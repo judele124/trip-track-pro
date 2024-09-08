@@ -1,10 +1,12 @@
 import "./App.css";
+import FirstEntry from "./components/first entry/FirstEntry";
 
 function App() {
+  
   return (
-    <>
-      <div></div>
-    </>
+    <div>
+      <FirstEntry />
+    </div>
   );
 }
 
