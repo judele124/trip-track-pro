@@ -7,6 +7,7 @@ const DarkModeContext = ({ children }) => {
   const handleDarkMode = () => {
     setDarkMode((prev) => !prev);
   };
+
   return (
     <darkModeContext.Provider value={{ darkMode, handleDarkMode }}>
       {children}
