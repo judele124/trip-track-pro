@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-button {
+/* button {
   @apply bg-orange;
-}
+} */

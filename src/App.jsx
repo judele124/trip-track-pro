@@ -1,10 +1,14 @@
 import "./App.css";
-import Button from "./shared/Button/Button";
+import FirstEntry from "./components/first entry/FirstEntry";
+// import Button from "./shared/Button/Button";
+
+
 
 function App() {
+  
   return (
     <div>
-      <Button />
+      <FirstEntry />
     </div>
   );
 }
