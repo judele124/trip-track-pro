@@ -1,8 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import TestUI from "../components/test/TestUI.tsx";
+// import TestUI from "../components/test/TestUI.tsx";
 import HomePageView from "../views/homePageView/HomePageView";
 import FirstEntryView from "../views/firstEntryView/FirstEntryView";
 import Layout from "../views/Layout.tsx";
+import TestMapbox from "../components/test/TestMapbox.tsx";
 const AppRoutes = () => {
   return (
     <BrowserRouter>
@@ -10,7 +11,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Layout />}>
           <Route path="" element={<HomePageView />} />
           <Route path="first-entry" element={<FirstEntryView />} />
-          <Route path="test" element={<TestUI />} />
+          <Route path="test" element={<TestMapbox />} />
         </Route>
         <Route path="*" element={<div>404</div>} />
       </Routes>
