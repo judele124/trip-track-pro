@@ -26,7 +26,11 @@ const HomePageView = () => {
           alt=""
         />
         <div className="mt-5">
-          <Button primary className="mb-1 w-full">
+          <Button
+            onClick={() => nav("/create-trip")}
+            primary
+            className="mb-1 w-full"
+          >
             Create a new trip
           </Button>
           <Button className="w-full">Join a trip</Button>
