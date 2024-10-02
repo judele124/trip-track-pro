@@ -16,14 +16,21 @@ const HomePageView = () => {
   }, []);
 
   return (
-    <div className="page-colors page-padding flex h-full flex-col justify-around">
-      <Logo />
-      <img width={"100%"} src={isDarkMode ? imgSrcDark : imgSrcLight} alt="" />
-      <div>
-        <Button primary className="mb-1 w-full">
-          Create a new trip
-        </Button>
-        <Button className="w-full">Join a trip</Button>
+    <div className="page-colors page-padding size-full">
+      <div className="mx-auto flex size-full max-w-[450px] flex-col">
+        <Logo />
+        <img
+          className="max-h-[60%] self-center"
+          width={"100%"}
+          src={isDarkMode ? imgSrcDark : imgSrcLight}
+          alt=""
+        />
+        <div className="mt-5">
+          <Button primary className="mb-1 w-full">
+            Create a new trip
+          </Button>
+          <Button className="w-full">Join a trip</Button>
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,6 @@
 
 body {
   font-family: "Inter", sans-serif;
-  height: 100dvh;
 }
 
 #root {
@@ -51,5 +50,5 @@ button {
 }
 
 .page-colors {
-  @apply bg-light dark:bg-dark text-dark dark:text-light;
+  @apply bg-light text-dark dark:bg-dark dark:text-light;
 }

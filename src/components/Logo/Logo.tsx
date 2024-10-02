@@ -7,6 +7,7 @@ const Logo = () => {
   const img = isDarkMode ? darkLogo : lightLogo;
   return (
     <img
+      width={"100%"}
       src={img}
       alt={isDarkMode ? "logo dark mode" : "logo light mode"}
     ></img>

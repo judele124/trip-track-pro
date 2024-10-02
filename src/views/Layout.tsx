@@ -4,7 +4,9 @@ const Layout = () => {
   const { isDarkMode } = useDarkMode();
 
   return (
-    <div className={`relative h-screen w-screen ${isDarkMode ? "dark" : ""}`}>
+    <div
+      className={`relative h-dvh w-screen overflow-hidden ${isDarkMode ? "dark" : ""}`}
+    >
       <Outlet />
       <ToggleDarkMode />
     </div>
