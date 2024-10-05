@@ -25,10 +25,7 @@ const Button = ({
   }
 
   return (
-    <button
-      {...props}
-      className={`${className} rounded-2xl px-5 py-3 font-semibold`}
-    >
+    <button {...props} className={`${className} px-5 py-3 font-semibold`}>
       {children}
     </button>
   );

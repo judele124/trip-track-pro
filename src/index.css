@@ -33,8 +33,13 @@ h5 {
 h6 {
   @apply text-sm font-bold;
 }
+
 button {
-  @apply rounded-full px-5 py-2;
+  @apply rounded-2xl px-5 py-2;
+}
+ 
+input {
+  @apply rounded-2xl px-5 py-2;
 }
 
 .page-x-padding {
