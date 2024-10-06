@@ -2,10 +2,15 @@ import Input from "./Input";
 
 interface InputWLabelProps {
   title?: string;
-  className?: string;
+  textarea?: boolean;
   type: string;
   name: string;
   placeholder?: string;
+  onChange?: (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
+  ) => void;
 }
 
 export default function InputWLabel({
@@ -13,12 +18,19 @@ export default function InputWLabel({
   type,
   title = "Default Title",
   placeholder,
-  className = "",
+  textarea = false,
+  onChange = () => {},
 }: InputWLabelProps) {
   return (
-    <label className={`flex w-full flex-col ${className}`}>
+    <label className={`flex w-full flex-col`}>
       <span className="pl-5">{title}</span>
-      <Input name={name} type={type} placeholder={placeholder} />
+      <Input
+        textarea={textarea}
+        onChange={onChange}
+        name={name}
+        type={type}
+        placeholder={placeholder}
+      />
     </label>
   );
 }

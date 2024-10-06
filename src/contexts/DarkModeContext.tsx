@@ -19,8 +19,6 @@ const DarkModeContextProvider = ({
 }: IDarkModeContextProviderProps) => {
   const [isDarkMode, setDarkMode] = useState(false);
   const toggleDarkMode = () => {
-    console.log("isDarkMode", isDarkMode);
-
     setDarkMode((prev) => !prev);
   };
 

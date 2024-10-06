@@ -37,8 +37,9 @@ h6 {
 button {
   @apply rounded-2xl px-5 py-2;
 }
- 
-input {
+
+input,
+textarea {
   @apply rounded-2xl px-5 py-2;
 }
 
