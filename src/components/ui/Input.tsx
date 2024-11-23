@@ -19,17 +19,25 @@ export default function Input({
   placeholder = "Default placeholder",
   onChange = () => {},
 }: InputProps) {
-  return textarea ? (
-    <textarea
-      onChange={onChange}
-      className={`dark:bg-secondary w-full  resize-none border-2 border-primary ${className}`}
-      name={name}
-      placeholder={placeholder}
-    />
-  ) : (
+  className += `
+  
+  `;
+
+  if (textarea) {
+    return (
+      <textarea
+        onChange={onChange}
+        className={`w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-darkSecondary dark:focus:border-light`}
+        name={name}
+        placeholder={placeholder}
+      />
+    );
+  }
+
+  return (
     <input
       onChange={onChange}
-      className={`dark:bg-secondary w-full border-2 border-primary ${className}`}
+      className={`w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-darkSecondary dark:focus:border-light`}
       name={name}
       type={type}
       placeholder={placeholder}

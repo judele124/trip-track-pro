@@ -38,12 +38,14 @@ const TestFormWithInputs = () => {
     name: "",
     password: "",
   });
+
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
     console.log(data);
   };
+
   useEffect(() => {
     console.log(data);
   }, [data]);
@@ -60,14 +62,14 @@ const TestFormWithInputs = () => {
       <InputWLabel title="Full Name" type="text" name={"name"} />
       <InputWLabel title="Password" type="password" name={"password"} />
       <InputWLabel
-        name="test"
+        name="test1"
         type="text"
         onChange={(e) => console.log(e.target.value)}
         placeholder="text area like"
         textarea
       />
       <Input
-        name="test"
+        name="test2"
         type="text"
         onChange={(e) => console.log(e.target.value)}
         placeholder="text area like"
