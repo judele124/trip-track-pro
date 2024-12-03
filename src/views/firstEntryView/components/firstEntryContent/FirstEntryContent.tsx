@@ -1,4 +1,3 @@
-import { useDarkMode } from "../../../../contexts/DarkModeContext";
 import s1ImgSrcLight from "../../assets/s1-map-light.svg";
 import s2ImgSrcLight from "../../assets/s2-phone-light.svg";
 import s3ImgSrcLight from "../../assets/s3-trophy-light.svg";
@@ -8,6 +7,8 @@ import s3ImgSrcDark from "../../assets/s3-trophy-dark.svg";
 
 import Button from "../../../../components/ui/Button";
 import useFirstEntry from "../../hooks/useFirstEntry";
+import ImageLightDark from "../../../../components/ui/ImageLightDark";
+
 
 interface FirstEntryContent {
   imgSrc: { dark: string; light: string };
@@ -34,8 +35,6 @@ const firstEntryContentData: FirstEntryContent[] = [
 ];
 
 const FirstEntryContent = () => {
-  const { isDarkMode } = useDarkMode();
-
   const { index, handleNext, endFirstEntry } = useFirstEntry(
     firstEntryContentData.length,
   );
@@ -46,15 +45,12 @@ const FirstEntryContent = () => {
         <p className="page-x-padding text-md text-center">
           {renderText(firstEntryContentData[index].text)}
         </p>
-        <img
+        <ImageLightDark 
           className="max-w-[450px] self-center"
           width={"100%"}
           height={"100%"}
-          src={
-            isDarkMode
-              ? firstEntryContentData[index].imgSrc.dark
-              : firstEntryContentData[index].imgSrc.light
-          }
+          srcDark={firstEntryContentData[index].imgSrc.dark}
+          srcLight={firstEntryContentData[index].imgSrc.light}
           alt={firstEntryContentData[index].imgAlt}
         />
       </div>
