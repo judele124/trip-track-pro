@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "../../../components/ui/Button";
+import InputWLabel from "../../../components/ui/InputWLabel";
 
 export default function CreateTripForm() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -14,36 +15,12 @@ export default function CreateTripForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto flex max-w-[350px] flex-col gap-4 p-4"
+      className="p-4s mx-auto flex max-w-[350px] flex-col gap-2 text-left"
     >
-      <label htmlFor="tripName" className="flex flex-col">
-        <span className="text-lg font-bold">Trip name</span>
-        <input
-          type="text"
-          id="tripName"
-          name="tripName"
-          placeholder="Trip name"
-          className="rounded-md bg-light px-2 py-1"
-        />
-      </label>
-      <label htmlFor="startDate" className="flex flex-col">
-        <span className="text-lg font-bold">Start date</span>
-        <input
-          type="date"
-          id="startDate"
-          name="startDate"
-          className="rounded-md bg-light px-2 py-1"
-        />
-      </label>
-      <label htmlFor="endDate" className="flex flex-col">
-        <span className="text-lg font-bold">End date</span>
-        <input
-          type="date"
-          id="endDate"
-          name="endDate"
-          className="rounded-md bg-light px-2 py-1"
-        />
-      </label>
+      <InputWLabel type="text" name="groupName" title="Trip name" />
+      <InputWLabel type="text" name="tripName" title="Trip name" />
+      <InputWLabel textarea type="text" name="decription" title="Decription" />
+
       <Button primary type="submit">
         Create trip
       </Button>
