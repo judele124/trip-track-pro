@@ -1,4 +1,4 @@
-import AppRoutes from "./appRoutes/AppRoutes.tsx";
+import AppRoutes from "./appRoutes";
 import DarkModeContextProvider from "./contexts/DarkModeContext.tsx";
 function App() {
   return (
