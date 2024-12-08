@@ -40,14 +40,12 @@ const FirstEntryContent = () => {
   );
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <p className="page-x-padding h-[64px] text-center text-lg font-semibold">
+    <div className="flex h-full w-full flex-col gap-4">
+      <p className="h-[64px] text-center text-lg font-semibold">
         {renderText(firstEntryContentData[index].text)}
       </p>
       <img
-        className="min-h-72 object-cover"
-        width={"100%"}
-        height={"100%"}
+        className="break-x-padding min-h-72 max-w-none object-cover"
         src={
           isDarkMode
             ? firstEntryContentData[index].imgSrc.dark
@@ -55,7 +53,7 @@ const FirstEntryContent = () => {
         }
         alt={firstEntryContentData[index].imgAlt}
       />
-      <div className="page-x-padding mx-auto w-full max-w-[600px]">
+      <div className="max-w-[600px]">
         <Button onClick={handleNext} primary className="w-full">
           Next
         </Button>

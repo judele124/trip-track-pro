@@ -1,18 +1,18 @@
-import Navbar from "../components/ui/Navbar";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import { Outlet } from "react-router-dom";
 
-const Layout = () => {
+const PageLayout = () => {
   const { isDarkMode } = useDarkMode();
 
   return (
     <div className={` ${isDarkMode ? "dark" : ""}`}>
-      <div className="page-colors page-padding relative h-dvh w-screen">
-        <Navbar />
-        <Outlet />
+      <div className="page-colors page-padding relative h-dvh">
+        <div className="mx-auto h-full sm:max-w-[450px]">
+          <Outlet />
+        </div>
       </div>
     </div>
   );
 };
 
-export default Layout;
+export default PageLayout;

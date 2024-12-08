@@ -16,8 +16,8 @@ const HomePageView = () => {
   }, []);
 
   return (
-    <div className="page-colors page-padding h-dvh">
-      <div className="mx-auto flex h-full max-h-screen flex-col gap-4 sm:max-w-[450px]">
+    <>
+      <div className="flex flex-col gap-4">
         <Logo />
         <img
           className="w-full overflow-hidden object-contain object-top"
@@ -35,7 +35,7 @@ const HomePageView = () => {
           <Button className="w-full">Join a trip</Button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

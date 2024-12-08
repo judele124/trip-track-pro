@@ -5,9 +5,9 @@ import InputWLabel from "../ui/InputWLabel";
 
 const TestUI = () => {
   return (
-    <div className="page-padding min-h-dvh bg-light dark:bg-dark dark:text-light">
+    <>
       <TestFormWithInputs />
-    </div>
+    </>
   );
 };
 
