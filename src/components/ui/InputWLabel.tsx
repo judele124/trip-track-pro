@@ -23,7 +23,7 @@ export default function InputWLabel({
 }: InputWLabelProps) {
   return (
     <label className={`flex w-full flex-col`}>
-      <span className="pl-5 font-semibold">{title}</span>
+      <span className="pl-5 text-start font-semibold">{title}</span>
       <Input
         textarea={textarea}
         onChange={onChange}

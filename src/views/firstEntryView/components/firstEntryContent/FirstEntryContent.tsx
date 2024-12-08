@@ -5,7 +5,6 @@ import s3ImgSrcLight from "../../assets/s3-trophy-light.svg";
 import s1ImgSrcDark from "../../assets/s1-map-dark.svg";
 import s2ImgSrcDark from "../../assets/s2-phone-dark.svg";
 import s3ImgSrcDark from "../../assets/s3-trophy-dark.svg";
-
 import Button from "../../../../components/ui/Button";
 import useFirstEntry from "../../hooks/useFirstEntry";
 
