@@ -9,7 +9,7 @@ const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<HomePageView />} />
+        <Route path="/" element={<HomePageView />} />
         <Route path="first-entry" element={<FirstEntryView />} />
         <Route path="/" element={<Layout />}>
           <Route path="create-trip" element={<CreateTripView />} />

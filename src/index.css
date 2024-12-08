@@ -55,6 +55,10 @@ textarea {
   @apply px-6 py-4;
 }
 
+.break-x-padding {
+  @apply -mx-6;
+}
+
 .page-colors {
   @apply bg-light text-dark dark:bg-dark dark:text-light;
 }

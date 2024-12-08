@@ -13,7 +13,7 @@ const Button = ({
   ...props
 }: ButtonProps) => {
   if (primary) {
-    className += " bg-primary text-light";
+    className += " bg-primary text-white";
   } else {
     if (!className.includes("text")) {
       className += " text-white dark:text-dark";

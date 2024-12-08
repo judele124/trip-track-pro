@@ -16,16 +16,15 @@ const HomePageView = () => {
   }, []);
 
   return (
-    <div className="page-colors page-padding size-full">
-      <div className="mx-auto flex size-full max-w-[450px] flex-col">
+    <div className="page-colors page-padding h-dvh">
+      <div className="mx-auto flex h-full max-h-screen flex-col gap-4 sm:max-w-[450px]">
         <Logo />
         <img
-          className="max-h-[60%] self-center"
-          width={"100%"}
+          className="w-full overflow-hidden object-contain object-top"
           src={isDarkMode ? imgSrcDark : imgSrcLight}
-          alt=""
+          alt="illustration of a map"
         />
-        <div className="mt-5">
+        <div>
           <Button
             onClick={() => nav("/create-trip")}
             primary
