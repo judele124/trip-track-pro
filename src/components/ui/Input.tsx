@@ -37,7 +37,7 @@ export default React.forwardRef<HTMLInputElement , IInputProps>(function Input(
     <input
       ref={ref}
       onChange={onChange}
-      className={`dark:bg-secondary w-full border-2 border-primary ${className}`}
+      className={`w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-darkSecondary dark:focus:border-light ${className}`}
       name={name}
       type={type}
       placeholder={placeholder}

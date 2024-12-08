@@ -3,13 +3,15 @@ import FirstEntryContent from "./components/firstEntryContent/FirstEntryContent.
 
 const FirstEntryView = () => {
   return (
-    <div className="page-colors page-y-padding size-full overflow-hidden">
-      <div className="page-x-padding mx-auto w-fit self-center">
-        <h3 className="text-xl font-bold">Welcome to</h3>
-        <Logo />
+    <>
+      <div className="flex flex-col gap-4">
+        <div>
+          <h3 className="text-xl font-bold">Welcome to</h3>
+          <Logo />
+        </div>
+        <FirstEntryContent />
       </div>
-      <FirstEntryContent />
-    </div>
+    </>
   );
 };
 

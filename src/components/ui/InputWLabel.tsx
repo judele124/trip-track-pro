@@ -26,7 +26,7 @@ export default React.forwardRef<HTMLInputElement, InputWLabelProps>(
 }: InputWLabelProps , ref) {
   return (
     <label className={`flex w-full flex-col`}>
-      <span className="pl-5">{title}</span>
+      <span className="pl-5 text-start font-semibold">{title}</span>
       <Input
         {...props}
         ref={ref}
