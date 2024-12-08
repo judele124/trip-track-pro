@@ -44,15 +44,15 @@ textarea {
 }
 
 .page-x-padding {
-  @apply px-8;
+  @apply px-6;
 }
 
 .page-y-padding {
-  @apply py-6;
+  @apply py-4;
 }
 
 .page-padding {
-  @apply px-8 py-6;
+  @apply px-6 py-4;
 }
 
 .page-colors {

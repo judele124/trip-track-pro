@@ -19,15 +19,12 @@ export default function Input({
   placeholder = "Default placeholder",
   onChange = () => {},
 }: InputProps) {
-  className += `
-  
-  `;
 
   if (textarea) {
     return (
       <textarea
         onChange={onChange}
-        className={`w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-darkSecondary dark:focus:border-light`}
+        className={`w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-darkSecondary dark:focus:border-light ${className}`}
         name={name}
         placeholder={placeholder}
       />
@@ -37,7 +34,7 @@ export default function Input({
   return (
     <input
       onChange={onChange}
-      className={`w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-darkSecondary dark:focus:border-light`}
+      className={`w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-darkSecondary dark:focus:border-light ${className}`}
       name={name}
       type={type}
       placeholder={placeholder}

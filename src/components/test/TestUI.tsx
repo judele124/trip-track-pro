@@ -6,21 +6,6 @@ import InputWLabel from "../ui/InputWLabel";
 const TestUI = () => {
   return (
     <div className="page-padding min-h-dvh bg-light dark:bg-dark dark:text-light">
-      {/* 
-      <h1>Lorem ipsum dolor sit amet.</h1>
-      <h2>Lorem ipsum dolor sit amet.</h2>
-      <h3>Lorem ipsum dolor sit amet.</h3>
-      <h4>Lorem ipsum dolor sit amet.</h4>
-      <h5>Lorem ipsum dolor sit amet.</h5>
-      <h6>Lorem ipsum dolor sit amet.</h6>
-      <p>Lorem ipsum dolor sit amet.</p>
-      <Button className="w-full" primary>
-        Button
-      </Button>
-      <Button className="w-full">Button</Button>
-      <Button className="w-full border-2 border-primary bg-light text-dark dark:bg-dark">
-        Button
-      </Button>*/}
       <TestFormWithInputs />
     </div>
   );
@@ -38,14 +23,12 @@ const TestFormWithInputs = () => {
     name: "",
     password: "",
   });
-
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
     console.log(data);
   };
-
   useEffect(() => {
     console.log(data);
   }, [data]);
@@ -62,14 +45,14 @@ const TestFormWithInputs = () => {
       <InputWLabel title="Full Name" type="text" name={"name"} />
       <InputWLabel title="Password" type="password" name={"password"} />
       <InputWLabel
-        name="test1"
+        name="test"
         type="text"
         onChange={(e) => console.log(e.target.value)}
         placeholder="text area like"
         textarea
       />
       <Input
-        name="test2"
+        name="test"
         type="text"
         onChange={(e) => console.log(e.target.value)}
         placeholder="text area like"
