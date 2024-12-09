@@ -44,9 +44,7 @@ const FirstEntryContent = () => {
         {renderText(firstEntryContentData[index].text)}
       </p>
       <ImageLightDark 
-          className="max-w-[450px] self-center"
-          width={"100%"}
-          height={"100%"}
+          // className="w-full overflow-hidden object-contain object-top"
           srcDark={firstEntryContentData[index].imgSrc.dark}
           srcLight={firstEntryContentData[index].imgSrc.light}
           alt={firstEntryContentData[index].imgAlt}

@@ -4,9 +4,8 @@ import Logo from "../../components/Logo/Logo";
 import imgSrcLight from "./assets/start-screen-light.svg";
 import imgSrcDark from "./assets/start-screen-dark.svg";
 import Button from "../../components/ui/Button";
-import { useDarkMode } from "../../contexts/DarkModeContext";
+import ImageLightDark from "../../components/ui/ImageLightDark";
 const HomePageView = () => {
-  const { isDarkMode } = useDarkMode();
   const nav = useNavigate();
 
   useEffect(() => {
@@ -19,10 +18,11 @@ const HomePageView = () => {
     <>
       <div className="flex flex-col gap-4">
         <Logo />
-        <img
-          className="w-full overflow-hidden object-contain object-top"
-          src={isDarkMode ? imgSrcDark : imgSrcLight}
-          alt="illustration of a map"
+        <ImageLightDark 
+          srcDark={imgSrcDark} 
+          srcLight={imgSrcLight} 
+          alt="illustration of a map" 
+          // className="w-full overflow-hidden object-contain object-top"
         />
         <div>
           <Button

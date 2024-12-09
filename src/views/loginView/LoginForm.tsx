@@ -1,4 +1,4 @@
-import { Fragment, InputHTMLAttributes, useEffect, useState } from "react";
+import { Fragment, InputHTMLAttributes, useState } from "react";
 import InputWLabel from "../../components/ui/InputWLabel";
 import Button from "../../components/ui/Button";
 import { useForm } from "react-hook-form";
@@ -22,39 +22,40 @@ const LoginFrom = () => {
   } = useForm<IFormData>();
 
   const fromStates: inputName[][] = [
-    ["name","email"],
-    [ "code"],
-  ] 
+    ["name", "email"],
+    ["code"],
+  ]
 
   const httpRouts = ['auth/send-code', 'auth/verify-code']
 
-  const {activate, loading, status } = useAxios({
-    method: 'POST',    
+  const { activate, loading, status } = useAxios({
+    method: 'POST',
     manual: true
   })
-  const onSubmit = (data : IFormData) => {
-    if(isFinished === 1){
+  const onSubmit = (data: IFormData) => {
+    if (isFinished === 1) {
       delete (data as { name?: string }).name
     }
-    
-    activate({url: httpRouts[isFinished], data})
-    if(status === 202 && isFinished === 1) navigate('/')
-    setIsFinished((prev) => (prev + 1) % 2); 
+    if (isFinished === 0 && data.email || data.code ) {
+      // activate({ url: httpRouts[isFinished], data })
+      if ( isFinished === 1) navigate('/home')
+      setIsFinished((prev) => (prev + 1) % 2);
+    }
   };
- 
+
   return (
     <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
-      {fromStates[isFinished].map((item ) => {
+      {fromStates[isFinished].map((item) => {
         const inputFieldProps = inputsFieldsProps.find((field) => field.name === item)
         return <Fragment key={item}>
-        <InputWLabel {...inputFieldProps} {...register(item)} /> 
-        {errors[item] && <p>{errors[item].message}</p>}
+          <InputWLabel {...inputFieldProps} {...register(item)} />
+          {errors[item] && <p>{errors[item].message}</p>}
         </Fragment>
       })}
-        
-      
+
+
       <Button primary type="submit">
-       {loading ? 'Loading...' : isFinished === 0 ? 'Send code' : 'submit'}
+        {loading ? 'Loading...' : isFinished === 0 ? 'Send code' : 'submit'}
       </Button>
     </form>
   );
@@ -63,7 +64,7 @@ const LoginFrom = () => {
 export default LoginFrom;
 
 type inputName = "name" | "email" | "code";
-const inputsFieldsProps:InputHTMLAttributes<HTMLInputElement>[] = [
+const inputsFieldsProps: InputHTMLAttributes<HTMLInputElement>[] = [
   {
     type: 'text',
     name: "name",

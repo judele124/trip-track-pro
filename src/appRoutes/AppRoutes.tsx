@@ -13,9 +13,9 @@ const AppRoutes = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<PageLayout />}>
-          <Route index element={<HomePageView />} />
+          <Route index element={<LoginView />} />
           <Route path="first-entry" element={<FirstEntryView />} />
-          <Route path="login" element={<LoginView />} />
+          <Route path="home" element={<HomePageView />} />
           <Route path="" element={<NavbarLayout />}>
             <Route path="create-trip" element={<CreateTripView />} />
             <Route path="test" element={<TestUI />} />

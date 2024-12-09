@@ -3,44 +3,47 @@ import React from "react";
 interface IInputProps {
   textarea?: boolean;
   className?: string;
-  type: string;
+  type?: string;
   name: string;
   placeholder?: string;
   onChange?: (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
   ) => void;
 }
 
-export default React.forwardRef<HTMLInputElement , IInputProps>(function Input(
+const Input = React.forwardRef<HTMLTextAreaElement | HTMLInputElement,IInputProps>(function Input(
   {
     textarea = false,
     className = "",
+    type = "text",
     name,
-    type,
     placeholder = "Default placeholder",
     onChange = () => {},
   }: IInputProps,
-  ref,
+  ref: React.Ref<HTMLTextAreaElement | HTMLInputElement>
 ) {
-  if (textarea)
+  if (textarea) {
     return (
       <textarea
+        ref={ref as React.Ref<HTMLTextAreaElement>}
         onChange={onChange}
-        className={`dark:bg-secondary w-full resize-none border-2 border-primary ${className}`}
+        className={`dark:bg-secondary w-full resize-none border-2 border-primary  ${className}`}
         name={name}
         placeholder={placeholder}
       />
     );
+  }
   return (
     <input
-      ref={ref}
+      ref={ref as React.Ref<HTMLInputElement>}
       onChange={onChange}
-      className={`w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-darkSecondary dark:focus:border-light ${className}`}
+      className={`dark:bg-secondary w-full resize-none border-2 border-primary py-[10px] focus:border-dark 
+        focus:outline-none dark:bg-darkSecondary dark:focus:border-light${className}`}
       name={name}
       type={type}
       placeholder={placeholder}
     />
   );
 });
+
+export default React.memo(Input); 
