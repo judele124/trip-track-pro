@@ -1,9 +1,10 @@
+import React from "react";
 import Input from "./Input";
 
-interface InputWLabelProps {
+interface InputWLabelProps  {
   title?: string;
   textarea?: boolean;
-  type: string;
+  type?: string;
   name: string;
   placeholder?: string;
   onChange?: (
@@ -13,18 +14,22 @@ interface InputWLabelProps {
   ) => void;
 }
 
-export default function InputWLabel({
+export default React.forwardRef<HTMLInputElement, InputWLabelProps>(
+ function InputWLabel({
   name,
-  type,
+  type = "text",
   title = "Default Title",
   placeholder,
   textarea = false,
   onChange = () => {},
-}: InputWLabelProps) {
+  ...props
+}: InputWLabelProps , ref) {
   return (
     <label className={`flex w-full flex-col`}>
       <span className="pl-5 text-start font-semibold">{title}</span>
       <Input
+        {...props}
+        ref={ref}
         textarea={textarea}
         onChange={onChange}
         name={name}
@@ -34,3 +39,4 @@ export default function InputWLabel({
     </label>
   );
 }
+)
