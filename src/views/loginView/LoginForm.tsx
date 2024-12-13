@@ -2,9 +2,8 @@ import { Fragment, InputHTMLAttributes, useState } from "react";
 import InputWLabel from "../../components/ui/InputWLabel";
 import Button from "../../components/ui/Button";
 import { useForm } from "react-hook-form";
-import useAxios from '../../hooks/useAxios'
+import useAxios from "../../hooks/useAxios";
 import { useNavigate } from "react-router-dom";
-
 
 type IFormData = {
   email: string;
@@ -13,7 +12,7 @@ type IFormData = {
 };
 const LoginFrom = () => {
   const [isFinished, setIsFinished] = useState(0);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const {
     register,
@@ -21,24 +20,21 @@ const LoginFrom = () => {
     formState: { errors },
   } = useForm<IFormData>();
 
-  const fromStates: inputName[][] = [
-    ["name", "email"],
-    ["code"],
-  ]
+  const fromStates: inputName[][] = [["name", "email"], ["code"]];
 
-  const httpRouts = ['auth/send-code', 'auth/verify-code']
+  const httpRouts = ["auth/send-code", "auth/verify-code"];
 
   const { activate, loading, status } = useAxios({
-    method: 'POST',
-    manual: true
-  })
+    method: "POST",
+    manual: true,
+  });
   const onSubmit = (data: IFormData) => {
     if (isFinished === 1) {
-      delete (data as { name?: string }).name
+      delete (data as { name?: string }).name;
     }
-    if (isFinished === 0 && data.email || data.code ) {
+    if ((isFinished === 0 && data.email) || data.code) {
       // activate({ url: httpRouts[isFinished], data })
-      if ( isFinished === 1) navigate('/home')
+      if (isFinished === 1) navigate("/home");
       setIsFinished((prev) => (prev + 1) % 2);
     }
   };
@@ -46,16 +42,19 @@ const LoginFrom = () => {
   return (
     <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
       {fromStates[isFinished].map((item) => {
-        const inputFieldProps = inputsFieldsProps.find((field) => field.name === item)
-        return <Fragment key={item}>
-          <InputWLabel {...inputFieldProps} {...register(item)} />
-          {errors[item] && <p>{errors[item].message}</p>}
-        </Fragment>
+        const inputFieldProps = inputsFieldsProps.find(
+          (field) => field.name === item,
+        );
+        return (
+          <Fragment key={item}>
+            <InputWLabel {...inputFieldProps} {...register(item)} />
+            {errors[item] && <p>{errors[item].message}</p>}
+          </Fragment>
+        );
       })}
 
-
       <Button primary type="submit">
-        {loading ? 'Loading...' : isFinished === 0 ? 'Send code' : 'submit'}
+        {loading ? "Loading..." : isFinished === 0 ? "Send code" : "submit"}
       </Button>
     </form>
   );
@@ -66,7 +65,7 @@ export default LoginFrom;
 type inputName = "name" | "email" | "code";
 const inputsFieldsProps: InputHTMLAttributes<HTMLInputElement>[] = [
   {
-    type: 'text',
+    type: "text",
     name: "name",
     title: "Enter name",
     placeholder: "Enter name",

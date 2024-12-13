@@ -1,7 +1,7 @@
 import { InputHTMLAttributes } from "react";
 import Button from "../../../components/ui/Button";
 import InputWLabel from "../../../components/ui/InputWLabel";
-import InputWBtnAndLabel from "../../../components/ui/InputWBtnAndLabel";
+import InputWBtnAndLabel from "../../../components/InputWBtnAndLabel";
 import { useForm } from "react-hook-form";
 
 type IFormData = {
@@ -22,10 +22,7 @@ export default function CreateTripForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto flex max-w-[350px] flex-col gap-2 p-4"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2 p-4">
       {inputsFieldsProps.map((props) => (
         <InputWLabel
           {...(props.name == "extraDetails" && { textarea: true })}
@@ -34,16 +31,16 @@ export default function CreateTripForm() {
           {...register(props.name as keyof IFormData)}
         />
       ))}
-      <InputWBtnAndLabel 
-      title="Add a reward" 
-      placeholder="Enter your query" 
-      primary 
-      isColumn
+      <InputWBtnAndLabel
+        title="Add a reward"
+        placeholder="Enter your query"
+        primary
+        isColumn
       >
-      <span>🔍</span>
-      <Button className="w-full" type="button" primary>
-        Add a photo
-      </Button>
+        <span>🔍</span>
+        <Button className="w-full" type="button" primary>
+          Add a photo
+        </Button>
       </InputWBtnAndLabel>
       <Button type="submit">Confirm</Button>
     </form>

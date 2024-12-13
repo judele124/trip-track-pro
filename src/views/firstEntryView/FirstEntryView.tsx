@@ -1,4 +1,4 @@
-import Logo from "../../components/Logo/Logo.tsx";
+import Logo from "../../components/Logo.tsx";
 import FirstEntryContent from "./components/firstEntryContent/FirstEntryContent.tsx";
 
 const FirstEntryView = () => {

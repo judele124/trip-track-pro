@@ -4,7 +4,7 @@ import loginImgLight from "./assets/loginImgLight.svg";
 import loginImgDark from "./assets/loginImgDark.svg";
 const LoginView = () => {
   return (
-    <div className="flex h-full flex-col items-center gap-5 pt-14">
+    <div className="flex h-full flex-col items-center gap-5">
       <h1>Login</h1>
       <LoginFrom />
       <ImageLightDark
