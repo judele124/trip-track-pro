@@ -8,7 +8,6 @@ import Button from "../../../../components/ui/Button";
 import useFirstEntry from "../../hooks/useFirstEntry";
 import ImageLightDark from "../../../../components/ui/ImageLightDark";
 
-
 interface FirstEntryContent {
   imgSrc: { dark: string; light: string };
   imgAlt: string;
@@ -40,15 +39,15 @@ const FirstEntryContent = () => {
 
   return (
     <div className="flex h-full w-full flex-col gap-4">
-      <p className="h-[64px] text-center text-lg font-semibold">
+      <p className="h-[64px] text-center text-lg font-semibold leading-tight">
         {renderText(firstEntryContentData[index].text)}
       </p>
-      <ImageLightDark 
-          // className="w-full overflow-hidden object-contain object-top"
-          srcDark={firstEntryContentData[index].imgSrc.dark}
-          srcLight={firstEntryContentData[index].imgSrc.light}
-          alt={firstEntryContentData[index].imgAlt}
-        />
+      <ImageLightDark
+        className="break-x-padding h-full max-h-56 max-w-none"
+        srcDark={firstEntryContentData[index].imgSrc.dark}
+        srcLight={firstEntryContentData[index].imgSrc.light}
+        alt={firstEntryContentData[index].imgAlt}
+      />
       <div className="max-w-[600px]">
         <Button onClick={handleNext} primary className="w-full">
           Next

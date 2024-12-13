@@ -18,11 +18,11 @@ const HomePageView = () => {
     <>
       <div className="flex flex-col gap-4">
         <Logo />
-        <ImageLightDark 
-          srcDark={imgSrcDark} 
-          srcLight={imgSrcLight} 
-          alt="illustration of a map" 
-          // className="w-full overflow-hidden object-contain object-top"
+        <ImageLightDark
+          srcDark={imgSrcDark}
+          srcLight={imgSrcLight}
+          className="max-h-[60vh]"
+          alt="illustration of a map"
         />
         <div>
           <Button
