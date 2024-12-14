@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMap } from './hooks/useMap';
 import { clearPoints } from './hooks/useMapPoints';
 import { getRouteData } from './services/useNavigation';
@@ -7,8 +7,6 @@ import { Point } from './types';
 import RouteInfo from './components/RouteInfo';
 import ClearRouteButton from './components/ClearRouteButton';
 import mapboxgl from 'mapbox-gl';
-import If from '../../components/condition/If';
-
 
 mapboxgl.accessToken = 'pk.eyJ1IjoianVkZWxlIiwiYSI6ImNtM3ZndjQ0MzByb3QycXIwczd6c3l4MnUifQ.aWTDBy7JZWGbopN3xfikNg';
 
@@ -20,9 +18,11 @@ const Map = () => {
 
 
   const onMapClick = async (e: mapboxgl.MapMouseEvent) => {
+    
     if (points.length >= maxStops) return;
-
     setPoints(prev => {
+      console.log(";;;;;");
+      
       const marker = new mapboxgl.Marker({
         element: CustomMarker({ index: prev.length }),
         anchor: 'center',
@@ -63,7 +63,8 @@ const Map = () => {
             }
           });
       }
-
+      // console.log(updatedPoints);
+      
       return updatedPoints;
     });
   }
@@ -72,18 +73,17 @@ const Map = () => {
   const map = useMap(mapContainer, onMapClick);
 
   useEffect(() => {
-    console.log(points);
+    // console.log(points);
   }, [points]);
 
-
-  return (
+ const clearP =  useCallback(() => clearPoints({ map, points, setPoints, setDistance }), [map, points]);
+  
+  return  (
     <div className="relative w-full h-screen">
       <div ref={mapContainer} className="w-full h-full" />
       <div className='absolute top-4 left-4 flex flex-col gap-3 bg-white p-4 rounded-lg shadow-lg  '>
         <RouteInfo points={points} distance={distance} />
-        <If condition={points.length >= 2}>
-          <ClearRouteButton onClick={() => clearPoints({ map, points, setPoints, setDistance })} />
-        </If>
+          {points.length >= 2 && <ClearRouteButton onClick={() => clearP()} />}
       </div>
     </div>
   );

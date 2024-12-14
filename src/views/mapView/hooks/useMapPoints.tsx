@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Point } from '../types';
 
 interface IMapPointsProps {
@@ -16,6 +15,7 @@ export const clearPoints = (props: IMapPointsProps) => {
       map.current.removeLayer('route');
       map.current.removeSource('route');
     }
+    console.log("lllll", points);
     points.forEach((point) => point.marker.remove());
     setPoints([]);
     setDistance(null);
