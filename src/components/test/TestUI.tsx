@@ -3,12 +3,10 @@ import FormMultipleStages from "../FormMultipleStages";
 import { useForm } from "react-hook-form";
 import Button from "../ui/Button";
 import InputWLabel from "../ui/InputWLabel";
-import InputWBtnAndLabel from "../InputWBtnAndLabel";
 
 const TestUI = () => {
   return (
     <>
-      {/* <TestLoginForm /> */}
       <TestCreateTripForm />
     </>
   );
@@ -18,7 +16,7 @@ const TestCreateTripForm = () => {
   const { register, handleSubmit } = useForm();
   return (
     <FormMultipleStages
-      onSubmit={({ stage, incrementStage }) => {
+      onMultipleStageSubmit={({ stage, incrementStage }) => {
         handleSubmit(async (data) => {
           try {
             const { status } = await fakeFetch();
@@ -76,7 +74,7 @@ const TestLoginForm = () => {
   return (
     <>
       <FormMultipleStages
-        onSubmit={({ stage, incrementStage }) => {
+        onMultipleStageSubmit={({ stage, incrementStage }) => {
           if (stage === 0) {
             handleSubmit(async (data) => {
               try {

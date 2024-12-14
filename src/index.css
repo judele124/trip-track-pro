@@ -5,8 +5,7 @@
 body {
   font-family: "Inter", sans-serif;
 }
-a
-#root {
+a #root {
   height: 100%;
 }
 
@@ -40,6 +39,14 @@ button {
 
 input,
 textarea {
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-text-fill-color: #ebe2d4 !important;
+    -webkit-box-shadow: 0 0 0 30px #383644 inset !important;
+  }
+
   @apply rounded-2xl px-5 py-2;
 }
 
