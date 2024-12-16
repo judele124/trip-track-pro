@@ -9,6 +9,7 @@ const Logo = () => {
     <img
       width={"100%"}
       src={img}
+      className="max-h-[20vh]"
       alt={isDarkMode ? "logo dark mode" : "logo light mode"}
     ></img>
   );

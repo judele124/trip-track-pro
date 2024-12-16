@@ -34,16 +34,16 @@ export default function CreateTripForm() {
           {...register(props.name as keyof IFormData)}
         />
       ))}
-      <InputWBtnAndLabel 
-      title="Add a reward" 
-      placeholder="Enter your query" 
-      primary 
-      isColumn
+      <InputWBtnAndLabel
+        title="Add a reward"
+        placeholder="Enter your query"
+        primary
+        isColumn
       >
-      <span>🔍</span>
-      <Button className="w-full" type="button" primary>
-        Add a photo
-      </Button>
+        <span>🔍</span>
+        <Button className="w-full" type="button" primary>
+          Add a photo
+        </Button>
       </InputWBtnAndLabel>
       <Button type="submit">Confirm</Button>
     </form>
