@@ -1,68 +1,140 @@
-import { FormEvent, useEffect, useState } from "react";
-import Button from "../ui/Button";
 import Input from "../ui/Input";
+import FormMultipleStages from "../FormMultipleStages";
+import { useForm } from "react-hook-form";
+import Button from "../ui/Button";
 import InputWLabel from "../ui/InputWLabel";
 
 const TestUI = () => {
   return (
     <>
-      <TestFormWithInputs />
+      <TestCreateTripForm />
     </>
   );
 };
 
-interface IUser {
-  email: string;
-  name: string;
-  password: string;
-}
-
-const TestFormWithInputs = () => {
-  const [data, setData] = useState<IUser>({
-    email: "",
-    name: "",
-    password: "",
-  });
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-    console.log(data);
-  };
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
+const TestCreateTripForm = () => {
+  const { register, handleSubmit } = useForm();
   return (
-    <form onSubmit={onSubmit}>
-      <h2 className="text-center">Form</h2>
-      <InputWLabel
-        onChange={(e) => setData({ ...data, email: e.target.value })}
-        title="Email address"
-        type="email"
-        name={"email"}
+    <FormMultipleStages
+      onMultipleStageSubmit={({ stage, incrementStage }) => {
+        handleSubmit(async (data) => {
+          try {
+            const { status } = await fakeFetch();
+            console.log(data);
+            incrementStage();
+          } catch (error) {
+            console.log(error);
+          }
+        })();
+      }}
+      renderStages={[
+        () => (
+          <>
+            <InputWLabel
+              title="Enter trip name"
+              placeholder="Enter trip name"
+              {...register("tripName")}
+            />
+            <InputWLabel
+              title="Enter group name"
+              placeholder="Enter group name"
+              {...register("groupName")}
+            />
+            <InputWLabel
+              title="Enter extra information"
+              textarea
+              {...register("extraDetails")}
+            />
+            <Button className="w-full">Next</Button>
+          </>
+        ),
+        () => (
+          <>
+            <InputWLabel
+              title="Enter first stop"
+              placeholder="Enter first stop"
+              {...register("firstStop")}
+            />
+            <Button>add stop</Button>
+            <InputWLabel
+              title="Enter last stop"
+              placeholder="Enter last stop"
+              {...register("lastStop")}
+            />
+            <Button className="w-full">Next</Button>
+          </>
+        ),
+      ]}
+    />
+  );
+};
+
+const TestLoginForm = () => {
+  const { register, handleSubmit } = useForm();
+  return (
+    <>
+      <FormMultipleStages
+        onMultipleStageSubmit={({ stage, incrementStage }) => {
+          if (stage === 0) {
+            handleSubmit(async (data) => {
+              try {
+                const { status } = await fakeFetch();
+                console.log(data);
+                if (status === 200) incrementStage();
+              } catch (error) {
+                console.log(error);
+              }
+            })();
+          } else {
+            handleSubmit(async (data) => {
+              try {
+                const { status } = await fakeFetch();
+                console.log(data);
+                if (status === 200) incrementStage();
+              } catch (error) {
+                console.log(error);
+              }
+            })();
+          }
+        }}
+        renderStages={[
+          () => (
+            <>
+              <Input
+                key={"email"}
+                placeholder="Enter mail address"
+                type="email"
+                {...register("email")}
+              />
+              <Button className="w-full">Next</Button>
+            </>
+          ),
+          () => (
+            <>
+              <Input
+                key={"name"}
+                placeholder="Enter name"
+                type="name"
+                {...register("name")}
+              />
+              <Input
+                key={"code"}
+                placeholder="Enter code"
+                type="number"
+                {...register("code")}
+              />
+              <Button className="w-full">Verify</Button>
+            </>
+          ),
+        ]}
       />
-      <InputWLabel title="Full Name" type="text" name={"name"} />
-      <InputWLabel title="Password" type="password" name={"password"} />
-      <InputWLabel
-        name="test"
-        type="text"
-        onChange={(e) => console.log(e.target.value)}
-        placeholder="text area like"
-        textarea
-      />
-      <Input
-        name="test"
-        type="text"
-        onChange={(e) => console.log(e.target.value)}
-        placeholder="text area like"
-        textarea
-      />
-      <Button type="submit" primary className="mt-2 w-full">
-        Submit
-      </Button>
-    </form>
+    </>
   );
 };
 
 export default TestUI;
+
+const fakeFetch = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return { status: 200 };
+};

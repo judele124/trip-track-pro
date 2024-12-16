@@ -1,6 +1,6 @@
-import darkLogo from "../../assets/logo-dark.svg";
-import lightLogo from "../../assets/logo-light.svg";
-import { useDarkMode } from "../../contexts/DarkModeContext";
+import darkLogo from "../assets/logo-dark.svg";
+import lightLogo from "../assets/logo-light.svg";
+import { useDarkMode } from "../contexts/DarkModeContext";
 const Logo = () => {
   const { isDarkMode } = useDarkMode();
 

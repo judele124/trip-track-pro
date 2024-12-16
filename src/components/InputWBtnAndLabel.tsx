@@ -2,7 +2,6 @@ import React, {
   ButtonHTMLAttributes,
   PropsWithChildren,
   ReactNode,
-  useEffect,
 } from "react";
 
 type IProps = {
@@ -22,7 +21,6 @@ const InputWBtnAndLabel = ({
   title,
   placeholder = "",
   isColumn,
-  ...props
 }: IProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -41,9 +39,6 @@ const InputWBtnAndLabel = ({
   const titleChild = childArray[0];
   const bottomChild = childArray[1];
 
-  useEffect(() => {
-    console.log(isOpen);
-  }, [isOpen]);
   return (
     <div
       className={`relative flex w-full rounded-2xl ${

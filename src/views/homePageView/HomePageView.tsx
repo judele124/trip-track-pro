@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Logo from "../../components/Logo/Logo";
+import Logo from "../../components/Logo";
 import imgSrcLight from "./assets/start-screen-light.svg";
 import imgSrcDark from "./assets/start-screen-dark.svg";
 import Button from "../../components/ui/Button";
@@ -21,7 +21,6 @@ const HomePageView = () => {
         <ImageLightDark
           srcDark={imgSrcDark}
           srcLight={imgSrcLight}
-          className="max-h-[60vh]"
           alt="illustration of a map"
         />
         <div>

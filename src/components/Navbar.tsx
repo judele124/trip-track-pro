@@ -1,4 +1,4 @@
-import { useDarkMode } from "../../contexts/DarkModeContext";
+import { useDarkMode } from "../contexts/DarkModeContext";
 
 export default function Navbar() {
   return (
