@@ -22,7 +22,6 @@ const HomePageView = () => {
           srcDark={imgSrcDark}
           srcLight={imgSrcLight}
           alt="illustration of a map"
-          // className="w-full overflow-hidden object-contain object-top"
         />
         <div>
           <Button
