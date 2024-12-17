@@ -57,7 +57,7 @@ export default function CreateTripForm() {
           <>
             {firstStageInputs.map((input) => (
               <div key={input.name}>
-                {errors && errors[input.name]?.message && (
+                {errors[input.name]?.message && (
                   <InputFeildError
                     message={errors[input.name]?.message || "Default error"}
                   />

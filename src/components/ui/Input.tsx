@@ -7,11 +7,17 @@ interface IInputProps {
   name: string;
   placeholder?: string;
   onChange?: (
-    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
   ) => void;
+  rows?: number;
 }
 
-const Input = React.forwardRef<HTMLTextAreaElement | HTMLInputElement,IInputProps>(function Input(
+const Input = React.forwardRef<
+  HTMLTextAreaElement | HTMLInputElement,
+  IInputProps
+>(function Input(
   {
     textarea = false,
     className = "",
@@ -19,15 +25,17 @@ const Input = React.forwardRef<HTMLTextAreaElement | HTMLInputElement,IInputProp
     name,
     placeholder = "Default placeholder",
     onChange = () => {},
+    rows,
   }: IInputProps,
-  ref: React.Ref<HTMLTextAreaElement | HTMLInputElement>
+  ref: React.Ref<HTMLTextAreaElement | HTMLInputElement>,
 ) {
   if (textarea) {
     return (
       <textarea
+        rows={rows}
         ref={ref as React.Ref<HTMLTextAreaElement>}
         onChange={onChange}
-        className={`dark:bg-secondary w-full resize-none border-2 border-primary  ${className}`}
+        className={`w-full resize-none border-2 border-primary dark:bg-secondary ${className}`}
         name={name}
         placeholder={placeholder}
       />
@@ -37,8 +45,7 @@ const Input = React.forwardRef<HTMLTextAreaElement | HTMLInputElement,IInputProp
     <input
       ref={ref as React.Ref<HTMLInputElement>}
       onChange={onChange}
-      className={`dark:bg-secondary w-full resize-none border-2 border-primary py-[10px] focus:border-dark 
-        focus:outline-none dark:bg-darkSecondary dark:focus:border-light${className}`}
+      className={`dark:bg-darkSecondary w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-secondary dark:focus:border-light${className}`}
       name={name}
       type={type}
       placeholder={placeholder}
@@ -46,4 +53,4 @@ const Input = React.forwardRef<HTMLTextAreaElement | HTMLInputElement,IInputProp
   );
 });
 
-export default React.memo(Input); 
+export default React.memo(Input);

@@ -4,7 +4,8 @@ interface IFormMultipleStagesProps extends HTMLAttributes<HTMLFormElement> {
   renderStages: ((index: number) => ReactNode)[];
   onMultipleStageSubmit: (
     e: FormEvent<HTMLFormElement>,
-  ) => Promise<void> | void;
+    { stage, incrementStage }: { stage: number; incrementStage: () => void },
+  ) => void;
   onLastStageSubmit: (e: FormEvent<HTMLFormElement>) => void;
 }
 
@@ -26,19 +27,22 @@ export default function FormMultipleStages({
     setStage((prev) => prev + 1);
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const isLastStage = stage >= stagesCount - 1;
-    if (isLastStage) {
-      onLastStageSubmit(e);
-    } else {
-      onMultipleStageSubmit(e);
-      incrementStage();
-    }
-  };
-
   return (
-    <form ref={formRef} {...prev} onSubmit={handleSubmit}>
+    <form
+      ref={formRef}
+      {...prev}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (stage == stagesCount - 1) {
+          onLastStageSubmit(e);
+        } else {
+          onMultipleStageSubmit(e, {
+            stage,
+            incrementStage,
+          });
+        }
+      }}
+    >
       {renderStages[stage](stage)}
     </form>
   );
