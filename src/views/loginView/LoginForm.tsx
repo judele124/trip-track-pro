@@ -2,7 +2,7 @@ import InputWLabel from "../../components/ui/InputWLabel";
 import Button from "../../components/ui/Button";
 import FormMultipleStages from "../../components/FormMultipleStages";
 import InputFeildError from "../../components/ui/InputFeildError";
-import { LoginSchema, ILoginSchema } from "../../zodSchemas/authSchemas";
+import { loginSchema, LoginSchema } from "../../zodSchemas/authSchemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -27,12 +27,12 @@ const LoginFrom = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ILoginSchema>({
-    resolver: zodResolver(LoginSchema[currentStage]),
+  } = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema[currentStage]),
   });
 
-  const onSubmit = async (data: ILoginSchema) => {
-    if (currentStage === 0) await sendCode(data);
+  const onSubmit = async (data: LoginSchema) => {
+    if (currentStage === 0) await sendCode(data.email);
     if (currentStage === 1) {
       await verifyCode(data);
       nav("/");
@@ -43,11 +43,15 @@ const LoginFrom = () => {
     <FormMultipleStages
       className="flex w-full flex-col gap-3"
       onLastStageSubmit={handleSubmit(onSubmit)}
-      onMultipleStageSubmit={(e, { incrementStage, stage }) => {
+      onMultipleStageSubmit={(e, { incrementStage }) => {
         handleSubmit(async (data) => {
-          await onSubmit(data);
-          incrementStage();
-          setCurrentStage((prev) => prev + 1);
+          try {
+            await onSubmit(data);
+            incrementStage();
+            setCurrentStage((prev) => prev + 1);
+          } catch (error) {
+            console.error(error);
+          }
         })(e);
       }}
       renderStages={[
@@ -105,7 +109,7 @@ const LoginFrom = () => {
                 code sent to {watch("email")} and will expire in 10 minutes
                 can't find it?{" "}
                 <span
-                  onClick={() => sendCode(watch())}
+                  onClick={() => sendCode(watch("email"))}
                   className="cursor-pointer text-dark underline underline-offset-2 dark:text-light"
                 >
                   resend code

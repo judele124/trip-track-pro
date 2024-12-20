@@ -21,8 +21,8 @@ export const verifyCodeSchema = z
   .strict();
 
 // Union schema that allows either sendCodeSchema or verifyCodeSchema
-export const LoginSchema = [sendCodeSchema, verifyCodeSchema];
+export const loginSchema = [sendCodeSchema, verifyCodeSchema];
 
-export type ILoginSchema = z.infer<
+export type LoginSchema = z.infer<
   typeof sendCodeSchema & typeof verifyCodeSchema
 >;

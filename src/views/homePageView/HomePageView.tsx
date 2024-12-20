@@ -5,12 +5,19 @@ import imgSrcLight from "./assets/start-screen-light.svg";
 import imgSrcDark from "./assets/start-screen-dark.svg";
 import Button from "../../components/ui/Button";
 import ImageLightDark from "../../components/ui/ImageLightDark";
+import { useAuthContext } from "../../contexts/AuthContext";
+
 const HomePageView = () => {
+  const { user } = useAuthContext();
   const nav = useNavigate();
 
   useEffect(() => {
     if (!localStorage.getItem("notFirstEntry")) {
       nav("/first-entry");
+    }
+
+    if (!user) {
+      nav("/login");
     }
   }, []);
 
