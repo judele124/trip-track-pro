@@ -5,20 +5,22 @@ import InputFeildError from "../../components/ui/InputFeildError";
 import { LoginSchema, ILoginSchema } from "../../zodSchemas/authSchemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import useAxios from "../../hooks/useAxios";
-import { API_BASE_URL } from "../../env.config";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../contexts/AuthContext";
 
 const LoginFrom = () => {
   const [currentStage, setCurrentStage] = useState(0);
   const nav = useNavigate();
+
   const {
-    activate,
+    sendCode,
+    verifyCode,
     loading,
-    error: axiosError,
-    status,
-  } = useAxios({ manual: true });
+    sendCodeError,
+    verifyCodeError,
+    sendCodeStatus,
+  } = useAuthContext();
 
   const {
     watch,
@@ -29,32 +31,19 @@ const LoginFrom = () => {
     resolver: zodResolver(LoginSchema[currentStage]),
   });
 
-  const sendCode = async ({ email }: ILoginSchema) => {
-    const url = `${API_BASE_URL}/auth/send-code`;
-    await activate({ data: { email }, url, method: "post" });
-  };
-
-  const verifyCode = async (data: ILoginSchema) => {
-    const url = `${API_BASE_URL}/auth/verify-code`;
-    await activate({ data, url, method: "post" });
-  };
-
   const onSubmit = async (data: ILoginSchema) => {
     if (currentStage === 0) await sendCode(data);
-    if (currentStage === 1) await verifyCode(data);
-  };
-
-  useEffect(() => {
-    if (status && currentStage === 1 && status >= 200 && status <= 300) {
+    if (currentStage === 1) {
+      await verifyCode(data);
       nav("/");
     }
-  }, [currentStage, status]);
+  };
 
   return (
     <FormMultipleStages
       className="flex w-full flex-col gap-3"
       onLastStageSubmit={handleSubmit(onSubmit)}
-      onMultipleStageSubmit={(e, { incrementStage }) => {
+      onMultipleStageSubmit={(e, { incrementStage, stage }) => {
         handleSubmit(async (data) => {
           await onSubmit(data);
           incrementStage();
@@ -78,6 +67,11 @@ const LoginFrom = () => {
             <Button className="w-full" type="submit" primary>
               {loading ? "Sending code..." : "Send code"}
             </Button>
+            {sendCodeError && (
+              <p className="text-center text-red-500">
+                {sendCodeError.message}
+              </p>
+            )}
           </>
         ),
         () => (
@@ -106,7 +100,7 @@ const LoginFrom = () => {
             <Button className="w-full" type="submit" primary>
               {loading ? "Loading..." : "Verify code"}
             </Button>
-            {status && status >= 200 && status < 300 ? (
+            {isStatusSuccessful(sendCodeStatus) && (
               <p className="text-center">
                 code sent to {watch("email")} and will expire in 10 minutes
                 can't find it?{" "}
@@ -117,10 +111,11 @@ const LoginFrom = () => {
                   resend code
                 </span>
               </p>
-            ) : (
-              axiosError && (
-                <p className="text-center text-red-500">{axiosError.message}</p>
-              )
+            )}
+            {verifyCodeError && (
+              <p className="text-center text-red-500">
+                {verifyCodeError.message}
+              </p>
             )}
           </>
         ),
@@ -130,3 +125,7 @@ const LoginFrom = () => {
 };
 
 export default LoginFrom;
+
+const isStatusSuccessful = (status: number | undefined) => {
+  return status && status >= 200 && status <= 300;
+};
