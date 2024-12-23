@@ -11,9 +11,9 @@ const TestUI = () => {
         <button onClick={() => setOpen2(true)}>s</button>
       </div>
       <Modal
-        // anchorElement={ref2}
-        // anchorTo="bottom"
-        center
+        anchorElement={ref2}
+        anchorTo="bottom"
+        // center
         open={open2}
         onBackdropClick={() => setOpen2(false)}
       >

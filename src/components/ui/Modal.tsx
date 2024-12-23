@@ -20,6 +20,7 @@ type ModalAnchor =
   | "top-left";
 
 type CommonProps = {
+  backgroundClassname?: string;
   className?: string;
   open: boolean;
   onBackdropClick: () => void;
@@ -41,18 +42,19 @@ type ModalProps = CommonProps &
   );
 
 const Modal: FC<ModalProps> = ({
+  backgroundClassname,
   open,
   onBackdropClick,
   anchorElement,
   anchorTo,
   center,
-  // translate = [0, 0],
   children,
 }) => {
   if (!open) return null;
 
   const [positions, setPositions] = useState([0, 0, 0, 0]);
   const childrenRef = useRef<HTMLDivElement>(null);
+  const backgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (center || !anchorElement?.current || !childrenRef.current) return;
@@ -173,10 +175,15 @@ const Modal: FC<ModalProps> = ({
     }
   }, [anchorElement, anchorTo]);
 
+  useEffect(() => {
+    backgroundRef.current?.classList.remove("opacity-0");
+  }, []);
+
   return (
     <div
+      ref={backgroundRef}
       onClick={onBackdropClick}
-      className="absolute inset-0 bg-gray-950/70 backdrop-blur-sm"
+      className={`absolute inset-0 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
     >
       <div
         className="relative w-fit"
