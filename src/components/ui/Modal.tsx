@@ -19,21 +19,33 @@ type ModalAnchor =
   | "left"
   | "top-left";
 
-type ModalProps = {
+type CommonProps = {
+  className?: string;
   open: boolean;
   onBackdropClick: () => void;
   children?: ReactNode;
-  anchorElement?: RefObject<HTMLElement>;
-  anchorTo?: ModalAnchor;
-  center?: boolean;
-  translate?: [number, number];
 };
+
+type ModalProps = CommonProps &
+  (
+    | {
+        center?: never;
+        anchorElement: RefObject<HTMLElement>;
+        anchorTo: ModalAnchor;
+      }
+    | {
+        center: boolean;
+        anchorElement?: never;
+        anchorTo?: never;
+      }
+  );
+
 const Modal: FC<ModalProps> = ({
   open,
   onBackdropClick,
   anchorElement,
-  anchorTo = "center",
-  center = false,
+  anchorTo,
+  center,
   // translate = [0, 0],
   children,
 }) => {
@@ -43,118 +55,120 @@ const Modal: FC<ModalProps> = ({
   const childrenRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (center) {
-      return;
-    }
-    if (anchorElement?.current && childrenRef.current) {
-      const rect = anchorElement.current.getBoundingClientRect();
-      const childrenRect = childrenRef.current.getBoundingClientRect();
+    if (center || !anchorElement?.current || !childrenRef.current) return;
 
-      switch (anchorTo) {
-        case "top": {
-          // Modal's top edge is aligned with the anchor's bottom edge, centered horizontally
-          const centerHorizontal = rect.left + rect.width / 2;
-          setPositions([
-            rect.bottom, // Top of the modal
-            centerHorizontal + childrenRect.width / 2, // Right
-            rect.bottom + childrenRect.height, // Bottom
-            centerHorizontal - childrenRect.width / 2, // Left
-          ]);
-          break;
-        }
+    const anchorElementRect = anchorElement.current.getBoundingClientRect();
+    const childrenRect = childrenRef.current.getBoundingClientRect();
 
-        case "top-right": {
-          // Modal's top-right corner is aligned with the anchor's bottom-left corner
-          setPositions([
-            rect.bottom, // Top of the modal
-            rect.left, // Right of the modal
-            rect.bottom + childrenRect.height, // Bottom of the modal
-            rect.left - childrenRect.width, // Left of the modal
-          ]);
-          break;
-        }
+    switch (anchorTo) {
+      case "top": {
+        const centerHorizontal =
+          anchorElementRect.left + anchorElementRect.width / 2;
+        setPositions([
+          anchorElementRect.bottom, // Top of the modal
+          centerHorizontal + childrenRect.width / 2, // Right
+          anchorElementRect.bottom + childrenRect.height, // Bottom
+          centerHorizontal - childrenRect.width / 2, // Left
+        ]);
+        break;
+      }
 
-        case "right": {
-          // Modal's left edge is aligned with the anchor's right edge, centered vertically
-          const centerVertical = rect.top + rect.height / 2;
-          setPositions([
-            centerVertical - childrenRect.height / 2, // Top
-            rect.left, // Right
-            centerVertical + childrenRect.height / 2, // Bottom
-            rect.left - childrenRect.width, // Left
-          ]);
-          break;
-        }
+      case "top-right": {
+        // Modal's top-right corner is aligned with the anchor's bottom-left corner
+        setPositions([
+          anchorElementRect.bottom, // Top of the modal
+          anchorElementRect.left, // Right of the modal
+          anchorElementRect.bottom + childrenRect.height, // Bottom of the modal
+          anchorElementRect.left - childrenRect.width, // Left of the modal
+        ]);
+        break;
+      }
 
-        case "bottom-right": {
-          // Modal's top-left corner is aligned with the anchor's bottom-right corner
-          setPositions([
-            rect.top - childrenRect.height, // Top of the modal
-            rect.left, // Right
-            rect.top, // Bottom
-            rect.left - childrenRect.width, // Left
-          ]);
-          break;
-        }
+      case "right": {
+        // Modal's left edge is aligned with the anchor's right edge, centered vertically
+        const centerVertical =
+          anchorElementRect.top + anchorElementRect.height / 2;
+        setPositions([
+          centerVertical - childrenRect.height / 2, // Top
+          anchorElementRect.left, // Right
+          centerVertical + childrenRect.height / 2, // Bottom
+          anchorElementRect.left - childrenRect.width, // Left
+        ]);
+        break;
+      }
 
-        case "bottom": {
-          // Modal's top edge is aligned with the anchor's bottom edge, centered horizontally
-          const centerHorizontal = rect.left + rect.width / 2;
-          setPositions([
-            rect.top - childrenRect.height, // Top of the modal
-            centerHorizontal + childrenRect.width / 2, // Right
-            rect.top, // Bottom
-            centerHorizontal - childrenRect.width / 2, // Left
-          ]);
-          break;
-        }
+      case "bottom-right": {
+        // Modal's top-left corner is aligned with the anchor's bottom-right corner
+        setPositions([
+          anchorElementRect.top - childrenRect.height, // Top of the modal
+          anchorElementRect.left, // Right
+          anchorElementRect.top, // Bottom
+          anchorElementRect.left - childrenRect.width, // Left
+        ]);
+        break;
+      }
 
-        case "bottom-left": {
-          // Modal's top-right corner is aligned with the anchor's bottom-left corner
-          setPositions([
-            rect.top - childrenRect.height, // Top of the modal
-            rect.right - childrenRect.width, // Right
-            rect.top, // Bottom
-            rect.right, // Left
-          ]);
-          break;
-        }
+      case "bottom": {
+        // Modal's top edge is aligned with the anchor's bottom edge, centered horizontally
+        const centerHorizontal =
+          anchorElementRect.left + anchorElementRect.width / 2;
+        setPositions([
+          anchorElementRect.top - childrenRect.height, // Top of the modal
+          centerHorizontal + childrenRect.width / 2, // Right
+          anchorElementRect.top, // Bottom
+          centerHorizontal - childrenRect.width / 2, // Left
+        ]);
+        break;
+      }
 
-        case "left": {
-          // Modal's right edge is aligned with the anchor's left edge, centered vertically
-          const centerVertical = rect.top + rect.height / 2;
-          setPositions([
-            centerVertical - childrenRect.height / 2, // Top
-            rect.right - childrenRect.width, // Right
-            centerVertical + childrenRect.height / 2, // Bottom
-            rect.right, // Left
-          ]);
-          break;
-        }
+      case "bottom-left": {
+        // Modal's top-right corner is aligned with the anchor's bottom-left corner
+        setPositions([
+          anchorElementRect.top - childrenRect.height, // Top of the modal
+          anchorElementRect.right - childrenRect.width, // Right
+          anchorElementRect.top, // Bottom
+          anchorElementRect.right, // Left
+        ]);
+        break;
+      }
 
-        case "top-left": {
-          // Modal's bottom-right corner is aligned with the anchor's top-left corner
-          setPositions([
-            rect.bottom, // Top of the modal
-            rect.right - childrenRect.width, // Right
-            rect.bottom + childrenRect.height, // Bottom
-            rect.right, // Left
-          ]);
-          break;
-        }
+      case "left": {
+        // Modal's right edge is aligned with the anchor's left edge, centered vertically
+        const centerVertical =
+          anchorElementRect.top + anchorElementRect.height / 2;
+        setPositions([
+          centerVertical - childrenRect.height / 2, // Top
+          anchorElementRect.right - childrenRect.width, // Right
+          centerVertical + childrenRect.height / 2, // Bottom
+          anchorElementRect.right, // Left
+        ]);
+        break;
+      }
 
-        case "center": {
-          // Modal is centered horizontally and vertically relative to the anchor
-          const centerHorizontal = rect.left + rect.width / 2;
-          const centerVertical = rect.top + rect.height / 2;
-          setPositions([
-            centerVertical - childrenRect.height / 2, // Top
-            centerHorizontal + childrenRect.width / 2, // Right
-            centerVertical + childrenRect.height / 2, // Bottom
-            centerHorizontal - childrenRect.width / 2, // Left
-          ]);
-          break;
-        }
+      case "top-left": {
+        // Modal's bottom-right corner is aligned with the anchor's top-left corner
+        setPositions([
+          anchorElementRect.bottom, // Top of the modal
+          anchorElementRect.right - childrenRect.width, // Right
+          anchorElementRect.bottom + childrenRect.height, // Bottom
+          anchorElementRect.right, // Left
+        ]);
+        break;
+      }
+
+      case "center": {
+        // Modal is centered horizontally and vertically relative to the anchor
+        const centerHorizontal =
+          anchorElementRect.left + anchorElementRect.width / 2;
+        const centerVertical =
+          anchorElementRect.top + anchorElementRect.height / 2;
+        setPositions([
+          centerVertical - childrenRect.height / 2, // Top
+          centerHorizontal + childrenRect.width / 2, // Right
+          centerVertical + childrenRect.height / 2, // Bottom
+          centerHorizontal - childrenRect.width / 2, // Left
+        ]);
+        break;
       }
     }
   }, [anchorElement, anchorTo]);
@@ -162,10 +176,10 @@ const Modal: FC<ModalProps> = ({
   return (
     <div
       onClick={onBackdropClick}
-      className="page-padding absolute inset-0 bg-gray-950/70 backdrop-blur-sm"
+      className="absolute inset-0 bg-gray-950/70 backdrop-blur-sm"
     >
       <div
-        className="relative w-full"
+        className="relative w-fit"
         ref={childrenRef}
         onClick={(e) => e.stopPropagation()}
         style={getPositionStyles(center, positions)}
@@ -179,7 +193,7 @@ const Modal: FC<ModalProps> = ({
 export default Modal;
 
 const getPositionStyles = (
-  center: boolean,
+  center: boolean | undefined,
   positions: number[],
 ): CSSProperties => {
   if (center) {
