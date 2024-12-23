@@ -17,10 +17,10 @@ const darkModeContext = createContext<IDarkModeContext>({
 const DarkModeContextProvider = ({
   children,
 }: IDarkModeContextProviderProps) => {
-  const [isDarkMode, setDarkMode] = useState(false);
+  const [isDarkMode, setDarkMode] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches,
+  );
   const toggleDarkMode = () => {
-    console.log("isDarkMode", isDarkMode);
-
     setDarkMode((prev) => !prev);
   };
 

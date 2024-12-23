@@ -8,8 +8,9 @@ const useFirstEntry = (dataLength: number) => {
   const handleNext = () => {
     if (index + 1 === dataLength) {
       endFirstEntry();
+    } else {
+      setIndex((index + 1) % dataLength);
     }
-    setIndex((index + 1) % dataLength);
   };
 
   const endFirstEntry = () => {
