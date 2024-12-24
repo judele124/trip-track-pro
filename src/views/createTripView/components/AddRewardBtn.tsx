@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../../../components/ui/Button";
 import InputWLabel from "../../../components/ui/InputWLabel";
 import { UseFormRegisterReturn } from "react-hook-form";
@@ -8,33 +8,34 @@ interface IAddRewardBtnProps {
   rewardTitleRegister: UseFormRegisterReturn;
   rewardImageRegister: UseFormRegisterReturn;
   fileName?: string | undefined;
-  onCencel?: () => void;
+  onCancel?: () => void;
 }
 
 export default function AddRewardBtn({
-  onCencel,
+  onCancel,
   rewardTitleRegister,
   rewardImageRegister,
   fileName,
 }: IAddRewardBtnProps) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   return (
-    <Button
-      type="button"
-      primary
-      className="flex flex-col items-center gap-4"
-      onClick={() => {
-        if (open) {
-          onCencel?.();
-        }
-        setOpen((prev) => !prev);
-      }}
-    >
-      {open ? "+ Add reward" : "- Cancel"}
-      {!open && (
+    <div className={`relative overflow-hidden rounded-2xl bg-primary`}>
+      <Button
+        type="button"
+        className={`relative z-10 flex w-full flex-col items-center gap-4 bg-primary shadow-md transition-all duration-75`}
+        onClick={() => {
+          if (open) {
+            onCancel?.();
+          }
+          setOpen((prev) => !prev);
+        }}
+      >
+        {!open ? "+ Add reward" : "- Cancel"}
+      </Button>
+      {open && (
         <div
-          className="flex w-full flex-col gap-4"
+          className={`flex w-full flex-col gap-4 p-4 transition-all delay-150 duration-200 ease-in-out`}
           onClick={(e) => e.stopPropagation()}
         >
           <InputWLabel
@@ -49,6 +50,6 @@ export default function AddRewardBtn({
           </Button>
         </div>
       )}
-    </Button>
+    </div>
   );
 }

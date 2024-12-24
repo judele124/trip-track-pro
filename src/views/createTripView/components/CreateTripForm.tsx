@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import FormMultipleStages from "../../../components/FormMultipleStages";
 import InputFeildError from "../../../components/ui/InputFeildError";
 import AddRewardBtn from "./AddRewardBtn";
+import Input from "../../../components/ui/Input";
 
 type IFormData = {
   groupName: string;
@@ -38,19 +39,6 @@ const firstStageInputs: IFirstStageInput[] = [
     title: "Enter descrpition",
     placeholder: "Enter descrpition",
     textarea: true,
-  },
-];
-
-const secondStageInputs: IFirstStageInput[] = [
-  {
-    name: "firstStop",
-    title: "First stop",
-    placeholder: "Enter first stop",
-  },
-  {
-    name: "lastStop",
-    title: "Last stop",
-    placeholder: "Enter last stop",
   },
 ];
 
@@ -98,7 +86,7 @@ export default function CreateTripForm() {
               </div>
             ))}
             <AddRewardBtn
-              onCencel={() => resetField("reward")}
+              onCancel={() => resetField("reward")}
               rewardTitleRegister={register("reward.title")}
               rewardImageRegister={register("reward.images")}
               fileName={watch("reward.images")?.[0].name}
@@ -110,46 +98,56 @@ export default function CreateTripForm() {
         ),
         () => (
           <>
-            <div key={secondStageInputs[0].name}>
-              {errors[secondStageInputs[0].name]?.message && (
+            <div key={"firstStop"}>
+              {errors["firstStop"]?.message && (
                 <InputFeildError
-                  message={
-                    errors[secondStageInputs[0].name]?.message ||
-                    "Default error"
-                  }
+                  message={errors["firstStop"]?.message || "Default error"}
                 />
               )}
               <InputWLabel
-                autoComplete={secondStageInputs[0].name}
-                {...register(secondStageInputs[0].name, {
+                autoComplete={"firstStop"}
+                {...register("firstStop", {
                   required: "This field is required",
                 })}
-                title={secondStageInputs[0].title}
-                placeholder={secondStageInputs[0].placeholder}
-                textarea={secondStageInputs[0].textarea}
+                title={"First Stop"}
+                placeholder={"Enter first stop"}
               />
             </div>
 
-            <div key={secondStageInputs[1].name}>
-              {errors[secondStageInputs[1].name]?.message && (
+            {Array.from({ length: middleStopsCount }, (_, i) => i).map(
+              (_, i) =>
+                i === 0 ? (
+                  <InputWLabel
+                    title="Middle stops"
+                    key={i}
+                    {...register(`middleStops.${i}`)}
+                  />
+                ) : (
+                  <Input key={i} {...register(`middleStops`)} />
+                ),
+            )}
+            <Button
+              onClick={() => setMiddleStopsCount((prev) => prev + 1)}
+              type="button"
+            >
+              Add middle stop
+            </Button>
+            <div key={"lastStop"}>
+              {errors["lastStop"]?.message && (
                 <InputFeildError
-                  message={
-                    errors[secondStageInputs[1].name]?.message ||
-                    "Default error"
-                  }
+                  message={errors["lastStop"]?.message || "Default error"}
                 />
               )}
               <InputWLabel
-                autoComplete={secondStageInputs[1].name}
-                {...register(secondStageInputs[1].name, {
+                autoComplete={"lastStop"}
+                {...register("lastStop", {
                   required: "This field is required",
                 })}
-                title={secondStageInputs[1].title}
-                placeholder={secondStageInputs[1].placeholder}
-                textarea={secondStageInputs[1].textarea}
+                title={"Last Stop"}
+                placeholder={"Enter last stop"}
               />
             </div>
-            <Button className="w-full" type="submit" primary>
+            <Button type="submit" primary>
               Send code
             </Button>
           </>
