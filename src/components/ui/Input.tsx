@@ -45,7 +45,7 @@ const Input = React.forwardRef<
     <input
       ref={ref as React.Ref<HTMLInputElement>}
       onChange={onChange}
-      className={`dark:bg-darkSecondary w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-secondary dark:focus:border-light${className}`}
+      className={`dark:bg-darkSecondary w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-secondary dark:focus:border-light ${className}`}
       name={name}
       type={type}
       placeholder={placeholder}

@@ -14,18 +14,22 @@ const Button = ({
 }: ButtonProps) => {
   if (primary) {
     className += " bg-primary text-white";
-  } else {
-    if (!className.includes("text")) {
-      className += " text-white dark:text-dark";
-    }
+  }
 
-    if (!className.includes("bg")) {
-      className += " bg-dark dark:bg-light";
-    }
+  if (!className.includes("text")) {
+    className += " text-white dark:text-dark";
+  }
+
+  if (!className.includes("bg")) {
+    className += " bg-dark dark:bg-light";
+  }
+
+  if (!className.includes("px-") || !className.includes("py-")) {
+    className += " px-5 py-3";
   }
 
   return (
-    <button {...props} className={`${className} px-5 py-3 font-semibold`}>
+    <button {...props} className={`${className} font-semibold`}>
       {children}
     </button>
   );
