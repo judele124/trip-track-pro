@@ -6,6 +6,10 @@ import CreateTripView from "../views/createTripView/index.tsx";
 import LoginView from "../views/loginView/LoginView.tsx";
 import NavbarLayout from "../views/NavbarLayout.tsx";
 import PageNotFoundView from "../views/pageNotFoundView/PageNotFoundView.tsx";
+import TripLayout from "../views/TripLayout.tsx";
+import Map from "../views/mapView/map.tsx";
+import ParticipantsView from "../views/participantsView/ParticipantsView.tsx";
+import ChatView from "../views/chatView/ChatView.tsx";
 
 const AppRoutes = () => {
   return (
@@ -19,8 +23,11 @@ const AppRoutes = () => {
             <Route path="create-trip" element={<CreateTripView />} />
             <Route path="*" element={<PageNotFoundView />} />
           </Route>
-          <Route path="map" element={<Map />} />
-          <Route path="test" element={<TestUI />} />
+        </Route>
+        <Route path="/trip" element={<TripLayout />} >
+          <Route index element={<Map />} />
+          <Route path="participants" element={<ParticipantsView />} />
+          <Route path="chat" element={<ChatView />} />
         </Route>
       </Routes>
     </BrowserRouter>

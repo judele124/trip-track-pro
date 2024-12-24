@@ -1,91 +1,61 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useMap } from './hooks/useMap';
-import { clearPoints } from './hooks/useMapPoints';
-import { getRouteData } from './services/useNavigation';
-import { CustomMarker } from './components/CustomMarker';
-import { Point } from './types';
-import RouteInfo from './components/RouteInfo';
-import ClearRouteButton from './components/ClearRouteButton';
+import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoianVkZWxlIiwiYSI6ImNtM3ZndjQ0MzByb3QycXIwczd6c3l4MnUifQ.aWTDBy7JZWGbopN3xfikNg';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
-const Map = () => {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const maxStops = 4;
-  const [points, setPoints] = useState<Point[]>([]);
-  const [distance, setDistance] = useState<number | null>(null);
+const INITIAL_CENTER: [number, number] = [-74.0242, 40.6941];
+const INITIAL_ZOOM = 10.12;
 
+const Map: React.FC = () => {
+  const mapRef = useRef<mapboxgl.Map | null>(null); 
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const onMapClick = async (e: mapboxgl.MapMouseEvent) => {
-    
-    if (points.length >= maxStops) return;
-    setPoints(prev => {
-      console.log(";;;;;");
-      
-      const marker = new mapboxgl.Marker({
-        element: CustomMarker({ index: prev.length }),
-        anchor: 'center',
-      }).setLngLat(e.lngLat).addTo(map.current!);
-      
-      const newPoint = { lngLat: e.lngLat, marker, index: prev.length };
-      const updatedPoints = [...prev, newPoint];
-
-      if (updatedPoints.length >= 2) {
-        getRouteData(updatedPoints, mapboxgl.accessToken, setDistance)
-          .then(route => {
-            if (route && map.current) {
-
-              if (map.current.getSource('route')) {
-                map.current.removeLayer('route');
-                map.current.removeSource('route');
-              }
-
-              map.current.addSource('route', {
-                type: 'geojson',
-                data: {
-                  type: 'Feature',
-                  properties: {},
-                  geometry: {
-                    type: 'LineString',
-                    coordinates: route
-                  }
-                }
-              });
-
-              map.current.addLayer({
-                id: 'route',
-                type: 'line',
-                source: 'route',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: { 'line-color': '#3b82f6', 'line-width': 4 },
-              });
-            }
-          });
-      }
-      // console.log(updatedPoints);
-      
-      return updatedPoints;
-    });
-  }
-
-
-  const map = useMap(mapContainer, onMapClick);
+  const [center, setCenter] = useState<[number, number]>(INITIAL_CENTER);
+  const [zoom, setZoom] = useState<number>(INITIAL_ZOOM);
 
   useEffect(() => {
-    // console.log(points);
-  }, [points]);
+    if (!mapContainerRef.current) return;
 
- const clearP =  useCallback(() => clearPoints({ map, points, setPoints, setDistance }), [map, points]);
-  
-  return  (
-    <div className="relative w-full h-screen">
-      <div ref={mapContainer} className="w-full h-full" />
-      <div className='absolute top-4 left-4 flex flex-col gap-3 bg-white p-4 rounded-lg shadow-lg  '>
-        <RouteInfo points={points} distance={distance} />
-          {points.length >= 2 && <ClearRouteButton onClick={() => clearP()} />}
-      </div>
-    </div>
+    mapboxgl.accessToken = 'pk.eyJ1IjoianVkZWxlIiwiYSI6ImNtM3ZndjQ0MzByb3QycXIwczd6c3l4MnUifQ.aWTDBy7JZWGbopN3xfikNg';
+
+    mapRef.current = new mapboxgl.Map({
+        container: mapContainerRef.current!,
+        style: 'mapbox://styles/judele/cm3vihtvp00dn01sd34tthl00',
+        center: center,
+        zoom: zoom,
+        interactive: true,
+        attributionControl: false,
+        logoPosition: undefined, 
+      });
+
+    mapRef.current.on('move', () => {
+      if (!mapRef.current) return;
+
+      const mapCenter = mapRef.current.getCenter();
+      const mapZoom = mapRef.current.getZoom();
+
+      setCenter([mapCenter.lng, mapCenter.lat]);
+      setZoom(mapZoom);
+    });
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+      }
+    };
+  }, []); 
+
+  return (
+    <>
+        <style>
+        {`
+          .mapboxgl-ctrl-logo {
+            display: none !important;
+          }
+        `}
+      </style>
+      <div id="map-container" style={{ width: '100%', height: '100%' }} ref={mapContainerRef}  />
+    </>
   );
 };
 
