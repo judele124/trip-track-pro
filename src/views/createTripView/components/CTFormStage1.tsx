@@ -1,21 +1,10 @@
-import {
-  InputHTMLAttributes,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { InputHTMLAttributes, useEffect, useState } from "react";
 import { IFormData } from "./CreateTripForm";
 import InputFeildError from "../../../components/ui/InputFeildError";
 import AddRewardBtn from "./AddRewardBtn";
 import InputWLabel from "../../../components/ui/InputWLabel";
 import Button from "../../../components/ui/Button";
-import {
-  FieldErrors,
-  UseFormRegister,
-  UseFormResetField,
-  UseFormSetValue,
-  UseFormUnregister,
-} from "react-hook-form";
+import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 
 interface IFirstStageInput extends InputHTMLAttributes<HTMLInputElement> {
   name: keyof IFormData;

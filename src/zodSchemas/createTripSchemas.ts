@@ -10,6 +10,7 @@ const rewardSchema = z
       .max(25, {
         message: "Reward title must not exceed 25 characters.",
       }),
+    // when no image is uploaded the state is holding an ampty FileList
     image: z.instanceof(FileList, { message: "Reward image is required." }).or(
       z
         .instanceof(File, { message: "Reward image is required." })

@@ -24,6 +24,6 @@ export const verifyCodeSchema = z
 
 export const loginSchema = [sendCodeSchema, verifyCodeSchema];
 
-export type LoginSchema = z.infer<
+export type LoginSchemaT = z.infer<
   typeof sendCodeSchema & typeof verifyCodeSchema
 >;
