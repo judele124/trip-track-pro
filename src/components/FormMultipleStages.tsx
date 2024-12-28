@@ -1,7 +1,14 @@
-import { FormEvent, HTMLAttributes, ReactNode, useRef, useState } from "react";
+import {
+  FormEvent,
+  HTMLAttributes,
+  ReactElement,
+  ReactNode,
+  useRef,
+  useState,
+} from "react";
 
 interface IFormMultipleStagesProps extends HTMLAttributes<HTMLFormElement> {
-  renderStages: ((index: number) => ReactNode)[];
+  renderStages: (((index: number) => ReactNode) | ReactElement)[];
   onMultipleStageSubmit: (
     e: FormEvent<HTMLFormElement>,
     { stage, incrementStage }: { stage: number; incrementStage: () => void },
@@ -43,7 +50,9 @@ export default function FormMultipleStages({
         }
       }}
     >
-      {renderStages[stage](stage)}
+      {typeof renderStages[stage] === "function"
+        ? renderStages[stage](stage)
+        : renderStages[stage]}
     </form>
   );
 }

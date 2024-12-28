@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Button from "../../../components/ui/Button";
 import InputWLabel from "../../../components/ui/InputWLabel";
 import { UseFormRegisterReturn } from "react-hook-form";
-import Input from "../../../components/ui/Input";
 
 interface IAddRewardBtnProps {
-  rewardTitleRegister: UseFormRegisterReturn;
-  rewardImageRegister: UseFormRegisterReturn;
+  rewardTitleRegister: () => UseFormRegisterReturn<"reward.title">;
+  rewardImageRegister: () => UseFormRegisterReturn<"reward.image">;
   fileName?: string | undefined;
+  onOpen?: () => void;
   onCancel?: () => void;
 }
 
 export default function AddRewardBtn({
+  onOpen,
   onCancel,
   rewardTitleRegister,
   rewardImageRegister,
@@ -27,6 +28,8 @@ export default function AddRewardBtn({
         onClick={() => {
           if (open) {
             onCancel?.();
+          } else {
+            onOpen?.();
           }
           setOpen((prev) => !prev);
         }}
@@ -40,14 +43,17 @@ export default function AddRewardBtn({
         >
           <InputWLabel
             className="border-dark dark:border-light"
-            {...rewardTitleRegister}
+            {...rewardTitleRegister()}
           />
-          <Button type="button" className="px-0 py-0">
-            <label className="inline-block w-full rounded-2xl border border-dark bg-light px-5 py-2 text-center text-dark dark:border-light dark:bg-dark dark:text-light">
-              {fileName || "+ Add image"}
-              <Input className="hidden" {...rewardImageRegister} type="file" />
-            </label>
-          </Button>
+          <InputWLabel
+            multiple={false}
+            labelTextCenter
+            labelClassName="rounded-2xl border py-3 border-dark dark:border-light bg-light dark:bg-dark "
+            type="file"
+            className="hidden"
+            title={fileName || "Add image"}
+            {...rewardImageRegister()}
+          />
         </div>
       )}
     </div>
