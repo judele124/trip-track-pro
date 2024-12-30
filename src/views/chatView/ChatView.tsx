@@ -14,7 +14,7 @@ const ChatView = () => {
     { id: 5, name: "Eve", message: "Sounds interesting! Need any help?" },
   ];
   return (
-    <div className="flex h-full flex-col p-4 pb-0">
+    <div className="flex h-full flex-col px-4">
       <div 
          style={{scrollbarWidth: 'none'}}
          className="flex flex-grow flex-col gap-2 overflow-y-scroll">
