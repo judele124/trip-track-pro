@@ -14,6 +14,7 @@ interface InputWLabelProps extends InputHTMLAttributes<HTMLInputElement> {
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>,
   ) => void;
+  labelTextCenter?: boolean;
 }
 
 export default React.forwardRef<HTMLInputElement, InputWLabelProps>(
@@ -27,22 +28,29 @@ export default React.forwardRef<HTMLInputElement, InputWLabelProps>(
       textarea = false,
       onChange = () => {},
       rows,
+      className,
+      labelTextCenter = false,
       ...props
     }: InputWLabelProps,
     ref,
   ) {
     return (
       <label className={`flex w-full flex-col gap-1 ${labelClassName}`}>
-        <span className="pl-5 text-start font-semibold">{title}</span>
+        <span
+          className={`${labelTextCenter ? "text-center" : "pl-5 text-start"} font-semibold`}
+        >
+          {title}
+        </span>
         <Input
+          className={className}
           rows={rows}
-          {...props}
           ref={ref}
           textarea={textarea}
           onChange={onChange}
           name={name}
           type={type}
           placeholder={placeholder}
+          {...props}
         />
       </label>
     );

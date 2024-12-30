@@ -81,7 +81,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   };
 
   useEffect(() => {
-    validateToken(activate).then(({ user }) => setUser(user));
+    validateToken(activate)
+      .then(({ user }) => setUser(user))
+      .catch((err) => console.error(err));
   }, []);
 
   return (

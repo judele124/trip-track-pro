@@ -1,4 +1,4 @@
-import LoginFrom from "./LoginForm";
+import LoginFrom from "./components/LoginForm";
 import ImageLightDark from "../../components/ui/ImageLightDark";
 import loginImgLight from "./assets/loginImgLight.svg";
 import loginImgDark from "./assets/loginImgDark.svg";

@@ -29,6 +29,10 @@ const Input = React.forwardRef<
   }: IInputProps,
   ref: React.Ref<HTMLTextAreaElement | HTMLInputElement>,
 ) {
+  if (!className.includes("border")) {
+    className += " border-primary dark:border-light";
+  }
+
   if (textarea) {
     return (
       <textarea
@@ -45,7 +49,7 @@ const Input = React.forwardRef<
     <input
       ref={ref as React.Ref<HTMLInputElement>}
       onChange={onChange}
-      className={`dark:bg-darkSecondary w-full resize-none border-2 border-primary py-[10px] focus:border-dark focus:outline-none dark:bg-secondary dark:focus:border-light${className}`}
+      className={`w-full resize-none border-2 border-primary focus:border-dark focus:outline-none dark:bg-secondary dark:focus:border-light ${className}`}
       name={name}
       type={type}
       placeholder={placeholder}

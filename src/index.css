@@ -43,11 +43,28 @@ textarea {
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
-    -webkit-text-fill-color: #ebe2d4 !important;
-    -webkit-box-shadow: 0 0 0 30px #383644 inset !important;
+    -webkit-text-fill-color: #19181e;
+    @apply text-dark shadow-[0_0_0_30px_#fff_inset];
   }
 
   @apply rounded-2xl px-5 py-2;
+}
+
+#root {
+  .dark {
+    input,
+    textarea {
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus,
+      &:-webkit-autofill:active {
+        -webkit-text-fill-color: #ebe2d4;
+        @apply dark:shadow-[0_0_0_30px_#383644_inset];
+      }
+
+      @apply rounded-2xl px-5 py-2;
+    }
+  }
 }
 
 .page-x-padding {
