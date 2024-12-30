@@ -1,3 +1,4 @@
+import 'mapbox-gl/dist/mapbox-gl.css';
 import AppRoutes from "./appRoutes";
 import AuthProvider from "./contexts/AuthContext.tsx";
 import DarkModeContextProvider from "./contexts/DarkModeContext.tsx";

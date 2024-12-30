@@ -31,7 +31,7 @@ const BackButton = () => {
   );
 };
 
-const ToggleDarkMode = () => {
+export const ToggleDarkMode = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   return (
     <button

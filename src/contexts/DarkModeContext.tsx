@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface IDarkModeContext {
   isDarkMode: boolean;
@@ -20,10 +20,14 @@ const DarkModeContextProvider = ({
   const [isDarkMode, setDarkMode] = useState(
     window.matchMedia("(prefers-color-scheme: dark)").matches,
   );
+
   const toggleDarkMode = () => {
     setDarkMode((prev) => !prev);
   };
 
+  useEffect(() => {
+    document.getElementById("root")?.classList.toggle("dark", isDarkMode);
+  },[isDarkMode]);
   return (
     <darkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
       {children}
