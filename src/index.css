@@ -9,7 +9,6 @@ a #root {
   height: 100%;
 }
 
-
 h1 {
   @apply text-3xl font-bold;
 }

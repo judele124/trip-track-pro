@@ -1,6 +1,6 @@
-import React from "react";
+import React, { InputHTMLAttributes } from "react";
 
-interface IInputProps {
+interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
   textarea?: boolean;
   className?: string;
   type?: string;
@@ -26,6 +26,7 @@ const Input = React.forwardRef<
     placeholder = "Default placeholder",
     onChange = () => {},
     rows,
+    ...props
   }: IInputProps,
   ref: React.Ref<HTMLTextAreaElement | HTMLInputElement>,
 ) {
@@ -47,6 +48,7 @@ const Input = React.forwardRef<
   }
   return (
     <input
+      {...props}
       ref={ref as React.Ref<HTMLInputElement>}
       onChange={onChange}
       className={`w-full resize-none border-2 border-primary focus:border-dark focus:outline-none dark:bg-secondary dark:focus:border-light ${className}`}
