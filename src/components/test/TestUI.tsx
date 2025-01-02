@@ -53,6 +53,7 @@ export default function TestUI() {
     <div className="mx-auto max-w-[400px]">
       <Dropdown
         list={data}
+        triggerType="button"
         displayKey="label"
         selected={selectedValue}
         setSelected={(item) => {

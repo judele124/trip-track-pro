@@ -28,8 +28,6 @@ const Button = ({
     className += " px-5 py-3";
   }
 
-  console.log(className);
-
   return (
     <button {...props} className={`${className} font-semibold`}>
       {children}
