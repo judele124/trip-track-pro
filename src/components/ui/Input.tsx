@@ -1,6 +1,10 @@
 import React, { InputHTMLAttributes } from "react";
 
-interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface IInputProps
+  extends InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
+  onKeyDown?: (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
   textarea?: boolean;
   className?: string;
   type?: string;
@@ -25,6 +29,7 @@ const Input = React.forwardRef<
     name,
     placeholder = "Default placeholder",
     onChange = () => {},
+    onKeyDown = () => {},
     rows,
     ...props
   }: IInputProps,
@@ -37,6 +42,7 @@ const Input = React.forwardRef<
   if (textarea) {
     return (
       <textarea
+        onKeyDown={onKeyDown}
         rows={rows}
         ref={ref as React.Ref<HTMLTextAreaElement>}
         onChange={onChange}
@@ -50,6 +56,7 @@ const Input = React.forwardRef<
     <input
       {...props}
       ref={ref as React.Ref<HTMLInputElement>}
+      onKeyDown={onKeyDown}
       onChange={onChange}
       className={`w-full resize-none border-2 border-primary focus:border-dark focus:outline-none dark:bg-secondary dark:focus:border-light ${className}`}
       name={name}
