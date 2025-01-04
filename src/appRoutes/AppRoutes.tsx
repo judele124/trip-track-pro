@@ -7,7 +7,7 @@ import LoginView from "../views/loginView/LoginView.tsx";
 import NavbarLayout from "../views/NavbarLayout.tsx";
 import PageNotFoundView from "../views/pageNotFoundView/PageNotFoundView.tsx";
 import TripLayout from "../views/TripLayout.tsx";
-import Map from "../views/mapView/map.tsx";
+import Map from "../views/mapView/Map.tsx";
 import ParticipantsView from "../views/participantsView/ParticipantsView.tsx";
 import ChatView from "../views/chatView/ChatView.tsx";
 
