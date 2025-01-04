@@ -25,7 +25,7 @@ const AppRoutes = () => {
           </Route>
         </Route>
         <Route path="/trip" element={<TripLayout />} >
-          <Route index element={<Map />} />
+          <Route path="map" element={<Map />} />
           <Route path="participants" element={<ParticipantsView />} />
           <Route path="chat" element={<ChatView />} />
         </Route>

@@ -1,26 +1,18 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import {ToggleDarkMode} from '../components/Navbar'
 import Button from "../components/ui/Button";
-import ImageLightDark from "../components/ui/ImageLightDark";
 import EditImg from '../assets/Edit_img.png'
 import wornnigImg from '../assets/wornnig-img.png'
-import groupImg from '../assets/GroupIcon.png'
-import groupBlackImg from '../assets/GroupBlackIcon.png'
-import mapImg from '../assets/mapIcon.png'
-import mapBlackImg from '../assets/mapBlackIcon.png'
-import chatImg from '../assets/chatIcon.png'
-import chatBlackImg from '../assets/chatBlackIcon.png'
+import BottomNavigationBtn from "../components/ui/BottomNavigationBtn";
 
 
 const TripLayout = () => {
     const num = 3
-    const nav = useNavigate()
     return (
-      <div className={`h-dvh overflow-hidden page-colors`}>
+      <div className={`relative z-0 h-dvh page-colors flex flex-col justify-between`}>
         <div className="flex flex-row justify-between p-2">
-          <Button className="bg-white dark:bg-secondary flex text-dark dark:text-white" >
+          <Button className="bg-white dark:bg-secondary flex text-dark dark:text-white px-0 py-0" >
             <img src={EditImg} alt="" />
-            <p className="mt-2">Edit trip</p>
           </Button>
           <div>
             <ToggleDarkMode />
@@ -32,38 +24,12 @@ const TripLayout = () => {
           </div>
         </div>
 
-        <div className="h-[80%] bg-secondary/20"><Outlet /></div>
+        <div className="absolute top-[75px] bottom-16 inset-0 -z-10 bg-secondary/20"><Outlet /></div>
 
-        <div className="flex flex-row justify-around p-2 border-t-2 border-primary">
-        <Button 
-           onClick={() => nav("/trip/participants")}
-           className="rounded-[100%] text-dark relative focus:bg-white dark:focus:bg-secondary" >
-            <ImageLightDark
-              srcDark={groupImg}
-              srcLight={groupBlackImg}
-              alt="icon of group of people"
-            />
-          </Button>
-          <Button 
-            onClick={() => nav("/trip")} 
-            className="rounded-[100%] text-dark relative focus:bg-white dark:focus:bg-secondary pt-0" >
-            <ImageLightDark
-              srcDark={mapImg}
-              srcLight={mapBlackImg}
-              alt="icon of map"
-            />
-          </Button>
-          <Button
-            onClick={() => nav("/trip/chat")}  
-            className="rounded-[100%] text-dark relative focus:bg-white dark:focus:bg-secondary" >
-            <ImageLightDark
-              srcDark={chatImg}
-              srcLight={chatBlackImg}
-              alt="icon of chat"
-            />
-            <span className="absolute top-0 right-0 w-4 h-4 bg-primary
-             rounded-full text-white flex items-center justify-center" >{num}</span>
-          </Button>
+        <div className="flex flex-row justify-around p-2 border-t-2 border-primary page-colors">
+          <BottomNavigationBtn to="participants" notificationCount={num} />
+          <BottomNavigationBtn to="map" notificationCount={num} />
+          <BottomNavigationBtn notificationCount={num} to="chat" />
         </div>
       </div>
     );

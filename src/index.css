@@ -9,6 +9,9 @@ a #root {
   height: 100%;
 }
 
+img {
+  @apply size-full object-contain
+}
 
 h1 {
   @apply text-3xl font-bold;
