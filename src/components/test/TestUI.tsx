@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import Dropdown from "./Dropdown/Dropdown";
+import { useState } from "react";
+import Dropdown from "./Dropdown/DropdownManager";
 
 const data = [
   {
@@ -86,22 +86,28 @@ const data = [
     imageUrl:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Venus-real_color.jpg/1200px-Venus-real_color.jpg",
   },
+  {
+    label: "Vezxagfxcgfhczxcasdnus",
+    value: "vengfxus",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Venus-real_color.jpg/1200px-Venus-real_color.jpg",
+    aaa: {
+      sss: ["asdasd"],
+    },
+  },
 ];
 
 export default function TestUI() {
-  const [selectedValue, setSelectedValue] = useState<(typeof data)[0] | null>(
-    null,
-  );
-
   return (
     <div className="mx-auto max-w-[400px]">
       <Dropdown
+        title="Select a planet"
         list={data}
-        type="button"
+        type="input"
         setSelected={(item) => {
-          setSelectedValue(item);
+          console.log(item);
         }}
-        displayKey="value"
+        displayKey="label"
       />
     </div>
   );

@@ -1,20 +1,21 @@
-import { MouseEventHandler, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Button from "../../ui/Button";
+import { useDropdownContext } from "./DropdownProvider";
 
 interface IDropdownMenuItemProps {
   displayValue: string;
   i: number;
-  onClick: MouseEventHandler<HTMLButtonElement>;
   isSuggested: boolean;
   isSelected: boolean;
 }
 
 export default function DropdownMenuItem({
   displayValue,
-  onClick,
   isSelected,
   isSuggested,
+  i,
 }: IDropdownMenuItemProps) {
+  const { setSelectedIndex, setSuggestedIndex, close } = useDropdownContext();
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -26,9 +27,15 @@ export default function DropdownMenuItem({
   return (
     <li>
       <Button
+        onFocus={() => setSuggestedIndex(i)}
+        onMouseLeave={() => setSuggestedIndex(-1)}
+        onMouseEnter={() => setSuggestedIndex(i)}
+        onClick={() => {
+          setSelectedIndex(i);
+          close();
+        }}
         ref={ref}
-        onClick={onClick}
-        className={`"hover:bg-gray-200" w-full text-start ${isSelected ? "bg-primary text-white" : isSuggested ? "bg-gray-200" : " "}`}
+        className={`"hover:bg-gray-200" w-full rounded-xl text-start ${isSelected ? "bg-primary text-white" : isSuggested ? "bg-gray-200" : " "}`}
         role="option"
         aria-selected={isSelected}
       >

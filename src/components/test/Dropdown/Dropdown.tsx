@@ -1,31 +1,28 @@
-import { useState, useRef, useEffect } from "react";
-import useToggle from "../../../hooks/useToggle";
-import DropdownMenu from "./DropdownMenu";
+import { useEffect, useRef } from "react";
+import { useDropdownContext } from "./DropdownProvider";
 import DropdownTriggerElement from "./DropdownTriggerElement";
+import DropdownMenu from "./DropdownMenu";
 
-interface IDropdownProps<T, K extends keyof T> {
-  displayKey: K;
-  list: T[];
-  setSelected: (item: T) => void;
-  type: "input" | "button";
-  initialSelected?: number;
-  autoFocus?: boolean;
-}
-
-export default function Dropdown<
-  T extends Record<K, string>,
-  K extends keyof T,
->({
-  type,
-  setSelected,
+export default function Dropdown<T>({
   displayKey,
+  type,
+  autoFocus,
   list,
-  initialSelected = -1,
-  autoFocus = false,
-}: IDropdownProps<T, K>) {
-  const { isOpen, setIsOpen } = useToggle(false);
-  const [selectedIndex, setSelectedIndex] = useState(initialSelected);
-  const [suggestedIndex, setSuggestedIndex] = useState(initialSelected);
+}: {
+  displayKey: keyof T;
+  type: "input" | "button";
+  autoFocus?: boolean;
+  list: T[];
+}) {
+  const {
+    suggestedIndex,
+    isOpen,
+    decrementSuggestedIndex,
+    incrementSuggestedIndex,
+    handleSelection,
+    close,
+    open,
+  } = useDropdownContext();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (e: MouseEvent) => {
@@ -33,36 +30,24 @@ export default function Dropdown<
       dropdownRef.current &&
       !dropdownRef.current.contains(e.target as Node)
     ) {
-      if (isOpen) setIsOpen(false);
+      if (isOpen) close();
     }
   };
 
   const handleKeyDown = (e: any) => {
     switch (e.key) {
       case "ArrowDown":
-        setSuggestedIndex((prev) => Math.min(prev + 1, list.length - 1));
+        decrementSuggestedIndex();
         break;
       case "ArrowUp":
-        setSuggestedIndex((prev) => Math.max(prev - 1, 0));
+        incrementSuggestedIndex();
         break;
       case "Enter":
-        setSelectedIndex(suggestedIndex);
-        setSelected(list[suggestedIndex]);
-        setIsOpen(false);
+        handleSelection(suggestedIndex);
         break;
       case "Escape":
-        setIsOpen(false);
+        open();
         break;
-    }
-  };
-
-  const hendleInputValueChange = (value: string) => {
-    const regExp = new RegExp(value, "i");
-    const index = list.findIndex((item) =>
-      regExp.test(String(item[displayKey])),
-    );
-    if (index !== -1) {
-      setSuggestedIndex(index);
     }
   };
 
@@ -80,38 +65,10 @@ export default function Dropdown<
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [suggestedIndex, isOpen]);
 
-  const selectedValue =
-    selectedIndex >= 0 ? list[selectedIndex][displayKey] : "";
-
   return (
-    <div className="relative w-full">
-      {type === "input" ? (
-        <DropdownTriggerElement
-          selectedValue={selectedValue}
-          autoFocus={autoFocus}
-          onInputValueChange={hendleInputValueChange}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          type={type}
-        />
-      ) : (
-        <DropdownTriggerElement
-          selectedValue={selectedValue}
-          autoFocus={autoFocus}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          type={type}
-        />
-      )}
-      {isOpen && (
-        <DropdownMenu
-          selectedIndex={selectedIndex}
-          suggestedIndex={suggestedIndex}
-          onSelect={(i) => setSelectedIndex(i)}
-          list={list}
-          displayKey={displayKey}
-        />
-      )}
+    <div ref={dropdownRef} className="relative w-full">
+      <DropdownTriggerElement autoFocus={autoFocus} type={type} />
+      {isOpen && <DropdownMenu list={list} displayKey={displayKey} />}
     </div>
   );
 }

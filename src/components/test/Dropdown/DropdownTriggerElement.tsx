@@ -1,32 +1,18 @@
 import DropdownInput from "./DropdownInput";
 import Button from "../../ui/Button";
 import { useEffect, useRef } from "react";
+import { useDropdownContext } from "./DropdownProvider";
 
-interface CommonValueProps {
-  selectedValue: string;
+interface IDropdownTriggerElementProps {
   type: "input" | "button";
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
   autoFocus?: boolean;
 }
 
-type IDropdownTriggerElementProps = CommonValueProps &
-  (
-    | {
-        type: "input";
-        onInputValueChange: (value: string) => void;
-      }
-    | { type: "button"; onInputValueChange?: undefined }
-  );
-
 export default function DropdownTriggerElement({
-  selectedValue,
-  isOpen,
-  setIsOpen,
   type,
-  onInputValueChange,
   autoFocus = false,
 }: IDropdownTriggerElementProps) {
+  const { toggle, selectedDisplayValue, isOpen } = useDropdownContext();
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -37,22 +23,14 @@ export default function DropdownTriggerElement({
   }, []);
 
   if (type === "input") {
-    return (
-      <DropdownInput
-        selectedValue={selectedValue}
-        ref={inputRef}
-        onInputValueChange={onInputValueChange}
-        setIsOpen={setIsOpen}
-        isOpen={isOpen}
-      />
-    );
+    return <DropdownInput ref={inputRef} />;
   }
 
   return (
     <Button
       ref={buttonRef}
-      onClick={() => setIsOpen(!isOpen)}
-      className="flex w-full items-center justify-start"
+      onClick={() => toggle()}
+      className="flex w-full items-center justify-start border-2 border-black bg-white text-dark"
       aria-haspopup="listbox"
       aria-expanded={isOpen}
     >
@@ -62,7 +40,7 @@ export default function DropdownTriggerElement({
       >
         <path d="M0,134.38V3A3,3,0,0,1,5.14.9L69.92,66.59a3,3,0,0,1,0,4.21L5.14,136.48A3,3,0,0,1,0,134.38Z" />
       </svg>
-      <span>{selectedValue}</span>
+      <span>{selectedDisplayValue}</span>
     </Button>
   );
 }

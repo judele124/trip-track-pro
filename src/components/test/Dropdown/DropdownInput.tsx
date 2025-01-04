@@ -1,24 +1,17 @@
 import { forwardRef, Ref, useEffect, useState } from "react";
 import Input from "../../ui/Input";
+import { useDropdownContext } from "./DropdownProvider";
 
 interface IDropdownInputProps {
-  selectedValue: string;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  onInputValueChange: (value: string) => void;
   initialValue?: string;
 }
 
 export default forwardRef(function DropdownInput(
-  {
-    selectedValue,
-    onInputValueChange,
-    isOpen,
-    setIsOpen,
-    initialValue,
-  }: IDropdownInputProps,
+  { initialValue }: IDropdownInputProps,
   ref: Ref<HTMLInputElement>,
 ) {
+  const { selectedDisplayValue, handleOnInputValueChange, open, isOpen } =
+    useDropdownContext();
   const [inputValue, setInputValue] = useState(initialValue || "");
 
   useEffect(() => {
@@ -26,8 +19,8 @@ export default forwardRef(function DropdownInput(
   }, []);
 
   useEffect(() => {
-    setInputValue(selectedValue);
-  }, [selectedValue]);
+    setInputValue(selectedDisplayValue);
+  }, [selectedDisplayValue]);
 
   return (
     <Input
@@ -35,13 +28,13 @@ export default forwardRef(function DropdownInput(
       name="testDropdown"
       value={inputValue}
       onChange={(e) => {
-        onInputValueChange(e.target.value);
+        handleOnInputValueChange(e.target.value);
         setInputValue(e.target.value);
-        setIsOpen(true);
+        open();
       }}
-      onFocus={() => setIsOpen(true)}
+      onFocus={() => open()}
       onKeyDown={(e) => {
-        setIsOpen(true);
+        open();
         if (e.key === "Escape") {
           e.currentTarget.blur();
         }
