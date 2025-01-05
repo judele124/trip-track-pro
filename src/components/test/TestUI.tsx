@@ -1,5 +1,6 @@
-import { useState } from "react";
-import Dropdown from "./Dropdown/DropdownManager";
+import Dropdown from "./Dropdown/Dropdown";
+import DropdownMenu from "./Dropdown/DropdownMenu";
+import DropdownTriggerElement from "./Dropdown/DropdownTriggerElement";
 
 const data = [
   {
@@ -20,95 +21,43 @@ const data = [
     imageUrl:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/1200px-The_Earth_seen_from_Apollo_17.jpg",
   },
-  {
-    label: "Neptasdaghxzxcune",
-    value: "neptasdagnhmsdxzcune",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Neptune_Full.jpg/1200px-Neptune_Full.jpg",
-  },
-  {
-    label: "Saturn",
-    value: "asdghnmasdxz",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Saturn%2C_Earth_and_Moon.jpg/1200px-Saturn%2C_Earth_and_Moon.jpg",
-  },
-  {
-    label: "asdaxczUranus",
-    value: "asdauyijhsdxza",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Uranus2.jpg/1200px-Uranus2.jpg",
-  },
-  {
-    label: "Vezxczxcasdnus",
-    value: "veartnbmkjluiol,ilhaasnus",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Venus-real_color.jpg/1200px-Venus-real_color.jpg",
-  },
-  {
-    label: "aaaaaaaaaaa",
-    value: "aacarthgjkjm,.i;haasdaaaaaa",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Mercury_in_color_-_Procesado.jpg/1200px-Mercury_in_color_-_Procesado.jpg",
-  },
-  {
-    label: "bbbbbbbbbbbb",
-    value: "marasdaxczxcs",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSIRIS_Mars_true_color.jpg/1200px-OSIRIS_Mars_true_color.jpg",
-  },
-  {
-    label: "Earth",
-    value: "eassddasxcarth",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/1200px-The_Earth_seen_from_Apollo_17.jpg",
-  },
-  {
-    label: "Neptasdaxzxcune",
-    value: "neptasdasdxzcune",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Neptune_Full.jpg/1200px-Neptune_Full.jpg",
-  },
-  {
-    label: "Saturn",
-    value: "satasdvcvfasdurn",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Saturn%2C_Earth_and_Moon.jpg/1200px-Saturn%2C_Earth_and_Moon.jpg",
-  },
-  {
-    label: "asdaxdsvctrsczUranus",
-    value: "uransxcdfhrftghus",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Uranus2.jpg/1200px-Uranus2.jpg",
-  },
-  {
-    label: "Vezxagfxcgfhczxcasdnus",
-    value: "vengfxus",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Venus-real_color.jpg/1200px-Venus-real_color.jpg",
-  },
-  {
-    label: "Vezxagfxcgfhczxcasdnus",
-    value: "vengfxus",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Venus-real_color.jpg/1200px-Venus-real_color.jpg",
-    aaa: {
-      sss: ["asdasd"],
-    },
-  },
 ];
+
+type IItem = (typeof data)[0];
 
 export default function TestUI() {
   return (
     <div className="mx-auto max-w-[400px]">
-      <Dropdown
-        title="Select a planet"
-        list={data}
-        type="input"
-        setSelected={(item) => {
-          console.log(item);
-        }}
-        displayKey="label"
-      />
+      <Dropdown list={data}>
+        <DropdownTriggerElement<IItem>
+          type="input"
+          value={(data) => data?.label || "default"}
+        />
+        <DropdownMenu<IItem>
+          setSelected={(item) => {
+            console.log(item);
+          }}
+          renderItem={({ item, isSelected }) => (
+            <>
+              <svg
+                width="10"
+                height="14"
+                viewBox="0 0 10 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 5.04202C10 9.45378 6.66667 11.9792 5 13.4375C3.54167 12.0833 0 9.32773 0 5.04202C0 2.25739 2.23858 0 5 0C7.76142 0 10 2.25739 10 5.04202Z"
+                  fill="#CE5737"
+                />
+                <circle cx="5" cy="5.20833" r="2.70833" fill="white" />
+              </svg>
+              {item.label}
+              {isSelected && <span>✅</span>}
+            </>
+          )}
+        />
+      </Dropdown>
     </div>
   );
 }

@@ -1,21 +1,25 @@
 import { useEffect, useRef } from "react";
 import Button from "../../ui/Button";
-import { useDropdownContext } from "./DropdownProvider";
+import { useDropdown } from "./Dropdown";
+import { RenderItem } from "./DropdownMenu";
 
-interface IDropdownMenuItemProps {
-  displayValue: string;
+interface IDropdownMenuItemProps<T> {
+  renderItem: RenderItem<T>;
+  item: any;
+  iconSrc?: string;
   i: number;
   isSuggested: boolean;
   isSelected: boolean;
 }
 
-export default function DropdownMenuItem({
-  displayValue,
+export default function DropdownMenuItem<T>({
+  renderItem,
+  item,
   isSelected,
   isSuggested,
   i,
-}: IDropdownMenuItemProps) {
-  const { setSelectedIndex, setSuggestedIndex, close } = useDropdownContext();
+}: IDropdownMenuItemProps<T>) {
+  const { setSelectedIndex, setSuggestedIndex, close } = useDropdown();
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -35,12 +39,11 @@ export default function DropdownMenuItem({
           close();
         }}
         ref={ref}
-        className={`"hover:bg-gray-200" w-full rounded-xl text-start ${isSelected ? "bg-primary text-white" : isSuggested ? "bg-gray-200" : " "}`}
+        className={`hover:bg-gray-200" flex w-full items-center gap-2 rounded-xl text-start ${isSelected ? "bg-secondary text-white" : isSuggested ? "bg-gray-200" : " "}`}
         role="option"
         aria-selected={isSelected}
       >
-        {displayValue}
-        {isSelected && <span className="ml-2"> </span>}
+        {renderItem({ isSelected, item })}
       </Button>
     </li>
   );

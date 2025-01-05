@@ -1,16 +1,69 @@
 import DropdownMenuItem from "./DropdownMenuItem";
-import { useDropdownContext } from "./DropdownProvider";
+import { useDropdown } from "./Dropdown";
+import { ReactNode, useEffect } from "react";
+
+export type RenderItem<T> = ({
+  isSelected,
+  item,
+}: {
+  isSelected: boolean;
+  item: T;
+}) => ReactNode;
 
 interface IDropdownMenuProps<T> {
-  list: T[];
-  displayKey: keyof T;
+  renderItem: RenderItem<T>;
+  setSelected: (item: T) => void;
 }
 
 export default function DropdownMenu<T>({
-  list,
-  displayKey,
+  renderItem,
+  setSelected,
 }: IDropdownMenuProps<T>) {
-  const { selectedIndex, suggestedIndex } = useDropdownContext();
+  const {
+    selectedIndex,
+    suggestedIndex,
+    isOpen,
+    list,
+    setSelectedIndex,
+    decrementSuggestedIndex,
+    incrementSuggestedIndex,
+    close,
+  } = useDropdown<T>();
+
+  const handleSelection = (index: number) => {
+    setSelectedIndex(index);
+    setSelected(list[index]);
+    close();
+  };
+
+  const handleKeyDown = (e: any) => {
+    switch (e.key) {
+      case "ArrowDown":
+        decrementSuggestedIndex();
+        break;
+      case "ArrowUp":
+        incrementSuggestedIndex();
+        break;
+      case "Enter":
+        handleSelection(suggestedIndex);
+        break;
+      case "Escape":
+        open();
+        break;
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [suggestedIndex, isOpen]);
+
+  if (!isOpen) {
+    return null;
+  }
+
   return (
     <ul
       onMouseOver={(e) => e.stopPropagation()}
@@ -19,7 +72,8 @@ export default function DropdownMenu<T>({
     >
       {list.map((item, i) => (
         <DropdownMenuItem
-          displayValue={String(item[displayKey])}
+          item={item}
+          renderItem={renderItem}
           isSelected={selectedIndex === i}
           isSuggested={i === suggestedIndex}
           i={i}
