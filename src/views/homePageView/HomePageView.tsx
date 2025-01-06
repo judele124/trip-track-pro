@@ -14,9 +14,8 @@ const HomePageView = () => {
   useEffect(() => {
     if (!localStorage.getItem("notFirstEntry")) {
       nav("/first-entry");
-    }
-
-    if (!user) {
+    } else if (!user && !localStorage.getItem("sentToLogin")) {
+      localStorage.setItem("sentToLogin", "true");
       nav("/login");
     }
   }, []);
