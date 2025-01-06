@@ -5,7 +5,6 @@ import { ChangeEvent, MouseEvent } from "react";
 
 type CommonDropdownTriggerElementProps<T> = {
   elemTextContent: (selectedItem: T | undefined | null) => string;
-  type: "input" | "button";
   autoFocus?: boolean;
 };
 
@@ -24,12 +23,6 @@ type IDropdownTriggerElementProps<T> = CommonDropdownTriggerElementProps<T> &
         onChange?: never;
       }
   );
-
-// interface IDropdownTriggerElementProps<T> {
-//   value: (selectedItem: T | undefined | null) => string;
-//   type: "input" | "button";
-//   autoFocus?: boolean;
-// }
 
 export default function DropdownTriggerElement<T>({
   elemTextContent: value,
