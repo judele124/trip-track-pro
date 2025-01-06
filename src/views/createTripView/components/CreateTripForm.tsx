@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormMultipleStages from "../../../components/FormMultipleStages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createTripSchema } from "../../../zodSchemas/createTripSchemas";
 import CTFormStage1 from "./CTFormStage1";
 import CTFormStage2 from "./CTFormStage2";
-import ProgressLine from "../../../components/ui/ProgressLine";
+// import { useTripSocket } from "../../../contexts/SocketContext";
 
 export type IFormData = {
   groupName: string;
@@ -34,6 +33,7 @@ export default function CreateTripForm({
   } = useForm<IFormData>({
     resolver: zodResolver(createTripSchema[currentFormStage]),
   });
+  // const { setTripSocket } = useTripSocket();
 
   return (
     <>
@@ -43,10 +43,13 @@ export default function CreateTripForm({
       <FormMultipleStages
         className="flex flex-col gap-3"
         onLastStageSubmit={handleSubmit((data) => {
-          // axios to create trip
-          // if success
           console.log(data);
           setCurrentFormStage((prev) => prev + 1);
+          // TODO:
+          // axios to create trip
+          // if success
+          // set trip socket
+          // setTripSocket(tripId);
         })}
         onMultipleStageSubmit={(e, { incrementStage }) => {
           handleSubmit((data) => {
