@@ -1,14 +1,18 @@
-import { useEffect, useRef } from "react";
+import { MouseEvent, useEffect, useRef } from "react";
 import Button from "../../ui/Button";
 import { useDropdown } from "./Dropdown";
+
+interface IDropdownButtonProps {
+  value: string;
+  autoFocus?: boolean;
+  onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
+}
 
 export default function DropdownButton({
   value,
   autoFocus,
-}: {
-  autoFocus: boolean;
-  value: string;
-}) {
+  onClick,
+}: IDropdownButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { toggle, isOpen } = useDropdown();
 
@@ -19,7 +23,10 @@ export default function DropdownButton({
   return (
     <Button
       ref={buttonRef}
-      onClick={() => toggle()}
+      onClick={(e) => {
+        toggle();
+        onClick?.(e);
+      }}
       className="flex w-full items-center justify-start border-2 border-black bg-white text-dark"
       aria-haspopup="listbox"
       aria-expanded={isOpen}

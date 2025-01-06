@@ -1,8 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  InputHTMLAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Input from "../../ui/Input";
 import { useDropdown } from "./Dropdown";
 
-interface IDropdownInputProps {
+interface IDropdownInputProps extends InputHTMLAttributes<HTMLInputElement> {
   value: string;
   autoFocus: boolean;
 }
@@ -10,6 +16,8 @@ interface IDropdownInputProps {
 export default function DropdownInput({
   value,
   autoFocus,
+  onChange,
+  ...props
 }: IDropdownInputProps) {
   const { open, isOpen } = useDropdown();
   const [inputValue, setInputValue] = useState(value || "");
@@ -26,12 +34,15 @@ export default function DropdownInput({
 
   return (
     <Input
+      {...props}
       ref={inputRef}
+      textarea={false}
       name="testDropdown"
       value={inputValue}
       onChange={(e) => {
         setInputValue(e.target.value);
         open();
+        onChange?.(e as ChangeEvent<HTMLInputElement>);
       }}
       onFocus={() => open()}
       onKeyDown={(e) => {

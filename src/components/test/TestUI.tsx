@@ -30,8 +30,8 @@ export default function TestUI() {
     <div className="mx-auto max-w-[400px]">
       <Dropdown list={data}>
         <DropdownTriggerElement<IItem>
-          type="input"
-          value={(data) => data?.label || "default"}
+          type="button"
+          elemTextContent={(data) => data?.label || "default"}
         />
         <DropdownMenu<IItem>
           setSelected={(item) => {
