@@ -1,6 +1,8 @@
 import Dropdown from "./Dropdown/Dropdown";
 import DropdownMenu from "./Dropdown/DropdownMenu";
 import DropdownTriggerElement from "./Dropdown/DropdownTriggerElement";
+import { useMapboxAutocomplete } from "../../hooks/useMapBoxApi";
+import { useEffect, useState } from "react";
 
 const data = [
   {
@@ -26,9 +28,33 @@ const data = [
 type IItem = (typeof data)[0];
 
 export default function TestUI() {
+
+  const [placeName, setPlaceName] = useState<string>("Paris");
+  const apiKey = "pk.eyJ1IjoianVkZWxlIiwiYSI6ImNtM3ZndjQ0MzByb3QycXIwczd6c3l4MnUifQ.aWTDBy7JZWGbopN3xfikNg";
+  const suggestions = useMapboxAutocomplete({ query: placeName, apiKey ,limit: 50});
+
+  useEffect(() => {
+    console.log("Suggestions:", suggestions);
+  }, [suggestions]);
+
+
   return (
-    <div className="mx-auto max-w-[400px]">
-      <Dropdown list={data}>
+    <div className="mx-auto h-full max-w-[400px]">
+       <div>
+      <input
+      className="text-black"
+        type="text"
+        value={placeName}
+        onChange={(e) => setPlaceName(e.target.value)}
+        placeholder="Enter a place"
+      />
+      <ul className="mt-2">
+        {suggestions.map((s, index) => (
+          <li className="border border-sky-400 m-2" key={index}>{s.place_name}</li>
+        ))}
+      </ul>
+    </div>
+      {/* <Dropdown list={data}>
         <DropdownTriggerElement<IItem>
           type="input"
           value={(data) => data?.label || "default"}
@@ -57,7 +83,7 @@ export default function TestUI() {
             </>
           )}
         />
-      </Dropdown>
+      </Dropdown> */}
     </div>
   );
 }
