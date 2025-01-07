@@ -1,6 +1,6 @@
 import DropdownMenuItem from "./DropdownMenuItem";
 import { useDropdown } from "./Dropdown";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 export type RenderItem<T> = ({
   isSelected,
@@ -32,7 +32,7 @@ export default function DropdownMenu<T>({
 
   const handleSelection = (index: number) => {
     setSelectedIndex(index);
-    setSelected(list[index]);
+    setSelected(list![index]);
     close();
   };
 
@@ -54,15 +54,13 @@ export default function DropdownMenu<T>({
   };
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !list || !list.length) return;
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [suggestedIndex, isOpen]);
+  }, [suggestedIndex, isOpen, list]);
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!list || !list.length || !isOpen) return null;
 
   return (
     <ul

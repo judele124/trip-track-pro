@@ -43,16 +43,16 @@ export default function CreateTripForm() {
         })(e);
       }}
       renderStages={[
-        <CTFormStage1
-          unregisterReward={() => {
-            resetField("reward");
-            unregister("reward.image");
-            unregister("reward.title");
-          }}
-          errors={errors}
-          register={register}
-          setValue={setValue}
-        />,
+        // <CTFormStage1
+        //   unregisterReward={() => {
+        //     resetField("reward");
+        //     unregister("reward.image");
+        //     unregister("reward.title");
+        //   }}
+        //   errors={errors}
+        //   register={register}
+        //   setValue={setValue}
+        // />,
         <CTFormStage2 register={register} errors={errors} />,
       ]}
     />

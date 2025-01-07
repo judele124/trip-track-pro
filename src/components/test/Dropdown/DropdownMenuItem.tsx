@@ -25,6 +25,7 @@ export default function DropdownMenuItem<T>({
   useEffect(() => {
     if (isSuggested) {
       ref.current?.scrollIntoView({ block: "nearest" });
+      ref.current?.focus();
     }
   }, [isSuggested]);
 
