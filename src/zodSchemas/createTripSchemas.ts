@@ -55,7 +55,8 @@ export const createTripSchema1 = z
   })
   .strict();
 
-export const createTripSchema2 = z.object({}).strict();
+// TODO: add validation stage 2
+export const createTripSchema2 = z.any();
 
 export const createTripSchema = [createTripSchema1, createTripSchema2];
 
