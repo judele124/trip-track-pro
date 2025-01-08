@@ -6,7 +6,7 @@ import DropdownTriggerElement from "./DropdownTriggerElement";
 import { validateRequiredChildren } from "../../../utils/functions";
 
 interface IDropdownContext<T> {
-  list: T[];
+  list?: T[];
   selectedIndex: number;
   suggestedIndex: number;
   isOpen: boolean;
@@ -22,7 +22,7 @@ interface IDropdownContext<T> {
 interface IDropdownProps<T> {
   initial?: number;
   children: ReactNode;
-  list: T[];
+  list?: T[];
 }
 
 const DropdownContext = createContext<IDropdownContext<any> | null>(null);
@@ -45,12 +45,12 @@ export default function Dropdown<T>({
     increment: incrementSuggestedIndex,
     decrement: decrementSuggestedIndex,
   } = useCounter({
-    length: list.length,
+    length: list?.length || 0,
     initial,
   });
 
   const { count: selectedIndex, setCount: setSelectedIndex } = useCounter({
-    length: list.length,
+    length: list?.length || 0,
     initial,
   });
 
