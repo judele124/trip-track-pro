@@ -4,7 +4,6 @@ import InputFeildError from "../../../components/ui/InputFeildError";
 import { IFormData } from "./CreateTripForm";
 import { useRef, useState } from "react";
 import StopLocationInput from "./StopLocationInput";
-import Input from "../../../components/ui/Input";
 
 export default function CTFormStage2({
   setValue,
@@ -20,7 +19,6 @@ export default function CTFormStage2({
 
   return (
     <>
-      <Input {...register("tripName")}></Input>
       <div ref={containerRef}>
         {errors.firstStop?.message && (
           <InputFeildError message={errors.firstStop.message} />
