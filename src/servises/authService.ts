@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "../env.config";
 import { UseAxiosResponse } from "../hooks/useAxios";
 import { getErrorMessage } from "../utils/errorMessages";
-import { LoginSchema } from "../zodSchemas/authSchemas";
+import { LoginSchemaT } from "../zodSchemas/authSchemas";
 
 type Activate = UseAxiosResponse["activate"];
 
@@ -30,7 +30,7 @@ export const sendCode = async (
 };
 
 export const verifyCode = async (
-  data: LoginSchema,
+  data: LoginSchemaT,
   activate: Activate,
 ): Promise<{
   user: IUserResponseData;
