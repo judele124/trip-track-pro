@@ -1,14 +1,17 @@
-import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 import Button from "../../../components/ui/Button";
 import InputFeildError from "../../../components/ui/InputFeildError";
 import { IFormData } from "./CreateTripForm";
 import { useRef, useState } from "react";
 import StopLocationInput from "./StopLocationInput";
+import Input from "../../../components/ui/Input";
 
 export default function CTFormStage2({
+  setValue,
   register,
   errors,
 }: {
+  setValue: UseFormSetValue<IFormData>;
   register: UseFormRegister<IFormData>;
   errors: FieldErrors<IFormData>;
 }) {
@@ -17,11 +20,15 @@ export default function CTFormStage2({
 
   return (
     <>
-      <div ref={containerRef} key={"firstStop"}>
+      <Input {...register("tripName")}></Input>
+      <div ref={containerRef}>
         {errors.firstStop?.message && (
           <InputFeildError message={errors.firstStop.message} />
         )}
         <StopLocationInput
+          onValueChange={(value: string) => {
+            setValue("firstStop", value);
+          }}
           register={register}
           registerKey={"firstStop"}
           icon={"start"}
@@ -40,10 +47,14 @@ export default function CTFormStage2({
       <div
         className={`flex max-h-[40vh] flex-col gap-2 ${middleStopsCount > 3 && "overflow-y-scroll"}`}
       >
-        {[...Array(middleStopsCount)].map((_) => (
+        {[...Array(middleStopsCount)].map((_, i) => (
           <StopLocationInput
+            onValueChange={(value: string) => {
+              setValue(`middleStops.${i}`, value);
+            }}
+            key={i}
             register={register}
-            registerKey={"firstStop"}
+            registerKey={`middleStops.${i}` as keyof IFormData}
             icon={"middle"}
           />
         ))}
@@ -55,8 +66,9 @@ export default function CTFormStage2({
         Add middle stop
       </Button>
       <StopLocationInput
+        onValueChange={(value: string) => setValue("lastStop", value)}
         register={register}
-        registerKey={"firstStop"}
+        registerKey={"lastStop"}
         icon={"end"}
         title={"Last Stop"}
       />

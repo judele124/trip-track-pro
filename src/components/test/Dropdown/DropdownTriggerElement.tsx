@@ -32,6 +32,7 @@ export default function DropdownTriggerElement<T>({
   autoFocus = false,
   onChange,
   onClick,
+  ...props
 }: IDropdownTriggerElementProps<T>) {
   const { list, selectedIndex } = useDropdown<T>();
 
@@ -42,6 +43,7 @@ export default function DropdownTriggerElement<T>({
   if (type === "input") {
     return (
       <DropdownInput
+        {...props}
         icon={icon}
         value={value(list?.[selectedIndex])}
         onChange={onChange}

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createTripSchema } from "../../../zodSchemas/createTripSchemas";
 import CTFormStage1 from "./CTFormStage1";
 import CTFormStage2 from "./CTFormStage2";
+import { useEffect } from "react";
 
 export type IFormData = {
   groupName: string;
@@ -23,6 +24,7 @@ export default function CreateTripForm({
   setCurrentFormStage: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const {
+    watch,
     unregister,
     setValue,
     resetField,
@@ -32,6 +34,10 @@ export default function CreateTripForm({
   } = useForm<IFormData>({
     resolver: zodResolver(createTripSchema[currentFormStage]),
   });
+
+  useEffect(() => {
+    console.log(watch());
+  }, [watch()]);
 
   return (
     <FormMultipleStages
@@ -47,17 +53,21 @@ export default function CreateTripForm({
         })(e);
       }}
       renderStages={[
-        // <CTFormStage1
-        //   unregisterReward={() => {
-        //     resetField("reward");
-        //     unregister("reward.image");
-        //     unregister("reward.title");
-        //   }}
-        //   errors={errors}
-        //   register={register}
-        //   setValue={setValue}
-        // />,
-        <CTFormStage2 register={register} errors={errors} />,
+        <CTFormStage1
+          unregisterReward={() => {
+            resetField("reward");
+            unregister("reward.image");
+            unregister("reward.title");
+          }}
+          errors={errors}
+          register={register}
+          setValue={setValue}
+        />,
+        <CTFormStage2
+          setValue={setValue}
+          register={register}
+          errors={errors}
+        />,
       ]}
     />
   );

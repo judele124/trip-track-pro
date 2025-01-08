@@ -14,45 +14,45 @@ const iconSrc = {
 };
 
 interface IStopLocationInputProps {
+  onValueChange: (value: string) => void;
   title?: string;
   icon?: "start" | "end" | "middle";
-  registerKey: string;
+  registerKey: string & keyof IFormData;
   register: UseFormRegister<IFormData>;
 }
 
+const data = [
+  { name: "aaa" },
+  { name: "bbb" },
+  { name: "ccc" },
+  { name: "aaa" },
+  { name: "bbb" },
+  { name: "ccc" },
+  { name: "aaa" },
+  { name: "bbb" },
+  { name: "ccc" },
+];
+
 export default function StopLocationInput({
+  onValueChange,
   title,
   icon = "start",
-  registerKey,
-  register,
 }: IStopLocationInputProps) {
   return (
     <label className={`flex w-full flex-col gap-1`}>
       {title && (
         <span className={`pl-5 text-start font-semibold`}>{title}</span>
       )}
-      <Dropdown
-        list={[
-          { name: "aaa" },
-          { name: "bbb" },
-          { name: "ccc" },
-          { name: "aaa" },
-          { name: "bbb" },
-          { name: "ccc" },
-          { name: "aaa" },
-          { name: "bbb" },
-          { name: "ccc" },
-        ]}
-      >
+      <Dropdown list={data}>
         <DropdownTriggerElement<{ name: string }>
           icon={<img src={iconSrc[icon]} alt="" />}
-          register={register(registerKey)}
           type="input"
           elemTextContent={(item) => item?.name || "default"}
-          onChange={(e) => console.log(e)}
         />
         <DropdownMenu<{ name: string }>
-          setSelected={() => {}}
+          setSelected={(item) => {
+            onValueChange(item.name);
+          }}
           renderItem={({ item }) => <div>{item.name}</div>}
         />
       </Dropdown>

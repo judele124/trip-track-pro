@@ -48,7 +48,7 @@ export default function DropdownMenu<T>({
         handleSelection(suggestedIndex);
         break;
       case "Escape":
-        open();
+        close();
         break;
     }
   };
@@ -59,6 +59,13 @@ export default function DropdownMenu<T>({
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [suggestedIndex, isOpen, list]);
+
+  useEffect(() => {
+    if (!list || !list.length || selectedIndex < 0) return;
+    console.log(list[selectedIndex]);
+
+    setSelected(list[selectedIndex]);
+  }, [selectedIndex]);
 
   if (!list || !list.length || !isOpen) return null;
 

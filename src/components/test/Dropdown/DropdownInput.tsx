@@ -1,6 +1,7 @@
-import React, {
+import {
   ChangeEvent,
   InputHTMLAttributes,
+  KeyboardEvent,
   useEffect,
   useRef,
   useState,
@@ -38,19 +39,17 @@ export default function DropdownInput({
     <div className="relative">
       {icon}
       <Input
-        className={`w-full ${icon ? "pl-10" : ""}`}
-        {...props}
         ref={inputRef}
+        className={`w-full ${icon ? "pl-10" : ""}`}
         textarea={false}
-        name="testDropdown"
         value={inputValue}
         onChange={(e) => {
+          onChange?.(e as ChangeEvent<HTMLInputElement>);
           setInputValue(e.target.value);
           open();
-          onChange?.(e as ChangeEvent<HTMLInputElement>);
         }}
         onFocus={() => open()}
-        onKeyDown={(e) => {
+        onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
           open();
           if (e.key === "Escape") {
             e.currentTarget.blur();
@@ -58,6 +57,7 @@ export default function DropdownInput({
         }}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        {...props}
       />
     </div>
   );
