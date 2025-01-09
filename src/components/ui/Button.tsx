@@ -1,4 +1,9 @@
-import { ButtonHTMLAttributes, PropsWithChildren } from "react";
+import {
+  ButtonHTMLAttributes,
+  forwardRef,
+  PropsWithChildren,
+  Ref,
+} from "react";
 
 type ButtonProps = {
   primary?: boolean;
@@ -6,33 +11,33 @@ type ButtonProps = {
 } & PropsWithChildren &
   ButtonHTMLAttributes<HTMLButtonElement>;
 
-const Button = ({
-  className = "",
-  children,
-  primary,
-  ...props
-}: ButtonProps) => {
-  if (primary) {
-    className += " bg-primary text-white";
-  }
+const Button = forwardRef(
+  (
+    { className = "", children, primary, ...props }: ButtonProps,
+    ref: Ref<HTMLButtonElement>,
+  ) => {
+    if (primary) {
+      className += " bg-primary text-white";
+    }
 
-  if (!className.includes("text")) {
-    className += " text-white dark:text-dark";
-  }
+    if (!className.includes("text")) {
+      className += " text-white dark:text-dark";
+    }
 
-  if (!className.includes("bg")) {
-    className += " bg-dark dark:bg-light";
-  }
+    if (!className.includes("bg")) {
+      className += " bg-dark dark:bg-light";
+    }
 
-  if (!className.includes("px-") || !className.includes("py-")) {
-    className += " px-5 py-3";
-  }
+    if (!className.includes("px-") && !className.includes("py-")) {
+      className += " px-5 py-3";
+    }
 
-  return (
-    <button {...props} className={`${className} font-semibold`}>
-      {children}
-    </button>
-  );
-};
+    return (
+      <button ref={ref} {...props} className={`${className} font-semibold`}>
+        {children}
+      </button>
+    );
+  },
+);
 
 export default Button;
