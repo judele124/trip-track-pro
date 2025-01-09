@@ -1,6 +1,6 @@
 import DropdownMenuItem from "./DropdownMenuItem";
 import { useDropdown } from "./Dropdown";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect } from "react";
 
 export type RenderItem<T> = ({
   isSelected,
@@ -36,7 +36,7 @@ export default function DropdownMenu<T>({
     close();
   };
 
-  const handleKeyDown = (e: any) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
       case "ArrowDown":
         decrementSuggestedIndex();
@@ -49,7 +49,7 @@ export default function DropdownMenu<T>({
         break;
       case "Escape":
         close();
-        break;
+        break;  
     }
   };
 

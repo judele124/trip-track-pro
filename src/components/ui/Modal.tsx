@@ -21,7 +21,6 @@ type ModalAnchor =
 
 type CommonProps = {
   backgroundClassname?: string;
-  className?: string;
   open: boolean;
   onBackdropClick: () => void;
   children?: ReactNode;
@@ -42,7 +41,7 @@ type ModalProps = CommonProps &
   );
 
 const Modal: FC<ModalProps> = ({
-  backgroundClassname,
+  backgroundClassname = "",
   open,
   onBackdropClick,
   anchorElement,
@@ -50,14 +49,12 @@ const Modal: FC<ModalProps> = ({
   center,
   children,
 }) => {
-  if (!open) return null;
-
   const [positions, setPositions] = useState([0, 0, 0, 0]);
   const childrenRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (center || !anchorElement?.current || !childrenRef.current) return;
+    if (center || !anchorElement?.current || !childrenRef.current || !open) return;
 
     const anchorElementRect = anchorElement.current.getBoundingClientRect();
     const childrenRect = childrenRef.current.getBoundingClientRect();
@@ -173,17 +170,19 @@ const Modal: FC<ModalProps> = ({
         break;
       }
     }
-  }, [anchorElement, anchorTo]);
+  }, [anchorElement, anchorTo , open]);
 
   useEffect(() => {
     backgroundRef.current?.classList.remove("opacity-0");
-  }, []);
+  }, [open]);
+
+  if (!open) return null;
 
   return (
     <div
       ref={backgroundRef}
       onClick={onBackdropClick}
-      className={`absolute inset-0 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
+      className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
     >
       <div
         className="relative w-fit"

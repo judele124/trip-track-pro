@@ -40,7 +40,7 @@ export default function DropdownMenuItem<T>({
           close();
         }}
         ref={ref}
-        className={`hover:bg-gray-200" flex w-full items-center gap-2 rounded-xl text-start ${isSelected ? "bg-secondary text-white" : isSuggested ? "bg-gray-200" : " "}`}
+        className={`hover:bg-gray-200 text-dark flex w-full items-center gap-2 rounded-xl text-start ${isSelected ? "bg-secondary text-white" : isSuggested ? "bg-gray-200" : " "}`}
         role="option"
         aria-selected={isSelected}
       >

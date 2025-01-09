@@ -6,6 +6,9 @@ import start from "../assets/start-stop-icon.svg";
 import middle from "../assets/middle-stop-icon.svg";
 import { UseFormRegister } from "react-hook-form";
 import { IFormData } from "./CreateTripForm";
+import Button from "../../../components/ui/Button";
+import Modal from "../../../components/ui/Modal";
+import useToggle from "../../../hooks/useToggle";
 
 const iconSrc = {
   start,
@@ -38,24 +41,54 @@ export default function StopLocationInput({
   title,
   icon = "start",
 }: IStopLocationInputProps) {
+  const { isOpen: isModalOpan, setIsOpen: setIsModalOpen, toggle: toggleModal } = useToggle();
+  const { isOpen: showBtn,setIsOpen: setShowBtn} = useToggle();
+
+
   return (
-    <label className={`flex w-full flex-col gap-1`}>
-      {title && (
-        <span className={`pl-5 text-start font-semibold`}>{title}</span>
-      )}
-      <Dropdown list={data}>
-        <DropdownTriggerElement<{ name: string }>
-          icon={<img src={iconSrc[icon]} alt="" />}
-          type="input"
-          elemTextContent={(item) => item?.name || "default"}
-        />
-        <DropdownMenu<{ name: string }>
-          setSelected={(item) => {
-            onValueChange(item.name);
-          }}
-          renderItem={({ item }) => <div>{item.name}</div>}
-        />
-      </Dropdown>
-    </label>
+    <>
+      <label className={`flex w-full flex-col gap-1`}>
+        {title && (
+          <span className={`pl-5 text-start font-semibold`}>{title}</span>
+        )}
+      </label>
+      <div className="relative">
+        <Dropdown list={data}>
+          <DropdownTriggerElement<{ name: string }>
+            icon={<img src={iconSrc[icon]} alt="" />}
+            type="input"
+            elemTextContent={(item) => item?.name || "default"}
+            onChange={() => {
+              setShowBtn(false);
+            }}
+          />
+          <DropdownMenu<{ name: string }>
+            setSelected={(item) => {
+              if (!item || !item.name) return;
+                onValueChange(item.name);
+                setShowBtn(true);
+            }}
+            renderItem={({ item }) => <div>{item.name}</div>}
+          />
+        </Dropdown>
+        {showBtn && (
+          <Button
+            type="button"
+            onClick={() => {
+              toggleModal()
+            }}
+            className="absolute right-0 top-1/2 -translate-y-1/2 scale-90 rounded-xl px-4 py-2"
+            primary
+          >
+            Add Experience
+          </Button>
+        )}
+      </div>
+
+      <Modal center open={isModalOpan} onBackdropClick={() => setIsModalOpen(false)}>
+        {/* mission components */}
+        <p>is modal</p>
+      </Modal>
+    </>
   );
 }

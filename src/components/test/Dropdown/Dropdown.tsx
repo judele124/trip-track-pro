@@ -11,6 +11,7 @@ interface IDropdownContext<T> {
   suggestedIndex: number;
   isOpen: boolean;
   setSelectedIndex: (index: number) => void;
+  resetSelectedIndex: () => void
   setSuggestedIndex: (index: number) => void;
   incrementSuggestedIndex: () => void;
   decrementSuggestedIndex: () => void;
@@ -49,7 +50,7 @@ export default function Dropdown<T>({
     initial,
   });
 
-  const { count: selectedIndex, setCount: setSelectedIndex } = useCounter({
+  const { count: selectedIndex, setCount: setSelectedIndex ,reset: resetSelectedIndex } = useCounter({
     length: list?.length || 0,
     initial,
   });
@@ -76,6 +77,7 @@ export default function Dropdown<T>({
         suggestedIndex,
         isOpen,
         setSelectedIndex,
+        resetSelectedIndex,
         setSuggestedIndex,
         incrementSuggestedIndex,
         decrementSuggestedIndex,

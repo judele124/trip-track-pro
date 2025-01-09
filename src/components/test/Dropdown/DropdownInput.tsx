@@ -22,7 +22,7 @@ export default function DropdownInput({
   onChange,
   ...props
 }: IDropdownInputProps) {
-  const { open, isOpen } = useDropdown();
+  const { open, isOpen ,resetSelectedIndex } = useDropdown();
   const [inputValue, setInputValue] = useState(value || "");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -53,6 +53,9 @@ export default function DropdownInput({
           open();
           if (e.key === "Escape") {
             e.currentTarget.blur();
+          }
+          if (e.key === "Backspace") {
+            resetSelectedIndex();
           }
         }}
         aria-haspopup="listbox"
