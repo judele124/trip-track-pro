@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 
 type ModalAnchor =
   | "center"
@@ -179,20 +180,23 @@ const Modal: FC<ModalProps> = ({
   if (!open) return null;
 
   return (
+   createPortal(
     <div
-      ref={backgroundRef}
-      onClick={onBackdropClick}
-      className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
+    ref={backgroundRef}
+    onClick={onBackdropClick}
+    className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
+  >
+    <div
+      className={`relative`}
+      ref={childrenRef}
+      onClick={(e) => e.stopPropagation()}
+      style={getPositionStyles(center, positions)}
     >
-      <div
-        className="relative w-fit"
-        ref={childrenRef}
-        onClick={(e) => e.stopPropagation()}
-        style={getPositionStyles(center, positions)}
-      >
-        {children}
-      </div>
+      {children}
     </div>
+  </div>,
+    document.body
+   )
   );
 };
 

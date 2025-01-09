@@ -9,6 +9,8 @@ import { IFormData } from "./CreateTripForm";
 import Button from "../../../components/ui/Button";
 import Modal from "../../../components/ui/Modal";
 import useToggle from "../../../hooks/useToggle";
+import ExperienceFrom from "../../../components/ExperienceFrom";
+import { useRef } from "react";
 
 const iconSrc = {
   start,
@@ -44,6 +46,8 @@ export default function StopLocationInput({
   const { isOpen: isModalOpan, setIsOpen: setIsModalOpen, toggle: toggleModal } = useToggle();
   const { isOpen: showBtn,setIsOpen: setShowBtn} = useToggle();
 
+  const reef = useRef<HTMLDivElement>(null);
+
 
   return (
     <>
@@ -52,7 +56,7 @@ export default function StopLocationInput({
           <span className={`pl-5 text-start font-semibold`}>{title}</span>
         )}
       </label>
-      <div className="relative">
+      <div ref={reef} className="relative">
         <Dropdown list={data}>
           <DropdownTriggerElement<{ name: string }>
             icon={<img src={iconSrc[icon]} alt="" />}
@@ -87,7 +91,7 @@ export default function StopLocationInput({
 
       <Modal center open={isModalOpan} onBackdropClick={() => setIsModalOpen(false)}>
         {/* mission components */}
-        <p>is modal</p>
+        <ExperienceFrom />
       </Modal>
     </>
   );
