@@ -28,7 +28,7 @@ const Button = forwardRef(
       className += " bg-dark dark:bg-light";
     }
 
-    if (!className.includes("px-") || !className.includes("py-")) {
+    if (!className.includes("px-") && !className.includes("py-")) {
       className += " px-5 py-3";
     }
 

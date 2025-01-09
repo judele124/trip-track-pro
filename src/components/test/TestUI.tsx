@@ -57,7 +57,7 @@ export default function TestUI() {
       {/* <Dropdown list={data}>
         <DropdownTriggerElement<IItem>
           type="input"
-          value={(data) => data?.label || "default"}
+          elemTextContent={(data) => data?.label || "default"}
         />
         <DropdownMenu<IItem>
           setSelected={(item) => {

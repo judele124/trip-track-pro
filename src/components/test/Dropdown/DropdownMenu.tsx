@@ -32,11 +32,11 @@ export default function DropdownMenu<T>({
 
   const handleSelection = (index: number) => {
     setSelectedIndex(index);
-    setSelected(list[index]);
+    setSelected(list![index]);
     close();
   };
 
-  const handleKeyDown = (e: any) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
       case "ArrowDown":
         decrementSuggestedIndex();
@@ -48,21 +48,26 @@ export default function DropdownMenu<T>({
         handleSelection(suggestedIndex);
         break;
       case "Escape":
-        open();
-        break;
+        close();
+        break;  
     }
   };
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !list || !list.length) return;
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [suggestedIndex, isOpen]);
+  }, [suggestedIndex, isOpen, list]);
 
-  if (!isOpen) {
-    return null;
-  }
+  useEffect(() => {
+    if (!list || !list.length || selectedIndex < 0) return;
+    console.log(list[selectedIndex]);
+
+    setSelected(list[selectedIndex]);
+  }, [selectedIndex]);
+
+  if (!list || !list.length || !isOpen) return null;
 
   return (
     <ul
