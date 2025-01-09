@@ -41,6 +41,7 @@ const ProgressLine: React.FC<ProgressLineProps> = ({
               viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
             >
               <circle
+                fill="none"
                 className={`transition-all ease-in-out fill-${isActive || isCompleted ? "primary" : "transparent"} stroke-primary`}
                 r={RADIUS}
                 cx={SVG_SIZE / 2}
@@ -56,7 +57,6 @@ const ProgressLine: React.FC<ProgressLineProps> = ({
                   y1={SVG_SIZE / 2}
                   x2={lineLength - 10}
                   y2={SVG_SIZE / 2}
-                  stroke="#000000"
                   strokeWidth={STROKE_WIDTH}
                   strokeLinecap="round"
                   strokeDasharray={"10 10"}
