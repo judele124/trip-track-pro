@@ -39,17 +39,17 @@ export default function DropdownMenu<T>({
   const handleKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
       case "ArrowDown":
-        decrementSuggestedIndex();
+        incrementSuggestedIndex();
         break;
       case "ArrowUp":
-        incrementSuggestedIndex();
+        decrementSuggestedIndex();
         break;
       case "Enter":
         handleSelection(suggestedIndex);
         break;
       case "Escape":
         close();
-        break;  
+        break;
     }
   };
 

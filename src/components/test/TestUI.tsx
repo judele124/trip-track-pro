@@ -2,8 +2,6 @@
 // import DropdownMenu from "./Dropdown/DropdownMenu";
 // import DropdownTriggerElement from "./Dropdown/DropdownTriggerElement";
 import { useEffect, useRef, useState } from "react";
-import { GOOGLE_MAPS_API_KEY } from "@/env.config";
-import axios from "axios";
 const data = [
   {
     label: "aaaaaaaaaaa",
@@ -25,24 +23,10 @@ const data = [
   },
 ];
 
-type IItem = (typeof data)[0];
-
 export default function TestUI() {
   const [placeName, setPlaceName] = useState<string>("Paris");
   const ref = useRef<HTMLDivElement>(null);
   const ipnutRef = useRef<HTMLInputElement>(null);
-
-  // const suggestions = useMapboxAutocomplete({
-  //   apiKey,
-  //   query: placeName,
-  //   // query: placeName,
-  //   // apiKey,
-  //   // limit: 50,
-  // });
-
-  // useEffect(() => {
-  //   console.log("Suggestions:", suggestions);
-  // }, [suggestions]);
 
   useEffect(() => {
     if (!ref.current) return;
