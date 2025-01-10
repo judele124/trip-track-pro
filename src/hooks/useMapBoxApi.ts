@@ -1,58 +1,43 @@
-import { useState, useCallback, useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import useAxios from "./useAxios";
 
 interface IUseMapboxAutocompleteProps {
-    query: string;
-    apiKey: string;
-    types?: string;
-    limit?: number;
-    language?: string;
-    country?: string;
+  query: string;
+  apiKey: string;
 }
 
-export const useMapboxAutocomplete = (
-  { query, apiKey , types = "address,place", limit = 10, language = "he-IL", country}: IUseMapboxAutocompleteProps
-) => {
+export const useMapboxAutocomplete = ({
+  query,
+  apiKey,
+}: IUseMapboxAutocompleteProps) => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
-
   const { activate } = useAxios({
     manual: true,
-    withCredentials: false,
     onSuccess: (response) => {
-      console.log("API Success:", response);
-      setSuggestions(response.data.features || []);
+      const features = response.data?.features || [];
+      setSuggestions(features);
+      console.log("Suggestions:", features);
     },
-    onError: (err) => {
-      console.error("API Error:", err);
+    onError: (error) => {
+      console.error("Error fetching suggestions:", error);
     },
   });
 
   const fetchSuggestions = useCallback(() => {
-    if (!   query || !apiKey) {
+    if (!query || !apiKey) {
       setSuggestions([]);
+      console.warn("Query or API key missing!");
       return;
     }
 
-    const baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places";
-    const encodedQuery = encodeURIComponent(query);
-
-    const params = {
-       types,
-       limit,
-       language,
-       country
-    };
-
     activate({
-      url: `${baseUrl}/${encodedQuery}.json?access_token=${apiKey}`, params
+      url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=amoeba&key=AIzaSyAjzGZTVQR_AEqXMKKOwpLDL0U7pKxNJRA`,
     });
   }, [query, apiKey, activate]);
 
   useEffect(() => {
-    if (query) {
-        fetchSuggestions();
-    }
-  }, [query]);
+    fetchSuggestions();
+  }, [query, fetchSuggestions]);
 
   return suggestions;
 };

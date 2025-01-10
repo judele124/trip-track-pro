@@ -1,9 +1,9 @@
-import Dropdown from "./Dropdown/Dropdown";
-import DropdownMenu from "./Dropdown/DropdownMenu";
-import DropdownTriggerElement from "./Dropdown/DropdownTriggerElement";
-import { useMapboxAutocomplete } from "../../hooks/useMapBoxApi";
-import { useEffect, useState } from "react";
-
+// import Dropdown from "./Dropdown/Dropdown";
+// import DropdownMenu from "./Dropdown/DropdownMenu";
+// import DropdownTriggerElement from "./Dropdown/DropdownTriggerElement";
+import { useEffect, useRef, useState } from "react";
+import { GOOGLE_MAPS_API_KEY } from "@/env.config";
+import axios from "axios";
 const data = [
   {
     label: "aaaaaaaaaaa",
@@ -28,32 +28,37 @@ const data = [
 type IItem = (typeof data)[0];
 
 export default function TestUI() {
-
   const [placeName, setPlaceName] = useState<string>("Paris");
-  const apiKey = "pk.eyJ1IjoianVkZWxlIiwiYSI6ImNtM3ZndjQ0MzByb3QycXIwczd6c3l4MnUifQ.aWTDBy7JZWGbopN3xfikNg";
-  const suggestions = useMapboxAutocomplete({ query: placeName, apiKey ,limit: 50});
+  const ref = useRef<HTMLDivElement>(null);
+  const ipnutRef = useRef<HTMLInputElement>(null);
+
+  // const suggestions = useMapboxAutocomplete({
+  //   apiKey,
+  //   query: placeName,
+  //   // query: placeName,
+  //   // apiKey,
+  //   // limit: 50,
+  // });
+
+  // useEffect(() => {
+  //   console.log("Suggestions:", suggestions);
+  // }, [suggestions]);
 
   useEffect(() => {
-    console.log("Suggestions:", suggestions);
-  }, [suggestions]);
-
+    if (!ref.current) return;
+  }, []);
 
   return (
-    <div className="mx-auto h-full max-w-[400px]">
-       <div>
-      <input
-      className="text-black"
-        type="text"
-        value={placeName}
-        onChange={(e) => setPlaceName(e.target.value)}
-        placeholder="Enter a place"
-      />
-      <ul className="mt-2">
-        {suggestions.map((s, index) => (
-          <li className="border border-sky-400 m-2" key={index}>{s.place_name}</li>
-        ))}
-      </ul>
-    </div>
+    <div ref={ref} className="mx-auto h-full max-w-[400px]">
+      <div>
+        {/* <ul className="mt-2">
+          {suggestions.map((s, index) => (
+            <li className="m-2 border border-sky-400" key={index}>
+              {s.place_name}
+            </li>
+          ))}
+        </ul> */}
+      </div>
       {/* <Dropdown list={data}>
         <DropdownTriggerElement<IItem>
           type="input"
