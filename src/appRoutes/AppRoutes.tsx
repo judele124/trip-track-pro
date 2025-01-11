@@ -10,14 +10,12 @@ import TripLayout from "../components/layouts/TripLayout/TripLayout.tsx";
 import Map from "../views/mapView/Map.tsx";
 import ParticipantsView from "../views/participantsView/ParticipantsView.tsx";
 import ChatView from "../views/chatView/ChatView.tsx";
-import TestUI from "../components/test/TestUI.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<PageLayout />}>
-        <Route path="test" element={<TestUI />} />
         <Route index element={<HomePageView />} />
         <Route path="" element={<NavbarLayout />}>
           <Route path="first-entry" element={<FirstEntryView />} />
