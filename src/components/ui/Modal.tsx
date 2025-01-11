@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 
 type ModalAnchor =
   | "center"
@@ -54,7 +55,8 @@ const Modal: FC<ModalProps> = ({
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (center || !anchorElement?.current || !childrenRef.current || !open) return;
+    if (center || !anchorElement?.current || !childrenRef.current || !open)
+      return;
 
     const anchorElementRect = anchorElement.current.getBoundingClientRect();
     const childrenRect = childrenRef.current.getBoundingClientRect();
@@ -170,7 +172,7 @@ const Modal: FC<ModalProps> = ({
         break;
       }
     }
-  }, [anchorElement, anchorTo , open]);
+  }, [anchorElement, anchorTo, open]);
 
   useEffect(() => {
     backgroundRef.current?.classList.remove("opacity-0");
@@ -178,7 +180,7 @@ const Modal: FC<ModalProps> = ({
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
       ref={backgroundRef}
       onClick={onBackdropClick}
@@ -192,7 +194,8 @@ const Modal: FC<ModalProps> = ({
       >
         {children}
       </div>
-    </div>
+  </div>,
+    document.body,
   );
 };
 
