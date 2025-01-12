@@ -55,7 +55,8 @@ const Modal: FC<ModalProps> = ({
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (center || !anchorElement?.current || !childrenRef.current || !open) return;
+    if (center || !anchorElement?.current || !childrenRef.current || !open)
+      return;
 
     const anchorElementRect = anchorElement.current.getBoundingClientRect();
     const childrenRect = childrenRef.current.getBoundingClientRect();
@@ -171,7 +172,7 @@ const Modal: FC<ModalProps> = ({
         break;
       }
     }
-  }, [anchorElement, anchorTo , open]);
+  }, [anchorElement, anchorTo, open]);
 
   useEffect(() => {
     backgroundRef.current?.classList.remove("opacity-0");
@@ -179,24 +180,22 @@ const Modal: FC<ModalProps> = ({
 
   if (!open) return null;
 
-  return (
-   createPortal(
+  return createPortal(
     <div
-    ref={backgroundRef}
-    onClick={onBackdropClick}
-    className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
-  >
-    <div
-      className={`relative`}
-      ref={childrenRef}
-      onClick={(e) => e.stopPropagation()}
-      style={getPositionStyles(center, positions)}
+      ref={backgroundRef}
+      onClick={onBackdropClick}
+      className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
     >
-      {children}
-    </div>
+      <div
+        className="relative w-fit"
+        ref={childrenRef}
+        onClick={(e) => e.stopPropagation()}
+        style={getPositionStyles(center, positions)}
+      >
+        {children}
+      </div>
   </div>,
-    document.body
-   )
+    document.body,
   );
 };
 

@@ -5,21 +5,9 @@ import imgSrcLight from "./assets/start-screen-light.svg";
 import imgSrcDark from "./assets/start-screen-dark.svg";
 import Button from "../../components/ui/Button";
 import ImageLightDark from "../../components/ui/ImageLightDark";
-import { useAuthContext } from "../../contexts/AuthContext";
 
 const HomePageView = () => {
-  const { user } = useAuthContext();
   const nav = useNavigate();
-
-  useEffect(() => {
-    if (!localStorage.getItem("notFirstEntry")) {
-      nav("/first-entry");
-    } else if (!user && !localStorage.getItem("sentToLogin")) {
-      localStorage.setItem("sentToLogin", "true");
-      nav("/login");
-    }
-  }, []);
-
   return (
     <>
       <div className="flex flex-col gap-4">
