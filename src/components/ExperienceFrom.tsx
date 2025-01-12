@@ -24,7 +24,7 @@ const ExperienceFrom = () => {
   };
 
   return (
-    <div className="page-colors mx-4 flex flex-col gap-3 rounded-3xl border p-4">
+    <div className="page-colors page-padding flex flex-col gap-3 mx-4 sm:mx-auto sm:max-w-[450px] rounded-3xl">
       <p className="text-xl font-bold">Select Experience</p>
       <Dropdown list={data}>
         <DropdownTriggerElement<{ name: string }>
@@ -55,7 +55,7 @@ const ExperienceFrom = () => {
                 placeholder="Enter score"
                 {...methods.register("score")}
               />
-              <Button primary type="submit">
+              <Button className="w-full" primary type="submit">
                 Confirm
               </Button>
             </div>

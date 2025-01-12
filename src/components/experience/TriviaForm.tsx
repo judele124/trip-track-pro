@@ -2,21 +2,40 @@ import { useFormContext, useFieldArray } from "react-hook-form";
 import InputWLabel from "../ui/InputWLabel";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Modal from "../ui/Modal";
+import InputFeildError from "../ui/InputFeildError";
 
 const TriviaForm = () => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [amountOptions, setAmountOptions] = useState<number>(1);
+  const [amountError, setAmountError] = useState<boolean>(false);
   const { register, control } = useFormContext();
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: "triviaOptions",
     keyName: "id",
   });
 
   useEffect(() => {
-    if (fields.length === 0) {
-        append({ value: "" });
-      }
-  }, [fields.length, append]);
+    if (fields.length !== amountOptions) {
+      const newFields = Array.from({ length: amountOptions }, () => ({ value: "" }));
+      replace(newFields);
+    }
+  }, [amountOptions]);
+
+  useEffect(() => {
+    console.log(fields);
+  }, [fields]);   
+  
+  const validateAmountOptions = (amount: number)=>{
+    if(amount < 1 || amount > 4){
+      setAmountError(true);
+    }
+    else{
+      setAmountError(false);
+    }
+  }
 
   return (
     <div>
@@ -32,32 +51,83 @@ const TriviaForm = () => {
         placeholder="Enter an answer"
         {...register("triviaAnswer")}
       />
-      <p className="text-xl font-bold m-1">Options</p>
-      <div className="max-h-[200px] border-2 border-primary p-2 rounded-lg overflow-auto">
-        {fields.map((field, index) => (
-        <React.Fragment key={field.id}>
-          <p className="pl-5">{`Option ${index + 1}`}</p>
-          <div key={field.id} className="relative mt-2">
-            <Input
-              type="text"
-              title={`Option ${index + 1}`}
-              placeholder={`Enter option ${index + 1}`}
-              {...register(`triviaOptions.${index}.value`)} 
-            />
-           {index > 0 && <button
-              type="button"
-              className="absolute top-1/2 -translate-y-1/2 right-0 text-red-500"
-              onClick={() => remove(index)}
-            >
-              Delete
-            </button>}
-          </div>
-          </React.Fragment>
-        ))}
-        <Button primary className="w-full mt-2" about="add" onClick={() => append({ value: "" })}>
-          Add Option
-        </Button>
+      <div>
+        {/* <label className="pl-5 text-start font-semibold">Options</label> */}
+        <div className="flex gap-2">
+          <Input
+            type="number"
+            title="Number of options"
+            placeholder="Enter the number of options"
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              validateAmountOptions(value);
+              if (value >= 1 && value <= 4) {
+                setAmountOptions(value);
+                // setAmountError(false);
+              }
+            }}
+            value={amountOptions}
+            // min={1}
+            // max={4}
+          />
+          <Button
+            className="w-full"
+            primary
+            type="button"
+            onClick={() => setIsModalOpen((prev) => !prev)}
+          >
+            Manage Options
+          </Button>
+        </div>
       </div>
+      <Modal
+        center
+        open={isModalOpen}
+        onBackdropClick={() => setIsModalOpen(false)}
+        children={
+          <div className="page-colors m-4 sm:max-w-[450px] sm:m-auto overflow-auto rounded-3xl p-4">
+            {fields.map((field, index) => (
+              <React.Fragment key={field.id}>
+                <p className="pl-5">{`Option ${index + 1}`}</p>
+                <div className="relative mt-2">
+                  <Input
+                    type="text"
+                    title={`Option ${index + 1}`}
+                    placeholder={`Enter option ${index + 1}`}
+                    {...register(`triviaOptions.${index}.value`)}
+                  />
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      className="absolute right-0 top-1/2 -translate-y-1/2 text-red-500"
+                      onClick={() => {
+                        remove(index)
+                        validateAmountOptions(fields.length - 1);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              </React.Fragment>
+            ))}
+            { amountError && <InputFeildError message="Options amount shuold be between 1-4" />}
+            <Button
+              primary
+              className="mt-2 w-full"
+              type="button"
+              onClick={() => {
+                validateAmountOptions(fields.length + 1);
+                if(fields.length < 4){
+                  append({ value: ""});
+                }
+                }}
+            >
+              Add Another Option
+            </Button>
+          </div>
+        }
+      />
     </div>
   );
 };
