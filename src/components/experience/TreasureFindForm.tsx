@@ -6,7 +6,7 @@ const TreasureFindForm = () => {
   const { register } = useFormContext();
 
   return (
-    <div className="flex flex-col gap-2">
+    <>
       <InputWLabel
         type="text"
         textarea
@@ -14,10 +14,10 @@ const TreasureFindForm = () => {
         placeholder="Enter treasure description"
         {...register("treasureDescription")}
       />
-      <Button primary className="w-full py-5" about="add a photo">
+      <Button primary className="w-full" about="add a photo">
         Add a Photo
       </Button>
-    </div>
+    </>
   );
 };
 

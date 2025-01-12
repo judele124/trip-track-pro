@@ -2,7 +2,7 @@ import { useFormContext, useFieldArray } from "react-hook-form";
 import InputWLabel from "../ui/InputWLabel";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../ui/Modal";
 import InputFeildError from "../ui/InputFeildError";
 
@@ -23,10 +23,7 @@ const TriviaForm = () => {
       replace(newFields);
     }
   }, [amountOptions]);
-
-  useEffect(() => {
-    console.log(fields);
-  }, [fields]);   
+ 
   
   const validateAmountOptions = (amount: number)=>{
     if(amount < 1 || amount > 4){
@@ -38,7 +35,7 @@ const TriviaForm = () => {
   }
 
   return (
-    <div>
+    <>
       <InputWLabel
         type="text"
         title="Question"
@@ -52,7 +49,7 @@ const TriviaForm = () => {
         {...register("triviaAnswer")}
       />
       <div>
-        {/* <label className="pl-5 text-start font-semibold">Options</label> */}
+        <label className="pl-5 text-start font-semibold">Options</label>
         <div className="flex gap-2">
           <Input
             type="number"
@@ -63,12 +60,11 @@ const TriviaForm = () => {
               validateAmountOptions(value);
               if (value >= 1 && value <= 4) {
                 setAmountOptions(value);
-                // setAmountError(false);
               }
             }}
             value={amountOptions}
-            // min={1}
-            // max={4}
+            min={1}
+            max={4}
           />
           <Button
             className="w-full"
@@ -84,12 +80,13 @@ const TriviaForm = () => {
         center
         open={isModalOpen}
         onBackdropClick={() => setIsModalOpen(false)}
+        containerClassName="w-full sm:max-w-[400px]"
         children={
-          <div className="page-colors m-4 sm:max-w-[450px] sm:m-auto overflow-auto rounded-3xl p-4">
+          <div className="flex flex-col gap-3 page-colors m-4 sm:max-w-[450px] sm:m-auto overflow-auto rounded-3xl p-4">
             {fields.map((field, index) => (
-              <React.Fragment key={field.id}>
+              <div className="flex flex-col" key={field.id}>
                 <p className="pl-5">{`Option ${index + 1}`}</p>
-                <div className="relative mt-2">
+                <div className="relative">
                   <Input
                     type="text"
                     title={`Option ${index + 1}`}
@@ -99,7 +96,7 @@ const TriviaForm = () => {
                   {index > 0 && (
                     <button
                       type="button"
-                      className="absolute right-0 top-1/2 -translate-y-1/2 text-red-500"
+                      className="absolute right-0 top-1/2 -translate-y-1/2 text-primary"
                       onClick={() => {
                         remove(index)
                         validateAmountOptions(fields.length - 1);
@@ -109,7 +106,7 @@ const TriviaForm = () => {
                     </button>
                   )}
                 </div>
-              </React.Fragment>
+              </div>
             ))}
             { amountError && <InputFeildError message="Options amount shuold be between 1-4" />}
             <Button
@@ -128,7 +125,7 @@ const TriviaForm = () => {
           </div>
         }
       />
-    </div>
+    </>
   );
 };
 

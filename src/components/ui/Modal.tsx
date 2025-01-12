@@ -25,6 +25,7 @@ type CommonProps = {
   open: boolean;
   onBackdropClick: () => void;
   children?: ReactNode;
+  containerClassName?: string;
 };
 
 type ModalProps = CommonProps &
@@ -48,6 +49,7 @@ const Modal: FC<ModalProps> = ({
   anchorElement,
   anchorTo,
   center,
+  containerClassName = "",
   children,
 }) => {
   const [positions, setPositions] = useState([0, 0, 0, 0]);
@@ -187,7 +189,7 @@ const Modal: FC<ModalProps> = ({
       className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
     >
       <div
-        className="relative w-fit"
+        className={`relative w-fit ${containerClassName}`}
         ref={childrenRef}
         onClick={(e) => e.stopPropagation()}
         style={getPositionStyles(center, positions)}
@@ -195,7 +197,7 @@ const Modal: FC<ModalProps> = ({
         {children}
       </div>
   </div>,
-    document.body,
+    document.getElementById("root")!,
   );
 };
 

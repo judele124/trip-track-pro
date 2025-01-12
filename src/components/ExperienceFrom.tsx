@@ -24,29 +24,29 @@ const ExperienceFrom = () => {
   };
 
   return (
-    <div className="page-colors page-padding flex flex-col gap-3 mx-4 sm:mx-auto sm:max-w-[450px] rounded-3xl">
-      <p className="text-xl font-bold">Select Experience</p>
-      <Dropdown list={data}>
-        <DropdownTriggerElement<{ name: string }>
-          type="button"
-          elemTextContent={(item) => item?.name || "Select Experience"}
-        />
-        <DropdownMenu<{ name: string }>
-          setSelected={(item) => {
-            setExperience(item.name);
-            methods.reset();
-          }}
-          renderItem={({ item }) => <div>{item.name}</div>}
-        />
-      </Dropdown>
-
+    <div className="page-colors page-padding mx-4 flex flex-col gap-2 rounded-3xl sm:mx-auto sm:max-w-[450px]">
+      <h3 className="">Select Experience</h3>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <form className="flex flex-col gap-2" onSubmit={methods.handleSubmit(onSubmit)}>
+          <Dropdown list={data}>
+            <DropdownTriggerElement<{ name: string }>
+              type="button"
+              elemTextContent={(item) => item?.name || "Select Experience"}
+            />
+            <DropdownMenu<{ name: string }>
+              setSelected={(item) => {
+                setExperience(item.name);
+                methods.reset();
+                methods.setValue("experience", item.name);
+              }}
+              renderItem={({ item }) => <div>{item.name}</div>}
+            />
+          </Dropdown>
           {experience === "Trivia" && <TriviaForm />}
           {experience === "Treasure find" && <TreasureFindForm />}
           {experience === "Scan QR" && <ScanQRForm />}
 
-          <div>
+          <div className="flex flex-col gap-1">
             <label className="pl-5 text-start font-semibold">Add Score</label>
             <div className="flex gap-2">
               <Input
@@ -55,7 +55,7 @@ const ExperienceFrom = () => {
                 placeholder="Enter score"
                 {...methods.register("score")}
               />
-              <Button className="w-full" primary type="submit">
+              <Button className="w-full" type="submit" primary>
                 Confirm
               </Button>
             </div>

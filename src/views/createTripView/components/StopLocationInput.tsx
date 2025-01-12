@@ -89,7 +89,7 @@ export default function StopLocationInput({
         )}
       </div>
 
-      <Modal center open={isModalOpan} onBackdropClick={() => setIsModalOpen(false)}>
+      <Modal containerClassName="w-full" center open={isModalOpan} onBackdropClick={() => setIsModalOpen(false)}>
         {/* mission components */}
         <ExperienceFrom />
       </Modal>
