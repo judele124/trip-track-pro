@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import Input from "../../ui/Input";
+import Input from "../Input";
 import { useDropdown } from "./Dropdown";
 
 interface IDropdownInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -22,7 +22,7 @@ export default function DropdownInput({
   onChange,
   ...props
 }: IDropdownInputProps) {
-  const { open, isOpen ,resetSelectedIndex } = useDropdown();
+  const { open, isOpen, resetSelectedIndex } = useDropdown();
   const [inputValue, setInputValue] = useState(value || "");
   const inputRef = useRef<HTMLInputElement>(null);
 

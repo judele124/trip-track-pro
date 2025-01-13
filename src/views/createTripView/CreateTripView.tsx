@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CreateTripForm from "./components/CreateTripForm";
-import ProgressLine from "../../components/ui/ProgressLine";
+import ProgressLine from "./components/ProgressLine";
 
 const STAGES_COUNT = 3;
 

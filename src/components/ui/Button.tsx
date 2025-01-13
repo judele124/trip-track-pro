@@ -33,7 +33,11 @@ const Button = forwardRef(
     }
 
     return (
-      <button ref={ref} {...props} className={`${className} font-semibold`}>
+      <button
+        ref={ref}
+        {...props}
+        className={`${className} font-semibold hover:bg-opacity-80`}
+      >
         {children}
       </button>
     );

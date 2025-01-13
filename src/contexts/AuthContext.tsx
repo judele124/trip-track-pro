@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import useAxios from "../hooks/useAxios";
-import { LoginSchema } from "../zodSchemas/authSchemas";
+import { LoginSchemaT } from "../zodSchemas/authSchemas";
 import {
   logout,
   sendCode,
   validateToken,
   verifyCode,
 } from "../servises/authService";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface IUser {
   email: string;
@@ -22,8 +22,10 @@ interface AuthProviderProps {
 interface IAuthContextValue {
   logout: () => Promise<void>;
   sendCode: (email: string) => Promise<void>;
-  verifyCode: (data: LoginSchema) => Promise<void>;
+  verifyCode: (data: LoginSchemaT) => Promise<void>;
   loading: boolean;
+  status: number | undefined;
+  tokenValidationStatus: number | null;
   sendCodeError: Error | null;
   verifyCodeError: Error | null;
   logoutError: Error | null;
@@ -36,8 +38,14 @@ interface IAuthContextValue {
 const AuthContext = createContext<null | IAuthContextValue>(null);
 
 export default function AuthProvider({ children }: AuthProviderProps) {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [sendCodeError, setSendCodeError] = useState<Error | null>(null);
   const [verifyCodeError, setVerifyCodeError] = useState<Error | null>(null);
+  useState<Error | null>(null);
+  const [tokenValidationStatus, setTokenValidationStatus] = useState<
+    number | null
+  >(null);
   const [sendCodeStatus, setSendCodeStatus] = useState<number | undefined>();
   const [verifyCodeStatus, setVerifyCodeStatus] = useState<
     number | undefined
@@ -57,7 +65,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const handleVerifyCode = async (data: LoginSchema) => {
+  const handleVerifyCode = async (data: LoginSchemaT) => {
     try {
       const { user, status } = await verifyCode(data, activate);
       setVerifyCodeStatus(status);
@@ -80,10 +88,22 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const handleTokenValidation = async () => {
+    try {
+      const { user, status } = await validateToken(activate);
+      setUser(user);
+      setTokenValidationStatus(status);
+    } catch (err: any) {
+      setTokenValidationStatus(null);
+      throw err;
+    }
+  };
+
   useEffect(() => {
-    validateToken(activate)
-      .then(({ user }) => setUser(user))
-      .catch((err) => console.error(err));
+    if (pathname === "/first-entry") {
+      return;
+    }
+    handleTokenValidation();
   }, []);
 
   return (
@@ -93,6 +113,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         verifyCode: handleVerifyCode,
         logout: handleLogout,
         loading,
+        tokenValidationStatus,
+        status,
         sendCodeError,
         verifyCodeError,
         logoutError: error,
