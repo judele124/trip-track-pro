@@ -56,7 +56,33 @@ export const createTripSchema1 = z
   .strict();
 
 // TODO: add validation stage 2
-export const createTripSchema2 = z.any();
+const createTripSchema2 = z.object({
+  firstStop: z.object({
+    address: z.string().min(1, "First stop address is required"),
+    location: z.object({
+      lat: z.number({ required_error: "Latitude is required" }),
+      lng: z.number({ required_error: "Longitude is required" }),
+    }),
+  }),
+  middleStops: z
+    .array(
+      z.object({
+        address: z.string().min(1, "Middle stop address is required"),
+        location: z.object({
+          lat: z.number({ required_error: "Latitude is required" }),
+          lng: z.number({ required_error: "Longitude is required" }),
+        }),
+      }),
+    )
+    .optional(), // Middle stops are optional
+  lastStop: z.object({
+    address: z.string().min(1, "Last stop address is required"),
+    location: z.object({
+      lat: z.number({ required_error: "Latitude is required" }),
+      lng: z.number({ required_error: "Longitude is required" }),
+    }),
+  }),
+});
 
 export const createTripSchema = [createTripSchema1, createTripSchema2];
 

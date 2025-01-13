@@ -1,12 +1,20 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import BottomNavigationBtn from "../../ui/BottomNavigationBtn";
 import TopNavigation from "./componenets/TopNavigationBar";
+import { useEffect } from "react";
 
 const TripLayout = () => {
   let { pathname } = useLocation();
+  const navigate = useNavigate();
+
   const title = titleFromPath(pathname);
 
-  const num = 3;
+  useEffect(() => {
+    if (location.pathname === "/trip") {
+      navigate("/trip/map");
+    }
+  }, [pathname]);
+
   return (
     <div className="page-colors relative z-0 mx-auto flex h-dvh max-w-[450px] flex-col">
       {/* top navigation */}
@@ -19,9 +27,9 @@ const TripLayout = () => {
 
       {/* bottom navigation */}
       <div className="page-colors flex flex-row justify-around border-t-2 border-primary p-2">
-        <BottomNavigationBtn to="participants" notificationCount={num} />
-        <BottomNavigationBtn to="map" notificationCount={num} />
-        <BottomNavigationBtn notificationCount={num} to="chat" />
+        <BottomNavigationBtn to="participants" notificationCount={3} />
+        <BottomNavigationBtn to="map" notificationCount={3} />
+        <BottomNavigationBtn notificationCount={3} to="chat" />
       </div>
     </div>
   );

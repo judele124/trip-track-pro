@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface useCounterProps {
-  length: number;
+  length?: number;
   initial: number;
 }
 
@@ -19,8 +19,17 @@ export function useCounter({
 }: useCounterProps): useCounterReturn {
   const [count, setCount] = useState<number>(initial);
 
-  const increment = () => setCount((prev) => Math.max(prev - 1, 0));
-  const decrement = () => setCount((prev) => Math.min(prev + 1, length - 1));
+  const increment = () => {
+    if (length !== undefined) {
+      setCount((prev) => Math.min(prev + 1, length - 1));
+    } else {
+      setCount((prev) => prev + 1);
+    }
+  };
+
+  const decrement = () => {
+    setCount((prev) => Math.max(prev - 1, 0));
+  };
 
   return {
     count,

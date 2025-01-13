@@ -1,7 +1,7 @@
-import Dropdown from "./Dropdown/Dropdown";
-import DropdownMenu from "./Dropdown/DropdownMenu";
-import DropdownTriggerElement from "./Dropdown/DropdownTriggerElement";
-
+// import Dropdown from "./Dropdown/Dropdown";
+// import DropdownMenu from "./Dropdown/DropdownMenu";
+// import DropdownTriggerElement from "./Dropdown/DropdownTriggerElement";
+import { useEffect, useRef, useState } from "react";
 const data = [
   {
     label: "aaaaaaaaaaa",
@@ -23,12 +23,27 @@ const data = [
   },
 ];
 
-type IItem = (typeof data)[0];
-
 export default function TestUI() {
+  const [placeName, setPlaceName] = useState<string>("Paris");
+  const ref = useRef<HTMLDivElement>(null);
+  const ipnutRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+  }, []);
+
   return (
-    <div className="mx-auto max-w-[400px]">
-      <Dropdown list={data}>
+    <div ref={ref} className="mx-auto h-full max-w-[400px]">
+      <div>
+        {/* <ul className="mt-2">
+          {suggestions.map((s, index) => (
+            <li className="m-2 border border-sky-400" key={index}>
+              {s.place_name}
+            </li>
+          ))}
+        </ul> */}
+      </div>
+      {/* <Dropdown list={data}>
         <DropdownTriggerElement<IItem>
           type="input"
           elemTextContent={(data) => data?.label || "default"}
@@ -57,7 +72,7 @@ export default function TestUI() {
             </>
           )}
         />
-      </Dropdown>
+      </Dropdown> */}
     </div>
   );
 }
