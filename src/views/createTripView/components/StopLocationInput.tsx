@@ -15,7 +15,7 @@ import { useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
-
+import ExperienceFrom from "../../../components/ExperienceFrom";
 const iconSrc = {
   start,
   end,
@@ -129,9 +129,10 @@ export default function StopLocationInput({
         center
         open={isModalOpan}
         onBackdropClick={() => setIsModalOpen(false)}
+        containerClassName="w-full"
       >
         {/* mission components */}
-        <p>is modal</p>
+        <ExperienceFrom />
       </Modal>
     </>
   );
