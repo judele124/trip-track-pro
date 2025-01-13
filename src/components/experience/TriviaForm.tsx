@@ -1,16 +1,57 @@
-import { useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import InputWLabel from "../ui/InputWLabel";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../ui/Modal";
 import TriviaOption from "./TriviaOption";
+
+const MIN_OPTIONS = 1;
+const MAX_OPTIONS = 4;
 
 const TriviaForm = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [amountOptions, setAmountOptions] = useState<number>(1);
   const [amountError, setAmountError] = useState<boolean>(false);
   const { register, control } = useFormContext();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "triviaOptions",
+    keyName: "id",
+  });
+
+  const handleAddOption = () => {
+    setAmountError(false);
+
+    if (isValidOptionsAmount(amountOptions + 1)) {
+      setAmountOptions((prev) => prev + 1);
+    } else {
+      setAmountError(true);
+    }
+  };
+
+  const handleDeleteOption = (index: number) => {
+    setAmountError(false);
+
+    if (isValidOptionsAmount(amountOptions - 1)) {
+      remove(index);
+      setAmountOptions((prev) => prev - 1);
+    } else {
+      setAmountError(true);
+    }
+  };
+
+  useEffect(() => {
+    // difference between the selected number of options to the current number of options
+    const difference = amountOptions - fields.length;
+    if (difference > 0) {
+      append(Array.from({ length: difference }, () => ({ value: "" })));
+    } else if (difference < 0) {
+      for (let i = 0; i < Math.abs(difference); i++) {
+        remove(fields.length - 1);
+      }
+    }
+  }, [amountOptions]);
 
   return (
     <>
@@ -35,16 +76,16 @@ const TriviaForm = () => {
             placeholder="Enter the number of options"
             onChange={(e) => {
               const value = Number(e.target.value);
-              if (value >= 1 && value <= 4) {
+              if (isValidOptionsAmount(value)) {
                 setAmountOptions(value);
+                setAmountError(false);
+              } else {
                 setAmountError(true);
-              }else{
-                setAmountError(false)
               }
             }}
             value={amountOptions}
-            min={1}
-            max={4}
+            min={MIN_OPTIONS}
+            max={MAX_OPTIONS}
           />
           <Button
             className="w-full"
@@ -62,14 +103,13 @@ const TriviaForm = () => {
         onBackdropClick={() => setIsModalOpen(false)}
         containerClassName="w-full sm:max-w-[400px]"
         children={
-            <TriviaOption 
-              register={register} 
-              control={control} 
-              amountOptions={amountOptions} 
-              setAmountOptions={setAmountOptions} 
-              amountError={amountError} 
-              setAmountError={setAmountError}
-              />
+          <TriviaOption
+            fields={fields}
+            amountError={amountError}
+            register={register}
+            handleDeleteOption={handleDeleteOption}
+            handleAddOption={handleAddOption}
+          />
         }
       />
     </>
@@ -77,3 +117,6 @@ const TriviaForm = () => {
 };
 
 export default TriviaForm;
+
+const isValidOptionsAmount = (amount: number) =>
+  amount >= MIN_OPTIONS && amount <= MAX_OPTIONS;
