@@ -1,19 +1,23 @@
 import { useForm } from "react-hook-form";
-import FormMultipleStages from "../../../components/FormMultipleStages";
+import FormMultipleStages from "@/components/FormMultipleStages";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createTripSchema } from "../../../zodSchemas/createTripSchemas";
+import { createTripSchema } from "@/zodSchemas/createTripSchemas";
 import CTFormStage1 from "./CTFormStage1";
 import CTFormStage2 from "./CTFormStage2";
 import { useEffect } from "react";
 
+interface IStopLocation {
+  address: string;
+  location: { lat: number; lng: number };
+}
 export type IFormData = {
   groupName: string;
   tripName: string;
   description: string;
   reward?: { title: string; image: File };
-  firstStop: string;
-  lastStop: string;
-  middleStops: string[];
+  firstStop: IStopLocation;
+  lastStop: IStopLocation;
+  middleStops: IStopLocation[];
 };
 
 export default function CreateTripForm({
@@ -64,8 +68,8 @@ export default function CreateTripForm({
         //   setValue={setValue}
         // />,
         <CTFormStage2
+          resetField={resetField}
           setValue={setValue}
-          register={register}
           errors={errors}
         />,
       ]}

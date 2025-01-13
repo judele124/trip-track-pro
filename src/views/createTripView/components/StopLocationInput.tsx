@@ -1,53 +1,82 @@
-import Dropdown from "../../../components/test/Dropdown/Dropdown";
-import DropdownMenu from "../../../components/test/Dropdown/DropdownMenu";
-import DropdownTriggerElement from "../../../components/test/Dropdown/DropdownTriggerElement";
+import Dropdown from "@/components/ui/Dropdown/Dropdown";
+import DropdownMenu from "@/components/ui/Dropdown/DropdownMenu";
+import DropdownTriggerElement from "@/components/ui/Dropdown/DropdownTriggerElement";
 import end from "../assets/end-stop-icon.svg";
 import start from "../assets/start-stop-icon.svg";
 import middle from "../assets/middle-stop-icon.svg";
-import { UseFormRegister } from "react-hook-form";
-import { IFormData } from "./CreateTripForm";
-import Button from "../../../components/ui/Button";
-import Modal from "../../../components/ui/Modal";
-import useToggle from "../../../hooks/useToggle";
+import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
+import useToggle from "@/hooks/useToggle";
+import {
+  PlacePrediction,
+  useAddressSugestions,
+} from "@/hooks/useAddressSuggestions";
+import { useState } from "react";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import axios from "axios";
+import { API_BASE_URL } from "@/env.config";
 import ExperienceFrom from "../../../components/ExperienceFrom";
-import { useRef } from "react";
-
 const iconSrc = {
   start,
   end,
   middle,
 };
 
-interface IStopLocationInputProps {
-  onValueChange: (value: string) => void;
-  title?: string;
-  icon?: "start" | "end" | "middle";
-  registerKey: string & keyof IFormData;
-  register: UseFormRegister<IFormData>;
+interface GoogleGeocodeResults {
+  geometry: { location: { lat: number; lng: number } };
 }
 
-const data = [
-  { name: "aaa" },
-  { name: "bbb" },
-  { name: "ccc" },
-  { name: "aaa" },
-  { name: "bbb" },
-  { name: "ccc" },
-  { name: "aaa" },
-  { name: "bbb" },
-  { name: "ccc" },
-];
+interface IStopLocationInputProps {
+  onRemove?: () => void;
+  middleStop?: boolean;
+  onValueChange: (
+    address: string,
+    location: { lat: number; lng: number },
+  ) => void;
+  title?: string;
+  icon?: "start" | "end" | "middle";
+}
 
 export default function StopLocationInput({
+  onRemove,
+  middleStop = false,
   onValueChange,
   title,
   icon = "start",
 }: IStopLocationInputProps) {
-  const { isOpen: isModalOpan, setIsOpen: setIsModalOpen, toggle: toggleModal } = useToggle();
-  const { isOpen: showBtn,setIsOpen: setShowBtn} = useToggle();
+  const [inputValue, setInputValue] = useState("");
+  const debouncedInputValue = useDebouncedValue(inputValue, 1000);
 
-  const reef = useRef<HTMLDivElement>(null);
+  const {
+    isOpen: isModalOpan,
+    setIsOpen: setIsModalOpen,
+    toggle: toggleModal,
+  } = useToggle();
+  const { isOpen: showBtn, setIsOpen: setShowBtn } = useToggle();
 
+  const { suggestions } = useAddressSugestions({
+    query: debouncedInputValue,
+  });
+
+  const getGeoLocationFromAddress = async (
+    address: string,
+  ): Promise<GoogleGeocodeResults["geometry"]["location"]> => {
+    const { data } = await axios(
+      `${API_BASE_URL}/google/geocode?address=${address}`,
+    );
+
+    return (data.results as GoogleGeocodeResults[])[0].geometry.location;
+  };
+
+  const handleAddressSelection = async (item: PlacePrediction) => {
+    try {
+      const { lat, lng } = await getGeoLocationFromAddress(item.description);
+      onValueChange(item.description, { lat, lng });
+      setShowBtn(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -56,40 +85,52 @@ export default function StopLocationInput({
           <span className={`pl-5 text-start font-semibold`}>{title}</span>
         )}
       </label>
-      <div ref={reef} className="relative">
-        <Dropdown list={data}>
-          <DropdownTriggerElement<{ name: string }>
+      <div className="relative">
+        <Dropdown list={suggestions?.predictions}>
+          <DropdownTriggerElement<PlacePrediction>
             icon={<img src={iconSrc[icon]} alt="" />}
             type="input"
-            elemTextContent={(item) => item?.name || "default"}
-            onChange={() => {
+            elemTextContent={(item) => item?.description || "default"}
+            onChange={(e) => {
+              setInputValue(e.target.value);
               setShowBtn(false);
             }}
           />
-          <DropdownMenu<{ name: string }>
-            setSelected={(item) => {
-              if (!item || !item.name) return;
-                onValueChange(item.name);
-                setShowBtn(true);
-            }}
-            renderItem={({ item }) => <div>{item.name}</div>}
+          <DropdownMenu<PlacePrediction>
+            setSelected={handleAddressSelection}
+            renderItem={({ item }) => <div>{item.description}</div>}
           />
         </Dropdown>
-        {showBtn && (
-          <Button
-            type="button"
-            onClick={() => {
-              toggleModal()
-            }}
-            className="absolute right-0 top-1/2 -translate-y-1/2 scale-90 rounded-xl px-4 py-2"
-            primary
-          >
-            Add Experience
-          </Button>
-        )}
+        <div className="absolute bottom-0 right-0 top-0 flex gap-2 py-2 pr-2">
+          {showBtn && (
+            <Button
+              className="rounded-xl px-2 py-0 text-sm font-normal"
+              type="button"
+              onClick={() => {
+                toggleModal();
+              }}
+              primary
+            >
+              Add Experience
+            </Button>
+          )}
+          {middleStop && (
+            <Button
+              className="rounded-xl bg-red-500 px-2 py-0"
+              onClick={onRemove}
+            >
+              🗑️
+            </Button>
+          )}
+        </div>
       </div>
 
-      <Modal containerClassName="w-full" center open={isModalOpan} onBackdropClick={() => setIsModalOpen(false)}>
+      <Modal
+        center
+        open={isModalOpan}
+        onBackdropClick={() => setIsModalOpen(false)}
+        containerClassName="w-full"
+      >
         {/* mission components */}
         <ExperienceFrom />
       </Modal>

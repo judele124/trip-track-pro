@@ -1,21 +1,36 @@
-import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
+import {
+  FieldErrors,
+  UseFormRegister,
+  UseFormResetField,
+  UseFormSetValue,
+} from "react-hook-form";
 import Button from "../../../components/ui/Button";
 import InputFeildError from "../../../components/ui/InputFeildError";
 import { IFormData } from "./CreateTripForm";
 import { useRef, useState } from "react";
 import StopLocationInput from "./StopLocationInput";
+import { useCounter } from "@/hooks/useCounter";
+
+interface ICTFormStage2Props {
+  resetField: UseFormResetField<IFormData>;
+  setValue: UseFormSetValue<IFormData>;
+  errors: FieldErrors<IFormData>;
+}
 
 export default function CTFormStage2({
+  resetField,
   setValue,
-  register,
   errors,
-}: {
-  setValue: UseFormSetValue<IFormData>;
-  register: UseFormRegister<IFormData>;
-  errors: FieldErrors<IFormData>;
-}) {
+}: ICTFormStage2Props) {
+  const {} = useCounter({ initial: 0 });
   const [middleStopsCount, setMiddleStopsCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleOnValueChange = (key: string & keyof IFormData) => {
+    return (address: string, location: { lat: number; lng: number }) => {
+      setValue(key, { address, location });
+    };
+  };
 
   return (
     <>
@@ -24,11 +39,7 @@ export default function CTFormStage2({
           <InputFeildError message={errors.firstStop.message} />
         )}
         <StopLocationInput
-          onValueChange={(value: string) => {
-            setValue("firstStop", value);
-          }}
-          register={register}
-          registerKey={"firstStop"}
+          onValueChange={handleOnValueChange("firstStop")}
           icon={"start"}
           title={"First Stop"}
         />
@@ -47,12 +58,15 @@ export default function CTFormStage2({
       >
         {[...Array(middleStopsCount)].map((_, i) => (
           <StopLocationInput
-            onValueChange={(value: string) => {
-              setValue(`middleStops.${i}`, value);
+            middleStop
+            onRemove={() => {
+              // TODO: remove middle stop from state
+              setMiddleStopsCount((prev) => prev - 1);
             }}
+            onValueChange={handleOnValueChange(
+              `middleStops.${i}` as keyof IFormData,
+            )}
             key={i}
-            register={register}
-            registerKey={`middleStops.${i}` as keyof IFormData}
             icon={"middle"}
           />
         ))}
@@ -64,9 +78,7 @@ export default function CTFormStage2({
         Add middle stop
       </Button>
       <StopLocationInput
-        onValueChange={(value: string) => setValue("lastStop", value)}
-        register={register}
-        registerKey={"lastStop"}
+        onValueChange={handleOnValueChange("lastStop")}
         icon={"end"}
         title={"Last Stop"}
       />

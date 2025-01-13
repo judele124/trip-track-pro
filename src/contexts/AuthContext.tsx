@@ -24,6 +24,8 @@ interface IAuthContextValue {
   sendCode: (email: string) => Promise<void>;
   verifyCode: (data: LoginSchemaT) => Promise<void>;
   loading: boolean;
+  status: number | undefined;
+  tokenValidationStatus: number | null;
   sendCodeError: Error | null;
   verifyCodeError: Error | null;
   logoutError: Error | null;
@@ -40,6 +42,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
   const [sendCodeError, setSendCodeError] = useState<Error | null>(null);
   const [verifyCodeError, setVerifyCodeError] = useState<Error | null>(null);
+  useState<Error | null>(null);
+  const [tokenValidationStatus, setTokenValidationStatus] = useState<
+    number | null
+  >(null);
   const [sendCodeStatus, setSendCodeStatus] = useState<number | undefined>();
   const [verifyCodeStatus, setVerifyCodeStatus] = useState<
     number | undefined
@@ -82,16 +88,22 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const handleTokenValidation = async () => {
+    try {
+      const { user, status } = await validateToken(activate);
+      setUser(user);
+      setTokenValidationStatus(status);
+    } catch (err: any) {
+      setTokenValidationStatus(null);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     if (pathname === "/first-entry") {
       return;
     }
-    validateToken(activate)
-      .then(({ user }) => setUser(user))
-      .catch((err) => {
-        console.log(err);
-        navigate("/login");
-      });
+    handleTokenValidation();
   }, []);
 
   return (
@@ -101,6 +113,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         verifyCode: handleVerifyCode,
         logout: handleLogout,
         loading,
+        tokenValidationStatus,
+        status,
         sendCodeError,
         verifyCodeError,
         logoutError: error,

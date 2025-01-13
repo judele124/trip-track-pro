@@ -1,5 +1,5 @@
 import { MouseEvent, useEffect, useRef } from "react";
-import Button from "../../ui/Button";
+import Button from "../Button";
 import { useDropdown } from "./Dropdown";
 
 interface IDropdownButtonProps {
