@@ -1,11 +1,12 @@
 import { useState } from "react";
 import CreateTripForm from "./components/CreateTripForm";
 import ProgressLine from "./components/ProgressLine";
+import ShareTrip from "./components/ShareTrip";
 
 const STAGES_COUNT = 3;
 
 export default function CreateTripView() {
-  const [currentFormStage, setCurrentFormStage] = useState(0);
+  const [currentFormStage, setCurrentFormStage] = useState(2);
 
   return (
     <>
@@ -25,12 +26,3 @@ export default function CreateTripView() {
     </>
   );
 }
-
-const ShareTrip = () => {
-  return (
-    <div className="flex h-full w-full flex-col gap-4">
-      <h1 className="heading">Trip create seccessfuly</h1>
-      <p className="subheading">Share the trip to add sub guides and players</p>
-    </div>
-  );
-};
