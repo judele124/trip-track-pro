@@ -46,6 +46,8 @@ export default function ShareTrip() {
           <h1>Trip create seccessfuly</h1>
           <p>Share the trip to add sub guides and players</p>
         </div>
+
+        {/* share methods */}
         <div className="flex flex-wrap justify-center gap-5 text-center">
           {/* whatsapp share */}
           <div className="max-w-32 rounded-2xl bg-white p-5 shadow-lg">
@@ -65,6 +67,26 @@ export default function ShareTrip() {
           >
             <Icon size={"100%"} className="fill-dark" name="qr" />
             <p>create a QR code</p>
+            {/* modal qr code */}
+            <Modal
+              center
+              onBackdropClick={toggleIsQrModalOpen}
+              open={isQrModalOpen}
+            >
+              <div className="flex flex-col items-center gap-2 rounded-2xl bg-white p-10 print:w-full">
+                <QRCodeSVG
+                  className="print:h-full print:w-full"
+                  value={shareTripUrl}
+                />
+                <Button className="print:hidden" onClick={() => window.print()}>
+                  Click to print
+                </Button>
+                <div className="hidden print:block">
+                  <h1>{searchParams.get("tripName")}</h1>
+                  <p>scan the code to join the trip</p>
+                </div>
+              </div>
+            </Modal>
           </div>
         </div>
         <div className="text-center">
@@ -79,23 +101,6 @@ export default function ShareTrip() {
         <Button primary>Start trip now</Button>
         <Button>Start later</Button>
       </div>
-
-      {/* modal qr code */}
-      <Modal center onBackdropClick={toggleIsQrModalOpen} open={isQrModalOpen}>
-        <div className="flex flex-col items-center gap-2 rounded-2xl bg-white p-10 print:w-full">
-          <QRCodeSVG
-            className="print:h-full print:w-full"
-            value={shareTripUrl}
-          />
-          <Button className="print:hidden" onClick={() => window.print()}>
-            Click to print
-          </Button>
-          <div className="hidden print:block">
-            <h1>{searchParams.get("tripName")}</h1>
-            <p>scan the code to join the trip</p>
-          </div>
-        </div>
-      </Modal>
     </>
   );
 }
