@@ -10,7 +10,7 @@ a #root {
 }
 
 img {
-  @apply size-full object-contain
+  @apply size-full object-contain;
 }
 
 h1 {
