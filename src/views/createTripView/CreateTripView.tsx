@@ -6,7 +6,7 @@ import ShareTrip from "./components/ShareTrip";
 const STAGES_COUNT = 3;
 
 export default function CreateTripView() {
-  const [currentFormStage, setCurrentFormStage] = useState(0);
+  const [currentFormStage, setCurrentFormStage] = useState(2);
 
   return (
     <>

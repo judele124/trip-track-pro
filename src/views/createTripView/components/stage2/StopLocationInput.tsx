@@ -15,7 +15,7 @@ import { useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
-import ExperienceForm from "@/views/createTripView/components/stage2/ExperienceForm";
+import ExperienceForm from "./ExperienceForm";
 const iconSrc = {
   start,
   end,
