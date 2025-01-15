@@ -39,8 +39,6 @@ const LoginFrom = () => {
   };
 
   useEffect(() => {
-    console.log(verifyCodeError);
-
     if (verifyCodeStatus === 200) nav("/");
   }, [verifyCodeStatus]);
 

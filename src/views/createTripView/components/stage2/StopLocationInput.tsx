@@ -77,7 +77,6 @@ export default function StopLocationInput({
       console.error(error);
     }
   };
-  console.log(loading);
 
   return (
     <>
