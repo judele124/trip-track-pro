@@ -1,9 +1,9 @@
 import Dropdown from "@/components/ui/Dropdown/Dropdown";
 import DropdownMenu from "@/components/ui/Dropdown/DropdownMenu";
 import DropdownTriggerElement from "@/components/ui/Dropdown/DropdownTriggerElement";
-import end from "../assets/end-stop-icon.svg";
-import start from "../assets/start-stop-icon.svg";
-import middle from "../assets/middle-stop-icon.svg";
+import end from "../../assets/end-stop-icon.svg";
+import start from "../../assets/start-stop-icon.svg";
+import middle from "../../assets/middle-stop-icon.svg";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import useToggle from "@/hooks/useToggle";
@@ -15,7 +15,7 @@ import { useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
-import ExperienceForm from "@/components/ExperienceForm";
+import ExperienceForm from "./ExperienceForm";
 const iconSrc = {
   start,
   end,
@@ -77,7 +77,7 @@ export default function StopLocationInput({
       console.error(error);
     }
   };
-
+  
   return (
     <>
       <label className={`flex w-full flex-col gap-1`}>

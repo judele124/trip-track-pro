@@ -23,7 +23,7 @@ export default function LoginFormStage2({
 }) {
   return (
     <>
-      <div>
+      {/* <div>
         {errors.name?.message && (
           <InputFeildError message={errors.name?.message} />
         )}
@@ -33,7 +33,7 @@ export default function LoginFormStage2({
           title="Enter name"
           placeholder="Enter name"
         />
-      </div>
+      </div> */}
       <div>
         {errors.code?.message && (
           <InputFeildError message={errors.code.message} />

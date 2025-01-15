@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Button from "../../../components/ui/Button";
-import InputWLabel from "../../../components/ui/InputWLabel";
+import Button from "../../../../components/ui/Button";
+import InputWLabel from "../../../../components/ui/InputWLabel";
 import { UseFormRegisterReturn } from "react-hook-form";
 
 interface IAddRewardBtnProps {

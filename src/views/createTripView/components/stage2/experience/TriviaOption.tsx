@@ -1,7 +1,7 @@
 import { UseFormRegister } from "react-hook-form";
-import Input from "../ui/Input";
-import InputFeildError from "../ui/InputFeildError";
-import Button from "../ui/Button";
+import Input from "../../../../../components/ui/Input";
+import InputFeildError from "../../../../../components/ui/InputFeildError";
+import Button from "../../../../../components/ui/Button";
 
 interface ITriviaOption {
   fields: Record<"id", string>[];
@@ -28,7 +28,7 @@ const TriviaOption = ({
               type="text"
               title={`Option ${index + 1}`}
               placeholder={`Enter option ${index + 1}`}
-              {...register(`triviaOptions.${index}.value`)}
+              {...register(`options.${index}.value`)}
             />
             {index > 0 && (
               <button

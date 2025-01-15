@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
-import InputWLabel from "../ui/InputWLabel";
-import Button from "../ui/Button";
+import InputWLabel from "../../../../../components/ui/InputWLabel";
+import Button from "../../../../../components/ui/Button";
 
 const TreasureFindForm = () => {
   const { register } = useFormContext();
