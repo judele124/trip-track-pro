@@ -15,7 +15,7 @@ import { useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
-import ExperienceFrom from "../../../components/ExperienceFrom";
+import ExperienceForm from "@/components/ExperienceForm";
 const iconSrc = {
   start,
   end,
@@ -132,7 +132,7 @@ export default function StopLocationInput({
         containerClassName="w-full"
       >
         {/* mission components */}
-        <ExperienceFrom />
+        <ExperienceForm />
       </Modal>
     </>
   );
