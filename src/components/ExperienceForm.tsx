@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import Dropdown from "../components/ui/Dropdown/Dropdown";
-import DropdownTriggerElement from "../components/ui/Dropdown/DropdownTriggerElement";
-import DropdownMenu from "../components/ui/Dropdown/DropdownMenu";
+import Dropdown from "./ui/Dropdown/Dropdown";
+import DropdownTriggerElement from "./ui/Dropdown/DropdownTriggerElement";
+import DropdownMenu from "./ui/Dropdown/DropdownMenu";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
-import TriviaForm from "../components/experience/TriviaForm";
-import TreasureFindForm from "../components/experience/TreasureFindForm";
-import ScanQRForm from "../components/experience/ScanQRForm";
+import TriviaForm from "./experience/TriviaForm";
+import TreasureFindForm from "./experience/TreasureFindForm";
+import ScanQRForm from "./experience/ScanQRForm";
 
 const data = [
   { name: "Trivia" },
@@ -15,7 +15,7 @@ const data = [
   { name: "Scan QR" },
 ];
 
-const ExperienceFrom = () => {
+const ExperienceForm = () => {
   const [experience, setExperience] = useState("");
   const methods = useForm();
 
@@ -66,4 +66,4 @@ const ExperienceFrom = () => {
   );
 };
 
-export default ExperienceFrom;
+export default ExperienceForm;

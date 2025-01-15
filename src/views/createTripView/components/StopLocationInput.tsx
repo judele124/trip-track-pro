@@ -12,9 +12,9 @@ import { useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
-import ExperienceFrom from "../../../components/ExperienceFrom";
 import { IconName } from "@/components/icons/Icon";
 import InputFeildError from "@/components/ui/InputFeildError";
+import ExperienceForm from "@/components/ExperienceForm";
 
 interface GoogleGeocodeResults {
   geometry: { location: { lat: number; lng: number } };
@@ -137,7 +137,7 @@ export default function StopLocationInput({
         containerClassName="w-full"
       >
         {/* mission components */}
-        <ExperienceFrom />
+        <ExperienceForm />
       </Modal>
     </>
   );

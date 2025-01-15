@@ -25,6 +25,7 @@ interface IIconProps {
   fill?: SVGAttributes<SVGSVGElement>["fill"];
   size?: string;
   name: IconName;
+  name: IconName;
   className?: string;
   notificationCount?: number;
 }

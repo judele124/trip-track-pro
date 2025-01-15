@@ -39,7 +39,6 @@ const AuthContext = createContext<null | IAuthContextValue>(null);
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const [sendCodeError, setSendCodeError] = useState<Error | null>(null);
   const [verifyCodeError, setVerifyCodeError] = useState<Error | null>(null);
   useState<Error | null>(null);

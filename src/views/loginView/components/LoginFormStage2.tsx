@@ -23,6 +23,7 @@ export default function LoginFormStage2({
 }) {
   return (
     <>
+      {verifyCodeError && <InputFeildError message={verifyCodeError.message} />}
       <div>
         {errors.name?.message && (
           <InputFeildError message={errors.name?.message} />
@@ -57,9 +58,6 @@ export default function LoginFormStage2({
             resend code
           </span>
         </p>
-      )}
-      {verifyCodeError && (
-        <p className="text-center text-red-500">{verifyCodeError.message}</p>
       )}
     </>
   );
