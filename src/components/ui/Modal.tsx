@@ -1,6 +1,7 @@
 import {
   CSSProperties,
   FC,
+  MouseEvent,
   ReactNode,
   RefObject,
   useEffect,
@@ -23,7 +24,7 @@ type ModalAnchor =
 type CommonProps = {
   backgroundClassname?: string;
   open: boolean;
-  onBackdropClick: () => void;
+  onBackdropClick: (e: MouseEvent<HTMLDivElement>) => void;
   children?: ReactNode;
   containerClassName?: string;
 };
@@ -185,7 +186,10 @@ const Modal: FC<ModalProps> = ({
   return createPortal(
     <div
       ref={backgroundRef}
-      onClick={onBackdropClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onBackdropClick(e);
+      }}
       className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
     >
       <div
@@ -196,7 +200,7 @@ const Modal: FC<ModalProps> = ({
       >
         {children}
       </div>
-  </div>,
+    </div>,
     document.getElementById("root")!,
   );
 };

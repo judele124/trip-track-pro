@@ -12,7 +12,7 @@ const BottomNavigationBtn = ({ notificationCount, to }: ILinkProps) => {
       className="relative size-12 content-center rounded-full text-center text-dark transition-all focus:bg-white dark:focus:bg-secondary"
     >
       <Icon
-        size={30}
+        size={"30"}
         notificationCount={notificationCount}
         name={to}
         containerClassname="mt-1"

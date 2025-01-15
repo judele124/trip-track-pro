@@ -8,11 +8,13 @@ import {
 } from "react";
 import Input from "../Input";
 import { useDropdown } from "./Dropdown";
+import { IconName } from "@/components/icons/Icon";
 
 interface IDropdownInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  icon?: JSX.Element;
+  icon?: IconName;
   value: string;
   autoFocus: boolean;
+  iconFill?: string;
 }
 
 export default function DropdownInput({
@@ -20,6 +22,7 @@ export default function DropdownInput({
   value,
   autoFocus,
   onChange,
+  iconFill,
   ...props
 }: IDropdownInputProps) {
   const { open, isOpen, resetSelectedIndex } = useDropdown();
@@ -37,11 +40,10 @@ export default function DropdownInput({
 
   return (
     <div className="relative">
-      {icon}
       <Input
+        iconFill={iconFill}
         ref={inputRef}
-        className={`w-full ${icon ? "pl-10" : ""}`}
-        textarea={false}
+        icon={icon}
         value={inputValue}
         onChange={(e) => {
           onChange?.(e as ChangeEvent<HTMLInputElement>);

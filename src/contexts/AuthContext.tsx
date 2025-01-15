@@ -74,7 +74,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     } catch (err: any) {
       setVerifyCodeError(err);
       setVerifyCodeStatus(undefined);
-      throw err;
+      console.error(err);
     }
   };
 
@@ -84,7 +84,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       setUser(null);
     } catch (err: any) {
       setVerifyCodeError(err);
-      throw err;
+      setVerifyCodeStatus(undefined);
+      console.error(err);
     }
   };
 
@@ -95,7 +96,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       setTokenValidationStatus(status);
     } catch (err: any) {
       setTokenValidationStatus(null);
-      throw err;
+      console.error(err);
     }
   };
 

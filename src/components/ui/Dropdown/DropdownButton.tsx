@@ -1,15 +1,18 @@
 import { MouseEvent, useEffect, useRef } from "react";
 import Button from "../Button";
 import { useDropdown } from "./Dropdown";
+import Icon, { IconName } from "@/components/icons/Icon";
 
 interface IDropdownButtonProps {
-  icon?: JSX.Element;
+  icon?: IconName;
   value: string;
   autoFocus?: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
+  iconFill?: string;
 }
 
 export default function DropdownButton({
+  iconFill,
   icon,
   value,
   autoFocus,
@@ -33,13 +36,10 @@ export default function DropdownButton({
       aria-haspopup="listbox"
       aria-expanded={isOpen}
     >
-      {icon || (
-        <svg
-          className={`mr-2 inline-block size-5 transition-all ${isOpen ? "rotate-90" : ""}`}
-          viewBox="0 0 70.79 137.38"
-        >
-          <path d="M0,134.38V3A3,3,0,0,1,5.14.9L69.92,66.59a3,3,0,0,1,0,4.21L5.14,136.48A3,3,0,0,1,0,134.38Z" />
-        </svg>
+      {icon && (
+        <div className="absolute left-3 top-1/2 -translate-y-1/2">
+          <Icon fill={iconFill} name={icon} />
+        </div>
       )}
       <span className={`${icon ? "pl-6" : ""}`}>{value}</span>
     </Button>

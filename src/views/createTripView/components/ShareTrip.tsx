@@ -70,7 +70,7 @@ export default function ShareTrip() {
             {/* modal qr code */}
             <Modal
               center
-              onBackdropClick={toggleIsQrModalOpen}
+              onBackdropClick={() => toggleIsQrModalOpen()}
               open={isQrModalOpen}
             >
               <div className="flex flex-col items-center gap-2 rounded-2xl bg-white p-10 print:w-full">
