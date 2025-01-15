@@ -41,3 +41,11 @@ export function mergeRefs<T>(
     });
   };
 }
+
+export function canBrowserShareData(data: ShareData) {
+  if (!navigator.share || !navigator.canShare) {
+    return false;
+  }
+
+  return navigator.canShare(data);
+}

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import Dropdown from "./ui/Dropdown/Dropdown";
-import DropdownTriggerElement from "./ui/Dropdown/DropdownTriggerElement";
-import DropdownMenu from "./ui/Dropdown/DropdownMenu";
-import Button from "./ui/Button";
-import Input from "./ui/Input";
+import Dropdown from "@/components/ui/Dropdown";
+import DropdownTriggerElement from "@/components/ui/Dropdown/DropdownTriggerElement";
+import DropdownMenu from "@/components/ui/Dropdown/DropdownMenu";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 import TriviaForm from "./experience/TriviaForm";
 import TreasureFindForm from "./experience/TreasureFindForm";
 import ScanQRForm from "./experience/ScanQRForm";
