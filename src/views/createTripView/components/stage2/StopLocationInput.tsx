@@ -14,7 +14,7 @@ import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
 import { IconName } from "@/components/icons/Icon";
 import InputFeildError from "@/components/ui/InputFeildError";
-import ExperienceForm from "@/components/ExperienceForm";
+import ExperienceForm from "./ExperienceForm";
 
 interface GoogleGeocodeResults {
   geometry: { location: { lat: number; lng: number } };

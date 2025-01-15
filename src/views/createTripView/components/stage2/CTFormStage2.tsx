@@ -3,9 +3,9 @@ import {
   UseFormResetField,
   UseFormSetValue,
 } from "react-hook-form";
-import Button from "../../../components/ui/Button";
-import InputFeildError from "../../../components/ui/InputFeildError";
-import { IFormData } from "./CreateTripForm";
+import Button from "@/components/ui/Button";
+import InputFeildError from "@/components/ui/InputFeildError";
+import { IFormData } from "../CreateTripForm";
 import { useRef, useState } from "react";
 import StopLocationInput from "./StopLocationInput";
 import { useCounter } from "@/hooks/useCounter";

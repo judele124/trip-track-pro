@@ -25,17 +25,6 @@ export default function LoginFormStage2({
     <>
       {verifyCodeError && <InputFeildError message={verifyCodeError.message} />}
       <div>
-        {errors.name?.message && (
-          <InputFeildError message={errors.name?.message} />
-        )}
-        <InputWLabel
-          autoComplete="name"
-          {...register("name")}
-          title="Enter name"
-          placeholder="Enter name"
-        />
-      </div>
-      <div>
         {errors.code?.message && (
           <InputFeildError message={errors.code.message} />
         )}

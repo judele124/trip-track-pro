@@ -1,9 +1,9 @@
 import { useFieldArray, useFormContext } from "react-hook-form";
-import InputWLabel from "../ui/InputWLabel";
-import Button from "../ui/Button";
-import Input from "../ui/Input";
+import InputWLabel from "../../../../../components/ui/InputWLabel";
+import Button from "../../../../../components/ui/Button";
+import Input from "../../../../../components/ui/Input";
 import { useEffect, useState } from "react";
-import Modal from "../ui/Modal";
+import Modal from "../../../../../components/ui/Modal";
 import TriviaOption from "./TriviaOption";
 
 const MIN_OPTIONS = 1;
@@ -16,7 +16,7 @@ const TriviaForm = () => {
   const { register, control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "triviaOptions",
+    name: "options",
     keyName: "id",
   });
 
@@ -59,13 +59,13 @@ const TriviaForm = () => {
         type="text"
         title="Question"
         placeholder="Enter a question"
-        {...register("triviaQuestion")}
+        {...register("question")}
       />
       <InputWLabel
         type="text"
         title="Answer"
         placeholder="Enter an answer"
-        {...register("triviaAnswer")}
+        {...register("answer")}
       />
       <div>
         <label className="pl-5 text-start font-semibold">Options</label>
