@@ -8,6 +8,8 @@ import Input from "@/components/ui/Input";
 import TriviaForm from "./experience/TriviaForm";
 import TreasureFindForm from "./experience/TreasureFindForm";
 import ScanQRForm from "./experience/ScanQRForm";
+import {Experience ,experienceSchema ,ExperienceType} from '@/zodSchemas/trip.schema'
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const data = [
   { name: "Trivia" },
@@ -15,12 +17,22 @@ const data = [
   { name: "Scan QR" },
 ];
 
+// interface IExperienceFormProps {
+//   onValueChange: (
+//     data: Experience
+//   ) => void;
+// }
+
 const ExperienceForm = () => {
   const [experience, setExperience] = useState("");
-  const methods = useForm();
+  const methods = useForm({
+    resolver: zodResolver(experienceSchema),
+  });
 
   const onSubmit = (data: any) => {
-    console.log("Form Data:", data);
+    // onValueChange(data);
+    console.log(data);
+    
   };
 
   return (
@@ -28,18 +40,18 @@ const ExperienceForm = () => {
       <h3 className="">Select Experience</h3>
       <FormProvider {...methods}>
         <form className="flex flex-col gap-2" onSubmit={methods.handleSubmit(onSubmit)}>
-          <Dropdown list={data}>
-            <DropdownTriggerElement<{ name: string }>
+          <Dropdown list={Object.values(ExperienceType)}>
+            <DropdownTriggerElement<ExperienceType>
               type="button"
-              elemTextContent={(item) => item?.name || "Select Experience"}
+              elemTextContent={(item) => item?.toString() || "Select Experience"}
             />
-            <DropdownMenu<{ name: string }>
+            <DropdownMenu<ExperienceType>
               setSelected={(item) => {
-                setExperience(item.name);
+                setExperience(item);
                 methods.reset();
-                methods.setValue("experience", item.name);
+                methods.setValue("type", item);
               }}
-              renderItem={({ item }) => <div>{item.name}</div>}
+              renderItem={({ item }) => <div>{item}</div>}
             />
           </Dropdown>
           {experience === "Trivia" && <TriviaForm />}

@@ -1,5 +1,7 @@
 import {
+  Control,
   FieldErrors,
+  useFieldArray,
   UseFormRegister,
   UseFormResetField,
   UseFormSetValue,
@@ -10,20 +12,26 @@ import { IFormData } from "../CreateTripForm";
 import { useRef, useState } from "react";
 import StopLocationInput from "./StopLocationInput";
 import { useCounter } from "@/hooks/useCounter";
+import StopInput from "./StopInput";
 
 interface ICTFormStage2Props {
   resetField: UseFormResetField<IFormData>;
   setValue: UseFormSetValue<IFormData>;
   errors: FieldErrors<IFormData>;
+  control: Control<IFormData, any>;
 }
 
 export default function CTFormStage2({
   resetField,
   setValue,
   errors,
+  control,
 }: ICTFormStage2Props) {
-  const {} = useCounter({ initial: 0 });
-  const [middleStopsCount, setMiddleStopsCount] = useState(0);
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "middleStops", // Name of the field array
+  });
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleOnValueChange = (key: string & keyof IFormData) => {
@@ -32,19 +40,32 @@ export default function CTFormStage2({
     };
   };
 
+  
+
+
+
   return (
     <>
       <div ref={containerRef}>
         {errors.firstStop?.message && (
           <InputFeildError message={errors.firstStop.message} />
         )}
-        <StopLocationInput
+        <StopInput 
+           name={"firstStop"}
+           setValue={setValue}
+           icon={"alert"}
+           onRemove={() => {
+             resetField("firstStop");
+             setMiddleStopsCount((prev) => prev - 1);
+           }}
+        />
+        {/* <StopLocationInput
           onValueChange={handleOnValueChange("firstStop")}
           icon={"start"}
           title={"First Stop"}
-        />
+        /> */}
       </div>
-      {middleStopsCount > 0 && (
+      {fields.length > 0 && (
         <label className={`flex w-full flex-col gap-1`}>
           {
             <span className={`pl-5 text-start font-semibold`}>
@@ -56,18 +77,16 @@ export default function CTFormStage2({
       <div
         className={`flex max-h-[40vh] flex-col gap-2 ${middleStopsCount > 3 && "overflow-y-scroll"}`}
       >
-        {[...Array(middleStopsCount)].map((_, i) => (
-          <StopLocationInput
-            middleStop
+        {fields.map((field, i) => (
+          <StopInput
+            key={i}
+            name={`middleStops.${i as keyof IFormData["middleStops"]}`}
+            setValue={setValue}
+            icon={"alert"}
             onRemove={() => {
-              // TODO: remove middle stop from state
+              resetField(`middleStops.${i}`);
               setMiddleStopsCount((prev) => prev - 1);
             }}
-            onValueChange={handleOnValueChange(
-              `middleStops.${i}` as keyof IFormData,
-            )}
-            key={i}
-            icon={"middle"}
           />
         ))}
       </div>

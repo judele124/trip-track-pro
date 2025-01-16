@@ -5,8 +5,9 @@ import { createTripSchema } from "@/zodSchemas/createTripSchemas";
 import CTFormStage1 from "./stage1/CTFormStage1";
 import CTFormStage2 from "./stage2/CTFormStage2";
 import { useEffect } from "react";
+import {Experience} from '@/zodSchemas/trip.schema'
 
-interface IStopLocation {
+export interface IStopLocation {
   address: string;
   location: { lat: number; lng: number };
 }
@@ -34,6 +35,7 @@ export default function CreateTripForm({
     resetField,
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<IFormData>({
     resolver: zodResolver(createTripSchema[currentFormStage]),
@@ -71,6 +73,7 @@ export default function CreateTripForm({
           resetField={resetField}
           setValue={setValue}
           errors={errors}
+          control={control}
         />,
       ]}
     />
