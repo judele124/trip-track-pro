@@ -5,8 +5,6 @@ import end from "../../assets/end-stop-icon.svg";
 import start from "../../assets/start-stop-icon.svg";
 import middle from "../../assets/middle-stop-icon.svg";
 import Button from "@/components/ui/Button";
-import Modal from "@/components/ui/Modal";
-import useToggle from "@/hooks/useToggle";
 import {
   PlacePrediction,
   useAddressSugestions,
@@ -15,9 +13,7 @@ import { useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
-import ExperienceForm from "./ExperienceForm";
-import { Experience } from "@/zodSchemas/trip.schema";
-import { IStopLocation } from "../CreateTripForm";
+import { Stop } from "@/zodSchemas/tripSchema";
 const iconSrc = {
   start,
   end,
@@ -27,23 +23,17 @@ const iconSrc = {
 interface GoogleGeocodeResults {
   geometry: { location: { lat: number; lng: number } };
 }
-type StopData =
-  | { address: string; location: { lat: number; lng: number } }
-  | IStopLocation;
 
 interface IStopLocationInputProps {
   onRemove?: () => void;
-  middleStop?: boolean;
-  onValueChange: (data: IStopLocation) => void;
+  onValueChange: (valie: Stop) => void;
   title?: string;
   icon?: "start" | "end" | "middle";
 }
 
 export default function StopLocationInput({
   onRemove,
-  middleStop = false,
   onValueChange,
-  title,
   icon = "start",
 }: IStopLocationInputProps) {
   const [inputValue, setInputValue] = useState("");
@@ -66,8 +56,7 @@ export default function StopLocationInput({
   const handleAddressSelection = async (item: PlacePrediction) => {
     try {
       const { lat, lng } = await getGeoLocationFromAddress(item.description);
-      onValueChange({ address: item.description, location: { lat, lng } });
-      // setShowBtn(true);
+      onValueChange({ location: { lat, lon: lng }, address: item.description });
     } catch (error) {
       console.error(error);
     }
@@ -75,11 +64,6 @@ export default function StopLocationInput({
 
   return (
     <>
-      <label className={`flex w-full flex-col gap-1`}>
-        {title && (
-          <span className={`pl-5 text-start font-semibold`}>{title}</span>
-        )}
-      </label>
       <div className="relative">
         <Dropdown list={suggestions?.predictions}>
           <DropdownTriggerElement<PlacePrediction>
@@ -88,7 +72,6 @@ export default function StopLocationInput({
             elemTextContent={(item) => item?.description || "default"}
             onChange={(e) => {
               setInputValue(e.target.value);
-              // setShowBtn(false);
             }}
           />
           <DropdownMenu<PlacePrediction>
@@ -96,14 +79,6 @@ export default function StopLocationInput({
             renderItem={({ item }) => <div>{item.description}</div>}
           />
         </Dropdown>
-        {middleStop && (
-          <Button
-            className="rounded-xl bg-red-500 px-2 py-0"
-            onClick={onRemove}
-          >
-            🗑️
-          </Button>
-        )}
       </div>
     </>
   );

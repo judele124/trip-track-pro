@@ -8,42 +8,29 @@ import Input from "@/components/ui/Input";
 import TriviaForm from "./experience/TriviaForm";
 import TreasureFindForm from "./experience/TreasureFindForm";
 import ScanQRForm from "./experience/ScanQRForm";
-import {Experience ,experienceSchema ,ExperienceType} from '@/zodSchemas/trip.schema'
+import { experienceSchema, ExperienceType } from "@/zodSchemas/trip.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const data = [
-  { name: "Trivia" },
-  { name: "Treasure find" },
-  { name: "Scan QR" },
-];
-
-// interface IExperienceFormProps {
-//   onValueChange: (
-//     data: Experience
-//   ) => void;
-// }
-
-const ExperienceForm = () => {
+const ExperienceForm = ({ onClose }: { onClose: () => void }) => {
   const [experience, setExperience] = useState("");
   const methods = useForm({
     resolver: zodResolver(experienceSchema),
   });
 
-  const onSubmit = (data: any) => {
-    // onValueChange(data);
-    console.log(data);
-    
-  };
-
   return (
     <div className="page-colors page-padding mx-4 flex flex-col gap-2 rounded-3xl sm:mx-auto sm:max-w-[450px]">
       <h3 className="">Select Experience</h3>
       <FormProvider {...methods}>
-        <form className="flex flex-col gap-2" onSubmit={methods.handleSubmit(onSubmit)}>
+        <form
+          className="flex flex-col gap-2"
+          onSubmit={methods.handleSubmit((data) => console.log(data))}
+        >
           <Dropdown list={Object.values(ExperienceType)}>
             <DropdownTriggerElement<ExperienceType>
               type="button"
-              elemTextContent={(item) => item?.toString() || "Select Experience"}
+              elemTextContent={(item) =>
+                item?.toString() || "Select Experience"
+              }
             />
             <DropdownMenu<ExperienceType>
               setSelected={(item) => {
@@ -71,6 +58,17 @@ const ExperienceForm = () => {
                 Confirm
               </Button>
             </div>
+            <Button
+              type="reset"
+              className="bg-red-500"
+              onClick={() => {
+                methods.reset();
+                setExperience("");
+                onClose();
+              }}
+            >
+              Cencel
+            </Button>
           </div>
         </form>
       </FormProvider>

@@ -32,11 +32,15 @@ const Button = forwardRef(
       className += " px-5 py-3";
     }
 
+    if (!className.includes("font-")) {
+      className += " font-semibold";
+    }
+
     return (
       <button
         ref={ref}
         {...props}
-        className={`${className} font-semibold hover:bg-opacity-80`}
+        className={`hover:bg-opacity-80 ${className}`}
       >
         {children}
       </button>

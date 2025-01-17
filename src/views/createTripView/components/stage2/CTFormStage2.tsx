@@ -1,108 +1,61 @@
-import {
-  Control,
-  FieldErrors,
-  useFieldArray,
-  UseFormRegister,
-  UseFormResetField,
-  UseFormSetValue,
-} from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import Button from "../../../../components/ui/Button";
 import InputFeildError from "../../../../components/ui/InputFeildError";
-import { IFormData } from "../CreateTripForm";
 import { useRef, useState } from "react";
 import StopLocationInput from "./StopLocationInput";
-import { useCounter } from "@/hooks/useCounter";
+import { Stop, Trip } from "@/zodSchemas/tripSchema";
 import StopInput from "./StopInput";
 
-interface ICTFormStage2Props {
-  resetField: UseFormResetField<IFormData>;
-  setValue: UseFormSetValue<IFormData>;
-  errors: FieldErrors<IFormData>;
-  control: Control<IFormData, any>;
-}
-
-export default function CTFormStage2({
-  resetField,
-  setValue,
-  errors,
-  control,
-}: ICTFormStage2Props) {
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "middleStops", // Name of the field array
-  });
+export default function CTFormStage2() {
+  const {
+    setValue,
+    formState: { errors },
+  } = useFormContext<Trip>();
+  const [middleStopsCount, setMiddleStopsCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleOnValueChange = (key: string & keyof IFormData) => {
-    return (address: string, location: { lat: number; lng: number }) => {
-      setValue(key, { address, location });
-    };
-  };
-
-  
-
-
 
   return (
     <>
       <div ref={containerRef}>
-        {errors.firstStop?.message && (
-          <InputFeildError message={errors.firstStop.message} />
+        {errors.stops?.[0]?.message && (
+          <InputFeildError message={errors.stops[0].message} />
         )}
-        <StopInput 
-           name={"firstStop"}
-           setValue={setValue}
-           icon={"alert"}
-           onRemove={() => {
-             resetField("firstStop");
-             setMiddleStopsCount((prev) => prev - 1);
-           }}
-        />
-        {/* <StopLocationInput
-          onValueChange={handleOnValueChange("firstStop")}
-          icon={"start"}
-          title={"First Stop"}
-        /> */}
+        <p className={`mb-1 pl-5 text-start font-semibold`}>First Stop</p>
+        <StopInput index={0} />
       </div>
-      {fields.length > 0 && (
-        <label className={`flex w-full flex-col gap-1`}>
-          {
-            <span className={`pl-5 text-start font-semibold`}>
-              Middle Stops
-            </span>
-          }
-        </label>
-      )}
-      <div
-        className={`flex max-h-[40vh] flex-col gap-2 ${middleStopsCount > 3 && "overflow-y-scroll"}`}
-      >
-        {fields.map((field, i) => (
-          <StopInput
-            key={i}
-            name={`middleStops.${i as keyof IFormData["middleStops"]}`}
-            setValue={setValue}
-            icon={"alert"}
-            onRemove={() => {
-              resetField(`middleStops.${i}`);
-              setMiddleStopsCount((prev) => prev - 1);
-            }}
-          />
-        ))}
+      <div>
+        {middleStopsCount > 0 && (
+          <p className={`mb-1 pl-5 text-start font-semibold`}>Middle Stops</p>
+        )}
+        <div
+          className={`flex max-h-[40vh] flex-col gap-2 ${middleStopsCount > 3 && "overflow-y-scroll"}`}
+        >
+          {[...Array(middleStopsCount)].map((_, i) => (
+            <StopInput
+              onRemove={() => setMiddleStopsCount((prev) => prev - 1)}
+              isMiddleStop
+              index={i + 1}
+              key={i + 1}
+            />
+          ))}
+        </div>
       </div>
       <Button
         onClick={() => setMiddleStopsCount((prev) => prev + 1)}
         type="button"
+        className="font-normal"
       >
         Add middle stop
       </Button>
-      <StopLocationInput
-        onValueChange={handleOnValueChange("lastStop")}
-        icon={"end"}
-        title={"Last Stop"}
-      />
+      {errors.stops?.[middleStopsCount + 1]?.message && (
+        <InputFeildError
+          message={errors.stops?.[middleStopsCount + 1]?.message!}
+        />
+      )}
+      <p className={`mb-1 pl-5 text-start font-semibold`}>Last Stop</p>
+      <StopInput index={middleStopsCount + 1} />
       <Button type="submit" primary>
-        Send code
+        Create Trip
       </Button>
     </>
   );

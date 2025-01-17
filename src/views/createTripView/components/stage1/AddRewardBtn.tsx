@@ -1,61 +1,91 @@
 import { useState } from "react";
 import Button from "../../../../components/ui/Button";
 import InputWLabel from "../../../../components/ui/InputWLabel";
-import { UseFormRegisterReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+import InputFeildError from "@/components/ui/InputFeildError";
+import { Trip } from "@/zodSchemas/tripSchema";
+import Modal from "@/components/ui/Modal";
+import Icon from "@/components/icons/Icon";
 
-interface IAddRewardBtnProps {
-  rewardTitleRegister: () => UseFormRegisterReturn<"reward.title">;
-  rewardImageRegister: () => UseFormRegisterReturn<"reward.image">;
-  fileName?: string | undefined;
-  onOpen?: () => void;
-  onCancel?: () => void;
-}
-
-export default function AddRewardBtn({
-  onOpen,
-  onCancel,
-  rewardTitleRegister,
-  rewardImageRegister,
-  fileName,
-}: IAddRewardBtnProps) {
+export default function AddRewardBtn() {
   const [open, setOpen] = useState(false);
+  const {
+    watch,
+    setValue,
+    register,
+    resetField,
+    unregister,
+    formState: { errors },
+    trigger,
+  } = useFormContext<Trip>();
+
+  const clearReward = () => {
+    setOpen(false);
+    resetField("reward");
+    unregister("reward.image");
+    unregister("reward.title");
+  };
+
+  const confirmReward = async () => {
+    const res = await trigger("reward");
+    if (res) {
+      setOpen(false);
+    }
+  };
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl bg-primary`}>
-      <Button
-        type="button"
-        className={`relative z-10 flex w-full flex-col items-center gap-4 bg-primary shadow-md transition-all duration-75`}
-        onClick={() => {
-          if (open) {
-            onCancel?.();
-          } else {
-            onOpen?.();
-          }
-          setOpen((prev) => !prev);
-        }}
-      >
-        {!open ? "+ Add reward" : "- Cancel"}
-      </Button>
-      {open && (
-        <div
-          className={`flex w-full flex-col gap-4 p-4 transition-all delay-150 duration-200 ease-in-out`}
-          onClick={(e) => e.stopPropagation()}
+    <>
+      <div className={`relative rounded-2xl bg-primary`}>
+        <Button
+          type="button"
+          className={`relative z-10 flex w-full flex-col items-center gap-4 bg-primary shadow-md transition-all duration-75`}
+          onClick={() => setOpen(true)}
         >
-          <InputWLabel
-            className="border-dark dark:border-light"
-            {...rewardTitleRegister()}
-          />
-          <InputWLabel
-            multiple={false}
-            labelTextCenter
-            labelClassName="rounded-2xl border py-3 border-dark dark:border-light bg-light dark:bg-dark "
-            type="file"
-            className="hidden"
-            title={fileName || "Add image"}
-            {...rewardImageRegister()}
-          />
-        </div>
-      )}
-    </div>
+          {watch("reward.title") ? `🏆 ${watch("reward.title")}` : "Add reward"}
+        </Button>
+        {open && (
+          <Modal
+            backgroundClassname="p-10"
+            open={open}
+            onBackdropClick={() => setOpen(false)}
+            center
+          >
+            <div
+              className={`page-colors relative flex w-full flex-col gap-2 rounded-2xl p-4 transition-all delay-150 duration-200 ease-in-out`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {errors.reward?.title?.message && (
+                <InputFeildError message={errors.reward?.title.message} />
+              )}
+              <InputWLabel
+                className="border-dark dark:border-light"
+                {...register("reward.title")}
+              />
+              <InputWLabel
+                multiple={false}
+                labelTextCenter
+                labelClassName="rounded-2xl border py-3 border-dark text-light dark:border-light dark:bg-light bg-dark"
+                type="file"
+                className="hidden"
+                title={`${watch("reward.image")?.name || "Add image +"}`}
+                {...register("reward.image", {
+                  onChange: (e) => setValue("reward.image", e.target.files[0]),
+                })}
+              />
+              <Button type="button" primary onClick={confirmReward}>
+                Confirm Reward
+              </Button>
+              <Button
+                type="button"
+                className="bg-transparent px-0 py-0 text-dark underline underline-offset-1 dark:text-light"
+                onClick={clearReward}
+              >
+                Delete Reward
+              </Button>
+            </div>
+          </Modal>
+        )}
+      </div>
+    </>
   );
 }

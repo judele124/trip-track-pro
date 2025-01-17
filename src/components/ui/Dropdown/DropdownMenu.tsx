@@ -62,8 +62,6 @@ export default function DropdownMenu<T>({
 
   useEffect(() => {
     if (!list || !list.length || selectedIndex < 0) return;
-    console.log(list[selectedIndex]);
-
     setSelected(list[selectedIndex]);
   }, [selectedIndex]);
 

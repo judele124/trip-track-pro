@@ -1,11 +1,15 @@
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import FormMultipleStages from "@/components/FormMultipleStages";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createTripSchema } from "@/zodSchemas/createTripSchemas";
 import CTFormStage1 from "./stage1/CTFormStage1";
 import CTFormStage2 from "./stage2/CTFormStage2";
 import { useEffect } from "react";
-import {Experience} from '@/zodSchemas/trip.schema'
+import { multipleStepsTripSchema, Trip } from "@/zodSchemas/tripSchema";
+
+interface ICreateTripFormProps {
+  currentFormStage: number;
+  setCurrentFormStage: React.Dispatch<React.SetStateAction<number>>;
+}
 
 export interface IStopLocation {
   address: string;
@@ -24,58 +28,38 @@ export type IFormData = {
 export default function CreateTripForm({
   currentFormStage,
   setCurrentFormStage,
-}: {
-  currentFormStage: number;
-  setCurrentFormStage: React.Dispatch<React.SetStateAction<number>>;
-}) {
-  const {
-    watch,
-    unregister,
-    setValue,
-    resetField,
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<IFormData>({
-    resolver: zodResolver(createTripSchema[currentFormStage]),
+}: ICreateTripFormProps) {
+  const reactHookFormsMethods = useForm<Trip>({
+    resolver: zodResolver(multipleStepsTripSchema[currentFormStage]),
+    defaultValues: {
+      description: "",
+      groupName: "",
+      name: "",
+      reward: undefined,
+      stops: [],
+    },
   });
 
   useEffect(() => {
-    console.log(watch());
-  }, [watch()]);
+    console.log(reactHookFormsMethods.watch());
+  }, [reactHookFormsMethods.watch()]);
 
   return (
-    <FormMultipleStages
-      className="flex flex-col gap-3"
-      onLastStageSubmit={handleSubmit((data) => {
-        console.log(data);
-      })}
-      onMultipleStageSubmit={(e, { incrementStage }) => {
-        handleSubmit((data) => {
+    <FormProvider {...reactHookFormsMethods}>
+      <FormMultipleStages
+        className="flex flex-col gap-3"
+        onLastStageSubmit={reactHookFormsMethods.handleSubmit((data) => {
           console.log(data);
-          setCurrentFormStage((prev) => prev + 1);
-          incrementStage();
-        })(e);
-      }}
-      renderStages={[
-        <CTFormStage1
-          unregisterReward={() => {
-            resetField("reward");
-            unregister("reward.image");
-            unregister("reward.title");
-          }}
-          errors={errors}
-          register={register}
-          setValue={setValue}
-        />,
-        <CTFormStage2
-          resetField={resetField}
-          setValue={setValue}
-          errors={errors}
-          control={control}
-        />,
-      ]}
-    />
+        })}
+        onMultipleStageSubmit={(e, { incrementStage }) => {
+          reactHookFormsMethods.handleSubmit((data) => {
+            console.log(data);
+            setCurrentFormStage((prev) => prev + 1);
+            incrementStage();
+          })(e);
+        }}
+        renderStages={[<CTFormStage1 />, <CTFormStage2 />]}
+      />
+    </FormProvider>
   );
 }
