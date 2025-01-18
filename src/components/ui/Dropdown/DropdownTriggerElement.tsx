@@ -2,11 +2,13 @@ import DropdownInput from "./DropdownInput";
 import DropdownButton from "./DropdownButton";
 import { useDropdown } from "./Dropdown";
 import { ChangeEvent, MouseEvent } from "react";
+import { IconName } from "@/components/icons/Icon";
 
 type CommonDropdownTriggerElementProps<T> = {
   elemTextContent: (selectedItem: T | undefined | null) => string;
   autoFocus?: boolean;
-  icon?: JSX.Element;
+  icon?: IconName;
+  iconFill?: string;
 };
 
 type IDropdownTriggerElementProps<T> = CommonDropdownTriggerElementProps<T> &
@@ -27,6 +29,7 @@ type IDropdownTriggerElementProps<T> = CommonDropdownTriggerElementProps<T> &
 
 export default function DropdownTriggerElement<T>({
   icon,
+  iconFill,
   elemTextContent: value,
   type,
   autoFocus = false,
@@ -36,15 +39,12 @@ export default function DropdownTriggerElement<T>({
 }: IDropdownTriggerElementProps<T>) {
   const { list, selectedIndex } = useDropdown<T>();
 
-  icon = icon && (
-    <i className="absolute left-3 top-1/2 size-6 -translate-y-1/2">{icon}</i>
-  );
-
   if (type === "input") {
     return (
       <DropdownInput
         {...props}
         icon={icon}
+        iconFill={iconFill}
         value={value(list?.[selectedIndex])}
         onChange={onChange}
         autoFocus={autoFocus}
@@ -58,6 +58,7 @@ export default function DropdownTriggerElement<T>({
       onClick={onClick}
       autoFocus={autoFocus}
       icon={icon}
+      iconFill={iconFill}
     />
   );
 }

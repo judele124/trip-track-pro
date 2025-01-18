@@ -1,9 +1,6 @@
 import Dropdown from "@/components/ui/Dropdown/Dropdown";
 import DropdownMenu from "@/components/ui/Dropdown/DropdownMenu";
 import DropdownTriggerElement from "@/components/ui/Dropdown/DropdownTriggerElement";
-import end from "../../assets/end-stop-icon.svg";
-import start from "../../assets/start-stop-icon.svg";
-import middle from "../../assets/middle-stop-icon.svg";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import useToggle from "@/hooks/useToggle";
@@ -15,12 +12,9 @@ import { useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
+import { IconName } from "@/components/icons/Icon";
+import InputFeildError from "@/components/ui/InputFeildError";
 import ExperienceForm from "./ExperienceForm";
-const iconSrc = {
-  start,
-  end,
-  middle,
-};
 
 interface GoogleGeocodeResults {
   geometry: { location: { lat: number; lng: number } };
@@ -34,7 +28,8 @@ interface IStopLocationInputProps {
     location: { lat: number; lng: number },
   ) => void;
   title?: string;
-  icon?: "start" | "end" | "middle";
+  icon?: IconName;
+  iconFill?: string;
 }
 
 export default function StopLocationInput({
@@ -42,10 +37,13 @@ export default function StopLocationInput({
   middleStop = false,
   onValueChange,
   title,
-  icon = "start",
+  icon,
+  iconFill = "#5e6166",
 }: IStopLocationInputProps) {
+  const [isAddressGeoLocationError, setIsAddressGeoLocationError] =
+    useState(false);
   const [inputValue, setInputValue] = useState("");
-  const debouncedInputValue = useDebouncedValue(inputValue, 1000);
+  const debouncedInputValue = useDebouncedValue(inputValue, 800);
 
   const {
     isOpen: isModalOpan,
@@ -54,7 +52,7 @@ export default function StopLocationInput({
   } = useToggle();
   const { isOpen: showBtn, setIsOpen: setShowBtn } = useToggle();
 
-  const { suggestions } = useAddressSugestions({
+  const { suggestions, error, loading } = useAddressSugestions({
     query: debouncedInputValue,
   });
 
@@ -73,13 +71,18 @@ export default function StopLocationInput({
       const { lat, lng } = await getGeoLocationFromAddress(item.description);
       onValueChange(item.description, { lat, lng });
       setShowBtn(true);
+      setIsAddressGeoLocationError(false);
     } catch (error) {
+      setIsAddressGeoLocationError(true);
       console.error(error);
     }
   };
-  
+
   return (
     <>
+      {(error || isAddressGeoLocationError) && (
+        <InputFeildError message="Something went wrong please try again later" />
+      )}
       <label className={`flex w-full flex-col gap-1`}>
         {title && (
           <span className={`pl-5 text-start font-semibold`}>{title}</span>
@@ -88,8 +91,9 @@ export default function StopLocationInput({
       <div className="relative">
         <Dropdown list={suggestions?.predictions}>
           <DropdownTriggerElement<PlacePrediction>
-            icon={<img src={iconSrc[icon]} alt="" />}
+            icon={loading ? "spinner" : icon}
             type="input"
+            iconFill={iconFill}
             elemTextContent={(item) => item?.description || "default"}
             onChange={(e) => {
               setInputValue(e.target.value);

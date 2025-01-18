@@ -1,11 +1,10 @@
 import {
   FieldErrors,
-  UseFormRegister,
   UseFormResetField,
   UseFormSetValue,
 } from "react-hook-form";
-import Button from "../../../../components/ui/Button";
-import InputFeildError from "../../../../components/ui/InputFeildError";
+import Button from "@/components/ui/Button";
+import InputFeildError from "@/components/ui/InputFeildError";
 import { IFormData } from "../CreateTripForm";
 import { useRef, useState } from "react";
 import StopLocationInput from "./StopLocationInput";
@@ -40,7 +39,8 @@ export default function CTFormStage2({
         )}
         <StopLocationInput
           onValueChange={handleOnValueChange("firstStop")}
-          icon={"start"}
+          icon={"target"}
+          iconFill="#ce5737"
           title={"First Stop"}
         />
       </div>
@@ -67,7 +67,7 @@ export default function CTFormStage2({
               `middleStops.${i}` as keyof IFormData,
             )}
             key={i}
-            icon={"middle"}
+            icon={"circle"}
           />
         ))}
       </div>
@@ -79,7 +79,8 @@ export default function CTFormStage2({
       </Button>
       <StopLocationInput
         onValueChange={handleOnValueChange("lastStop")}
-        icon={"end"}
+        icon={"flag"}
+        iconFill="#ce5737"
         title={"Last Stop"}
       />
       <Button type="submit" primary>

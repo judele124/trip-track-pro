@@ -39,7 +39,7 @@ export const verifyCode = async (
   const url = `${API_BASE_URL}/auth/verify-code`;
   const {
     error,
-    data: { user },
+    data: resData,
     status,
   } = await activate({
     data,
@@ -50,8 +50,8 @@ export const verifyCode = async (
   if (error) {
     throw new Error(getErrorMessage(status));
   }
-  delete user.iv;
-  return { user, status };
+  delete resData.user.iv;
+  return { user: resData.user, status };
 };
 
 export const logout = async (
