@@ -3,7 +3,6 @@ import FormMultipleStages from "@/components/FormMultipleStages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CTFormStage1 from "./stage1/CTFormStage1";
 import CTFormStage2 from "./stage2/CTFormStage2";
-import { useEffect } from "react";
 import { multipleStepsTripSchema, Trip } from "@/zodSchemas/tripSchema";
 
 interface ICreateTripFormProps {
@@ -40,20 +39,17 @@ export default function CreateTripForm({
     },
   });
 
-  useEffect(() => {
-    console.log(reactHookFormsMethods.watch());
-  }, [reactHookFormsMethods.watch()]);
+  console.log(reactHookFormsMethods.formState.errors);
 
   return (
     <FormProvider {...reactHookFormsMethods}>
       <FormMultipleStages
         className="flex flex-col gap-3"
-        onLastStageSubmit={reactHookFormsMethods.handleSubmit((data) => {
-          console.log(data);
+        onLastStageSubmit={reactHookFormsMethods.handleSubmit(() => {
+          console.log(reactHookFormsMethods.watch());
         })}
         onMultipleStageSubmit={(e, { incrementStage }) => {
-          reactHookFormsMethods.handleSubmit((data) => {
-            console.log(data);
+          reactHookFormsMethods.handleSubmit(() => {
             setCurrentFormStage((prev) => prev + 1);
             incrementStage();
           })(e);

@@ -2,13 +2,11 @@ import { useFormContext } from "react-hook-form";
 import Button from "../../../../components/ui/Button";
 import InputFeildError from "../../../../components/ui/InputFeildError";
 import { useRef, useState } from "react";
-import StopLocationInput from "./StopLocationInput";
-import { Stop, Trip } from "@/zodSchemas/tripSchema";
+import { Trip } from "@/zodSchemas/tripSchema";
 import StopInput from "./StopInput";
 
 export default function CTFormStage2() {
   const {
-    setValue,
     formState: { errors },
   } = useFormContext<Trip>();
   const [middleStopsCount, setMiddleStopsCount] = useState(0);
@@ -17,8 +15,12 @@ export default function CTFormStage2() {
   return (
     <>
       <div ref={containerRef}>
-        {errors.stops?.[0]?.message && (
-          <InputFeildError message={errors.stops[0].message} />
+        {errors.stops && (
+          <InputFeildError
+            message={
+              "Trip must have at least 2 stop, all stops must have an address"
+            }
+          />
         )}
         <p className={`mb-1 pl-5 text-start font-semibold`}>First Stop</p>
         <StopInput index={0} />
@@ -47,11 +49,7 @@ export default function CTFormStage2() {
       >
         Add middle stop
       </Button>
-      {errors.stops?.[middleStopsCount + 1]?.message && (
-        <InputFeildError
-          message={errors.stops?.[middleStopsCount + 1]?.message!}
-        />
-      )}
+
       <p className={`mb-1 pl-5 text-start font-semibold`}>Last Stop</p>
       <StopInput index={middleStopsCount + 1} />
       <Button type="submit" primary>

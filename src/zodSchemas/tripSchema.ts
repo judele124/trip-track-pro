@@ -91,9 +91,11 @@ const TreasureSchema = z.object({
     .optional(),
 });
 
-export const experienceSchema = z
-  .discriminatedUnion("type", [TriviaSchema, InfoSchema, TreasureSchema])
-  .optional();
+export const experienceSchema = z.discriminatedUnion("type", [
+  TriviaSchema,
+  InfoSchema,
+  TreasureSchema,
+]);
 
 // stops schemas
 export const StopSchema = z.object({
@@ -115,7 +117,7 @@ export const StopSchema = z.object({
     .max(200, { message: "Code must be exactly 200 characters" })
     .optional(),
 
-  experience: experienceSchema,
+  experience: experienceSchema.optional(),
 });
 
 export const stopsSchema = z.object({
@@ -189,6 +191,13 @@ export const multipleStepsTripSchema = [tripDetailsSchema, stopsSchema];
 
 export const createTripSchema = tripDetailsSchema.merge(stopsSchema);
 
+export type Trivia = z.infer<typeof TriviaSchema>;
+export type Info = z.infer<typeof InfoSchema>;
+export type Treasure = z.infer<typeof TreasureSchema>;
+
+export type TripDetails = z.infer<typeof tripDetailsSchema>;
+export type Stops = z.infer<typeof stopsSchema>;
+export type Reward = z.infer<typeof rewardSchema>;
 export type Experience = z.infer<typeof experienceSchema>;
 
 export type Stop = z.infer<typeof StopSchema>;

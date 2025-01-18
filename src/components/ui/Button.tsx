@@ -13,7 +13,13 @@ type ButtonProps = {
 
 const Button = forwardRef(
   (
-    { className = "", children, primary, ...props }: ButtonProps,
+    {
+      className = "",
+      children,
+      primary,
+      type = "button",
+      ...props
+    }: ButtonProps,
     ref: Ref<HTMLButtonElement>,
   ) => {
     if (primary) {
@@ -40,6 +46,7 @@ const Button = forwardRef(
       <button
         ref={ref}
         {...props}
+        type={type}
         className={`hover:bg-opacity-80 ${className}`}
       >
         {children}

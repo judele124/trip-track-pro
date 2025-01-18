@@ -4,12 +4,11 @@ import DropdownTriggerElement from "@/components/ui/Dropdown/DropdownTriggerElem
 import end from "../../assets/end-stop-icon.svg";
 import start from "../../assets/start-stop-icon.svg";
 import middle from "../../assets/middle-stop-icon.svg";
-import Button from "@/components/ui/Button";
 import {
   PlacePrediction,
   useAddressSugestions,
 } from "@/hooks/useAddressSuggestions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
@@ -25,14 +24,12 @@ interface GoogleGeocodeResults {
 }
 
 interface IStopLocationInputProps {
-  onRemove?: () => void;
-  onValueChange: (valie: Stop) => void;
+  onValueChange: (value: Stop | undefined) => void;
   title?: string;
   icon?: "start" | "end" | "middle";
 }
 
 export default function StopLocationInput({
-  onRemove,
   onValueChange,
   icon = "start",
 }: IStopLocationInputProps) {
@@ -62,6 +59,12 @@ export default function StopLocationInput({
     }
   };
 
+  useEffect(() => {
+    if (debouncedInputValue === "") {
+      onValueChange(undefined);
+    }
+  }, [debouncedInputValue]);
+
   return (
     <>
       <div className="relative">
@@ -70,9 +73,7 @@ export default function StopLocationInput({
             icon={<img src={iconSrc[icon]} alt="" />}
             type="input"
             elemTextContent={(item) => item?.description || "default"}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-            }}
+            onChange={(e) => setInputValue(e.target.value)}
           />
           <DropdownMenu<PlacePrediction>
             setSelected={handleAddressSelection}

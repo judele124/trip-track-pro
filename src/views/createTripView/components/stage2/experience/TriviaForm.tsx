@@ -1,24 +1,36 @@
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import InputWLabel from "../../../../../components/ui/InputWLabel";
 import Button from "../../../../../components/ui/Button";
 import Input from "../../../../../components/ui/Input";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Modal from "../../../../../components/ui/Modal";
 import TriviaOption from "./TriviaOption";
+import { Trip, Trivia } from "@/zodSchemas/tripSchema";
+import InputFeildError from "@/components/ui/InputFeildError";
 
 const MIN_OPTIONS = 1;
 const MAX_OPTIONS = 4;
 
-const TriviaForm = () => {
+const TriviaForm = ({ index: stopIndex }: { index: number }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [amountOptions, setAmountOptions] = useState<number>(1);
   const [amountError, setAmountError] = useState<boolean>(false);
-  const { register, control } = useFormContext();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "options",
-    keyName: "id",
-  });
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext<Trip>();
+
+  const handleInputAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    if (isValidOptionsAmount(value)) {
+      setAmountOptions(value);
+      setAmountError(false);
+    } else {
+      setAmountError(true);
+    }
+  };
 
   const handleAddOption = () => {
     setAmountError(false);
@@ -30,43 +42,73 @@ const TriviaForm = () => {
     }
   };
 
-  const handleDeleteOption = (index: number) => {
+  const handleDeleteOption = (optionIndex: number) => {
     setAmountError(false);
 
-    if (isValidOptionsAmount(amountOptions - 1)) {
-      remove(index);
-      setAmountOptions((prev) => prev - 1);
-    } else {
+    if (!isValidOptionsAmount(amountOptions - 1)) {
       setAmountError(true);
+      return;
     }
+
+    const options = watch(`stops.${stopIndex}.experience.data.options`);
+
+    options.splice(optionIndex, 1);
+
+    setValue(`stops.${stopIndex}.experience.data.options`, options);
+
+    setAmountOptions((prev) => prev - 1);
   };
 
   useEffect(() => {
-    // difference between the selected number of options to the current number of options
-    const difference = amountOptions - fields.length;
-    if (difference > 0) {
-      append(Array.from({ length: difference }, () => ({ value: "" })));
-    } else if (difference < 0) {
-      for (let i = 0; i < Math.abs(difference); i++) {
-        remove(fields.length - 1);
-      }
+    const options = watch(`stops.${stopIndex}.experience.data.options`);
+    if (!options) {
+      setValue(`stops.${stopIndex}.experience.data.options`, [""]);
+      return;
+    }
+
+    if (options.length < amountOptions) {
+      setValue(`stops.${stopIndex}.experience.data.options`, [...options, ""]);
+    } else {
+      setValue(
+        `stops.${stopIndex}.experience.data.options`,
+        options.filter((_, i) => i < amountOptions),
+      );
     }
   }, [amountOptions]);
+  const experienceDataErrors = errors.stops?.[stopIndex]?.experience
+    ?.data as Trivia["data"];
 
   return (
     <>
+      {experienceDataErrors?.question && (
+        <InputFeildError
+          message={"Trivia question must be at least 2 characters long"}
+        />
+      )}
       <InputWLabel
         type="text"
         title="Question"
         placeholder="Enter a question"
-        {...register("question")}
+        {...register(`stops.${stopIndex}.experience.data.question`)}
       />
+      {experienceDataErrors?.answer && (
+        <InputFeildError
+          message={"Answer must be at least 2 characters long"}
+        />
+      )}
       <InputWLabel
         type="text"
         title="Answer"
         placeholder="Enter an answer"
-        {...register("answer")}
+        {...register(`stops.${stopIndex}.experience.data.answer`)}
       />
+      {experienceDataErrors?.options && (
+        <InputFeildError
+          message={
+            "Trivia question must have at least 2 options. and options must be at least 2 char long."
+          }
+        />
+      )}
       <div>
         <label className="pl-5 text-start font-semibold">Options</label>
         <div className="flex gap-2">
@@ -74,15 +116,13 @@ const TriviaForm = () => {
             type="number"
             title="Number of options"
             placeholder="Enter the number of options"
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              if (isValidOptionsAmount(value)) {
-                setAmountOptions(value);
-                setAmountError(false);
-              } else {
-                setAmountError(true);
-              }
-            }}
+            onChange={
+              handleInputAmountChange as (
+                e:
+                  | ChangeEvent<HTMLInputElement>
+                  | ChangeEvent<HTMLTextAreaElement>,
+              ) => void
+            }
             value={amountOptions}
             min={MIN_OPTIONS}
             max={MAX_OPTIONS}
@@ -104,7 +144,8 @@ const TriviaForm = () => {
         containerClassName="w-full sm:max-w-[400px]"
         children={
           <TriviaOption
-            fields={fields}
+            stopIndex={stopIndex}
+            fieldsCount={amountOptions}
             amountError={amountError}
             register={register}
             handleDeleteOption={handleDeleteOption}

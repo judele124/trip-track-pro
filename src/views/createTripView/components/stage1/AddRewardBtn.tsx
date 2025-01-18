@@ -45,7 +45,7 @@ export default function AddRewardBtn() {
         </Button>
         {open && (
           <Modal
-            backgroundClassname="p-10"
+            containerClassName="w-full page-x-padding"
             open={open}
             onBackdropClick={() => setOpen(false)}
             center

@@ -3,7 +3,7 @@ import ExperienceForm from "./ExperienceForm";
 import Modal from "@/components/ui/Modal";
 import useToggle from "@/hooks/useToggle";
 import Button from "@/components/ui/Button";
-import { useFormContext } from "react-hook-form";
+import { set, useFormContext } from "react-hook-form";
 
 interface IStopInputProps {
   isMiddleStop?: boolean;
@@ -27,9 +27,16 @@ export default function StopInput({
   return (
     <div className="relative">
       <StopLocationInput
-        onValueChange={({ address }) => {
+        onValueChange={(stopLocationData) => {
+          if (!stopLocationData) {
+            setValue(`stops.${index}`, stopLocationData);
+            setShowBtn(false);
+            return;
+          }
+
           setShowBtn(true);
-          setValue(`stops.${index}.address`, address);
+          setValue(`stops.${index}.address`, stopLocationData.address);
+          setValue(`stops.${index}.location`, stopLocationData.location);
         }}
         icon={"start"}
         title={"First Stop"}
@@ -61,7 +68,11 @@ export default function StopInput({
         onBackdropClick={() => setIsModalOpen(false)}
         containerClassName="w-full"
       >
-        <ExperienceForm onClose={() => setIsModalOpen(false)} />
+        <ExperienceForm
+          onCencel={() => setIsModalOpen(false)}
+          onConfirm={() => setIsModalOpen(false)}
+          index={index}
+        />
       </Modal>
     </div>
   );
