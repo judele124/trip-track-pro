@@ -23,17 +23,7 @@ export default function LoginFormStage2({
 }) {
   return (
     <>
-      {/* <div>
-        {errors.name?.message && (
-          <InputFeildError message={errors.name?.message} />
-        )}
-        <InputWLabel
-          autoComplete="name"
-          {...register("name")}
-          title="Enter name"
-          placeholder="Enter name"
-        />
-      </div> */}
+      {verifyCodeError && <InputFeildError message={verifyCodeError.message} />}
       <div>
         {errors.code?.message && (
           <InputFeildError message={errors.code.message} />
@@ -57,9 +47,6 @@ export default function LoginFormStage2({
             resend code
           </span>
         </p>
-      )}
-      {verifyCodeError && (
-        <p className="text-center text-red-500">{verifyCodeError.message}</p>
       )}
     </>
   );

@@ -41,6 +41,14 @@ export const useAddressSugestions = ({ query }: IUseAddressSugestionsProps) => {
 
     activate({
       url: `${API_BASE_URL}/google/address-suggestions?query=${query}`,
+      onError: (err) => {
+        console.log(err);
+      },
+      onSuccess: (res) => {
+        if (res.data.status === "REQUEST_DENIED") {
+          throw new Error("Request Denied");
+        }
+      },
     });
   }, [query]);
 

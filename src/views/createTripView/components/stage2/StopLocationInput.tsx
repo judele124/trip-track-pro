@@ -1,9 +1,6 @@
 import Dropdown from "@/components/ui/Dropdown/Dropdown";
 import DropdownMenu from "@/components/ui/Dropdown/DropdownMenu";
 import DropdownTriggerElement from "@/components/ui/Dropdown/DropdownTriggerElement";
-import end from "../../assets/end-stop-icon.svg";
-import start from "../../assets/start-stop-icon.svg";
-import middle from "../../assets/middle-stop-icon.svg";
 import {
   PlacePrediction,
   useAddressSugestions,
@@ -13,11 +10,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
 import { Stop } from "@/zodSchemas/tripSchema";
-const iconSrc = {
-  start,
-  end,
-  middle,
-};
+import { IconName } from "@/components/icons/Icon";
 
 interface GoogleGeocodeResults {
   geometry: { location: { lat: number; lng: number } };
@@ -26,17 +19,22 @@ interface GoogleGeocodeResults {
 interface IStopLocationInputProps {
   onValueChange: (value: Stop | undefined) => void;
   title?: string;
-  icon?: "start" | "end" | "middle";
+  icon?: IconName;
+  iconFill?: string;
 }
 
 export default function StopLocationInput({
+  iconFill = "#383644",
+  icon,
   onValueChange,
-  icon = "start",
+  title,
 }: IStopLocationInputProps) {
+  const [isAddressGeoLocationError, setIsAddressGeoLocationError] =
+    useState(false);
   const [inputValue, setInputValue] = useState("");
-  const debouncedInputValue = useDebouncedValue(inputValue, 1000);
+  const debouncedInputValue = useDebouncedValue(inputValue, 800);
 
-  const { suggestions } = useAddressSugestions({
+  const { suggestions, loading } = useAddressSugestions({
     query: debouncedInputValue,
   });
 
@@ -54,7 +52,9 @@ export default function StopLocationInput({
     try {
       const { lat, lng } = await getGeoLocationFromAddress(item.description);
       onValueChange({ location: { lat, lon: lng }, address: item.description });
+      setIsAddressGeoLocationError(false);
     } catch (error) {
+      setIsAddressGeoLocationError(true);
       console.error(error);
     }
   };
@@ -70,8 +70,9 @@ export default function StopLocationInput({
       <div className="relative">
         <Dropdown list={suggestions?.predictions}>
           <DropdownTriggerElement<PlacePrediction>
-            icon={<img src={iconSrc[icon]} alt="" />}
+            icon={loading ? "spinner" : icon}
             type="input"
+            iconFill={iconFill}
             elemTextContent={(item) => item?.description || "default"}
             onChange={(e) => setInputValue(e.target.value)}
           />

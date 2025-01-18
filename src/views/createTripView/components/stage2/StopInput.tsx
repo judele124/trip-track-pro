@@ -3,7 +3,7 @@ import ExperienceForm from "./ExperienceForm";
 import Modal from "@/components/ui/Modal";
 import useToggle from "@/hooks/useToggle";
 import Button from "@/components/ui/Button";
-import { set, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 interface IStopInputProps {
   isMiddleStop?: boolean;
@@ -38,7 +38,8 @@ export default function StopInput({
           setValue(`stops.${index}.address`, stopLocationData.address);
           setValue(`stops.${index}.location`, stopLocationData.location);
         }}
-        icon={"start"}
+        iconFill={isMiddleStop ? "" : "#ce5737"}
+        icon={isMiddleStop ? "circle" : index === 0 ? "target" : "flag"}
         title={"First Stop"}
       />
 

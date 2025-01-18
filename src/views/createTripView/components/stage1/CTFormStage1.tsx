@@ -1,8 +1,9 @@
 import { InputHTMLAttributes, useEffect, useState } from "react";
-import InputFeildError from "../../../../components/ui/InputFeildError";
+import { IFormData } from "../CreateTripForm";
+import InputFeildError from "@/components/ui/InputFeildError";
 import AddRewardBtn from "./AddRewardBtn";
-import InputWLabel from "../../../../components/ui/InputWLabel";
-import Button from "../../../../components/ui/Button";
+import InputWLabel from "@/components/ui/InputWLabel";
+import Button from "@/components/ui/Button";
 import { useFormContext } from "react-hook-form";
 import { Trip } from "@/zodSchemas/tripSchema";
 

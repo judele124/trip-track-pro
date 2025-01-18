@@ -2,7 +2,7 @@ import FormMultipleStages from "../../../components/FormMultipleStages";
 import { loginSchema, LoginSchemaT } from "../../../zodSchemas/authSchemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../../contexts/AuthContext";
 import LoginFormStage1 from "./LoginFormStage1";
@@ -19,6 +19,7 @@ const LoginFrom = () => {
     sendCodeError,
     verifyCodeError,
     sendCodeStatus,
+    verifyCodeStatus,
   } = useAuthContext();
 
   const {
@@ -34,9 +35,12 @@ const LoginFrom = () => {
     if (currentStage === 0) await sendCode(data.email);
     if (currentStage === 1) {
       await verifyCode(data);
-      nav("/");
     }
   };
+
+  useEffect(() => {
+    if (verifyCodeStatus === 200) nav("/");
+  }, [verifyCodeStatus]);
 
   return (
     <FormMultipleStages
