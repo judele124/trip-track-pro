@@ -64,7 +64,6 @@ const Input = React.forwardRef<
       />
     );
   }
-  console.log(icon);
 
   return (
     <div className="relative h-fit">

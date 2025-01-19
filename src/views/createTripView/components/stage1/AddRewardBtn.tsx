@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../../../components/ui/Button";
 import InputWLabel from "../../../../components/ui/InputWLabel";
 import { useFormContext } from "react-hook-form";
 import InputFeildError from "@/components/ui/InputFeildError";
-import { Trip } from "@/zodSchemas/tripSchema";
 import Modal from "@/components/ui/Modal";
-import Icon from "@/components/icons/Icon";
-
+import { Types } from "trip-track-package";
 export default function AddRewardBtn() {
   const [open, setOpen] = useState(false);
   const {
@@ -17,7 +15,7 @@ export default function AddRewardBtn() {
     unregister,
     formState: { errors },
     trigger,
-  } = useFormContext<Trip>();
+  } = useFormContext<Types["Trip"]>();
 
   const clearReward = () => {
     setOpen(false);
@@ -32,6 +30,12 @@ export default function AddRewardBtn() {
       setOpen(false);
     }
   };
+
+  useEffect(() => {
+    if (open) {
+      setValue("reward.image", undefined);
+    }
+  }, [open]);
 
   return (
     <>
@@ -61,6 +65,9 @@ export default function AddRewardBtn() {
                 className="border-dark dark:border-light"
                 {...register("reward.title")}
               />
+              {errors.reward?.image?.message && (
+                <InputFeildError message={errors.reward?.image?.message} />
+              )}
               <InputWLabel
                 multiple={false}
                 labelTextCenter
@@ -69,7 +76,8 @@ export default function AddRewardBtn() {
                 className="hidden"
                 title={`${watch("reward.image")?.name || "Add image +"}`}
                 {...register("reward.image", {
-                  onChange: (e) => setValue("reward.image", e.target.files[0]),
+                  onChange: (e) =>
+                    setValue("reward.image", e.target.files[0] || undefined),
                 })}
               />
               <Button type="button" primary onClick={confirmReward}>
