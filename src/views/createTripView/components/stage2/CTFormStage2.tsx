@@ -2,13 +2,13 @@ import { useFormContext } from "react-hook-form";
 import Button from "../../../../components/ui/Button";
 import InputFeildError from "../../../../components/ui/InputFeildError";
 import { useRef, useState } from "react";
-import { Trip } from "@/zodSchemas/tripSchema";
 import StopInput from "./StopInput";
+import { Types } from "trip-track-package";
 
 export default function CTFormStage2() {
   const {
     formState: { errors },
-  } = useFormContext<Trip>();
+  } = useFormContext<Types["Trip"]>();
   const [middleStopsCount, setMiddleStopsCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -49,9 +49,10 @@ export default function CTFormStage2() {
       >
         Add middle stop
       </Button>
-
-      <p className={`mb-1 pl-5 text-start font-semibold`}>Last Stop</p>
-      <StopInput index={middleStopsCount + 1} />
+      <div>
+        <p className={`mb-1 pl-5 text-start font-semibold`}>Last Stop</p>
+        <StopInput index={middleStopsCount + 1} />
+      </div>
       <Button type="submit" primary>
         Create Trip
       </Button>

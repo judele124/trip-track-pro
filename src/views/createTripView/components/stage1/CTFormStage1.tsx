@@ -1,16 +1,16 @@
-import { InputHTMLAttributes, useEffect, useState } from "react";
-import { IFormData } from "../CreateTripForm";
+import { InputHTMLAttributes } from "react";
 import InputFeildError from "@/components/ui/InputFeildError";
 import AddRewardBtn from "./AddRewardBtn";
 import InputWLabel from "@/components/ui/InputWLabel";
 import Button from "@/components/ui/Button";
 import { useFormContext } from "react-hook-form";
-import { Trip } from "@/zodSchemas/tripSchema";
+import { Types } from "trip-track-package";
 
 interface IFirstStageInput extends InputHTMLAttributes<HTMLInputElement> {
-  name: keyof Trip;
+  name: keyof Types["Trip"];
   textarea?: boolean;
 }
+
 const firstStageInputs: IFirstStageInput[] = [
   {
     name: "groupName",
@@ -34,7 +34,7 @@ export default function CTFormStage1() {
   const {
     register,
     formState: { errors },
-  } = useFormContext<Trip>();
+  } = useFormContext<Types["Trip"]>();
 
   return (
     <>

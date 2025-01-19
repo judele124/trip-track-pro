@@ -4,9 +4,8 @@ import DropdownTriggerElement from "@/components/ui/Dropdown/DropdownTriggerElem
 import DropdownMenu from "@/components/ui/Dropdown/DropdownMenu";
 import Button from "@/components/ui/Button";
 import TriviaForm from "./experience/TriviaForm";
-import { ExperienceType } from "@/zodSchemas/trip.schema";
-import { Trip } from "@/zodSchemas/tripSchema";
 import InputWLabel from "@/components/ui/InputWLabel";
+import { ExperienceType, Types } from "trip-track-package";
 // import TreasureFindForm from "./experience/TreasureFindForm";
 // import ScanQRForm from "./experience/ScanQRForm";
 
@@ -28,7 +27,7 @@ const ExperienceForm = ({
     resetField,
     trigger,
     formState: { errors },
-  } = useFormContext<Trip>();
+  } = useFormContext<Types["Trip"]>();
   const experienceType = watch(`stops.${index}.experience.type`);
   return (
     <form

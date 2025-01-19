@@ -42,7 +42,6 @@ export default function StopInput({
         icon={isMiddleStop ? "circle" : index === 0 ? "target" : "flag"}
         title={"First Stop"}
       />
-
       <div className="absolute bottom-0 right-0 top-0 flex gap-2 py-2 pr-2">
         {showBtn && (
           <Button

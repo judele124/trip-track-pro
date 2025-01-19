@@ -9,15 +9,16 @@ import { useEffect, useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
-import { Stop } from "@/zodSchemas/tripSchema";
+import { Types } from "trip-track-package";
 import { IconName } from "@/components/icons/Icon";
+import InputFeildError from "@/components/ui/InputFeildError";
 
 interface GoogleGeocodeResults {
   geometry: { location: { lat: number; lng: number } };
 }
 
 interface IStopLocationInputProps {
-  onValueChange: (value: Stop | undefined) => void;
+  onValueChange: (value: Types["Trip"]["stops"][0] | undefined) => void;
   title?: string;
   icon?: IconName;
   iconFill?: string;
@@ -27,14 +28,13 @@ export default function StopLocationInput({
   iconFill = "#383644",
   icon,
   onValueChange,
-  title,
 }: IStopLocationInputProps) {
   const [isAddressGeoLocationError, setIsAddressGeoLocationError] =
     useState(false);
   const [inputValue, setInputValue] = useState("");
   const debouncedInputValue = useDebouncedValue(inputValue, 800);
 
-  const { suggestions, loading } = useAddressSugestions({
+  const { suggestions, loading, error } = useAddressSugestions({
     query: debouncedInputValue,
   });
 
@@ -81,6 +81,9 @@ export default function StopLocationInput({
             renderItem={({ item }) => <div>{item.description}</div>}
           />
         </Dropdown>
+        {(isAddressGeoLocationError || error) && (
+          <InputFeildError message="Something went wrong please try again later" />
+        )}
       </div>
     </>
   );
