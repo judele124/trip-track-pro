@@ -13,7 +13,13 @@ type ButtonProps = {
 
 const Button = forwardRef(
   (
-    { className = "", children, primary, ...props }: ButtonProps,
+    {
+      className = "",
+      children,
+      primary,
+      type = "button",
+      ...props
+    }: ButtonProps,
     ref: Ref<HTMLButtonElement>,
   ) => {
     if (primary) {
@@ -32,11 +38,16 @@ const Button = forwardRef(
       className += " px-5 py-3";
     }
 
+    if (!className.includes("font-")) {
+      className += " font-semibold";
+    }
+
     return (
       <button
         ref={ref}
         {...props}
-        className={`${className} font-semibold hover:bg-opacity-80`}
+        type={type}
+        className={`hover:bg-opacity-80 ${className}`}
       >
         {children}
       </button>

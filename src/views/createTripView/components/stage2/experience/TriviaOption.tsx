@@ -4,7 +4,8 @@ import InputFeildError from "../../../../../components/ui/InputFeildError";
 import Button from "../../../../../components/ui/Button";
 
 interface ITriviaOption {
-  fields: Record<"id", string>[];
+  stopIndex: number;
+  fieldsCount: number;
   register: UseFormRegister<any>;
   amountError: boolean;
   handleDeleteOption: (index: number) => void;
@@ -12,7 +13,8 @@ interface ITriviaOption {
 }
 
 const TriviaOption = ({
-  fields,
+  stopIndex,
+  fieldsCount,
   register,
   amountError,
   handleAddOption,
@@ -20,15 +22,17 @@ const TriviaOption = ({
 }: ITriviaOption) => {
   return (
     <div className="page-colors m-4 flex flex-col gap-3 overflow-auto rounded-3xl p-4 sm:m-auto sm:max-w-[450px]">
-      {fields.map((field, index) => (
-        <div className="flex flex-col" key={field.id}>
+      {[...Array(fieldsCount)].map((_, index) => (
+        <div className="flex flex-col" key={index}>
           <p className="pl-5">{`Option ${index + 1}`}</p>
           <div className="relative">
             <Input
               type="text"
               title={`Option ${index + 1}`}
               placeholder={`Enter option ${index + 1}`}
-              {...register(`options.${index}.value`)}
+              {...register(
+                `stops.${stopIndex}.experience.data.options.${index}`,
+              )}
             />
             {index > 0 && (
               <button

@@ -1,58 +1,40 @@
 import Dropdown from "@/components/ui/Dropdown/Dropdown";
 import DropdownMenu from "@/components/ui/Dropdown/DropdownMenu";
 import DropdownTriggerElement from "@/components/ui/Dropdown/DropdownTriggerElement";
-import Button from "@/components/ui/Button";
-import Modal from "@/components/ui/Modal";
-import useToggle from "@/hooks/useToggle";
 import {
   PlacePrediction,
   useAddressSugestions,
 } from "@/hooks/useAddressSuggestions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import axios from "axios";
 import { API_BASE_URL } from "@/env.config";
+import { Types } from "trip-track-package";
 import { IconName } from "@/components/icons/Icon";
 import InputFeildError from "@/components/ui/InputFeildError";
-import ExperienceForm from "./ExperienceForm";
 
 interface GoogleGeocodeResults {
   geometry: { location: { lat: number; lng: number } };
 }
 
 interface IStopLocationInputProps {
-  onRemove?: () => void;
-  middleStop?: boolean;
-  onValueChange: (
-    address: string,
-    location: { lat: number; lng: number },
-  ) => void;
+  onValueChange: (value: Types["Trip"]["Stop"]["Model"] | undefined) => void;
   title?: string;
   icon?: IconName;
   iconFill?: string;
 }
 
 export default function StopLocationInput({
-  onRemove,
-  middleStop = false,
-  onValueChange,
-  title,
+  iconFill = "#383644",
   icon,
-  iconFill = "#5e6166",
+  onValueChange,
 }: IStopLocationInputProps) {
   const [isAddressGeoLocationError, setIsAddressGeoLocationError] =
     useState(false);
   const [inputValue, setInputValue] = useState("");
   const debouncedInputValue = useDebouncedValue(inputValue, 800);
 
-  const {
-    isOpen: isModalOpan,
-    setIsOpen: setIsModalOpen,
-    toggle: toggleModal,
-  } = useToggle();
-  const { isOpen: showBtn, setIsOpen: setShowBtn } = useToggle();
-
-  const { suggestions, error, loading } = useAddressSugestions({
+  const { suggestions, loading, error } = useAddressSugestions({
     query: debouncedInputValue,
   });
 
@@ -69,8 +51,7 @@ export default function StopLocationInput({
   const handleAddressSelection = async (item: PlacePrediction) => {
     try {
       const { lat, lng } = await getGeoLocationFromAddress(item.description);
-      onValueChange(item.description, { lat, lng });
-      setShowBtn(true);
+      onValueChange({ location: { lat, lon: lng }, address: item.description });
       setIsAddressGeoLocationError(false);
     } catch (error) {
       setIsAddressGeoLocationError(true);
@@ -78,16 +59,14 @@ export default function StopLocationInput({
     }
   };
 
+  useEffect(() => {
+    if (debouncedInputValue === "") {
+      onValueChange(undefined);
+    }
+  }, [debouncedInputValue]);
+
   return (
     <>
-      {(error || isAddressGeoLocationError) && (
-        <InputFeildError message="Something went wrong please try again later" />
-      )}
-      <label className={`flex w-full flex-col gap-1`}>
-        {title && (
-          <span className={`pl-5 text-start font-semibold`}>{title}</span>
-        )}
-      </label>
       <div className="relative">
         <Dropdown list={suggestions?.predictions}>
           <DropdownTriggerElement<PlacePrediction>
@@ -95,49 +74,17 @@ export default function StopLocationInput({
             type="input"
             iconFill={iconFill}
             elemTextContent={(item) => item?.description || "default"}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setShowBtn(false);
-            }}
+            onChange={(e) => setInputValue(e.target.value)}
           />
           <DropdownMenu<PlacePrediction>
             setSelected={handleAddressSelection}
             renderItem={({ item }) => <div>{item.description}</div>}
           />
         </Dropdown>
-        <div className="absolute bottom-0 right-0 top-0 flex gap-2 py-2 pr-2">
-          {showBtn && (
-            <Button
-              className="rounded-xl px-2 py-0 text-sm font-normal"
-              type="button"
-              onClick={() => {
-                toggleModal();
-              }}
-              primary
-            >
-              Add Experience
-            </Button>
-          )}
-          {middleStop && (
-            <Button
-              className="rounded-xl bg-red-500 px-2 py-0"
-              onClick={onRemove}
-            >
-              🗑️
-            </Button>
-          )}
-        </div>
+        {(isAddressGeoLocationError || error) && (
+          <InputFeildError message="Something went wrong please try again later" />
+        )}
       </div>
-
-      <Modal
-        center
-        open={isModalOpan}
-        onBackdropClick={() => setIsModalOpen(false)}
-        containerClassName="w-full"
-      >
-        {/* mission components */}
-        <ExperienceForm />
-      </Modal>
     </>
   );
 }

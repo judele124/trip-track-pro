@@ -1,5 +1,4 @@
 import FormMultipleStages from "../../../components/FormMultipleStages";
-import { loginSchema, LoginSchemaT } from "../../../zodSchemas/authSchemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../../contexts/AuthContext";
 import LoginFormStage1 from "./LoginFormStage1";
 import LoginFormStage2 from "./LoginFormStage2";
+import { Types, Schemas } from "trip-track-package";
 
 const LoginFrom = () => {
   const [currentStage, setCurrentStage] = useState(0);
@@ -27,11 +27,11 @@ const LoginFrom = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginSchemaT>({
-    resolver: zodResolver(loginSchema[currentStage]),
+  } = useForm<Types["Auth"]["LoginSchema"]>({
+    resolver: zodResolver(Schemas.auth.multipleStepsLoginSchema[currentStage]),
   });
 
-  const onSubmit = async (data: LoginSchemaT) => {
+  const onSubmit = async (data: Types["Auth"]["LoginSchema"]) => {
     if (currentStage === 0) await sendCode(data.email);
     if (currentStage === 1) {
       await verifyCode(data);

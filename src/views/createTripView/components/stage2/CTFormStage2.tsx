@@ -1,90 +1,60 @@
-import {
-  FieldErrors,
-  UseFormResetField,
-  UseFormSetValue,
-} from "react-hook-form";
-import Button from "@/components/ui/Button";
-import InputFeildError from "@/components/ui/InputFeildError";
-import { IFormData } from "../CreateTripForm";
+import { useFormContext } from "react-hook-form";
+import Button from "../../../../components/ui/Button";
+import InputFeildError from "../../../../components/ui/InputFeildError";
 import { useRef, useState } from "react";
-import StopLocationInput from "./StopLocationInput";
-import { useCounter } from "@/hooks/useCounter";
+import StopInput from "./StopInput";
+import { Types } from "trip-track-package";
 
-interface ICTFormStage2Props {
-  resetField: UseFormResetField<IFormData>;
-  setValue: UseFormSetValue<IFormData>;
-  errors: FieldErrors<IFormData>;
-}
-
-export default function CTFormStage2({
-  resetField,
-  setValue,
-  errors,
-}: ICTFormStage2Props) {
-  const {} = useCounter({ initial: 0 });
+export default function CTFormStage2() {
+  const {
+    formState: { errors },
+  } = useFormContext<Types["Trip"]["Model"]>();
   const [middleStopsCount, setMiddleStopsCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleOnValueChange = (key: string & keyof IFormData) => {
-    return (address: string, location: { lat: number; lng: number }) => {
-      setValue(key, { address, location });
-    };
-  };
 
   return (
     <>
       <div ref={containerRef}>
-        {errors.firstStop?.message && (
-          <InputFeildError message={errors.firstStop.message} />
-        )}
-        <StopLocationInput
-          onValueChange={handleOnValueChange("firstStop")}
-          icon={"target"}
-          iconFill="#ce5737"
-          title={"First Stop"}
-        />
-      </div>
-      {middleStopsCount > 0 && (
-        <label className={`flex w-full flex-col gap-1`}>
-          {
-            <span className={`pl-5 text-start font-semibold`}>
-              Middle Stops
-            </span>
-          }
-        </label>
-      )}
-      <div
-        className={`flex max-h-[40vh] flex-col gap-2 ${middleStopsCount > 3 && "overflow-y-scroll"}`}
-      >
-        {[...Array(middleStopsCount)].map((_, i) => (
-          <StopLocationInput
-            middleStop
-            onRemove={() => {
-              // TODO: remove middle stop from state
-              setMiddleStopsCount((prev) => prev - 1);
-            }}
-            onValueChange={handleOnValueChange(
-              `middleStops.${i}` as keyof IFormData,
-            )}
-            key={i}
-            icon={"circle"}
+        {errors.stops && (
+          <InputFeildError
+            message={
+              "Trip must have at least 2 stop, all stops must have an address"
+            }
           />
-        ))}
+        )}
+        <p className={`mb-1 pl-5 text-start font-semibold`}>First Stop</p>
+        <StopInput index={0} />
+      </div>
+      <div>
+        {middleStopsCount > 0 && (
+          <p className={`mb-1 pl-5 text-start font-semibold`}>Middle Stops</p>
+        )}
+        <div
+          className={`flex max-h-[40vh] flex-col gap-2 ${middleStopsCount > 3 && "overflow-y-scroll"}`}
+        >
+          {[...Array(middleStopsCount)].map((_, i) => (
+            <StopInput
+              onRemove={() => setMiddleStopsCount((prev) => prev - 1)}
+              isMiddleStop
+              index={i + 1}
+              key={i + 1}
+            />
+          ))}
+        </div>
       </div>
       <Button
         onClick={() => setMiddleStopsCount((prev) => prev + 1)}
         type="button"
+        className="font-normal"
       >
         Add middle stop
       </Button>
-      <StopLocationInput
-        onValueChange={handleOnValueChange("lastStop")}
-        icon={"flag"}
-        iconFill="#ce5737"
-        title={"Last Stop"}
-      />
+      <div>
+        <p className={`mb-1 pl-5 text-start font-semibold`}>Last Stop</p>
+        <StopInput index={middleStopsCount + 1} />
+      </div>
       <Button type="submit" primary>
-        Send code
+        Create Trip
       </Button>
     </>
   );

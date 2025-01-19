@@ -1,15 +1,16 @@
-import { InputHTMLAttributes, useEffect, useState } from "react";
-import { IFormData } from "../CreateTripForm";
+import { InputHTMLAttributes } from "react";
 import InputFeildError from "@/components/ui/InputFeildError";
 import AddRewardBtn from "./AddRewardBtn";
 import InputWLabel from "@/components/ui/InputWLabel";
 import Button from "@/components/ui/Button";
-import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+import { Types } from "trip-track-package";
 
 interface IFirstStageInput extends InputHTMLAttributes<HTMLInputElement> {
-  name: keyof IFormData;
+  name: keyof Types["Trip"]["Model"];
   textarea?: boolean;
 }
+
 const firstStageInputs: IFirstStageInput[] = [
   {
     name: "groupName",
@@ -17,7 +18,7 @@ const firstStageInputs: IFirstStageInput[] = [
     placeholder: "Enter group name",
   },
   {
-    name: "tripName",
+    name: "name",
     title: "Enter trip name",
     placeholder: "Enter trip name",
   },
@@ -29,24 +30,11 @@ const firstStageInputs: IFirstStageInput[] = [
   },
 ];
 
-export default function CTFormStage1({
-  unregisterReward,
-  register,
-  errors,
-  setValue,
-}: {
-  unregisterReward: () => void;
-  register: UseFormRegister<IFormData>;
-  errors: FieldErrors<IFormData>;
-  setValue: UseFormSetValue<IFormData>;
-}) {
-  const [hasReward, setHasReward] = useState(false);
-
-  useEffect(() => {
-    if (!hasReward) {
-      unregisterReward();
-    }
-  }, [hasReward]);
+export default function CTFormStage1() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<Types["Trip"]["Model"]>();
 
   return (
     <>
@@ -64,19 +52,7 @@ export default function CTFormStage1({
           />
         </div>
       ))}
-      {errors.reward?.title?.message && (
-        <InputFeildError message={errors.reward?.title.message} />
-      )}
-      <AddRewardBtn
-        onOpen={() => setHasReward(true)}
-        onCancel={() => setHasReward(false)}
-        rewardTitleRegister={() => register("reward.title")}
-        rewardImageRegister={() =>
-          register("reward.image", {
-            onChange: (e) => setValue("reward.image", e.target.files[0]),
-          })
-        }
-      />
+      <AddRewardBtn />
       <Button className="w-full" type="submit">
         Confirm
       </Button>

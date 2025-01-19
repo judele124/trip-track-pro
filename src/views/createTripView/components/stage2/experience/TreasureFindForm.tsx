@@ -2,7 +2,7 @@ import { useFormContext } from "react-hook-form";
 import InputWLabel from "@/components/ui/InputWLabel";
 import Button from "@/components/ui/Button";
 
-const TreasureFindForm = () => {
+const TreasureFindForm = ({ index }: { index: number }) => {
   const { register } = useFormContext();
 
   return (

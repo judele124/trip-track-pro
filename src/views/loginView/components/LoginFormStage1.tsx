@@ -2,7 +2,7 @@ import { FieldErrors, UseFormRegister } from "react-hook-form";
 import InputFeildError from "../../../components/ui/InputFeildError";
 import InputWLabel from "../../../components/ui/InputWLabel";
 import Button from "../../../components/ui/Button";
-import { LoginSchemaT } from "../../../zodSchemas/authSchemas";
+import { Types } from "trip-track-package";
 
 export default function LoginFormStage1({
   register,
@@ -10,8 +10,8 @@ export default function LoginFormStage1({
   loading,
   sendCodeError,
 }: {
-  register: UseFormRegister<LoginSchemaT>;
-  errors: FieldErrors<LoginSchemaT>;
+  register: UseFormRegister<Types["Auth"]["LoginSchema"]>;
+  errors: FieldErrors<Types["Auth"]["LoginSchema"]>;
   loading: boolean;
   sendCodeError: Error | null;
 }) {

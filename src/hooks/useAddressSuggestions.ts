@@ -35,7 +35,9 @@ export const useAddressSugestions = ({ query }: IUseAddressSugestionsProps) => {
   });
 
   useEffect(() => {
-    if (!query) return;
+    if (!query) {
+      return;
+    }
 
     activate({
       url: `${API_BASE_URL}/google/address-suggestions?query=${query}`,
