@@ -18,7 +18,7 @@ interface GoogleGeocodeResults {
 }
 
 interface IStopLocationInputProps {
-  onValueChange: (value: Types["Trip"]["stops"][0] | undefined) => void;
+  onValueChange: (value: Types["Trip"]["Stop"]["Model"] | undefined) => void;
   title?: string;
   icon?: IconName;
   iconFill?: string;

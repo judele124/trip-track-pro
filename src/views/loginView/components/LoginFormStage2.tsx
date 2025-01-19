@@ -2,7 +2,7 @@ import { FieldErrors, UseFormRegister } from "react-hook-form";
 import Button from "../../../components/ui/Button";
 import InputFeildError from "../../../components/ui/InputFeildError";
 import InputWLabel from "../../../components/ui/InputWLabel";
-import { LoginSchemaT } from "../../../zodSchemas/authSchemas";
+import { Types } from "trip-track-package";
 
 export default function LoginFormStage2({
   email,
@@ -14,8 +14,8 @@ export default function LoginFormStage2({
   resendCode,
 }: {
   email: string;
-  register: UseFormRegister<LoginSchemaT>;
-  errors: FieldErrors<LoginSchemaT>;
+  register: UseFormRegister<Types["Auth"]["LoginSchema"]>;
+  errors: FieldErrors<Types["Auth"]["LoginSchema"]>;
   sendCodeStatus: number | undefined;
   verifyCodeError: Error | null;
   loading: boolean;

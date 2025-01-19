@@ -15,7 +15,7 @@ export default function AddRewardBtn() {
     unregister,
     formState: { errors },
     trigger,
-  } = useFormContext<Types["Trip"]>();
+  } = useFormContext<Types["Trip"]["Model"]>();
 
   const clearReward = () => {
     setOpen(false);

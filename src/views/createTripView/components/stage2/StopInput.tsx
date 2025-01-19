@@ -4,6 +4,7 @@ import Modal from "@/components/ui/Modal";
 import useToggle from "@/hooks/useToggle";
 import Button from "@/components/ui/Button";
 import { useFormContext } from "react-hook-form";
+import { Types } from "trip-track-package";
 
 interface IStopInputProps {
   isMiddleStop?: boolean;
@@ -16,7 +17,7 @@ export default function StopInput({
   onRemove,
   isMiddleStop,
 }: IStopInputProps) {
-  const { setValue } = useFormContext();
+  const { setValue, resetField } = useFormContext<Types["Trip"]["Model"]>();
   const {
     isOpen: isModalOpan,
     setIsOpen: setIsModalOpen,
@@ -29,7 +30,7 @@ export default function StopInput({
       <StopLocationInput
         onValueChange={(stopLocationData) => {
           if (!stopLocationData) {
-            setValue(`stops.${index}`, stopLocationData);
+            resetField(`stops.${index}`);
             setShowBtn(false);
             return;
           }

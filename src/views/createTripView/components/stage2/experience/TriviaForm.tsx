@@ -5,8 +5,8 @@ import Input from "../../../../../components/ui/Input";
 import { ChangeEvent, useEffect, useState } from "react";
 import Modal from "../../../../../components/ui/Modal";
 import TriviaOption from "./TriviaOption";
-import { Trip, Trivia } from "@/zodSchemas/tripSchema";
 import InputFeildError from "@/components/ui/InputFeildError";
+import { Types } from "trip-track-package";
 
 const MIN_OPTIONS = 1;
 const MAX_OPTIONS = 4;
@@ -20,7 +20,7 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
     setValue,
     watch,
     formState: { errors },
-  } = useFormContext<Trip>();
+  } = useFormContext<Types["Trip"]["Model"]>();
 
   const handleInputAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -75,8 +75,9 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
       );
     }
   }, [amountOptions]);
+
   const experienceDataErrors = errors.stops?.[stopIndex]?.experience
-    ?.data as Trivia["data"];
+    ?.data as Types["Trip"]["Stop"]["Experience"]["Details"]["Trivia"]["Model"]["data"];
 
   return (
     <>

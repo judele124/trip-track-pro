@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import CTFormStage1 from "./stage1/CTFormStage1";
 import CTFormStage2 from "./stage2/CTFormStage2";
 import { Schemas, Types } from "trip-track-package";
-// import { multipleStepsTripSchema, Trip } from "@/zodSchemas/tripSchema";
 
 interface ICreateTripFormProps {
   currentFormStage: number;
@@ -29,7 +28,7 @@ export default function CreateTripForm({
   currentFormStage,
   setCurrentFormStage,
 }: ICreateTripFormProps) {
-  const reactHookFormsMethods = useForm<Types["Trip"]>({
+  const reactHookFormsMethods = useForm<Types["Trip"]["Model"]>({
     resolver: zodResolver(
       Schemas.trip.multipleStepsTripSchema[currentFormStage],
     ),
@@ -41,8 +40,6 @@ export default function CreateTripForm({
       stops: [],
     },
   });
-
-  console.log(reactHookFormsMethods.formState.errors);
 
   return (
     <FormProvider {...reactHookFormsMethods}>

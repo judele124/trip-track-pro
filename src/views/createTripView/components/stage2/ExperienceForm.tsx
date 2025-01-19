@@ -27,7 +27,7 @@ const ExperienceForm = ({
     resetField,
     trigger,
     formState: { errors },
-  } = useFormContext<Types["Trip"]>();
+  } = useFormContext<Types["Trip"]["Model"]>();
   const experienceType = watch(`stops.${index}.experience.type`);
   return (
     <form
@@ -55,11 +55,8 @@ const ExperienceForm = ({
           renderItem={({ item }) => <div>{item}</div>}
         />
       </Dropdown>
+
       {experienceType === ExperienceType.TRIVIA && <TriviaForm index={index} />}
-      {/* {experienceType === ExperienceType.TREASURE_FIND && (
-        <TreasureFindForm index={index} />
-      )} */}
-      {/* {experienceType === ExperienceType.INFO && <ScanQRForm index={index} />} */}
 
       <InputWLabel
         type="number"

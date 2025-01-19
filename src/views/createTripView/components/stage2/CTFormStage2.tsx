@@ -8,7 +8,7 @@ import { Types } from "trip-track-package";
 export default function CTFormStage2() {
   const {
     formState: { errors },
-  } = useFormContext<Types["Trip"]>();
+  } = useFormContext<Types["Trip"]["Model"]>();
   const [middleStopsCount, setMiddleStopsCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 

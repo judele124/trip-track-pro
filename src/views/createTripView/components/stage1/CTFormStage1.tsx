@@ -7,7 +7,7 @@ import { useFormContext } from "react-hook-form";
 import { Types } from "trip-track-package";
 
 interface IFirstStageInput extends InputHTMLAttributes<HTMLInputElement> {
-  name: keyof Types["Trip"];
+  name: keyof Types["Trip"]["Model"];
   textarea?: boolean;
 }
 
@@ -34,7 +34,7 @@ export default function CTFormStage1() {
   const {
     register,
     formState: { errors },
-  } = useFormContext<Types["Trip"]>();
+  } = useFormContext<Types["Trip"]["Model"]>();
 
   return (
     <>

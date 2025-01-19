@@ -1,5 +1,4 @@
 import FormMultipleStages from "../../../components/FormMultipleStages";
-// import { loginSchema, LoginSchemaT } from "../../../zodSchemas/authSchemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
