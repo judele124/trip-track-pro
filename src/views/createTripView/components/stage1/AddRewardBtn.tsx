@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../../../../components/ui/Button";
 import InputWLabel from "../../../../components/ui/InputWLabel";
 import { useFormContext } from "react-hook-form";
 import InputFeildError from "@/components/ui/InputFeildError";
 import Modal from "@/components/ui/Modal";
 import { Types } from "trip-track-package";
+import Input from "@/components/ui/Input";
+import { mergeRefs } from "@/utils/functions";
 export default function AddRewardBtn() {
+  const rewardImageRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const {
     watch,
@@ -37,6 +40,13 @@ export default function AddRewardBtn() {
     }
   }, [open]);
 
+  const { ref, ...rewardImageRegisterReturn } = open
+    ? register("reward.image", {
+        onChange: (e) =>
+          setValue("reward.image", e.target.files[0] || undefined),
+      })
+    : {};
+
   return (
     <>
       <div className={`relative rounded-2xl bg-primary`}>
@@ -61,6 +71,8 @@ export default function AddRewardBtn() {
               {errors.reward?.title?.message && (
                 <InputFeildError message={errors.reward?.title.message} />
               )}
+
+              {/* Reward title */}
               <InputWLabel
                 className="border-dark dark:border-light"
                 {...register("reward.title")}
@@ -68,18 +80,20 @@ export default function AddRewardBtn() {
               {errors.reward?.image?.message && (
                 <InputFeildError message={errors.reward?.image?.message} />
               )}
-              <InputWLabel
-                multiple={false}
-                labelTextCenter
-                labelClassName="rounded-2xl border py-3 border-dark text-light dark:border-light dark:bg-light bg-dark"
-                type="file"
-                className="hidden"
-                title={`${watch("reward.image")?.name || "Add image +"}`}
-                {...register("reward.image", {
-                  onChange: (e) =>
-                    setValue("reward.image", e.target.files[0] || undefined),
-                })}
-              />
+
+              {/* Reward Image */}
+              <Button onClick={() => rewardImageRef.current?.click()}>
+                {watch("reward.image")?.name || "Add image +"}
+                <Input
+                  ref={mergeRefs(ref, rewardImageRef)}
+                  type="file"
+                  className="hidden"
+                  title={`${watch("reward.image")?.name || "Add image +"}`}
+                  {...rewardImageRegisterReturn}
+                />
+              </Button>
+
+              {/* Reward Buttons */}
               <Button type="button" primary onClick={confirmReward}>
                 Confirm Reward
               </Button>

@@ -1,7 +1,7 @@
+import { Types } from "trip-track-package";
 import { API_BASE_URL } from "../env.config";
 import { UseAxiosResponse } from "../hooks/useAxios";
 import { getErrorMessage } from "../utils/errorMessages";
-import { LoginSchemaT } from "../zodSchemas/authSchemas";
 
 type Activate = UseAxiosResponse["activate"];
 
@@ -30,7 +30,7 @@ export const sendCode = async (
 };
 
 export const verifyCode = async (
-  data: LoginSchemaT,
+  data: Types["Auth"]["LoginSchema"],
   activate: Activate,
 ): Promise<{
   user: IUserResponseData;

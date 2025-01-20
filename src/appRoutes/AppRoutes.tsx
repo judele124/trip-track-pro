@@ -11,6 +11,7 @@ import Map from "../views/mapView/Map.tsx";
 import ParticipantsView from "../views/participantsView/ParticipantsView.tsx";
 import ChatView from "../views/chatView/ChatView.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
+import ShareTripView from "@/views/shareTrip/ShareTripView.tsx";
 
 const AppRoutes = () => {
   return (
@@ -28,9 +29,18 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="shared-trip"
+            element={
+              <ProtectedRoute>
+                <ShareTripView />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<PageNotFoundView />} />
         </Route>
       </Route>
+
       <Route path="/trip" element={<TripLayout />}>
         <Route
           path="map"

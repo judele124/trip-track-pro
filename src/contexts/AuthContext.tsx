@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import useAxios from "../hooks/useAxios";
-import { LoginSchemaT } from "../zodSchemas/authSchemas";
 import {
   logout,
   sendCode,
   validateToken,
   verifyCode,
 } from "../servises/authService";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { Types } from "trip-track-package";
 
 interface IUser {
   email: string;
@@ -22,7 +22,7 @@ interface AuthProviderProps {
 interface IAuthContextValue {
   logout: () => Promise<void>;
   sendCode: (email: string) => Promise<void>;
-  verifyCode: (data: LoginSchemaT) => Promise<void>;
+  verifyCode: (data: Types["Auth"]["LoginSchema"]) => Promise<void>;
   loading: boolean;
   status: number | undefined;
   tokenValidationStatus: number | null;
@@ -64,7 +64,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const handleVerifyCode = async (data: LoginSchemaT) => {
+  const handleVerifyCode = async (data: Types["Auth"]["LoginSchema"]) => {
     try {
       const { user, status } = await verifyCode(data, activate);
       setVerifyCodeStatus(status);
