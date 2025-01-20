@@ -14,3 +14,15 @@ export const tripCreate = async (
 
   return { data, status };
 };
+
+export const tripGet = async (
+  activate: UseAxiosResponse["activate"],
+  id: string,
+) => {
+  const { data, status } = await activate({
+    url: `${API_BASE_URL}/trip/get/${id}`,
+    method: "get",
+  });
+
+  return { data, status };
+};
