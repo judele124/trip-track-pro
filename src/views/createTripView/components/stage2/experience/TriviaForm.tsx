@@ -111,9 +111,10 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
         />
       )}
       <div>
-        <label className="pl-5 text-start font-semibold">Options</label>
+        <label className="pl-5 text-start font-semibold">Trivia Options</label>
         <div className="flex gap-2">
           <Input
+            containerClassName="w-full"
             type="number"
             title="Number of options"
             placeholder="Enter the number of options"
@@ -134,7 +135,7 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
             type="button"
             onClick={() => setIsModalOpen((prev) => !prev)}
           >
-            Manage Options
+            set options
           </Button>
         </div>
       </div>

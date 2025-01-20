@@ -5,18 +5,18 @@ import Modal from "@/components/ui/Modal";
 import useToggle from "@/hooks/useToggle";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 export default function ShareTrip() {
   const [error, setError] = useState("");
-  const [searchParams, setSearchParams] = useSearchParams({
+  const [searchParams, _] = useSearchParams({
     tripId: "default trip id",
-    tripName: "default trip name",
+    name: "default trip name",
   });
-  const { pathname } = useLocation();
+
   const { isOpen: isQrModalOpen, toggle: toggleIsQrModalOpen } = useToggle();
 
-  const shareTripUrl = `${window.location.origin + pathname}?tripId=${searchParams.get("tripId")}&tripName=${searchParams.get("tripName")}`;
+  const shareTripUrl = `${window.location.origin + "/join-trip"}?tripId=${searchParams.get("tripId")}&name=${searchParams.get("name")}`;
 
   const shareData = {
     url: shareTripUrl,
@@ -43,7 +43,7 @@ export default function ShareTrip() {
     <>
       <div className="flex h-full w-full flex-col gap-4">
         <div>
-          <h1>Trip create seccessfuly</h1>
+          <h1>Trip {searchParams.get("name")} created seccessfuly</h1>
           <p>Share the trip to add sub guides and players</p>
         </div>
 

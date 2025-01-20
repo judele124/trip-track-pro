@@ -1,15 +1,18 @@
-import { forwardRef, InputHTMLAttributes } from "react";
-import Input, { IInputProps } from "./Input";
+import React, {
+  InputHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "react";
+import Textarea from "./Textarea";
 
-type InputWLabelProps = IInputProps & {
+interface InputWLabelProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   labelProps?: InputHTMLAttributes<HTMLLabelElement>;
   title?: string;
   labelClassName?: string;
   labelTextCenter?: boolean;
-};
+}
 
-export default forwardRef<HTMLInputElement, InputWLabelProps>(
-  function InputWLabel(
+export default React.forwardRef<HTMLTextAreaElement, InputWLabelProps>(
+  function TextareaWLabel(
     {
       labelProps,
       title = "Default Title",
@@ -29,7 +32,7 @@ export default forwardRef<HTMLInputElement, InputWLabelProps>(
         >
           {title}
         </span>
-        <Input {...props} ref={ref} />
+        <Textarea {...props} ref={ref} />
       </label>
     );
   },
