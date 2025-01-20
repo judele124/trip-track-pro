@@ -30,7 +30,7 @@ const AppRoutes = () => {
             }
           />
           <Route
-            path="shared-trip"
+            path="share-trip"
             element={
               <ProtectedRoute>
                 <ShareTripView />
