@@ -67,7 +67,7 @@ export default function CreateTripForm({
       setCurrentFormStage((prev) => prev + 1);
       const tripData = data as Types["Trip"]["Model"];
       setSearchParams({
-        tripId: tripData._id,
+        tripId: tripData._id.toString(),
         name: tripData.name,
       });
     }
