@@ -2,31 +2,31 @@ import Icon from "@/components/icons/Icon";
 import Button from "@/components/ui/Button";
 import InputFeildError from "@/components/ui/InputFeildError";
 import Modal from "@/components/ui/Modal";
+import useAxios from "@/hooks/useAxios";
+import useIdFromParamsOrNavigate from "@/hooks/useIdFromParamsOrNavigate";
 import useToggle from "@/hooks/useToggle";
+import { tripGet } from "@/servises/tripService";
 import { QRCodeSVG } from "qrcode.react";
-import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Types } from "trip-track-package";
 
 export default function ShareTrip() {
-  const [error, setError] = useState("");
-  const [searchParams, _] = useSearchParams({
-    tripId: "default trip id",
-    name: "default trip name",
-  });
-
+  const nav = useNavigate();
+  const tripId = useIdFromParamsOrNavigate("404");
   const { isOpen: isQrModalOpen, toggle: toggleIsQrModalOpen } = useToggle();
+  const { activate, data, error, loading } = useAxios({ manual: true });
+  const [browserError, setBrowserError] = useState<string | null>(null);
 
-  const shareTripUrl = `${window.location.origin + "/join-trip"}?tripId=${searchParams.get("tripId")}&name=${searchParams.get("name")}`;
-
-  const shareData = {
-    url: shareTripUrl,
-    text: `Check out this trip!\n${shareTripUrl}`,
-    title: "Check out this trip!",
-  };
+  useEffect(() => {
+    if (tripId) {
+      tripGet(activate, tripId);
+    }
+  }, [tripId]);
 
   const handleClickOtherShareMethod = async () => {
     if (!navigator.canShare) {
-      setError("Sorry your browser doest support sharing.");
+      setBrowserError("Sorry your browser doest support sharing.");
       return;
     }
 
@@ -39,11 +39,45 @@ export default function ShareTrip() {
     }
   };
 
+  if (error) {
+    return (
+      <div className="text-center">
+        <p>Sorry something went wrong please try again later</p>
+        <Button primary className="mt-5 w-full" onClick={() => nav("/")}>
+          Home
+        </Button>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!data) return null;
+
+  const { name, description, _id }: Types["Trip"]["Model"] = data;
+
+  const shareTripUrl = `${window.location.origin + "/join-trip"}?tripId=${_id}`;
+
+  const shareData = {
+    url: shareTripUrl,
+    text: `Check out this trip!
+The trip is called ${name}
+${description ? `the trip is about ${description}` : ""}
+and you can join it here:\n${shareTripUrl}`,
+    title: "Check out this trip!",
+  };
+
   return (
     <>
       <div className="flex h-full w-full flex-col gap-4">
         <div>
-          <h1>Trip {searchParams.get("name")} created seccessfuly</h1>
+          <h1>
+            Trip{" "}
+            <span className="text-4xl font-semibold text-primary">{name}</span>{" "}
+            created seccessfuly
+          </h1>
           <p>Share the trip to add sub guides and players</p>
         </div>
 
@@ -82,7 +116,7 @@ export default function ShareTrip() {
                   Click to print
                 </Button>
                 <div className="hidden print:block">
-                  <h1>{searchParams.get("tripName")}</h1>
+                  <h1>{name}</h1>
                   <p>scan the code to join the trip</p>
                 </div>
               </div>
@@ -90,7 +124,7 @@ export default function ShareTrip() {
           </div>
         </div>
         <div className="text-center">
-          {error && <InputFeildError message={error} />}
+          {browserError && <InputFeildError message={browserError} />}
           <Button
             className="bg-transparent px-0 py-0 text-dark underline underline-offset-1 dark:text-light"
             onClick={handleClickOtherShareMethod}

@@ -15,6 +15,10 @@ const TripLayout = () => {
     }
   }, [pathname]);
 
+  useEffect(() => {
+    console.log("this log is from TripLayout");
+  }, []);
+
   return (
     <div className="page-colors relative z-0 mx-auto flex h-dvh max-w-[450px] flex-col">
       {/* top navigation */}
