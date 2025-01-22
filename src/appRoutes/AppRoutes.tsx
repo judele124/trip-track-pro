@@ -15,11 +15,13 @@ import ShareTripView from "@/views/shareTripView";
 import JoinTripView from "@/views/joinTripView";
 import JoiningTripView from "@/views/connectTripView/index.tsx";
 import ConnectTripView from "@/views/connectTripView/index.tsx";
+import TestUI from "@/components/test/TestUI.tsx";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<PageLayout />}>
+      <Route path="/" element={<TestUI />}>
+        {/* <PageLayout /> */}
         <Route index element={<HomePageView />} />
         <Route path="" element={<NavbarLayout />}>
           <Route path="first-entry" element={<FirstEntryView />} />
