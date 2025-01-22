@@ -4,9 +4,12 @@ import React, {
   useState,
   ReactNode,
   useEffect,
+  useRef,
+  MutableRefObject,
 } from "react";
-import { Map as MapboxMap } from "mapbox-gl";
+import { Map } from "mapbox-gl";
 import { IconName } from "@/components/icons/Icon";
+import {Types} from 'trip-track-package'
 
 interface IexperiencePoints {
   location: [number, number];
@@ -20,9 +23,8 @@ interface ItravelsPoints {
 
 interface MapContextValue {
   isMapReady: boolean;
+  mapRef: MutableRefObject<Map | null>;
   setMapReady: (ready: boolean) => void;
-  mapRefContext: MapboxMap | null;
-  setMapRefContext: (map: MapboxMap | null) => void;
   experiencePoints: IexperiencePoints[];
   setExperiencePoints: (points: IexperiencePoints[]) => void;
   travelsPoints: ItravelsPoints[];
@@ -52,9 +54,9 @@ const MapContextProvider: React.FC<MapContextProviderProps> = ({
   children,
 }) => {
   const [isMapReady, setMapReady] = useState<boolean>(false);
-  const [mapRefContext, setMapRefContext] = useState<MapboxMap | null>(null);
   const [experiencePoints, setExperiencePoints] = useState<IexperiencePoints[]>([]);
   const [travelsPoints, setTravelsPoints] = useState<ItravelsPoints[]>([]);
+  const mapRef = useRef<Map | null>(null);
 
   useEffect(() => {
     setExperiencePoints(expP);
@@ -64,10 +66,9 @@ const MapContextProvider: React.FC<MapContextProviderProps> = ({
   return (
     <MapContext.Provider
       value={{
+        mapRef,
         isMapReady,
         setMapReady,
-        mapRefContext,
-        setMapRefContext,
         experiencePoints,
         setExperiencePoints,
         travelsPoints,

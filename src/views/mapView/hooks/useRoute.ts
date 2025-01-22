@@ -2,10 +2,10 @@ import { useMapContext } from '@/contexts/MapContext';
 import mapboxgl from 'mapbox-gl';
 
 export const useRoute = () => {
-    const { mapRefContext: mapRef } = useMapContext();
+    const { mapRef : { current : mapRefCurrent} } = useMapContext();
 
     const createRoute = async (points: [number, number][]) => {
-        if (!mapRef || !mapRef.loaded()) {
+        if (!mapRefCurrent || !mapRefCurrent.loaded()) {
             console.log('Map not initialized yet');
             return;
         }
@@ -17,17 +17,19 @@ export const useRoute = () => {
                 { method: 'GET' }
             );
             const json = await query.json();
+            console.log(json);
+            
 
-            if (mapRef.getSource('route')) {
+            if (mapRefCurrent.getSource('route')) {
                 try {
-                    mapRef.removeLayer('route');
-                    mapRef.removeSource('route');
+                    mapRefCurrent.removeLayer('route');
+                    mapRefCurrent.removeSource('route');
                 } catch (error) {
                     console.error('Error removing existing route:', error);
                 }
             }
 
-            mapRef.addSource('route', {
+            mapRefCurrent.addSource('route', {
                 type: 'geojson',
                 data: {
                     type: 'Feature',
@@ -36,7 +38,7 @@ export const useRoute = () => {
                 }
             });
 
-            mapRef.addLayer({
+            mapRefCurrent.addLayer({
                 id: 'route',
                 type: 'line',
                 source: 'route',
