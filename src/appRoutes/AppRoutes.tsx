@@ -11,6 +11,10 @@ import Map from "../views/mapView/Map.tsx";
 import ParticipantsView from "../views/participantsView/ParticipantsView.tsx";
 import ChatView from "../views/chatView/ChatView.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
+import ShareTripView from "@/views/shareTripView";
+import JoinTripView from "@/views/joinTripView";
+import JoiningTripView from "@/views/connectTripView/index.tsx";
+import ConnectTripView from "@/views/connectTripView/index.tsx";
 
 const AppRoutes = () => {
   return (
@@ -20,6 +24,8 @@ const AppRoutes = () => {
         <Route path="" element={<NavbarLayout />}>
           <Route path="first-entry" element={<FirstEntryView />} />
           <Route path="login" element={<LoginView />} />
+
+          {/* protected routes */}
           <Route
             path="create-trip"
             element={
@@ -28,10 +34,36 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="share-trip"
+            element={
+              <ProtectedRoute>
+                <ShareTripView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="join-trip"
+            element={
+              <ProtectedRoute>
+                <JoinTripView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/connect/:tripId"
+            element={
+              <ProtectedRoute>
+                <ConnectTripView />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<PageNotFoundView />} />
         </Route>
       </Route>
+
       <Route path="/trip" element={<TripLayout />}>
+        <Route path="joining/:tripId" element={<JoiningTripView />} />
         <Route
           path="map"
           element={

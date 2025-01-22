@@ -32,7 +32,7 @@ const ExperienceForm = ({
   return (
     <form
       className="page-colors page-padding mx-4 flex flex-col gap-2 rounded-3xl sm:mx-auto sm:max-w-[450px]"
-      onSubmit={async (e) => {
+      onSubmit={async () => {
         if (!(await trigger(`stops.${index}`))) {
           console.error(errors);
           return;
@@ -62,7 +62,9 @@ const ExperienceForm = ({
         type="number"
         placeholder="Enter score"
         title="Add Score"
-        {...register(`stops.${index}.experience.score`)}
+        {...register(`stops.${index}.experience.score`, {
+          valueAsNumber: true,
+        })}
       />
       <div className="flex gap-2">
         <Button

@@ -4,6 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import CTFormStage1 from "./stage1/CTFormStage1";
 import CTFormStage2 from "./stage2/CTFormStage2";
 import { Schemas, Types } from "trip-track-package";
+import { tripCreate } from "@/servises/tripService";
+import useAxios from "@/hooks/useAxios";
+import InputFeildError from "@/components/ui/InputFeildError";
+import { useEffect } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 
 interface ICreateTripFormProps {
   currentFormStage: number;
@@ -28,7 +33,10 @@ export default function CreateTripForm({
   currentFormStage,
   setCurrentFormStage,
 }: ICreateTripFormProps) {
-  const reactHookFormsMethods = useForm<Types["Trip"]["Model"]>({
+  const [_, setSearchParams] = useSearchParams();
+  const { handleSubmit, ...reactHookFormsMethods } = useForm<
+    Types["Trip"]["Model"]
+  >({
     resolver: zodResolver(
       Schemas.trip.multipleStepsTripSchema[currentFormStage],
     ),
@@ -41,21 +49,56 @@ export default function CreateTripForm({
     },
   });
 
+  const {
+    activate,
+    data,
+    error: tripCreateError,
+    loading: tripCreateLoading,
+    status,
+  } = useAxios({ manual: true });
+
+  const handleTripCreate = async () => {
+    const formState = reactHookFormsMethods.watch();
+    await tripCreate(activate, formState);
+  };
+
+  useEffect(() => {
+    if (status && status >= 200 && status <= 300) {
+      setCurrentFormStage((prev) => prev + 1);
+      const tripData = data as Types["Trip"]["Model"];
+      setSearchParams({
+        tripId: tripData._id.toString(),
+        name: tripData.name,
+      });
+    }
+  }, [status]);
+
+  useEffect(() => {
+    setCurrentFormStage(0);
+    setSearchParams({});
+  }, []);
+
   return (
-    <FormProvider {...reactHookFormsMethods}>
-      <FormMultipleStages
-        className="flex flex-col gap-3"
-        onLastStageSubmit={reactHookFormsMethods.handleSubmit(() => {
-          console.log(reactHookFormsMethods.watch());
-        })}
-        onMultipleStageSubmit={(e, { incrementStage }) => {
-          reactHookFormsMethods.handleSubmit(() => {
-            setCurrentFormStage((prev) => prev + 1);
-            incrementStage();
-          })(e);
-        }}
-        renderStages={[<CTFormStage1 />, <CTFormStage2 />]}
-      />
-    </FormProvider>
+    <>
+      <FormProvider handleSubmit={handleSubmit} {...reactHookFormsMethods}>
+        <FormMultipleStages
+          className="flex flex-col gap-3"
+          onLastStageSubmit={handleSubmit(handleTripCreate)}
+          onMultipleStageSubmit={(e, { incrementStage }) => {
+            handleSubmit(() => {
+              setCurrentFormStage((prev) => prev + 1);
+              incrementStage();
+            })(e);
+          }}
+          renderStages={[<CTFormStage1 />, <CTFormStage2 />]}
+        />
+      </FormProvider>
+      <div className="text-center">
+        {tripCreateError && (
+          <InputFeildError message={tripCreateError.message} />
+        )}
+        {tripCreateLoading && <p>Loading...</p>}
+      </div>
+    </>
   );
 }

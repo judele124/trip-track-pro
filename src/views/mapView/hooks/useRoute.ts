@@ -2,7 +2,7 @@ import { useMapContext } from '@/contexts/MapContext';
 import mapboxgl from 'mapbox-gl';
 
 export const useRoute = () => {
-    const { mapRef } = useMapContext();
+    const { mapRefContext: mapRef } = useMapContext();
 
     const createRoute = async (points: [number, number][]) => {
         if (!mapRef || !mapRef.loaded()) {

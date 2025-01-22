@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import useAxios from "../hooks/useAxios";
-import {Types} from 'trip-track-package'
 import {
   logout,
   sendCode,
   validateToken,
   verifyCode,
 } from "../servises/authService";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { Types } from "trip-track-package";
 
 interface IUser {
   email: string;
