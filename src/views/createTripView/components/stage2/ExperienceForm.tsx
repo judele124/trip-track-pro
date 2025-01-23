@@ -29,12 +29,13 @@ const ExperienceForm = ({
     formState: { errors },
   } = useFormContext<Types["Trip"]["Model"]>();
   const experienceType = watch(`stops.${index}.experience.type`);
+
   return (
     <form
       className="page-colors page-padding mx-4 flex flex-col gap-2 rounded-3xl sm:mx-auto sm:max-w-[450px]"
       onSubmit={async () => {
-        if (!(await trigger(`stops.${index}`))) {
-          console.error(errors);
+        if (!(await trigger(`stops.${index}.experience`))) {
+          console.error(errors.stops?.[index]?.experience);
           return;
         }
         onConfirm();

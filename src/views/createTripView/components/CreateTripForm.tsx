@@ -8,7 +8,7 @@ import { tripCreate } from "@/servises/tripService";
 import useAxios from "@/hooks/useAxios";
 import InputFeildError from "@/components/ui/InputFeildError";
 import { useEffect } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 interface ICreateTripFormProps {
   currentFormStage: number;
@@ -58,8 +58,10 @@ export default function CreateTripForm({
   } = useAxios({ manual: true });
 
   const handleTripCreate = async () => {
-    const formState = reactHookFormsMethods.watch();
-    await tripCreate(activate, formState);
+    console.log(reactHookFormsMethods.getValues());
+
+    // const formState = reactHookFormsMethods.watch();
+    // await tripCreate(activate, formState);
   };
 
   useEffect(() => {

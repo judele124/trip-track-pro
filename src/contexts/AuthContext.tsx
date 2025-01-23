@@ -8,6 +8,7 @@ import {
 } from "../servises/authService";
 import { useLocation } from "react-router-dom";
 import { Types } from "trip-track-package";
+import { ServiceError } from "@/utils/ServiceError";
 
 interface IUser {
   email: string;
@@ -93,8 +94,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       const { user, status } = await validateToken(activate);
       setUser(user);
       setTokenValidationStatus(status);
-    } catch (err: any) {
-      setTokenValidationStatus(null);
+    } catch (err) {
+      setTokenValidationStatus((err as ServiceError).statusCode);
       console.error(err);
     }
   };

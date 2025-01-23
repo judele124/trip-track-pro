@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../components/Logo";
 import imgSrcLight from "./assets/start-screen-light.svg";
