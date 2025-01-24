@@ -8,7 +8,7 @@ import { tripCreate } from "@/servises/tripService";
 import useAxios from "@/hooks/useAxios";
 import InputFeildError from "@/components/ui/InputFeildError";
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface ICreateTripFormProps {
   currentFormStage: number;
@@ -33,6 +33,7 @@ export default function CreateTripForm({
   currentFormStage,
   setCurrentFormStage,
 }: ICreateTripFormProps) {
+  const nav = useNavigate();
   const [_, setSearchParams] = useSearchParams();
   const { handleSubmit, ...reactHookFormsMethods } = useForm<
     Types["Trip"]["Model"]
@@ -58,21 +59,20 @@ export default function CreateTripForm({
   } = useAxios({ manual: true });
 
   const handleTripCreate = async () => {
-    console.log(reactHookFormsMethods.getValues());
-    console.log("submit from crate trip");
-
-    // const formState = reactHookFormsMethods.watch();
-    // await tripCreate(activate, formState);
+    const values = reactHookFormsMethods.getValues();
+    await tripCreate(activate, values);
   };
 
   useEffect(() => {
     if (status && status >= 200 && status <= 300) {
       setCurrentFormStage((prev) => prev + 1);
-      const tripData = data as Types["Trip"]["Model"];
-      setSearchParams({
-        tripId: tripData._id.toString(),
-        name: tripData.name,
-      });
+      const tripResponseData = data as Types["Trip"]["Model"];
+
+      const queryString = new URLSearchParams({
+        tripId: tripResponseData._id.toString(),
+      }).toString();
+
+      nav(`/share-trip?${queryString}`);
     }
   }, [status]);
 

@@ -36,7 +36,7 @@ export default function AddRewardBtn() {
 
   useEffect(() => {
     if (open) {
-      setValue("reward.image", undefined);
+      setValue("reward.image", watch("reward.image") || undefined);
     }
   }, [open]);
 

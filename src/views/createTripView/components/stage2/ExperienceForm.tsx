@@ -32,9 +32,6 @@ const ExperienceForm = ({
   const selectedExperienceType = watch(`stops.${index}.experience.type`);
   const experienceTypeValues = Object.values(ExperienceType);
 
-  console.log("data", watch(`stops.${index}.experience`));
-  console.log("errors", errors.stops?.[index]?.experience);
-
   return (
     <form
       className="page-colors page-padding mx-4 flex flex-col gap-2 rounded-3xl sm:mx-auto sm:max-w-[450px]"
@@ -45,8 +42,6 @@ const ExperienceForm = ({
           !(await trigger(`stops.${index}.experience.data`)) ||
           !(await trigger(`stops.${index}.experience.type`))
         ) {
-          console.log(errors.stops?.[index]);
-
           return;
         }
 

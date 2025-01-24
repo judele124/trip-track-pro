@@ -81,8 +81,6 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
   const experienceDataErrors = errors.stops?.[stopIndex]?.experience
     ?.data as Types["Trip"]["Stop"]["Experience"]["Details"]["Trivia"]["Model"]["data"];
 
-  console.log(watch(`stops.${stopIndex}.experience.data`));
-
   return (
     <>
       {experienceDataErrors?.question && (
