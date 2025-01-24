@@ -60,6 +60,11 @@ export default function CreateTripForm({
 
   const handleTripCreate = async () => {
     const values = reactHookFormsMethods.getValues();
+
+    if (values.reward == undefined) {
+      delete values.reward;
+    }
+
     await tripCreate(activate, values);
   };
 

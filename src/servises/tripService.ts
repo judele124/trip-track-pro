@@ -6,10 +6,30 @@ export const tripCreate = async (
   activate: UseAxiosResponse["activate"],
   tripData: Types["Trip"]["Model"],
 ): Promise<{ status: number; data?: any }> => {
+  const formData = new FormData();
+
+  const rewardImage = tripData.reward?.image;
+  if (rewardImage) {
+    formData.append("rewardImage", rewardImage);
+  }
+
+  const jsonData = JSON.stringify({
+    description: tripData.description,
+    groupName: tripData.groupName,
+    name: tripData.name,
+    stops: tripData.stops,
+    ...(tripData.reward ? { reward: { title: tripData.reward.title } } : {}),
+  });
+
+  formData.append("data", jsonData);
+
   const { data, status } = await activate({
     url: `${API_BASE_URL}/trip/create`,
     method: "post",
-    data: tripData,
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 
   return { data, status };
