@@ -12,15 +12,17 @@ const MIN_OPTIONS = 1;
 const MAX_OPTIONS = 4;
 
 const TriviaForm = ({ index: stopIndex }: { index: number }) => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [amountOptions, setAmountOptions] = useState<number>(1);
-  const [amountError, setAmountError] = useState<boolean>(false);
   const {
     register,
     setValue,
     watch,
     formState: { errors },
   } = useFormContext<Types["Trip"]["Model"]>();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [amountError, setAmountError] = useState<boolean>(false);
+  const [amountOptions, setAmountOptions] = useState<number>(
+    watch(`stops.${stopIndex}.experience.data.options`)?.length || 1,
+  );
 
   const handleInputAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -78,6 +80,8 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
 
   const experienceDataErrors = errors.stops?.[stopIndex]?.experience
     ?.data as Types["Trip"]["Stop"]["Experience"]["Details"]["Trivia"]["Model"]["data"];
+
+  console.log(watch(`stops.${stopIndex}.experience.data`));
 
   return (
     <>

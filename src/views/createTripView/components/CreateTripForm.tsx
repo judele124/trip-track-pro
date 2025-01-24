@@ -59,6 +59,7 @@ export default function CreateTripForm({
 
   const handleTripCreate = async () => {
     console.log(reactHookFormsMethods.getValues());
+    console.log("submit from crate trip");
 
     // const formState = reactHookFormsMethods.watch();
     // await tripCreate(activate, formState);
