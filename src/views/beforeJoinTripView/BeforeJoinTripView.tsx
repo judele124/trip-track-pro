@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Types } from "trip-track-package";
 
-export default function JoinTrip() {
+export default function BeforeJoinTripView() {
   const { activate, data, status, loading, error } = useAxios({ manual: true });
   const tripId = useIdFromParamsOrNavigate("404");
   const nav = useNavigate();

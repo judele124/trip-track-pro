@@ -2,6 +2,7 @@ import { Types } from "trip-track-package";
 import { API_BASE_URL } from "../env.config";
 import { UseAxiosResponse } from "../hooks/useAxios";
 import { getErrorMessage } from "../utils/errorMessages";
+import { ServiceError } from "@/utils/ServiceError";
 
 type Activate = UseAxiosResponse["activate"];
 
@@ -23,7 +24,7 @@ export const sendCode = async (
   });
 
   if (error) {
-    throw new Error(getErrorMessage(status));
+    throw new ServiceError(getErrorMessage(status), status);
   }
 
   return { data, status };
@@ -48,7 +49,7 @@ export const verifyCode = async (
   });
 
   if (error) {
-    throw new Error(getErrorMessage(status));
+    throw new ServiceError(getErrorMessage(status), status);
   }
   delete resData.user.iv;
   return { user: resData.user, status };
@@ -64,7 +65,7 @@ export const logout = async (
   });
 
   if (error) {
-    throw new Error(getErrorMessage(status));
+    throw new ServiceError(getErrorMessage(status), status);
   }
 
   return { status, data };
@@ -84,7 +85,7 @@ export const validateToken = async (
   });
 
   if (error) {
-    throw new Error(getErrorMessage(status));
+    throw new ServiceError(getErrorMessage(status), status);
   }
 
   return { status, user };

@@ -12,7 +12,7 @@ import ParticipantsView from "../views/participantsView/ParticipantsView.tsx";
 import ChatView from "../views/chatView/ChatView.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
 import ShareTripView from "@/views/shareTripView";
-import JoinTripView from "@/views/joinTripView";
+import BeforeJoinTripView from "@/views/beforeJoinTripView";
 import JoiningTripView from "@/views/connectTripView/index.tsx";
 import ConnectTripView from "@/views/connectTripView/index.tsx";
 
@@ -20,6 +20,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<PageLayout />}>
+        {/* <PageLayout /> */}
         <Route index element={<HomePageView />} />
         <Route path="" element={<NavbarLayout />}>
           <Route path="first-entry" element={<FirstEntryView />} />
@@ -46,7 +47,7 @@ const AppRoutes = () => {
             path="join-trip"
             element={
               <ProtectedRoute>
-                <JoinTripView />
+                <BeforeJoinTripView />
               </ProtectedRoute>
             }
           />
