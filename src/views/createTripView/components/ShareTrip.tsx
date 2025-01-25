@@ -84,7 +84,7 @@ and you can join it here:\n${shareTripUrl}`,
         {/* share methods */}
         <div className="flex flex-wrap justify-center gap-5 text-center">
           {/* whatsapp share */}
-          <div className="max-w-32 rounded-2xl bg-white p-5 shadow-lg">
+          <div className="max-w-32 rounded-2xl bg-white p-5 shadow-lg dark:bg-secondary">
             <Link
               to={`https://wa.me/?text=${encodeURIComponent(shareData.text)}`}
               target="_blank"
@@ -97,7 +97,7 @@ and you can join it here:\n${shareTripUrl}`,
           {/* create qr code */}
           <div
             onClick={() => toggleIsQrModalOpen()}
-            className="max-w-32 rounded-2xl bg-white p-5 shadow-lg"
+            className="max-w-32 rounded-2xl bg-white p-5 shadow-lg dark:bg-secondary"
           >
             <Icon size={"100%"} className="fill-dark" name="qr" />
             <p>create a QR code</p>

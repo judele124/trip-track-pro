@@ -4,6 +4,7 @@ import GuideMarker from "@/views/mapView/components/GuideMarker";
 import { useEffect, useRef, useState } from "react";
 import mapboxgl, { Map } from "mapbox-gl";
 import GeneralMarker from "@/views/mapView/components/GeneralMarker";
+import StopMarker from "@/views/mapView/components/StopMarker";
 export default function TestUI() {
   const conatinerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
@@ -30,8 +31,7 @@ export default function TestUI() {
   return (
     <div className="page-colors mx-auto h-screen max-w-[400px]">
       <div ref={conatinerRef} className="h-full w-full"></div>
-      <UserMarker />
-      <GeneralMarker
+      {/* <GeneralMarker
         isMapReady={isMapReady}
         location={{ lat: 10, lon: 10 }}
         mapRef={mapRef}
@@ -45,10 +45,16 @@ export default function TestUI() {
         mapRef={mapRef}
       >
         <UserMarker />
+      </GeneralMarker> */}
+
+      <GeneralMarker
+        isMapReady={isMapReady}
+        location={{ lat: 15, lon: 20 }}
+        mapRef={mapRef}
+      >
+        <StopMarker />
       </GeneralMarker>
-      <Icon name="trivia" />
-      <Icon name="qr" />
-      <Icon name="flag" />
+
       {/* <div className="flex flex-wrap gap-5">
         <Icon name={"alert"} />
         <Icon name={"participants"} />

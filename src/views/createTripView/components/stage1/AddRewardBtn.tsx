@@ -28,6 +28,13 @@ export default function AddRewardBtn() {
   };
 
   const confirmReward = async () => {
+    const reward = watch("reward");
+
+    // FileList is the initial value shen no file was uploaded
+    // set to undefind to pass validation
+    if (reward?.image instanceof FileList) {
+      setValue("reward.image", undefined);
+    }
     const res = await trigger("reward");
     if (res) {
       setOpen(false);
@@ -36,7 +43,7 @@ export default function AddRewardBtn() {
 
   useEffect(() => {
     if (open) {
-      setValue("reward.image", undefined);
+      setValue("reward.image", watch("reward.image") || undefined);
     }
   }, [open]);
 
