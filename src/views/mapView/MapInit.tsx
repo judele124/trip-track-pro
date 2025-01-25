@@ -6,6 +6,7 @@ import { useRoute } from "./hooks/useRoute";
 import { useMapContext } from "@/contexts/MapContext";
 import CustomMarker from "./components/CustomMarker";
 import mapboxgl, { Map } from "mapbox-gl";
+import {MAPBOX_ACCESS_TOKEN} from '@/env.config'
 
 
 const INITIAL_CENTER: [number, number] = [-74.0242, 40.6941];
@@ -13,7 +14,6 @@ const INITIAL_ZOOM: number = 10.12;
 
 export default function MapInit() {
   const conatinerRef = useRef<HTMLDivElement>(null);
-
   const {
     mapRef,
     setMapReady,
@@ -21,8 +21,12 @@ export default function MapInit() {
     experiencePoints,
     travelsPoints,
   } = useMapContext();
-  mapboxgl.accessToken = 'pk.eyJ1IjoianVkZWxlIiwiYSI6ImNtM3ZndjQ0MzByb3QycXIwczd6c3l4MnUifQ.aWTDBy7JZWGbopN3xfikNg';
-  const { createRoute } = useRoute();
+
+  mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+  useRoute({
+    mapRef,
+    points: experiencePoints.map((p) => p.location),
+  });
 
   useEffect(() => {
     if (!conatinerRef.current) {
@@ -44,14 +48,6 @@ export default function MapInit() {
       mapRef.current?.remove();
     };
   }, []);
-
-  useEffect(() => {
-    if (isMapReady) {
-      setTimeout(() => {        
-        createRoute(experiencePoints.map((point) => point.location));
-      }, 100)
-    }
-  }, [isMapReady]);
 
   return (
     <div className="page-colors mx-auto h-screen max-w-[400px]">

@@ -21,7 +21,7 @@ interface ItravelsPoints {
   rule: string;
 }
 
-interface MapContextValue {
+export interface MapContextValue {
   isMapReady: boolean;
   mapRef: MutableRefObject<Map | null>;
   setMapReady: (ready: boolean) => void;
@@ -61,7 +61,13 @@ const MapContextProvider: React.FC<MapContextProviderProps> = ({
   useEffect(() => {
     setExperiencePoints(expP);
     setTravelsPoints(travelsP);
+    console.log('is first');
   }, []);
+
+  useEffect(() => {
+    console.log('exp context', experiencePoints);
+  }, [experiencePoints]);
+    
 
   return (
     <MapContext.Provider
