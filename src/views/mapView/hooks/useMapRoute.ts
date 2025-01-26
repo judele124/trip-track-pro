@@ -1,11 +1,8 @@
 import useAxios from "@/hooks/useAxios";
-import {
-  GeoJSONSourceSpecification,
-  Map,
-  SourceSpecification,
-} from "mapbox-gl";
+import { Map } from "mapbox-gl";
 import { MutableRefObject, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
+import { Feature } from "geojson";
 
 interface MapboxWaypoint {
   location: [number, number];
@@ -20,7 +17,7 @@ interface MapboxRoute {
     summary: string;
     duration: number;
   }[];
-  geometry: GeoJSON.GeoJSON;
+  geometry: Feature["geometry"];
   weight: number;
   distance: number;
   duration: number;
@@ -58,6 +55,8 @@ export const useMapRoute = ({ points, mapRef, isMapReady }: IUseMapRoute) => {
   useEffect(() => {
     if (!data || !mapRef.current) return;
     const routeData = data as MapBoxDirectionsResponse;
+    console.log(routeData);
+
     try {
       if (mapRef.current.getSource("route")) {
         try {
