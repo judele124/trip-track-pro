@@ -64,6 +64,7 @@ export default function CreateTripForm({
     if (values.reward == undefined) {
       delete values.reward;
     }
+    console.log(values);
 
     await tripCreate(activate, values);
   };

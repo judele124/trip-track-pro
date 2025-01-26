@@ -1,6 +1,6 @@
 import { RefObject } from "react";
 import Modal from "../../../ui/Modal";
-import Icon from "../../../icons/Icon";
+import Icon, { IconName } from "../../../icons/Icon";
 
 interface Props {
   toggleMenu: () => void;
@@ -13,7 +13,7 @@ export default function Sidemenu({
   isMenuOpen,
   toggleMenuRef,
 }: Props) {
-  const menuItems = [
+  const menuItems: { title: string; icon: IconName; onClick: () => void }[] = [
     {
       title: "Settings",
       icon: "settings",
@@ -37,6 +37,7 @@ export default function Sidemenu({
       <ul className="page-colors mt-5 flex min-w-44 flex-col rounded-2xl bg-black px-3 py-1 text-white">
         {menuItems.map(({ title, icon, onClick }, i) => (
           <li
+            key={title}
             onClick={onClick}
             className={`group flex gap-2 p-3 ${i != menuItems.length - 1 && "border-b-2 border-secondary"}`}
           >

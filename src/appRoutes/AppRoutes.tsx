@@ -7,7 +7,7 @@ import LoginView from "../views/loginView/LoginView.tsx";
 import NavbarLayout from "../components/layouts/NavbarLayout.tsx";
 import PageNotFoundView from "../views/pageNotFoundView/PageNotFoundView.tsx";
 import TripLayout from "../components/layouts/TripLayout/TripLayout.tsx";
-import Map from "../views/mapView/Map.tsx";
+import MapView from "../views/mapView";
 import ParticipantsView from "../views/participantsView/ParticipantsView.tsx";
 import ChatView from "../views/chatView/ChatView.tsx";
 import ProtectedRoute from "../components/ProtectedRoute.tsx";
@@ -69,7 +69,7 @@ const AppRoutes = () => {
           path="map"
           element={
             <ProtectedRoute>
-              <Map />
+              <MapView />
             </ProtectedRoute>
           }
         />
