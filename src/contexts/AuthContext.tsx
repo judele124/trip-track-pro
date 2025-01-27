@@ -65,7 +65,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const handleVerifyCode = async (data: Types["Auth"]["LoginSchema"]) => {
+  const handleVerifyCode = async (data: Types["Auth"]["VerifyCode"]) => {
     try {
       const { user, status } = await verifyCode(data, activate);
       setVerifyCodeStatus(status);
@@ -101,9 +101,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   };
 
   useEffect(() => {
-    if (pathname === "/first-entry") {
-      return;
-    }
+    if (pathname === "/first-entry") return;
+
     handleTokenValidation();
   }, []);
 

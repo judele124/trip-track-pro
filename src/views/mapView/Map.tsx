@@ -1,62 +1,36 @@
-import { useRef, useEffect, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
+import MapContextProvider from "@/contexts/MapContext";
+import useMapInit from "./hooks/useMapInit";
+import { ReactNode, useRef } from "react";
+import { useMapRoute } from "./hooks/useMapRoute";
+import { Types } from "trip-track-package";
+import Icon from "@/components/icons/Icon";
 
-import 'mapbox-gl/dist/mapbox-gl.css';
+interface MapProps {
+  children?: ReactNode;
+  routeOriginalPoints: Types["Trip"]["Stop"]["Model"]["location"][];
+}
 
-const INITIAL_CENTER: [number, number] = [-74.0242, 40.6941];
-const INITIAL_ZOOM = 10.12;
-
-const Map: React.FC = () => {
-  const mapRef = useRef<mapboxgl.Map | null>(null); 
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
-
-  const [center, setCenter] = useState<[number, number]>(INITIAL_CENTER);
-  const [zoom, setZoom] = useState<number>(INITIAL_ZOOM);
-
-  useEffect(() => {
-    if (!mapContainerRef.current) return;
-
-    mapboxgl.accessToken = 'pk.eyJ1IjoianVkZWxlIiwiYSI6ImNtM3ZndjQ0MzByb3QycXIwczd6c3l4MnUifQ.aWTDBy7JZWGbopN3xfikNg';
-
-    mapRef.current = new mapboxgl.Map({
-        container: mapContainerRef.current!,
-        style: 'mapbox://styles/judele/cm3vihtvp00dn01sd34tthl00',
-        center: center,
-        zoom: zoom,
-        interactive: true,
-        attributionControl: false,
-        logoPosition: undefined, 
-      });
-
-    mapRef.current.on('move', () => {
-      if (!mapRef.current) return;
-
-      const mapCenter = mapRef.current.getCenter();
-      const mapZoom = mapRef.current.getZoom();
-
-      setCenter([mapCenter.lng, mapCenter.lat]);
-      setZoom(mapZoom);
-    });
-
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-      }
-    };
-  }, []); 
+export default function Map({ children, routeOriginalPoints }: MapProps) {
+  const conatinerRef = useRef<HTMLDivElement>(null);
+  const { isMapReady, mapRef } = useMapInit(conatinerRef);
+  const { isRouteReady } = useMapRoute({
+    points: routeOriginalPoints,
+    mapRef,
+    isMapReady,
+  });
 
   return (
-    <>
-        <style>
-        {`
-          .mapboxgl-ctrl-logo {
-            display: none !important;
-          }
-        `}
-      </style>
-      <div id="map-container" style={{ width: '100%', height: '100%' }} ref={mapContainerRef}  />
-    </>
+    <MapContextProvider isMapReady={isMapReady} mapRef={mapRef}>
+      {!isRouteReady ? (
+        <div className="page-colors flex size-full items-center justify-center">
+          <div>
+            <Icon size="50" className="fill-primary" name="spinner" />
+          </div>
+        </div>
+      ) : (
+        <>{children}</>
+      )}
+      <div ref={conatinerRef} className="h-full w-full"></div>
+    </MapContextProvider>
   );
-};
-
-export default Map;
+}

@@ -2,6 +2,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import BottomNavigationBtn from "../../ui/BottomNavigationBtn";
 import TopNavigation from "./componenets/TopNavigationBar";
 import { useEffect } from "react";
+import BottomNavigation from "./componenets/BottomNavigation";
 
 const TripLayout = () => {
   let { pathname } = useLocation();
@@ -10,7 +11,7 @@ const TripLayout = () => {
   const title = titleFromPath(pathname);
 
   useEffect(() => {
-    if (location.pathname === "/trip") {
+    if (["/trip", "/trip/"].includes(pathname)) {
       navigate("/trip/map");
     }
   }, [pathname]);
@@ -26,11 +27,7 @@ const TripLayout = () => {
       </div>
 
       {/* bottom navigation */}
-      <div className="page-colors flex flex-row justify-around border-t-2 border-primary p-2">
-        <BottomNavigationBtn to="participants" notificationCount={3} />
-        <BottomNavigationBtn to="map" notificationCount={3} />
-        <BottomNavigationBtn notificationCount={3} to="chat" />
-      </div>
+      <BottomNavigation />
     </div>
   );
 };

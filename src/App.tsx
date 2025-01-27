@@ -1,5 +1,5 @@
 import "mapbox-gl/dist/mapbox-gl.css";
-import AppRoutes from "./appRoutes";
+import AllRoutes from "./Routes/index.tsx";
 import AuthProvider from "./contexts/AuthContext.tsx";
 import DarkModeContextProvider from "./contexts/DarkModeContext.tsx";
 import { axios } from "./hooks/useAxios.ts";
@@ -13,7 +13,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <DarkModeContextProvider>
-          <AppRoutes />
+          <AllRoutes />
         </DarkModeContextProvider>
       </AuthProvider>
     </BrowserRouter>

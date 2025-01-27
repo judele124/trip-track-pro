@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function ConnectTripView() {
   const [text, setText] = useState<string>("Connecting...");
   let { tripId } = useParams();
 
   useEffect(() => {
+    if (!tripId) return;
+
     const id = setInterval(() => {
       setText((prev) => {
         if (prev === "Connecting...") {
@@ -14,6 +16,8 @@ export default function ConnectTripView() {
           return "Connecting.." as string;
         } else if (prev === "Connecting..") {
           return "Connecting..." as string;
+        } else {
+          return "Connecting" as string;
         }
       });
     }, 400);
@@ -25,7 +29,9 @@ export default function ConnectTripView() {
   return (
     <>
       <h1>
-        {text} {tripId}
+        {text}
+        <br />
+        {tripId}
       </h1>
     </>
   );
