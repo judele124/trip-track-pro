@@ -1,8 +1,8 @@
 import useAxios from "@/hooks/useAxios";
 import { Map } from "mapbox-gl";
-import { MutableRefObject, useEffect } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
-import { Feature } from "geojson";
+import { Feature, LineString } from "geojson";
 
 interface MapboxWaypoint {
   location: [number, number];
@@ -17,7 +17,7 @@ interface MapboxRoute {
     summary: string;
     duration: number;
   }[];
-  geometry: Feature["geometry"];
+  geometry: Feature<LineString>["geometry"];
   weight: number;
   distance: number;
   duration: number;
@@ -35,8 +35,14 @@ interface IUseMapRoute {
   isMapReady: boolean;
 }
 
+interface IUseMapRouteReturn {
+  data: MapBoxDirectionsResponse | undefined;
+  isRouteReady: boolean;
+}
+
 export const useMapRoute = ({ points, mapRef, isMapReady }: IUseMapRoute) => {
-  const { data, loading, status, error, activate } = useAxios({
+  const [isRouteReady, setIsRouteReady] = useState(false);
+  const { data, activate } = useAxios({
     method: "GET",
     manual: true,
   });
@@ -55,7 +61,6 @@ export const useMapRoute = ({ points, mapRef, isMapReady }: IUseMapRoute) => {
   useEffect(() => {
     if (!data || !mapRef.current) return;
     const routeData = data as MapBoxDirectionsResponse;
-    console.log(routeData);
 
     try {
       if (mapRef.current.getSource("route")) {
@@ -91,9 +96,17 @@ export const useMapRoute = ({ points, mapRef, isMapReady }: IUseMapRoute) => {
         },
       });
 
-      mapRef.current.setCenter(data.routes[0].center);
+      mapRef.current.setCenter(
+        routeData.routes[0].geometry.coordinates[0] as [number, number],
+      );
+      mapRef.current.setZoom(15);
+      setIsRouteReady(true);
     } catch (error) {
       console.error("Error creating route:", error);
     }
   }, [data]);
+
+  return {
+    isRouteReady,
+  };
 };

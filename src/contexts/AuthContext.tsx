@@ -101,9 +101,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   };
 
   useEffect(() => {
-    if (pathname === "/first-entry") {
-      return;
-    }
+    if (pathname === "/first-entry") return;
+
     handleTokenValidation();
   }, []);
 

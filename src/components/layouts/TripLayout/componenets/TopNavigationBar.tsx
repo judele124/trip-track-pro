@@ -16,7 +16,7 @@ export default function TopNavigation({ title }: { title: string }) {
           onClick={toggleMenu}
           className="bg-transparent px-0 py-0"
         >
-          <Icon viewBox="0 0 23 21" className="fill-primary" name="menu" />
+          <Icon className="fill-primary" name="menu" />
         </Button>
 
         <h4>{title}</h4>
@@ -32,11 +32,11 @@ export default function TopNavigation({ title }: { title: string }) {
 
       <div className="flex flex-row items-center gap-4">
         <Button className="bg-transparent px-0 py-0">
-          <Icon viewBox="0 0 25 25" name="alert" />
+          <Icon className="fill-dark dark:fill-light" name="alert" />
         </Button>
 
         <Button className="bg-transparent px-0 py-0">
-          <Icon viewBox="0 0 22 28" name="user" />
+          <Icon className="fill-dark dark:fill-light" name="user" />
         </Button>
       </div>
     </div>

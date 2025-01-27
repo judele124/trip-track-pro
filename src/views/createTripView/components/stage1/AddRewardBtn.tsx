@@ -66,7 +66,7 @@ export default function AddRewardBtn() {
         </Button>
         {open && (
           <Modal
-            containerClassName="w-full page-x-padding"
+            containerClassName="w-full page-x-padding max-w-[450px]"
             open={open}
             onBackdropClick={() => setOpen(false)}
             center
