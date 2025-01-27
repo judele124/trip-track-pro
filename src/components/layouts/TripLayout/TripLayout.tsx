@@ -1,20 +1,10 @@
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import BottomNavigationBtn from "../../ui/BottomNavigationBtn";
+import { Outlet, useLocation } from "react-router-dom";
 import TopNavigation from "./componenets/TopNavigationBar";
-import { useEffect } from "react";
 import BottomNavigation from "./componenets/BottomNavigation";
 
 const TripLayout = () => {
   let { pathname } = useLocation();
-  const navigate = useNavigate();
-
   const title = titleFromPath(pathname);
-
-  useEffect(() => {
-    if (["/trip", "/trip/"].includes(pathname)) {
-      navigate("/trip/map");
-    }
-  }, [pathname]);
 
   return (
     <div className="page-colors relative z-0 mx-auto flex h-dvh max-w-[450px] flex-col">
