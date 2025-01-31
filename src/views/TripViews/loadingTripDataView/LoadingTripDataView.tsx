@@ -13,7 +13,10 @@ export default function LoadingTripDataView() {
   const nav = useNavigate();
 
   useEffect(() => {
-    if (!tripId) return;
+    if (!tripId) {
+      return nav("/404");
+    }
+    
     tripGet(activate, tripId);
   }, [pathname]);
 

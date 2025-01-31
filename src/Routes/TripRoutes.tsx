@@ -4,14 +4,14 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import MapView from "@/views/TripViews/mapView";
 import ParticipantsView from "@/views/TripViews/participantsView/ParticipantsView";
 import ChatView from "@/views/TripViews/chatView/ChatView";
-import PageNotFoundView from "@/views/pageNotFoundView";
 import LoadingTripDataView from "@/views/TripViews/loadingTripDataView/LoadingTripDataView";
+import PageNotFoundView from "@/views/pageNotFoundView";
 
 export default function TripRoutes() {
   return (
     <Routes>
-      <Route path="/trip" element={<TripLayout />}>
-        <Route path=":tripId" element={<LoadingTripDataView />} />
+      <Route path="/" element={<TripLayout />}>
+        <Route path=":tripId?" element={<LoadingTripDataView />} />
         <Route
           path="map"
           element={
@@ -36,8 +36,8 @@ export default function TripRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<PageNotFoundView />} />
       </Route>
+      <Route path="*" element={<PageNotFoundView />} />
     </Routes>
   );
 }

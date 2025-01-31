@@ -5,10 +5,10 @@ import FirstEntryView from "@/views/AppViews/firstEntryView/FirstEntryView";
 import CreateTripView from "@/views/AppViews/createTripView";
 import LoginView from "@/views/AppViews/loginView/LoginView";
 import NavbarLayout from "@/components/layouts/NavbarLayout.tsx";
-import PageNotFoundView from "@/views/pageNotFoundView/PageNotFoundView.tsx";
 import ShareTripView from "@/views/AppViews/shareTripView";
 import BeforeJoinTripView from "@/views/AppViews/beforeJoinTripView";
 import ProtectedRoute from "@/components/ProtectedRoute.tsx";
+import PageNotFoundView from "@/views/pageNotFoundView";
 
 const AppRoutes = () => {
   return (
@@ -44,9 +44,9 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<PageNotFoundView />} />
         </Route>
       </Route>
+      <Route path="*" element={<PageNotFoundView  />} />
     </Routes>
   );
 };
