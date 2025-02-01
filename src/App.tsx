@@ -13,7 +13,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <DarkModeContextProvider>
-          <AllRoutes  />
+          <AllRoutes />
         </DarkModeContextProvider>
       </AuthProvider>
     </BrowserRouter>

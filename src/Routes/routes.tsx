@@ -14,22 +14,60 @@ import ChatView from "@/views/TripViews/chatView";
 import LoadingTripDataView from "@/views/TripViews/loadingTripDataView";
 import MapView from "@/views/TripViews/mapView";
 import ParticipantsView from "@/views/TripViews/participantsView";
-import { RouteObject, RouteProps } from "react-router-dom";
+import { RouteObject } from "react-router-dom";
+
+const baseRoutes = {
+  app: "/app",
+  trip: "/trip",
+} as const;
+
+const tripRoutes = {
+  map: `map`,
+  participants: `participants`,
+  chat: `chat`,
+  notFound: '*',
+} as const;
+
+const appRoutes = {
+  login: `login`,
+  firstEntry: `first-entry`,
+  createTrip: `create-trip`,
+  shareTrip: `share-trip`,
+  joinTrip: `join-trip`,
+  notFound: '*',
+} as const;
+
+export const navgationRoutes = {
+  login:`${baseRoutes.app}/${appRoutes.login}`,
+  firstEntry:`${baseRoutes.app}/${appRoutes.firstEntry}`,
+  createTrip:`${baseRoutes.app}/${appRoutes.createTrip}`,
+  shareTrip:`${baseRoutes.app}/${appRoutes.shareTrip}`,
+  joinTrip:`${baseRoutes.app}/${appRoutes.joinTrip}`,
+
+  map:`${baseRoutes.trip}/${tripRoutes.map}`,
+  participants:`${baseRoutes.trip}/${tripRoutes.participants}`,
+  chat:`${baseRoutes.trip}/${tripRoutes.chat}`,
+
+  notFound:`${baseRoutes.app}/${appRoutes.notFound}`,
+  app:`${baseRoutes.app}`,
+  trip:`${baseRoutes.trip}`,
+} as const;
+
 
 
 const routes: RouteObject[] = [
   {
-    path: "/app/*",
+    path: `${baseRoutes.app}/*`,
     element: <PageLayout />,
     children: [
       { index: true, element: <HomePageView /> },
       {
         element: <NavbarLayout />,
         children: [
-          { path: "first-entry", element: <FirstEntryView /> },
-          { path: "login", element: <LoginView /> },
+          { path: appRoutes.firstEntry, element: <FirstEntryView /> },
+          { path: appRoutes.login, element: <LoginView /> },
           {
-            path: "create-trip",
+            path: appRoutes.createTrip,
             element: (
               <ProtectedRoute>
                 <CreateTripView />
@@ -37,7 +75,7 @@ const routes: RouteObject[] = [
             ),
           },
           {
-            path: "share-trip",
+            path: appRoutes.shareTrip,
             element: (
               <ProtectedRoute>
                 <ShareTripView />
@@ -45,25 +83,29 @@ const routes: RouteObject[] = [
             ),
           },
           {
-            path: "join-trip",
+            path: appRoutes.joinTrip,
             element: (
               <ProtectedRoute>
                 <BeforeJoinTripView />
               </ProtectedRoute>
             ),
           },
-          { path: "*", element: <PageNotFoundView /> },
+          { path: appRoutes.notFound, element: <PageNotFoundView /> },
         ],
       },
     ],
   },
   {
-    path: "/trip/*",
-    element:<TripProvider><TripLayout /></TripProvider>,
+    path: `${baseRoutes.trip}/*`,
+    element: (
+      <TripProvider>
+        <TripLayout />
+      </TripProvider>
+    ),
     children: [
       { path: ":tripId?", element: <LoadingTripDataView /> },
       {
-        path: "map",
+        path: tripRoutes.map,
         element: (
           <ProtectedRoute>
             <MapView />
@@ -71,7 +113,7 @@ const routes: RouteObject[] = [
         ),
       },
       {
-        path: "participants",
+        path: tripRoutes.participants,
         element: (
           <ProtectedRoute>
             <ParticipantsView />
@@ -79,17 +121,17 @@ const routes: RouteObject[] = [
         ),
       },
       {
-        path: "chat",
+        path: tripRoutes.chat,
         element: (
           <ProtectedRoute>
             <ChatView />
           </ProtectedRoute>
         ),
       },
-      { path: "*", element: <PageNotFoundView /> },
+      { path: tripRoutes.notFound, element: <PageNotFoundView /> },
     ],
   },
-  { path: "*", element: <PageNotFoundView /> },
+  { path: tripRoutes.notFound, element: <PageNotFoundView /> },
 ];
 
 export default routes;

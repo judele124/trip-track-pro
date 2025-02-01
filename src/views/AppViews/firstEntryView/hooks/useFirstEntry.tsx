@@ -15,7 +15,7 @@ const useFirstEntry = (dataLength: number) => {
 
   const endFirstEntry = () => {
     localStorage.setItem("notFirstEntry", "true");
-    nav("/");
+    nav("/app");
   };
   return { index, handleNext, endFirstEntry };
 };

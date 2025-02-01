@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/components/Logo";
 import imgSrcLight from "./assets/start-screen-light.svg";
 import imgSrcDark from "./assets/start-screen-dark.svg";
@@ -17,13 +17,13 @@ const HomePageView = () => {
           alt="illustration of a map"
         />
         <div>
+          <Link to="create-trip">
           <Button
-            onClick={() => nav("/create-trip")}
             primary
             className="mb-1 w-full"
           >
             Create a new trip
-          </Button>
+          </Button></Link>
           <Button className="w-full">Join a trip</Button>
         </div>
       </div>
