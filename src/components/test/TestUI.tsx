@@ -1,27 +1,65 @@
-import Modal from "../ui/Modal";
-import { useRef, useState } from "react";
+import UserMarker from "@/views/mapView/components/UserMarker";
+import Icon from "../icons/Icon";
+import GuideMarker from "@/views/mapView/components/GuideMarker";
+import { useEffect, useRef, useState } from "react";
+import mapboxgl, { Map } from "mapbox-gl";
+import GeneralMarker from "@/views/mapView/components/GeneralMarker";
+import StopMarker from "@/views/mapView/components/StopMarker";
+export default function TestUI() {
+  const conatinerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<Map | null>(null);
+  const [isMapReady, setMapReady] = useState(false);
+  useEffect(() => {
+    if (!conatinerRef.current) {
+      return;
+    }
+    mapboxgl.accessToken =
+      "pk.eyJ1IjoianVkZWxlIiwiYSI6ImNtM3ZndjQ0MzByb3QycXIwczd6c3l4MnUifQ.aWTDBy7JZWGbopN3xfikNg";
 
-const TestUI = () => {
-  const [open2, setOpen2] = useState(false);
-  const ref2 = useRef<HTMLDivElement>(null);
+    mapRef.current = new Map({
+      container: conatinerRef.current,
+      style: "mapbox://styles/judele/cm3vihtvp00dn01sd34tthl00",
+      center: [10, 10],
+      zoom: 10,
+    });
+
+    mapRef.current.on("load", () => {
+      setMapReady(true);
+    });
+  }, []);
+
   return (
-    <div className="mx-auto max-w-[400px]">
-      <div className="flex justify-between">
-        <button>asd</button>
-        <button onClick={() => setOpen2(true)}>s</button>
-      </div>
-      <Modal
-        anchorElement={ref2}
-        anchorTo="bottom"
-        // center
-        open={open2}
-        onBackdropClick={() => setOpen2(false)}
+    <div className="page-colors mx-auto h-screen max-w-[400px]">
+      <div ref={conatinerRef} className="h-full w-full"></div>
+      {/* <GeneralMarker
+        isMapReady={isMapReady}
+        location={{ lat: 10, lon: 10 }}
+        mapRef={mapRef}
       >
-        <div className="page-colors size-40 rounded-lg p-10">asdasd</div>
-      </Modal>
-      <div ref={ref2} className="mt-[200px] size-20 bg-red-500"></div>
+        <GuideMarker />
+      </GeneralMarker>
+
+      <GeneralMarker
+        isMapReady={isMapReady}
+        location={{ lat: 15, lon: 20 }}
+        mapRef={mapRef}
+      >
+        <UserMarker />
+      </GeneralMarker> */}
+
+      <GeneralMarker
+        isMapReady={isMapReady}
+        location={{ lat: 15, lon: 20 }}
+        mapRef={mapRef}
+      >
+        <StopMarker />
+      </GeneralMarker>
+
+      {/* <div className="flex flex-wrap gap-5">
+        <Icon name={"alert"} />
+        <Icon name={"participants"} />
+        <Icon name={"chat"} />
+      </div> */}
     </div>
   );
-};
-
-export default TestUI;
+}

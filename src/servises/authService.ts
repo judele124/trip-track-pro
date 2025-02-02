@@ -1,7 +1,8 @@
+import { Types } from "trip-track-package";
 import { API_BASE_URL } from "../env.config";
 import { UseAxiosResponse } from "../hooks/useAxios";
 import { getErrorMessage } from "../utils/errorMessages";
-import { LoginSchema } from "../zodSchemas/authSchemas";
+import { ServiceError } from "@/utils/ServiceError";
 
 type Activate = UseAxiosResponse["activate"];
 
@@ -23,14 +24,14 @@ export const sendCode = async (
   });
 
   if (error) {
-    throw new Error(getErrorMessage(status));
+    throw new ServiceError(getErrorMessage(status), status);
   }
 
   return { data, status };
 };
 
 export const verifyCode = async (
-  data: LoginSchema,
+  data: Types["Auth"]["LoginSchema"],
   activate: Activate,
 ): Promise<{
   user: IUserResponseData;
@@ -39,7 +40,7 @@ export const verifyCode = async (
   const url = `${API_BASE_URL}/auth/verify-code`;
   const {
     error,
-    data: { user },
+    data: resData,
     status,
   } = await activate({
     data,
@@ -48,10 +49,10 @@ export const verifyCode = async (
   });
 
   if (error) {
-    throw new Error(getErrorMessage(status));
+    throw new ServiceError(getErrorMessage(status), status);
   }
-  delete user.iv;
-  return { user, status };
+  delete resData.user.iv;
+  return { user: resData.user, status };
 };
 
 export const logout = async (
@@ -64,7 +65,7 @@ export const logout = async (
   });
 
   if (error) {
-    throw new Error(getErrorMessage(status));
+    throw new ServiceError(getErrorMessage(status), status);
   }
 
   return { status, data };
@@ -84,7 +85,7 @@ export const validateToken = async (
   });
 
   if (error) {
-    throw new Error(getErrorMessage(status));
+    throw new ServiceError(getErrorMessage(status), status);
   }
 
   return { status, user };

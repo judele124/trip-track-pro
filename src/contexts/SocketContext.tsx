@@ -3,42 +3,56 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 import { API_BASE_URL } from "../env.config";
+import { SocketClientType } from "@/types/socket";
 
-interface ITripSocket {
-  tripId: string;
-  socket: Socket | null;
-}
-
-interface ITripSocketContext {
-  tripSocket: ITripSocket | null;
-  setTripSocket: (tripId: string) => void;
+interface ISocketContextValue {
+  initialSocket: (tripId: string) => void;
+  socket: SocketClientType | null;
 }
 
 interface ITripSocketProviderProps {
   children: ReactNode;
 }
 
-const tripSocketContext = createContext<ITripSocketContext | null>(null);
+const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
-export default function TripSocketProvider({
-  children,
-}: ITripSocketProviderProps) {
-  const [tripSocket, setTripSocketState] = useState<ITripSocket | null>(null);
+export default function SocketProvider({ children }: ITripSocketProviderProps) {
+  const [socket, setSocket] = useState<SocketClientType | null>(null);
+  const [tripId, setTripId] = useState<string | null>(null);
+  const currentUserLocationInterval = useRef<number>();
 
-  useEffect(() => {
-    if (!tripSocket?.tripId) {
-      return;
-    }
-
-    const socket = io(API_BASE_URL, {
-      query: { tripId: tripSocket.tripId },
+  const initialSocket = (tripId: string) => {
+    const socket: SocketClientType = io(API_BASE_URL, {
+      query: { tripId },
     });
 
-    setTripSocketState((prev) => ({ ...prev!, socket }));
+    setTripId(tripId);
+    setSocket(socket);
+  };
+
+  useEffect(() => {
+    if (!socket || !tripId) return;
+
+    socket.emit("joinTrip", tripId);
+
+    // currentUserLocationInterval.current = setInterval(() => {
+    //   navigator.geolocation.getCurrentPosition(
+    //     (position) => {
+    //       socket.emit("updateLocation", tripId, {
+    //         lon: position.coords.longitude,
+    //         lat: position.coords.latitude,
+    //       });
+    //     },
+    //     (err) => {
+    //       console.error(err);
+    //     },
+    //   );
+    // }, 2000);
 
     socket.on("connect", () => {
       console.log("Connected to socket");
@@ -51,18 +65,17 @@ export default function TripSocketProvider({
     socket.on("connect_error", (error) => {
       console.error("Socket connection error:", error);
     });
+
     return () => {
       socket.disconnect();
       console.log("Socket disconnected");
-    };
-  }, [tripSocket?.tripId]);
 
-  const setTripSocket = (tripId: string) => {
-    setTripSocketState({ tripId, socket: null });
-  };
+      clearInterval(currentUserLocationInterval.current);
+    };
+  }, [socket, tripId]);
 
   return (
-    <tripSocketContext.Provider value={{ tripSocket, setTripSocket }}>
+    <tripSocketContext.Provider value={{ initialSocket, socket }}>
       {children}
     </tripSocketContext.Provider>
   );

@@ -1,12 +1,14 @@
 import {
   CSSProperties,
   FC,
+  MouseEvent,
   ReactNode,
   RefObject,
   useEffect,
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 
 type ModalAnchor =
   | "center"
@@ -21,10 +23,10 @@ type ModalAnchor =
 
 type CommonProps = {
   backgroundClassname?: string;
-  className?: string;
   open: boolean;
-  onBackdropClick: () => void;
+  onBackdropClick: (e: MouseEvent<HTMLDivElement>) => void;
   children?: ReactNode;
+  containerClassName?: string;
 };
 
 type ModalProps = CommonProps &
@@ -42,22 +44,22 @@ type ModalProps = CommonProps &
   );
 
 const Modal: FC<ModalProps> = ({
-  backgroundClassname,
+  backgroundClassname = "",
   open,
   onBackdropClick,
   anchorElement,
   anchorTo,
   center,
+  containerClassName = "",
   children,
 }) => {
-  if (!open) return null;
-
   const [positions, setPositions] = useState([0, 0, 0, 0]);
   const childrenRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (center || !anchorElement?.current || !childrenRef.current) return;
+    if (center || !anchorElement?.current || !childrenRef.current || !open)
+      return;
 
     const anchorElementRect = anchorElement.current.getBoundingClientRect();
     const childrenRect = childrenRef.current.getBoundingClientRect();
@@ -173,27 +175,33 @@ const Modal: FC<ModalProps> = ({
         break;
       }
     }
-  }, [anchorElement, anchorTo]);
+  }, [anchorElement, anchorTo, open]);
 
   useEffect(() => {
     backgroundRef.current?.classList.remove("opacity-0");
-  }, []);
+  }, [open]);
 
-  return (
+  if (!open) return null;
+
+  return createPortal(
     <div
       ref={backgroundRef}
-      onClick={onBackdropClick}
-      className={`absolute inset-0 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
+      onClick={(e) => {
+        e.stopPropagation();
+        onBackdropClick(e);
+      }}
+      className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
     >
       <div
-        className="relative w-fit"
+        className={`relative w-fit ${containerClassName}`}
         ref={childrenRef}
         onClick={(e) => e.stopPropagation()}
         style={getPositionStyles(center, positions)}
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.getElementById("root")!,
   );
 };
 

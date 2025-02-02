@@ -17,9 +17,7 @@ const darkModeContext = createContext<IDarkModeContext>({
 const DarkModeContextProvider = ({
   children,
 }: IDarkModeContextProviderProps) => {
-  const [isDarkMode, setDarkMode] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches,
-  );
+  const [isDarkMode, setDarkMode] = useState(initialDarkMode());
 
   const toggleDarkMode = () => {
     setDarkMode((prev) => !prev);
@@ -27,7 +25,8 @@ const DarkModeContextProvider = ({
 
   useEffect(() => {
     document.getElementById("root")?.classList.toggle("dark", isDarkMode);
-  },[isDarkMode]);
+    localStorage.setItem("isDarkMode", `${isDarkMode}`);
+  }, [isDarkMode]);
   return (
     <darkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
       {children}
@@ -40,3 +39,16 @@ export const useDarkMode = () => {
 };
 
 export default DarkModeContextProvider;
+
+const initialDarkMode = (): boolean => {
+  const localStorageDarkMode = localStorage.getItem("isDarkMode");
+  if (localStorageDarkMode) {
+    return localStorageDarkMode === "true";
+  }
+
+  if (typeof window !== "undefined") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  return false;
+};

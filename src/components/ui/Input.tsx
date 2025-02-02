@@ -1,59 +1,39 @@
-import React from "react";
+import React, { InputHTMLAttributes, forwardRef, Ref } from "react";
+import Icon, { IconName } from "../icons/Icon";
 
-interface IInputProps {
-  textarea?: boolean;
-  className?: string;
-  type?: string;
-  name: string;
-  placeholder?: string;
-  onChange?: (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>,
-  ) => void;
-  rows?: number;
+export interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
+  containerClassName?: string;
+  icon?: IconName;
+  iconFill?: string;
 }
 
-const Input = React.forwardRef<
-  HTMLTextAreaElement | HTMLInputElement,
-  IInputProps
->(function Input(
+const Input = forwardRef<HTMLInputElement, IInputProps>(function Input(
   {
-    textarea = false,
+    icon,
+    iconFill = "#383644",
     className = "",
-    type = "text",
-    name,
-    placeholder = "Default placeholder",
-    onChange = () => {},
-    rows,
+    containerClassName,
+    ...props
   }: IInputProps,
-  ref: React.Ref<HTMLTextAreaElement | HTMLInputElement>,
+  ref: Ref<HTMLInputElement>,
 ) {
   if (!className.includes("border")) {
     className += " border-primary dark:border-light";
   }
 
-  if (textarea) {
-    return (
-      <textarea
-        rows={rows}
-        ref={ref as React.Ref<HTMLTextAreaElement>}
-        onChange={onChange}
-        className={`w-full resize-none border-2 border-primary dark:bg-secondary ${className}`}
-        name={name}
-        placeholder={placeholder}
-      />
-    );
-  }
   return (
-    <input
-      ref={ref as React.Ref<HTMLInputElement>}
-      onChange={onChange}
-      className={`w-full resize-none border-2 border-primary focus:border-dark focus:outline-none dark:bg-secondary dark:focus:border-light ${className}`}
-      name={name}
-      type={type}
-      placeholder={placeholder}
-    />
+    <div className={`relative h-fit ${containerClassName}`}>
+      {icon && (
+        <span className="absolute left-3 top-1/2 -translate-y-1/2">
+          <Icon size="20" fill={iconFill} name={icon} />
+        </span>
+      )}
+      <input
+        className={`w-full resize-none border-2 border-primary focus:border-dark focus:outline-none dark:bg-secondary dark:focus:border-light ${className} ${icon ? "pl-9" : ""}`}
+        {...props}
+        ref={ref}
+      />
+    </div>
   );
 });
 
