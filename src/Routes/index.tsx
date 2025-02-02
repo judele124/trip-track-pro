@@ -1,5 +1,11 @@
-import { Route, RouteObject, Routes, useLoaderData, useLocation, useNavigate } from "react-router-dom";
-import routes from "./routes";
+import {
+  Route,
+  RouteObject,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import routes, { navgationRoutes } from "./routes";
 import { ReactNode, useEffect } from "react";
 
 function renderRoutes(ch: RouteObject[]): ReactNode[] {
@@ -22,11 +28,11 @@ function renderRoutes(ch: RouteObject[]): ReactNode[] {
 }
 
 export default function AllRoutes() {
-  const {pathname} = useLocation();
-  const nav = useNavigate()
+  const { pathname } = useLocation();
+  const nav = useNavigate();
   useEffect(() => {
     if (pathname === "/") {
-      nav("/app");
+      nav(navgationRoutes.app);
     }
   }, []);
   return <Routes>{renderRoutes(routes)}</Routes>;

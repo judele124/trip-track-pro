@@ -5,6 +5,7 @@ import Modal from "@/components/ui/Modal";
 import useAxios from "@/hooks/useAxios";
 import useIdFromParamsOrNavigate from "@/hooks/useIdFromParamsOrNavigate";
 import useToggle from "@/hooks/useToggle";
+import { navgationRoutes } from "@/Routes/routes";
 import { tripGet } from "@/servises/tripService";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
@@ -43,7 +44,7 @@ export default function ShareTrip() {
     return (
       <div className="text-center">
         <p>Sorry something went wrong please try again later</p>
-        <Button primary className="mt-5 w-full" onClick={() => nav("/")}>
+        <Button primary className="mt-5 w-full" onClick={() => nav(navgationRoutes.app)}>
           Home
         </Button>
       </div>

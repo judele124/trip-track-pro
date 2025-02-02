@@ -1,9 +1,12 @@
 import Loader from "@/components/ui/Loader";
 import { useTripContext } from "@/contexts/TripContext";
 import useAxios from "@/hooks/useAxios";
+import { navgationRoutes } from "@/Routes/routes";
 import { tripGet } from "@/servises/tripService";
 import { useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {Schemas} from 'trip-track-package';
+
 
 export default function LoadingTripDataView() {
   const { setTrip } = useTripContext();
@@ -13,9 +16,13 @@ export default function LoadingTripDataView() {
   const nav = useNavigate();
 
   useEffect(() => {
+    console.log(Schemas);
+    
     if (!tripId) {
-      return nav("/404");
+      return nav(navgationRoutes.notFound);
+      
     }
+    console.log('null tripId');
     
     tripGet(activate, tripId);
   }, [pathname]);
@@ -24,12 +31,14 @@ export default function LoadingTripDataView() {
     if (!data && !error) return;
 
     if (error) {
-      return nav("/404");
+      console.log('error');
+      
+      return nav(navgationRoutes.notFound);
     }
 
     // TODO: connect socket
     setTrip(data);
-    nav("/trip/map");
+    nav(navgationRoutes.map);
   }, [error, data]);
 
   if (loading) {

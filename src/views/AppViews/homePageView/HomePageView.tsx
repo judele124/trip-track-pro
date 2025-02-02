@@ -1,12 +1,12 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Logo from "@/components/Logo";
 import imgSrcLight from "./assets/start-screen-light.svg";
 import imgSrcDark from "./assets/start-screen-dark.svg";
 import Button from "@/components/ui/Button";
 import ImageLightDark from "@/components/ui/ImageLightDark";
+import { navgationRoutes } from "@/Routes/routes";
 
 const HomePageView = () => {
-  const nav = useNavigate();
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -17,7 +17,7 @@ const HomePageView = () => {
           alt="illustration of a map"
         />
         <div>
-          <Link to="create-trip">
+          <Link to={navgationRoutes.createTrip}>
           <Button
             primary
             className="mb-1 w-full"

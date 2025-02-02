@@ -1,4 +1,5 @@
 import Button from "@/components/ui/Button";
+import { navgationRoutes } from "@/Routes/routes";
 import { Link } from "react-router-dom";
 
 export default function PageNotFoundView() {
@@ -8,7 +9,7 @@ export default function PageNotFoundView() {
         <div className="mt-10 text-center">
           <h1 className="text-3xl font-bold">404</h1>
           <p>Page not found</p>
-          <Link to={"/app"}>
+          <Link to={navgationRoutes.app}>
             <Button className="mt-5 w-full" primary>
               Home
             </Button>

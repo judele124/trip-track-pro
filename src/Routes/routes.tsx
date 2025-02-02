@@ -25,7 +25,7 @@ const tripRoutes = {
   map: `map`,
   participants: `participants`,
   chat: `chat`,
-  notFound: '*',
+  notFound: 'not-found',
 } as const;
 
 const appRoutes = {
@@ -34,7 +34,7 @@ const appRoutes = {
   createTrip: `create-trip`,
   shareTrip: `share-trip`,
   joinTrip: `join-trip`,
-  notFound: '*',
+  notFound: 'not-found',
 } as const;
 
 export const navgationRoutes = {
@@ -48,7 +48,7 @@ export const navgationRoutes = {
   participants:`${baseRoutes.trip}/${tripRoutes.participants}`,
   chat:`${baseRoutes.trip}/${tripRoutes.chat}`,
 
-  notFound:`${baseRoutes.app}/${appRoutes.notFound}`,
+  notFound:`${appRoutes.notFound}`,
   app:`${baseRoutes.app}`,
   trip:`${baseRoutes.trip}`,
 } as const;
@@ -90,7 +90,7 @@ const routes: RouteObject[] = [
               </ProtectedRoute>
             ),
           },
-          { path: appRoutes.notFound, element: <PageNotFoundView /> },
+          { path: '*', element: <PageNotFoundView /> },
         ],
       },
     ],
@@ -128,10 +128,10 @@ const routes: RouteObject[] = [
           </ProtectedRoute>
         ),
       },
-      { path: tripRoutes.notFound, element: <PageNotFoundView /> },
+      { path: '*', element: <PageNotFoundView /> },
     ],
   },
-  { path: tripRoutes.notFound, element: <PageNotFoundView /> },
+  { path: '*', element: <PageNotFoundView /> },
 ];
 
 export default routes;
