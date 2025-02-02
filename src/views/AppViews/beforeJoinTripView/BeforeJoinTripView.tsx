@@ -2,15 +2,15 @@ import Logo from "@/components/Logo";
 import Button from "@/components/ui/Button";
 import useAxios from "@/hooks/useAxios";
 import useIdFromParamsOrNavigate from "@/hooks/useIdFromParamsOrNavigate";
+import { navigationRoutes } from "@/Routes/routes";
 import { tripGet } from "@/servises/tripService";
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Types } from "trip-track-package";
 
 export default function BeforeJoinTripView() {
   const { activate, data, status, loading, error } = useAxios({ manual: true });
-  const tripId = useIdFromParamsOrNavigate("404");
-  const nav = useNavigate();
+  const tripId = useIdFromParamsOrNavigate(navigationRoutes.notFound);
 
   useEffect(() => {
     if (!tripId) return;
@@ -31,7 +31,9 @@ export default function BeforeJoinTripView() {
       <p>{description}</p>
       <div>
         <Button primary className="mb-1 w-full">
-          <Link to={`/trip/${tripId}`}>Join the trip</Link>
+          <Link to={`${navigationRoutes.trip}?tripId=${tripId}`}>
+            Join the trip
+          </Link>
         </Button>
       </div>
     </div>

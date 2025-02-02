@@ -9,6 +9,7 @@ import useAxios from "@/hooks/useAxios";
 import InputFeildError from "@/components/ui/InputFeildError";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { navigationRoutes } from "@/Routes/routes";
 
 interface ICreateTripFormProps {
   currentFormStage: number;
@@ -64,7 +65,6 @@ export default function CreateTripForm({
     if (values.reward == undefined) {
       delete values.reward;
     }
-    console.log(values);
 
     await tripCreate(activate, values);
   };
@@ -78,7 +78,7 @@ export default function CreateTripForm({
         tripId: tripResponseData._id.toString(),
       }).toString();
 
-      nav(`/share-trip?${queryString}`);
+      nav(`${navigationRoutes.shareTrip}?${queryString}`);
     }
   }, [status]);
 

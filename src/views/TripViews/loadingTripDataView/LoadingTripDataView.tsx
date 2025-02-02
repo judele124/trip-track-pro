@@ -1,19 +1,28 @@
 import Loader from "@/components/ui/Loader";
 import { useTripContext } from "@/contexts/TripContext";
 import useAxios from "@/hooks/useAxios";
+import { navigationRoutes } from "@/Routes/routes";
 import { tripGet } from "@/servises/tripService";
 import { useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Schemas } from "trip-track-package";
 
 export default function LoadingTripDataView() {
   const { setTrip } = useTripContext();
   const { activate, loading, error, data } = useAxios({ manual: true });
-  const { tripId } = useParams();
+  const [searchParams, _] = useSearchParams();
   const { pathname } = useLocation();
   const nav = useNavigate();
 
   useEffect(() => {
-    if (!tripId) return;
+    const tripId = searchParams.get("tripId");
+    const validateTripId = Schemas.mongoObjectId.safeParse(tripId);
+
+    if (!tripId || !validateTripId.success) {
+      nav(navigationRoutes.notFound);
+      return;
+    }
+
     tripGet(activate, tripId);
   }, [pathname]);
 
@@ -21,12 +30,12 @@ export default function LoadingTripDataView() {
     if (!data && !error) return;
 
     if (error) {
-      return nav("/404");
+      return nav(navigationRoutes.notFound);
     }
 
     // TODO: connect socket
     setTrip(data);
-    nav("/trip/map");
+    nav(navigationRoutes.map);
   }, [error, data]);
 
   if (loading) {

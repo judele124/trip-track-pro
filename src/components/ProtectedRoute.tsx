@@ -1,6 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { navigationRoutes } from "@/Routes/routes";
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, tokenValidationStatus } = useAuthContext();
@@ -8,7 +9,7 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (tokenValidationStatus && !user) {
-      nav("/login");
+      nav(navigationRoutes.login);
     }
   }, [tokenValidationStatus]);
 

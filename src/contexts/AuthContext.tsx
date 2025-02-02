@@ -9,6 +9,7 @@ import {
 import { useLocation } from "react-router-dom";
 import { Types } from "trip-track-package";
 import { ServiceError } from "@/utils/ServiceError";
+import { navigationRoutes } from "@/Routes/routes";
 
 interface IUser {
   email: string;
@@ -101,7 +102,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   };
 
   useEffect(() => {
-    if (pathname === "/first-entry") return;
+    if (pathname.includes(navigationRoutes.firstEntry)) return;
 
     handleTokenValidation();
   }, []);
