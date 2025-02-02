@@ -1,4 +1,5 @@
 import Loader from "@/components/ui/Loader";
+import { useTripSocket } from "@/contexts/SocketContext";
 import { useTripContext } from "@/contexts/TripContext";
 import useAxios from "@/hooks/useAxios";
 import { navigationRoutes } from "@/Routes/routes";
@@ -12,6 +13,7 @@ export default function LoadingTripDataView() {
   const { activate, loading, error, data } = useAxios({ manual: true });
   const [searchParams, _] = useSearchParams();
   const { pathname } = useLocation();
+  const { initialSocket } = useTripSocket();
   const nav = useNavigate();
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function LoadingTripDataView() {
       return nav(navigationRoutes.notFound);
     }
 
-    // TODO: connect socket
+    initialSocket(data._id);
     setTrip(data);
     nav(navigationRoutes.map);
   }, [error, data]);
