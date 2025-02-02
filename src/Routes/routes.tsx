@@ -25,7 +25,7 @@ const tripRoutes = {
   map: `map`,
   participants: `participants`,
   chat: `chat`,
-  notFound: 'not-found',
+  notFound: "not-found",
 } as const;
 
 const appRoutes = {
@@ -34,26 +34,24 @@ const appRoutes = {
   createTrip: `create-trip`,
   shareTrip: `share-trip`,
   joinTrip: `join-trip`,
-  notFound: 'not-found',
+  notFound: "not-found",
 } as const;
 
-export const navgationRoutes = {
-  login:`${baseRoutes.app}/${appRoutes.login}`,
-  firstEntry:`${baseRoutes.app}/${appRoutes.firstEntry}`,
-  createTrip:`${baseRoutes.app}/${appRoutes.createTrip}`,
-  shareTrip:`${baseRoutes.app}/${appRoutes.shareTrip}`,
-  joinTrip:`${baseRoutes.app}/${appRoutes.joinTrip}`,
+export const navigationRoutes = {
+  login: `${baseRoutes.app}/${appRoutes.login}`,
+  firstEntry: `${baseRoutes.app}/${appRoutes.firstEntry}`,
+  createTrip: `${baseRoutes.app}/${appRoutes.createTrip}`,
+  shareTrip: `${baseRoutes.app}/${appRoutes.shareTrip}`,
+  joinTrip: `${baseRoutes.app}/${appRoutes.joinTrip}`,
 
-  map:`${baseRoutes.trip}/${tripRoutes.map}`,
-  participants:`${baseRoutes.trip}/${tripRoutes.participants}`,
-  chat:`${baseRoutes.trip}/${tripRoutes.chat}`,
+  map: `${baseRoutes.trip}/${tripRoutes.map}`,
+  participants: `${baseRoutes.trip}/${tripRoutes.participants}`,
+  chat: `${baseRoutes.trip}/${tripRoutes.chat}`,
 
-  notFound:`${appRoutes.notFound}`,
-  app:`${baseRoutes.app}`,
-  trip:`${baseRoutes.trip}`,
+  notFound: `${appRoutes.notFound}`,
+  app: `${baseRoutes.app}`,
+  trip: `${baseRoutes.trip}`,
 } as const;
-
-
 
 const routes: RouteObject[] = [
   {
@@ -90,7 +88,7 @@ const routes: RouteObject[] = [
               </ProtectedRoute>
             ),
           },
-          { path: '*', element: <PageNotFoundView /> },
+          { path: "*", element: <PageNotFoundView /> },
         ],
       },
     ],
@@ -103,7 +101,7 @@ const routes: RouteObject[] = [
       </TripProvider>
     ),
     children: [
-      { path: ":tripId?", element: <LoadingTripDataView /> },
+      { index: true, element: <LoadingTripDataView /> },
       {
         path: tripRoutes.map,
         element: (
@@ -128,10 +126,10 @@ const routes: RouteObject[] = [
           </ProtectedRoute>
         ),
       },
-      { path: '*', element: <PageNotFoundView /> },
+      { path: "*", element: <PageNotFoundView /> },
     ],
   },
-  { path: '*', element: <PageNotFoundView /> },
+  { path: "*", element: <PageNotFoundView /> },
 ];
 
 export default routes;

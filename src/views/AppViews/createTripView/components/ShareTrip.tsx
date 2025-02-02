@@ -5,7 +5,7 @@ import Modal from "@/components/ui/Modal";
 import useAxios from "@/hooks/useAxios";
 import useIdFromParamsOrNavigate from "@/hooks/useIdFromParamsOrNavigate";
 import useToggle from "@/hooks/useToggle";
-import { navgationRoutes } from "@/Routes/routes";
+import { navigationRoutes } from "@/Routes/routes";
 import { tripGet } from "@/servises/tripService";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ import { Types } from "trip-track-package";
 
 export default function ShareTrip() {
   const nav = useNavigate();
-  const tripId = useIdFromParamsOrNavigate("404");
+  const tripId = useIdFromParamsOrNavigate(navigationRoutes.notFound);
   const { isOpen: isQrModalOpen, toggle: toggleIsQrModalOpen } = useToggle();
   const { activate, data, error, loading } = useAxios({ manual: true });
   const [browserError, setBrowserError] = useState<string | null>(null);
@@ -44,7 +44,11 @@ export default function ShareTrip() {
     return (
       <div className="text-center">
         <p>Sorry something went wrong please try again later</p>
-        <Button primary className="mt-5 w-full" onClick={() => nav(navgationRoutes.app)}>
+        <Button
+          primary
+          className="mt-5 w-full"
+          onClick={() => nav(navigationRoutes.app)}
+        >
           Home
         </Button>
       </div>
@@ -59,7 +63,7 @@ export default function ShareTrip() {
 
   const { name, description, _id }: Types["Trip"]["Model"] = data;
 
-  const shareTripUrl = `${window.location.origin + "/join-trip"}?tripId=${_id}`;
+  const shareTripUrl = `${window.location.origin + navigationRoutes.joinTrip}?tripId=${_id}`;
 
   const shareData = {
     url: shareTripUrl,

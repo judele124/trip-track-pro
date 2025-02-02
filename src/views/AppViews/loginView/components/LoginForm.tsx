@@ -7,7 +7,7 @@ import LoginFormStage1 from "./LoginFormStage1";
 import LoginFormStage2 from "./LoginFormStage2";
 import { Types, Schemas } from "trip-track-package";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { navgationRoutes } from "@/Routes/routes";
+import { navigationRoutes } from "@/Routes/routes";
 
 const LoginFrom = () => {
   const [currentStage, setCurrentStage] = useState(0);
@@ -40,7 +40,7 @@ const LoginFrom = () => {
   };
 
   useEffect(() => {
-    if (verifyCodeStatus === 200) nav(navgationRoutes.app);
+    if (verifyCodeStatus === 200) nav(navigationRoutes.app);
   }, [verifyCodeStatus]);
 
   return (

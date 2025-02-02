@@ -9,7 +9,7 @@ import useAxios from "@/hooks/useAxios";
 import InputFeildError from "@/components/ui/InputFeildError";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { navgationRoutes } from "@/Routes/routes";
+import { navigationRoutes } from "@/Routes/routes";
 
 interface ICreateTripFormProps {
   currentFormStage: number;
@@ -78,7 +78,7 @@ export default function CreateTripForm({
         tripId: tripResponseData._id.toString(),
       }).toString();
 
-      nav(`${navgationRoutes.shareTrip}?${queryString}`);
+      nav(`${navigationRoutes.shareTrip}?${queryString}`);
     }
   }, [status]);
 

@@ -5,7 +5,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import routes, { navgationRoutes } from "./routes";
+import routes, { navigationRoutes } from "./routes";
 import { ReactNode, useEffect } from "react";
 
 function renderRoutes(ch: RouteObject[]): ReactNode[] {
@@ -32,7 +32,7 @@ export default function AllRoutes() {
   const nav = useNavigate();
   useEffect(() => {
     if (pathname === "/") {
-      nav(navgationRoutes.app);
+      nav(navigationRoutes.app);
     }
   }, []);
   return <Routes>{renderRoutes(routes)}</Routes>;
