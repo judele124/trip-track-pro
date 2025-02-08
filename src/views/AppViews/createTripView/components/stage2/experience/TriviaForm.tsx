@@ -1,4 +1,4 @@
-import { useFormContext } from "react-hook-form";
+import { FieldErrors, useFormContext } from "react-hook-form";
 import InputWLabel from "@/components/ui/InputWLabel";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -79,13 +79,15 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
   }, [amountOptions]);
 
   const experienceDataErrors = errors.stops?.[stopIndex]?.experience
-    ?.data as Types["Trip"]["Stop"]["Experience"]["Details"]["Trivia"]["Model"]["data"];
+    ?.data as FieldErrors<
+    Types["Trip"]["Stop"]["Experience"]["Details"]["Trivia"]["Model"]["data"]
+  >;
 
   return (
     <>
       {experienceDataErrors?.question && (
         <InputFeildError
-          message={"Trivia question must be at least 2 characters long"}
+          message={experienceDataErrors?.question?.message as string}
         />
       )}
       <InputWLabel
@@ -96,7 +98,7 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
       />
       {experienceDataErrors?.answer && (
         <InputFeildError
-          message={"Answer must be at least 2 characters long"}
+          message={experienceDataErrors?.answer?.message as string}
         />
       )}
       <InputWLabel
@@ -107,9 +109,7 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
       />
       {experienceDataErrors?.options && (
         <InputFeildError
-          message={
-            "Trivia question must have at least 2 options. and options must be at least 2 char long."
-          }
+          message={experienceDataErrors?.options?.message as string}
         />
       )}
       <div>
