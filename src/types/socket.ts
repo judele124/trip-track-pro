@@ -7,6 +7,9 @@ export interface ServerToClientEvents {
     location: { lat: number; lon: number },
   ) => void;
   tripStatusChanged: (tripId: string, status: string) => void;
+  isOutOfRange: (userSocketId: string) => void;
+  experienceFinished: (userSocketId: string) => void;
+  messageSent: (message: string) => void;
   error: (
     data: { errorDetails: Record<string, any>; message: string } | string,
   ) => void;
@@ -18,6 +21,8 @@ export interface ClientToServerEvents {
     tripId: string,
     { lon, lat }: { lon: number; lat: number },
   ) => void;
+  finishExperience: (tripId: string) => void;
+  sendMessage: (tripId: string, message: string) => void;
   "connect-error": (error: Error) => void;
 }
 
