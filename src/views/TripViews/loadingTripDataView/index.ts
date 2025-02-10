@@ -1,1 +1,1 @@
-export { default } from "./LoadingTripDataView";
+export { default } from './LoadingTripDataView';

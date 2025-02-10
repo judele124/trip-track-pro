@@ -1,1 +1,1 @@
-export { default } from "./CreateTripView";
+export { default } from './CreateTripView';
