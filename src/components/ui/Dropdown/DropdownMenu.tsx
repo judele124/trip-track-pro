@@ -1,88 +1,88 @@
-import DropdownMenuItem from "./DropdownMenuItem";
-import { useDropdown } from "./Dropdown";
-import { ReactNode, useEffect } from "react";
+import DropdownMenuItem from './DropdownMenuItem';
+import { useDropdown } from './Dropdown';
+import { ReactNode, useEffect } from 'react';
 
 export type RenderItem<T> = ({
-  isSelected,
-  item,
+	isSelected,
+	item,
 }: {
-  isSelected: boolean;
-  item: T;
+	isSelected: boolean;
+	item: T;
 }) => ReactNode;
 
 interface IDropdownMenuProps<T> {
-  renderItem: RenderItem<T>;
-  setSelected: (item: T) => void;
+	renderItem: RenderItem<T>;
+	setSelected: (item: T) => void;
 }
 
 export default function DropdownMenu<T>({
-  renderItem,
-  setSelected,
+	renderItem,
+	setSelected,
 }: IDropdownMenuProps<T>) {
-  const {
-    selectedIndex,
-    suggestedIndex,
-    isOpen,
-    list,
-    setSelectedIndex,
-    decrementSuggestedIndex,
-    incrementSuggestedIndex,
-    close,
-  } = useDropdown<T>();
+	const {
+		selectedIndex,
+		suggestedIndex,
+		isOpen,
+		list,
+		setSelectedIndex,
+		decrementSuggestedIndex,
+		incrementSuggestedIndex,
+		close,
+	} = useDropdown<T>();
 
-  const handleSelection = (index: number) => {
-    setSelectedIndex(index);
-    setSelected(list![index]);
-    close();
-  };
+	const handleSelection = (index: number) => {
+		setSelectedIndex(index);
+		setSelected(list![index]);
+		close();
+	};
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    switch (e.key) {
-      case "ArrowDown":
-        incrementSuggestedIndex();
-        break;
-      case "ArrowUp":
-        decrementSuggestedIndex();
-        break;
-      case "Enter":
-        handleSelection(suggestedIndex);
-        break;
-      case "Escape":
-        close();
-        break;
-    }
-  };
+	const handleKeyDown = (e: KeyboardEvent) => {
+		switch (e.key) {
+			case 'ArrowDown':
+				incrementSuggestedIndex();
+				break;
+			case 'ArrowUp':
+				decrementSuggestedIndex();
+				break;
+			case 'Enter':
+				handleSelection(suggestedIndex);
+				break;
+			case 'Escape':
+				close();
+				break;
+		}
+	};
 
-  useEffect(() => {
-    if (!isOpen || !list || !list.length) return;
+	useEffect(() => {
+		if (!isOpen || !list || !list.length) return;
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [suggestedIndex, isOpen, list]);
+		document.addEventListener('keydown', handleKeyDown);
+		return () => document.removeEventListener('keydown', handleKeyDown);
+	}, [suggestedIndex, isOpen, list]);
 
-  useEffect(() => {
-    if (!list || !list.length || selectedIndex < 0) return;
-    setSelected(list[selectedIndex]);
-  }, [selectedIndex]);
+	useEffect(() => {
+		if (!list || !list.length || selectedIndex < 0) return;
+		setSelected(list[selectedIndex]);
+	}, [selectedIndex]);
 
-  if (!list || !list.length || !isOpen) return null;
+	if (!list || !list.length || !isOpen) return null;
 
-  return (
-    <ul
-      onMouseOver={(e) => e.stopPropagation()}
-      className="absolute top-14 z-10 max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg"
-      role="listbox"
-    >
-      {list.map((item, i) => (
-        <DropdownMenuItem
-          item={item}
-          renderItem={renderItem}
-          isSelected={selectedIndex === i}
-          isSuggested={i === suggestedIndex}
-          i={i}
-          key={i}
-        />
-      ))}
-    </ul>
-  );
+	return (
+		<ul
+			onMouseOver={(e) => e.stopPropagation()}
+			className='absolute top-14 z-10 max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
+			role='listbox'
+		>
+			{list.map((item, i) => (
+				<DropdownMenuItem
+					item={item}
+					renderItem={renderItem}
+					isSelected={selectedIndex === i}
+					isSuggested={i === suggestedIndex}
+					i={i}
+					key={i}
+				/>
+			))}
+		</ul>
+	);
 }
