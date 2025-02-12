@@ -1,25 +1,53 @@
 import { Socket } from 'socket.io-client';
 
-export interface ServerToClientEvents {
-	tripJoined: (userSocketId: string) => void;
-	locationUpdated: (
-		userId: string,
-		location: { lat: number; lon: number }
-	) => void;
-	tripStatusChanged: (tripId: string, status: string) => void;
-	error: (
-		data: { errorDetails: Record<string, any>; message: string } | string
-	) => void;
-}
+type LocationPayload = {
+	lon: number;
+	lat: number;
+};
 
-export interface ClientToServerEvents {
-	joinTrip: (tripId: string) => void;
-	updateLocation: (
-		tripId: string,
-		{ lon, lat }: { lon: number; lat: number }
-	) => void;
-	'connect-error': (error: Error) => void;
-}
+type ClientEventPayloads = {
+	joinTrip: [tripId: string];
+	updateLocation: [tripId: string, location: LocationPayload];
+	finishExperience: [tripId: string];
+	sendMessage: [tripId: string, message: string];
+	'connect-error': [error: Error];
+};
+
+type ServerEventPayloads = {
+	tripJoined: [userSocketId: string];
+	locationUpdated: [userSocketId: string, location: LocationPayload];
+	experienceFinished: [userSocketId: string];
+	messageSent: [message: string];
+	tripStatusChanged: [tripId: string, status: string];
+	error: [
+		data: string | { message: string; errorDetails: Record<string, any> },
+	];
+};
+
+export const ServerEvents = {
+	tripJoined: 'tripJoined',
+	locationUpdated: 'locationUpdated',
+	experienceFinished: 'experienceFinished',
+	messageSent: 'messageSent',
+	tripStatusChanged: 'tripStatusChanged',
+	error: 'error',
+};
+
+export const ClientEvents = {
+	joinTrip: 'joinTrip',
+	updateLocation: 'updateLocation',
+	finishExperience: 'finishExperience',
+	sendMessage: 'sendMessage',
+	connectError: 'connect-error',
+} as const;
+
+type ClientToServerEvents = {
+	[K in keyof ClientEventPayloads]: (...args: ClientEventPayloads[K]) => void;
+};
+
+type ServerToClientEvents = {
+	[K in keyof ServerEventPayloads]: (...args: ServerEventPayloads[K]) => void;
+};
 
 export type SocketClientType = Socket<
 	ServerToClientEvents,

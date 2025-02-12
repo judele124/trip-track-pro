@@ -40,19 +40,41 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 
 		socket.emit('joinTrip', tripId);
 
-		// currentUserLocationInterval.current = setInterval(() => {
-		//   navigator.geolocation.getCurrentPosition(
-		//     (position) => {
-		//       socket.emit("updateLocation", tripId, {
-		//         lon: position.coords.longitude,
-		//         lat: position.coords.latitude,
-		//       });
-		//     },
-		//     (err) => {
-		//       console.error(err);
-		//     },
-		//   );
-		// }, 2000);
+		//updateLocation
+		currentUserLocationInterval.current = setInterval(() => {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					socket.emit('updateLocation', tripId, {
+						lon: position.coords.longitude,
+						lat: position.coords.latitude,
+					});
+				},
+				(err) => {
+					console.error(err);
+				},
+				{
+					enableHighAccuracy: true,
+					maximumAge: 0,
+					timeout: 10000,
+				}
+			);
+		}, 5000);
+
+		socket.on('tripJoined', (userId) => {
+			console.log('User joined trip:', userId);
+		});
+
+		socket.on('locationUpdated', (userId, location) => {
+			console.log('Location updated:', userId, location);
+		});
+
+		socket.on('experienceFinished', (userId) => {
+			console.log('Experience finished:', userId);
+		});
+
+		socket.on('messageSent', (message) => {
+			console.log('Message as received:', message);
+		});
 
 		socket.on('connect', () => {
 			console.log('Connected to socket');
