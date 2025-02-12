@@ -1,1 +1,1 @@
-export { default } from "./ShareTripView";
+export { default } from './ShareTripView';

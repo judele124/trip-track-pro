@@ -1,1 +1,1 @@
-export { default } from "./TripLayout";
+export { default } from './TripLayout';
