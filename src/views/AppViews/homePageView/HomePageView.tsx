@@ -5,6 +5,7 @@ import imgSrcDark from './assets/start-screen-dark.svg';
 import Button from '@/components/ui/Button';
 import ImageLightDark from '@/components/ui/ImageLightDark';
 import { navigationRoutes } from '@/Routes/routes';
+import InputUserAvatarModal from '@/components/InputUserAvatarModal';
 
 const HomePageView = () => {
 	return (
@@ -25,6 +26,8 @@ const HomePageView = () => {
 					<Button className='w-full'>Join a trip</Button>
 				</div>
 			</div>
+
+			<InputUserAvatarModal />
 		</>
 	);
 };

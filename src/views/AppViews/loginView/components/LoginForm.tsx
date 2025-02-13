@@ -14,6 +14,7 @@ const LoginFrom = () => {
 	const nav = useNavigate();
 
 	const {
+		user,
 		sendCode,
 		verifyCode,
 		loading,
@@ -40,7 +41,9 @@ const LoginFrom = () => {
 	};
 
 	useEffect(() => {
-		if (verifyCodeStatus === 200) nav(navigationRoutes.app);
+		if (verifyCodeStatus === 200) {
+			nav(navigationRoutes.app);
+		}
 	}, [verifyCodeStatus]);
 
 	return (

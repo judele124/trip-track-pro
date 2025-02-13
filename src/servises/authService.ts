@@ -35,6 +35,7 @@ export const verifyCode = async (
 	activate: Activate
 ): Promise<{
 	user: IUserResponseData;
+	isNew: boolean;
 	status: number;
 }> => {
 	const url = `${API_BASE_URL}/auth/verify-code`;
@@ -52,7 +53,8 @@ export const verifyCode = async (
 		throw new ServiceError(getErrorMessage(status), status);
 	}
 	delete resData.user.iv;
-	return { user: resData.user, status };
+
+	return { user: resData.user, status, isNew: resData.isNewUser };
 };
 
 export const logout = async (
