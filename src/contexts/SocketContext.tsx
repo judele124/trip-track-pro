@@ -9,9 +9,10 @@ import {
 import { io } from "socket.io-client";
 import { API_BASE_URL } from "../env.config";
 import { SocketClientType } from "@/types/socket";
+import { Types } from "trip-track-package";
 
 interface ISocketContextValue {
-  initialSocket: (tripId: string) => void;
+  initialSocket: (tripId: Types["Trip"]["Model"]["_id"]) => void;
   socket: SocketClientType | null;
 }
 
@@ -23,10 +24,12 @@ const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
   const [socket, setSocket] = useState<SocketClientType | null>(null);
-  const [tripId, setTripId] = useState<string | null>(null);
+  const [tripId, setTripId] = useState<Types["Trip"]["Model"]["_id"] | null>(
+    null,
+  );
   const currentUserLocationInterval = useRef<number>();
 
-  const initialSocket = (tripId: string) => {
+  const initialSocket = (tripId: Types["Trip"]["Model"]["_id"]) => {
     const socket: SocketClientType = io(API_BASE_URL, {
       query: { tripId },
     });

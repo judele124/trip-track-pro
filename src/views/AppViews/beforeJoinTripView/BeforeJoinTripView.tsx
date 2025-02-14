@@ -6,16 +6,22 @@ import { tripGet } from "@/servises/tripService";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Types } from "trip-track-package";
-import LL from "@/assets/GroupIcon.png";
+import { useTripContext } from "@/contexts/TripContext";
 
 export default function BeforeJoinTripView() {
   const { activate, data, status, loading, error } = useAxios({ manual: true });
   const tripId = useIdFromParamsOrNavigate(navigationRoutes.notFound);
+  const { setTrip } = useTripContext();
 
   useEffect(() => {
     if (!tripId) return;
     tripGet(activate, tripId);
   }, [tripId]);
+
+  useEffect(() => {
+    if (!data) return;
+    setTrip(data);
+  }, [data]);
 
   if (!status || loading || error) {
     return <p>{loading ? "Loading..." : error?.message}</p>;

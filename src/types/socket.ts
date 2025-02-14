@@ -1,4 +1,5 @@
 import { Socket } from "socket.io-client";
+import { Types } from "trip-track-package";
 
 export interface ServerToClientEvents {
   tripJoined: (userSocketId: string) => void;
@@ -6,16 +7,19 @@ export interface ServerToClientEvents {
     userId: string,
     location: { lat: number; lon: number },
   ) => void;
-  tripStatusChanged: (tripId: string, status: string) => void;
+  tripStatusChanged: (
+    tripId: Types["Trip"]["Model"]["_id"],
+    status: string,
+  ) => void;
   error: (
     data: { errorDetails: Record<string, any>; message: string } | string,
   ) => void;
 }
 
 export interface ClientToServerEvents {
-  joinTrip: (tripId: string) => void;
+  joinTrip: (tripId: Types["Trip"]["Model"]["_id"]) => void;
   updateLocation: (
-    tripId: string,
+    tripId: Types["Trip"]["Model"]["_id"],
     { lon, lat }: { lon: number; lat: number },
   ) => void;
   "connect-error": (error: Error) => void;

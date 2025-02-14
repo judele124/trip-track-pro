@@ -3,7 +3,6 @@ import PageLayout from "@/components/layouts/PageLayout";
 import TripLayout from "@/components/layouts/TripLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import SocketProvider from "@/contexts/SocketContext";
-import TripProvider from "@/contexts/TripContext";
 import BeforeJoinTripView from "@/views/AppViews/beforeJoinTripView";
 import CreateTripView from "@/views/AppViews/createTripView";
 import FirstEntryView from "@/views/AppViews/firstEntryView/FirstEntryView";
@@ -97,11 +96,9 @@ const routes: RouteObject[] = [
   {
     path: `${baseRoutes.trip}/*`,
     element: (
-      <TripProvider>
-        <SocketProvider>
-          <TripLayout />
-        </SocketProvider>
-      </TripProvider>
+      <SocketProvider>
+        <TripLayout />
+      </SocketProvider>
     ),
     children: [
       { index: true, element: <LoadingTripDataView /> },
