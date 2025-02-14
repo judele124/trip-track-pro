@@ -40,8 +40,6 @@ export default function InputUserAvatarModal() {
 	const inputValueDebaunced = useDebouncedValue(inputValue, 500);
 
 	useEffect(() => {
-		console.log(user);
-
 		if (!user || user.name) return;
 
 		activate({
