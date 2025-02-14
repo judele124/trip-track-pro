@@ -5,65 +5,103 @@ import Button from './ui/Button';
 import { useEffect, useState } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import useAxios, { axios } from '@/hooks/useAxios';
+import useAxios from '@/hooks/useAxios';
 import { API_BASE_URL } from '@/env.config';
-import { Schemas } from 'trip-track-package';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import InputFeildError from './ui/InputFeildError';
+import { Schemas } from 'trip-track-package';
+import { z } from 'zod';
 
 export default function InputUserAvatarModal() {
 	const { user } = useAuthContext();
 	const {
 		activate,
 		data: randomName,
-		error,
 		loading,
 	} = useAxios({
 		manual: true,
 	});
+	const [randomNameError, setRandomNameError] = useState<string | null>(null);
+	const [updateNameError, setUpdateNameError] = useState<string | null>(null);
 
 	const {
 		watch,
 		formState: { errors },
 		handleSubmit,
-		register,
 		setValue,
-	} = useForm<{
-		name: string;
-	}>({
-		resolver: zodResolver(z.string({ message: 'Name is required' })),
+	} = useForm<z.infer<typeof Schemas.user>>({
+		resolver: zodResolver(Schemas.user),
 	});
 
-	// const { isOpen } = useToggle(user?.isNew ? true : false);
-	const { isOpen } = useToggle(true);
+	const { isOpen, setIsOpen } = useToggle(!user?.name ? true : false);
 
-	const nameDebounced = useDebouncedValue(name, 300);
+	const [inputValue, setInputValue] = useState('');
+	const inputValueDebaunced = useDebouncedValue(inputValue, 500);
 
 	useEffect(() => {
-		// if (!user?.isNew) return;
-		handleGenerateRandomName();
-	}, []);
+		console.log(user);
+
+		if (!user || user.name) return;
+
+		activate({
+			url: `${API_BASE_URL}/user/random-name`,
+		}).then(({ data: name }) => setInputValue(name));
+		setValue('email', user.email);
+	}, [user]);
+
+	const name = watch('name');
+
+	useEffect(() => {
+		setValue('imageUrl', `https://robohash.org/${name}.png`);
+	}, [name]);
+
+	useEffect(() => {
+		if (!inputValueDebaunced) return;
+		setValue('name', inputValueDebaunced);
+	}, [inputValueDebaunced]);
 
 	const handleGenerateRandomName = async () => {
-		const { data } = await activate({
+		const { data: name, error } = await activate({
 			url: `${API_BASE_URL}/user/random-name`,
 		});
-		setValue('name', data);
-	};
-
-	const src = (() => {
-		if (loading) {
-			return 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200w.gif?cid=6c09b952aui5tunhas7rsybn9vumavkvdfvz88bxyjecfghh&ep=v1_gifs_search&rid=200w.gif&ct=g';
-		}
 
 		if (error) {
-			return `https://t3.ftcdn.net/jpg/03/46/83/96/240_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg`;
+			setRandomNameError(error.message);
+			return;
 		}
+		setValue('name', name);
+		setValue('imageUrl', `https://robohash.org/${name}.png`);
+	};
 
-		return `https://robohash.org/${nameDebounced}.png`;
-	})();
+	const onSubmit = async (formState: z.infer<typeof Schemas.user>) => {
+		try {
+			// update mongo
+			const { error } = await activate({
+				url: `${API_BASE_URL}/user/profile`,
+				method: 'PUT',
+				data: formState,
+			});
+
+			if (error && 'status' in error && error.status === 404) {
+				setUpdateNameError('User not found');
+				return;
+			}
+			// update user tokens
+			await activate({
+				url: `${API_BASE_URL}/auth/create-user-tokens`,
+			});
+			setIsOpen(false);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	if (user?.name) return null;
+
+	const imageSrc = loading
+		? 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200w.gif?cid=6c09b952aui5tunhas7rsybn9vumavkvdfvz88bxyjecfghh&ep=v1_gifs_search&rid=200w.gif&ct=g'
+		: watch('imageUrl');
 
 	return (
 		<Modal
@@ -73,46 +111,38 @@ export default function InputUserAvatarModal() {
 			open={isOpen}
 		>
 			<form
-				onSubmit={handleSubmit((data) => {
-					console.log(data);
-				})}
+				onSubmit={handleSubmit(onSubmit)}
 				className='page-colors flex flex-col justify-center gap-2 rounded-2xl p-5 text-center'
 			>
+				<h5>This is you</h5>
+				<img
+					className='mx-auto size-28 rounded-full bg-secondary text-center'
+					src={imageSrc}
+					alt='User avatar image'
+				/>
+				{randomNameError ? (
+					<h6>{randomNameError}</h6>
+				) : (
+					<h6>{watch('name') ?? randomName}</h6>
+				)}
+
+				<p>see what happens when you type a new name</p>
 				{errors.name?.message && (
 					<InputFeildError message={errors.name.message} />
 				)}
-				<h5>This is you</h5>
-				<UserAvatar src={src} name={name ?? randomName} />
-				<p>see what happens when you type a new name</p>
-
 				<Input
-					value={watch('name') || ''}
+					value={inputValue}
 					placeholder='Enter name'
-					{...register('name')}
+					onChange={(e) => setInputValue(e.target.value)}
 				/>
-				<Button type='submit'>Confirm</Button>
+				<Button disabled={loading} type='submit'>
+					Confirm
+				</Button>
 				<Button type='button' onClick={handleGenerateRandomName}>
 					Generate Random Name
 				</Button>
+				{updateNameError && <InputFeildError message={updateNameError} />}
 			</form>
 		</Modal>
-	);
-}
-
-interface IUserAvatarProps {
-	src: string;
-	name: string;
-}
-
-function UserAvatar({ src, name }: IUserAvatarProps) {
-	return (
-		<>
-			<img
-				className='mx-auto size-28 rounded-full bg-secondary text-center'
-				src={src}
-				alt='User avatar image'
-			/>
-			<h6>{name}</h6>
-		</>
 	);
 }

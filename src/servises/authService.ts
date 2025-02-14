@@ -8,7 +8,8 @@ type Activate = UseAxiosResponse['activate'];
 
 interface IUserResponseData {
 	email: string;
-	name: string;
+	name?: string;
+	imageUrl?: string;
 	_id: string;
 }
 

@@ -13,7 +13,8 @@ import { navigationRoutes } from '@/Routes/routes';
 
 interface IUser {
 	email: string;
-	name: string;
+	name?: string;
+	imageUrl?: string;
 	_id: string;
 	isNew?: boolean;
 }
