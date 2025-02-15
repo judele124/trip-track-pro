@@ -1,58 +1,58 @@
 import {
-  ButtonHTMLAttributes,
-  forwardRef,
-  PropsWithChildren,
-  Ref,
-} from "react";
+	ButtonHTMLAttributes,
+	forwardRef,
+	PropsWithChildren,
+	Ref,
+} from 'react';
 
 type ButtonProps = {
-  primary?: boolean;
-  className?: string;
+	primary?: boolean;
+	className?: string;
 } & PropsWithChildren &
-  ButtonHTMLAttributes<HTMLButtonElement>;
+	ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button = forwardRef(
-  (
-    {
-      className = "",
-      children,
-      primary,
-      type = "button",
-      ...props
-    }: ButtonProps,
-    ref: Ref<HTMLButtonElement>,
-  ) => {
-    if (primary) {
-      className += " bg-primary text-white";
-    }
+	(
+		{
+			className = '',
+			children,
+			primary,
+			type = 'button',
+			...props
+		}: ButtonProps,
+		ref: Ref<HTMLButtonElement>
+	) => {
+		if (primary) {
+			className += ' bg-primary text-white';
+		}
 
-    if (!className.includes("text")) {
-      className += " text-white dark:text-dark";
-    }
+		if (!className.includes('text')) {
+			className += ' text-white dark:text-dark';
+		}
 
-    if (!className.includes("bg")) {
-      className += " bg-dark dark:bg-light";
-    }
+		if (!className.includes('bg')) {
+			className += ' bg-dark dark:bg-light';
+		}
 
-    if (!className.includes("px-") && !className.includes("py-")) {
-      className += " px-5 py-3";
-    }
+		if (!className.includes('px-') && !className.includes('py-')) {
+			className += ' px-5 py-3';
+		}
 
-    if (!className.includes("font-")) {
-      className += " font-semibold";
-    }
+		if (!className.includes('font-')) {
+			className += ' font-semibold';
+		}
 
-    return (
-      <button
-        ref={ref}
-        {...props}
-        type={type}
-        className={`hover:bg-opacity-80 ${className}`}
-      >
-        {children}
-      </button>
-    );
-  },
+		return (
+			<button
+				ref={ref}
+				{...props}
+				type={type}
+				className={`hover:bg-opacity-80 ${className}`}
+			>
+				{children}
+			</button>
+		);
+	}
 );
 
 export default Button;

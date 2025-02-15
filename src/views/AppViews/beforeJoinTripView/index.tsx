@@ -1,1 +1,1 @@
-export { default } from "./BeforeJoinTripView";
+export { default } from './BeforeJoinTripView';

@@ -1,93 +1,112 @@
 import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { io } from "socket.io-client";
-import { API_BASE_URL } from "../env.config";
-import { SocketClientType } from "@/types/socket";
-import { Types } from "trip-track-package";
+	createContext,
+	ReactNode,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
+import { io } from 'socket.io-client';
+import { API_BASE_URL } from '../env.config';
+import { SocketClientType } from '@/types/socket';
 
 interface ISocketContextValue {
-  initialSocket: (tripId: Types["Trip"]["Model"]["_id"]) => void;
-  socket: SocketClientType | null;
+	initialSocket: (tripId: string) => void;
+	socket: SocketClientType | null;
 }
 
 interface ITripSocketProviderProps {
-  children: ReactNode;
+	children: ReactNode;
 }
 
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
-  const [socket, setSocket] = useState<SocketClientType | null>(null);
-  const [tripId, setTripId] = useState<Types["Trip"]["Model"]["_id"] | null>(
-    null,
-  );
-  const currentUserLocationInterval = useRef<number>();
+	const [socket, setSocket] = useState<SocketClientType | null>(null);
+	const [tripId, setTripId] = useState<string | null>(null);
+	const currentUserLocationInterval = useRef<number>();
 
-  const initialSocket = (tripId: Types["Trip"]["Model"]["_id"]) => {
-    const socket: SocketClientType = io(API_BASE_URL, {
-      query: { tripId },
-    });
+	const initialSocket = (tripId: string) => {
+		const socket: SocketClientType = io(API_BASE_URL, {
+			query: { tripId },
+		});
 
-    setTripId(tripId);
-    setSocket(socket);
-  };
+		setTripId(tripId);
+		setSocket(socket);
+	};
 
-  useEffect(() => {
-    if (!socket || !tripId) return;
+	useEffect(() => {
+		if (!socket || !tripId) return;
 
-    socket.emit("joinTrip", tripId);
+		socket.emit('joinTrip', tripId);
 
-    // currentUserLocationInterval.current = setInterval(() => {
-    //   navigator.geolocation.getCurrentPosition(
-    //     (position) => {
-    //       socket.emit("updateLocation", tripId, {
-    //         lon: position.coords.longitude,
-    //         lat: position.coords.latitude,
-    //       });
-    //     },
-    //     (err) => {
-    //       console.error(err);
-    //     },
-    //   );
-    // }, 2000);
+		//updateLocation
+		currentUserLocationInterval.current = setInterval(() => {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					socket.emit('updateLocation', tripId, {
+						lon: position.coords.longitude,
+						lat: position.coords.latitude,
+					});
+				},
+				(err) => {
+					console.error(err);
+				},
+				{
+					enableHighAccuracy: true,
+					maximumAge: 0,
+					timeout: 10000,
+				}
+			);
+		}, 5000);
 
-    socket.on("connect", () => {
-      console.log("Connected to socket");
-    });
+		socket.on('tripJoined', (userId) => {
+			console.log('User joined trip:', userId);
+		});
 
-    socket.on("disconnect", () => {
-      console.log("Disconnected from socket");
-    });
+		socket.on('locationUpdated', (userId, location) => {
+			console.log('Location updated:', userId, location);
+		});
 
-    socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
-    });
+		socket.on('experienceFinished', (userId) => {
+			console.log('Experience finished:', userId);
+		});
 
-    return () => {
-      socket.disconnect();
-      console.log("Socket disconnected");
+		socket.on('messageSent', (message) => {
+			console.log('Message as received:', message);
+		});
 
-      clearInterval(currentUserLocationInterval.current);
-    };
-  }, [socket, tripId]);
+		socket.on('connect', () => {
+			console.log('Connected to socket');
+		});
 
-  return (
-    <tripSocketContext.Provider value={{ initialSocket, socket }}>
-      {children}
-    </tripSocketContext.Provider>
-  );
+		socket.on('disconnect', () => {
+			console.log('Disconnected from socket');
+		});
+
+		socket.on('connect_error', (error) => {
+			console.error('Socket connection error:', error);
+		});
+
+		return () => {
+			socket.disconnect();
+			console.log('Socket disconnected');
+
+			clearInterval(currentUserLocationInterval.current);
+		};
+	}, [socket, tripId]);
+
+	return (
+		<tripSocketContext.Provider value={{ initialSocket, socket }}>
+			{children}
+		</tripSocketContext.Provider>
+	);
 }
 
 export const useTripSocket = () => {
-  const context = useContext(tripSocketContext);
-  if (!context) {
-    throw new Error("useTripSocket must be used within a TripSocketProvider");
-  }
-  return context;
+	const context = useContext(tripSocketContext);
+	if (!context) {
+		throw new Error('useTripSocket must be used within a TripSocketProvider');
+	}
+	return context;
 };

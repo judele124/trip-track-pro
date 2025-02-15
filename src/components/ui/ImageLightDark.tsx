@@ -1,22 +1,22 @@
-import { ImgHTMLAttributes } from "react";
-import { useDarkMode } from "../../contexts/DarkModeContext";
+import { ImgHTMLAttributes } from 'react';
+import { useDarkMode } from '../../contexts/DarkModeContext';
 
 interface IImageLightDarkProps extends ImgHTMLAttributes<HTMLImageElement> {
-  srcDark: string;
-  srcLight: string;
+	srcDark: string;
+	srcLight: string;
 }
 const ImageLightDark = ({
-  srcDark,
-  srcLight,
-  ...props
+	srcDark,
+	srcLight,
+	...props
 }: IImageLightDarkProps) => {
-  const { isDarkMode } = useDarkMode();
+	const { isDarkMode } = useDarkMode();
 
-  if (isDarkMode) {
-    return <img src={srcDark} {...props} />;
-  }
+	if (isDarkMode) {
+		return <img src={srcDark} {...props} />;
+	}
 
-  return <img src={srcLight} {...props} />;
+	return <img src={srcLight} {...props} />;
 };
 
 export default ImageLightDark;

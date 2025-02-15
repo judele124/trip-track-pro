@@ -1,1 +1,1 @@
-export { default } from "./ParticipantsView";
+export { default } from './ParticipantsView';
