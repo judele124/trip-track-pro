@@ -13,8 +13,10 @@ import { navigationRoutes } from '@/Routes/routes';
 
 interface IUser {
 	email: string;
-	name: string;
+	name?: string;
+	imageUrl?: string;
 	_id: string;
+	isNew?: boolean;
 }
 
 interface AuthProviderProps {
@@ -68,9 +70,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
 	const handleVerifyCode = async (data: Types['Auth']['VerifyCode']) => {
 		try {
-			const { user, status } = await verifyCode(data, activate);
+			const { user, status, isNew } = await verifyCode(data, activate);
 			setVerifyCodeStatus(status);
-			setUser(user);
+			setUser({ ...user, isNew });
 			setVerifyCodeError(null);
 		} catch (err: any) {
 			setVerifyCodeError(err);

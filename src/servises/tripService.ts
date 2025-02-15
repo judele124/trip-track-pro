@@ -40,7 +40,7 @@ export const tripGet = async (
 	id: string
 ) => {
 	const { data, status } = await activate({
-		url: `${API_BASE_URL}/trip/get/${id}`,
+		url: `${API_BASE_URL}/trip/${id}`,
 		method: 'get',
 	});
 
