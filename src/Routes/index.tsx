@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import routes, { navigationRoutes } from './routes';
 import { ReactNode, useEffect } from 'react';
-import TripProvider, { useTripContext } from '@/contexts/TripContext';
+import TripProvider from '@/contexts/TripContext';
 
 function renderRoutes(ch: RouteObject[]): ReactNode[] {
 	return ch.map(({ index, path, children: childrenRouteObjects, element }) => {
@@ -38,8 +38,7 @@ export default function AllRoutes() {
 	}, []);
 	return (
 		<TripProvider>
-			{' '}
-			<Routes>{renderRoutes(routes)}</Routes>{' '}
+			<Routes>{renderRoutes(routes)}</Routes>
 		</TripProvider>
 	);
 }

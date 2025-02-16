@@ -1,4 +1,3 @@
-import Loader from '@/components/ui/Loader';
 import { useTripSocket } from '@/contexts/SocketContext';
 import { useTripContext } from '@/contexts/TripContext';
 import { navigationRoutes } from '@/Routes/routes';
@@ -11,7 +10,6 @@ export default function LoadingTripDataView() {
 	const nav = useNavigate();
 
 	useEffect(() => {
-		console.log(trip?._id);
 		if (!trip?._id) {
 			nav(navigationRoutes.notFound);
 			return;

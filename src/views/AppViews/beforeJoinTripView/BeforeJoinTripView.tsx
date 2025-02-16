@@ -28,7 +28,6 @@ export default function BeforeJoinTripView() {
 	}
 
 	const { name, description, reward }: Types['Trip']['Model'] = data;
-	console.log(reward);
 
 	return (
 		<div className='flex flex-col gap-6'>
