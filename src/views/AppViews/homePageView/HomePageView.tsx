@@ -28,6 +28,8 @@ const HomePageView = () => {
 			</div>
 
 			<InputUserAvatarModal />
+
+			{/* <TestUI /> */}
 		</>
 	);
 };

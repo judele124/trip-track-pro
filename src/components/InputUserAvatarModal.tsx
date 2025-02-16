@@ -1,9 +1,7 @@
-import useToggle from '@/hooks/useToggle';
 import Modal from './ui/Modal';
 import Input from './ui/Input';
 import Button from './ui/Button';
 import { useEffect, useState } from 'react';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import useAxios from '@/hooks/useAxios';
 import { API_BASE_URL } from '@/env.config';
@@ -12,8 +10,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import InputFeildError from './ui/InputFeildError';
 import { Schemas } from 'trip-track-package';
 import { z } from 'zod';
+import { useAuthContext } from '@/contexts/AuthContext';
 
-export default function InputUserAvatarModal() {
+interface IInputUserAvatarModalProps {
+	allowGuest?: boolean;
+}
+
+export default function InputUserAvatarModal({
+	allowGuest,
+}: IInputUserAvatarModalProps) {
 	const { user } = useAuthContext();
 	const {
 		activate,
@@ -23,7 +28,6 @@ export default function InputUserAvatarModal() {
 		manual: true,
 	});
 	const [randomNameError, setRandomNameError] = useState<string | null>(null);
-	const [updateNameError, setUpdateNameError] = useState<string | null>(null);
 
 	const {
 		watch,
@@ -34,19 +38,19 @@ export default function InputUserAvatarModal() {
 		resolver: zodResolver(Schemas.user),
 	});
 
-	const { isOpen, setIsOpen } = useToggle(!user?.name ? true : false);
-
 	const [inputValue, setInputValue] = useState('');
 	const inputValueDebaunced = useDebouncedValue(inputValue, 500);
 
 	useEffect(() => {
-		if (!user || user.name) return;
+		if (!user) return;
 
 		activate({
 			url: `${API_BASE_URL}/user/random-name`,
 		}).then(({ data: name }) => setInputValue(name));
-		setValue('email', user.email);
-	}, [user]);
+		if (user.role !== 'guest') {
+			setValue('email', user.email);
+		}
+	}, []);
 
 	const name = watch('name');
 
@@ -74,28 +78,29 @@ export default function InputUserAvatarModal() {
 
 	const onSubmit = async (formState: z.infer<typeof Schemas.user>) => {
 		try {
+			if (user?.role === 'guest') {
+				await activate({
+					url: `${API_BASE_URL}/user/profile`,
+					method: 'PUT',
+					data: formState,
+				});
+			}
 			// update mongo
-			const { error } = await activate({
+			await activate({
 				url: `${API_BASE_URL}/user/profile`,
 				method: 'PUT',
 				data: formState,
 			});
 
-			if (error && 'status' in error && error.status === 404) {
-				setUpdateNameError('User not found');
-				return;
-			}
 			// update user tokens
 			await activate({
 				url: `${API_BASE_URL}/auth/create-user-tokens`,
+				method: 'GET',
 			});
-			setIsOpen(false);
 		} catch (error) {
 			console.error(error);
 		}
 	};
-
-	if (!user || user.name || user.role !== 'user') return null;
 
 	const imageSrc = loading
 		? 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200w.gif?cid=6c09b952aui5tunhas7rsybn9vumavkvdfvz88bxyjecfghh&ep=v1_gifs_search&rid=200w.gif&ct=g'
@@ -106,7 +111,7 @@ export default function InputUserAvatarModal() {
 			containerClassName='page-padding w-[95vw] max-w-[400px]'
 			onBackdropClick={() => {}}
 			center={true}
-			open={isOpen}
+			open={true}
 		>
 			<form
 				onSubmit={handleSubmit(onSubmit)}
@@ -139,7 +144,6 @@ export default function InputUserAvatarModal() {
 				<Button type='button' onClick={handleGenerateRandomName}>
 					Generate Random Name
 				</Button>
-				{updateNameError && <InputFeildError message={updateNameError} />}
 			</form>
 		</Modal>
 	);

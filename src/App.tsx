@@ -4,7 +4,6 @@ import DarkModeContextProvider from './contexts/DarkModeContext.tsx';
 import { axios } from './hooks/useAxios.ts';
 import { BrowserRouter } from 'react-router-dom';
 import AllRoutes from './Routes/index.tsx';
-import { TestUI } from './components/test/TestUI.tsx';
 
 axios.defaults.baseURL = 'http://localhost:3000/';
 axios.defaults.withCredentials = true;
@@ -14,7 +13,6 @@ function App() {
 		<BrowserRouter>
 			<AuthProvider>
 				<DarkModeContextProvider>
-					<TestUI />
 					<AllRoutes />
 				</DarkModeContextProvider>
 			</AuthProvider>
