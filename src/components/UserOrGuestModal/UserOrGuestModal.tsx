@@ -6,32 +6,47 @@ import useAxios from '@/hooks/useAxios';
 import { API_BASE_URL } from '@/env.config';
 import Icon from '../icons/Icon';
 
-interface UserOrGuestModalProps {}
+interface UserOrGuestModalProps {
+	open: boolean;
+	onClose: () => void;
+}
 
-export default function UserOrGuestModal({}: UserOrGuestModalProps) {
-	const { activate, loading, data, status, error } = useAxios({
+export default function UserOrGuestModal({
+	open,
+	onClose,
+}: UserOrGuestModalProps) {
+	const { activate, loading, status, error } = useAxios({
 		manual: true,
 	});
 	const nav = useNavigate();
+
+	const handleCreateGuestToken = async () => {
+		try {
+			await activate({
+				url: `${API_BASE_URL}/auth/create-guest-token`,
+				method: 'GET',
+			});
+			onClose();
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	const handleLoginAsUser = () => {
+		nav(navigationRoutes.login);
+		onClose();
+	};
+
 	return (
-		<Modal open center onBackdropClick={() => {}}>
-			<div className='page-colors flex flex-col gap-4 rounded-2xl p-8 text-center'>
+		<Modal open={open} center onBackdropClick={() => {}}>
+			<div className='page-colors flex max-w-[90vw] flex-col gap-4 rounded-2xl p-8 text-center'>
 				<div>
-					<h3>You are not logged in</h3>
+					<h3>We need to know who you are</h3>
 					<p>Sign in to continue</p>
 				</div>
 				<Button
 					className={status ? 'bg-green-500' : ''}
-					onClick={async () => {
-						try {
-							await activate({
-								url: `${API_BASE_URL}/auth/create-guest-token`,
-								method: 'GET',
-							});
-						} catch (error) {
-							console.error(error);
-						}
-					}}
+					onClick={handleCreateGuestToken}
 				>
 					{(error && (
 						<p className='text-red-500'>
@@ -42,12 +57,7 @@ export default function UserOrGuestModal({}: UserOrGuestModalProps) {
 						(status && 'Token created') ||
 						'Create guest token'}
 				</Button>
-				<Button
-					primary
-					onClick={() => {
-						nav(navigationRoutes.login);
-					}}
-				>
+				<Button primary onClick={handleLoginAsUser}>
 					Login as user
 				</Button>
 			</div>

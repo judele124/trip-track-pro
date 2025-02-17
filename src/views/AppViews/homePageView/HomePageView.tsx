@@ -5,9 +5,37 @@ import imgSrcDark from './assets/start-screen-dark.svg';
 import Button from '@/components/ui/Button';
 import ImageLightDark from '@/components/ui/ImageLightDark';
 import { navigationRoutes } from '@/Routes/routes';
-import InputUserAvatarModal from '@/components/InputUserAvatarModal';
+import UserInputNameModal from '@/components/UserInputNameModal';
+import { useAuthContext } from '@/contexts/AuthContext';
+import useAxios from '@/hooks/useAxios';
+import { useCallback } from 'react';
 
 const HomePageView = () => {
+	const { user } = useAuthContext();
+	const { activate } = useAxios({
+		manual: true,
+	});
+
+	const handleUpdateUserAvatarInfo = useCallback(
+		async ({ name, imageUrl }: { name: string; imageUrl: string }) => {
+			if (!user || user.role === 'guest') return;
+			await activate({
+				url: '/user/profile',
+				method: 'PUT',
+				data: {
+					...user,
+					name,
+					imageUrl,
+				},
+			});
+
+			await activate({
+				url: '/create-user-tokens',
+			});
+		},
+		[user]
+	);
+
 	return (
 		<>
 			<div className='flex flex-col gap-4'>
@@ -27,9 +55,13 @@ const HomePageView = () => {
 				</div>
 			</div>
 
-			<InputUserAvatarModal />
-
-			{/* <TestUI /> */}
+			{user && user.role === 'user' && (
+				<UserInputNameModal
+					onSubmit={({ name, imageUrl }) => {
+						handleUpdateUserAvatarInfo({ name, imageUrl });
+					}}
+				/>
+			)}
 		</>
 	);
 };
