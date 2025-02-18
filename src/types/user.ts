@@ -1,6 +1,7 @@
 interface BaseUser {
 	_id: string;
 	role: 'user' | 'guest';
+	name?: string;
 }
 
 interface GuestData extends BaseUser {
@@ -10,7 +11,6 @@ interface GuestData extends BaseUser {
 interface UserData extends BaseUser {
 	role: 'user';
 	email: string;
-	name?: string;
 	imageUrl?: string;
 }
 

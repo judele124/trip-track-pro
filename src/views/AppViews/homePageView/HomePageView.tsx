@@ -8,7 +8,8 @@ import { navigationRoutes } from '@/Routes/routes';
 import UserInputNameModal from '@/components/UserInputNameModal';
 import { useAuthContext } from '@/contexts/AuthContext';
 import useAxios from '@/hooks/useAxios';
-import { useCallback } from 'react';
+import useToggle from '@/hooks/useToggle';
+import { useEffect } from 'react';
 
 const HomePageView = () => {
 	const { user } = useAuthContext();
@@ -16,25 +17,45 @@ const HomePageView = () => {
 		manual: true,
 	});
 
-	const handleUpdateUserAvatarInfo = useCallback(
-		async ({ name, imageUrl }: { name: string; imageUrl: string }) => {
-			if (!user || user.role === 'guest') return;
+	const { isOpen: isNameModalOpen, setIsOpen: setIsNameModalOpen } =
+		useToggle();
+
+	useEffect(() => {
+		if (user && user.role === 'user' && !user.name) {
+			setIsNameModalOpen(true);
+		} else {
+			setIsNameModalOpen(false);
+		}
+	}, [user]);
+
+	const handleUpdateUserAvatarInfo = async ({
+		name,
+		imageUrl,
+	}: {
+		name: string;
+		imageUrl: string;
+	}) => {
+		if (!user || user.role === 'guest') return;
+		const { _id, ...userRest } = user;
+
+		const { status } = await activate({
+			url: '/user/profile',
+			method: 'PUT',
+			data: {
+				...userRest,
+				name,
+				imageUrl,
+			},
+		});
+
+		if (status >= 200 && status < 300) {
 			await activate({
-				url: '/user/profile',
-				method: 'PUT',
-				data: {
-					...user,
-					name,
-					imageUrl,
-				},
+				url: '/auth/create-user-tokens',
 			});
 
-			await activate({
-				url: '/create-user-tokens',
-			});
-		},
-		[user]
-	);
+			setIsNameModalOpen(false);
+		}
+	};
 
 	return (
 		<>
@@ -51,11 +72,21 @@ const HomePageView = () => {
 							Create a new trip
 						</Button>
 					</Link>
-					<Button className='w-full'>Join a trip</Button>
+					{user ? (
+						<Link to={navigationRoutes.profile}>
+							<Button className='flex w-full items-center justify-center gap-4'>
+								{user.name}'s Profile
+							</Button>
+						</Link>
+					) : (
+						<Link to={navigationRoutes.login}>
+							<Button className='w-full'>Login</Button>
+						</Link>
+					)}
 				</div>
 			</div>
 
-			{user && user.role === 'user' && (
+			{isNameModalOpen && (
 				<UserInputNameModal
 					onSubmit={({ name, imageUrl }) => {
 						handleUpdateUserAvatarInfo({ name, imageUrl });
