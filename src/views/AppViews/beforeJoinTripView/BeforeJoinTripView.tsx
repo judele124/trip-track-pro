@@ -4,14 +4,20 @@ import useIdFromParamsOrNavigate from '@/hooks/useIdFromParamsOrNavigate';
 import { navigationRoutes } from '@/Routes/routes';
 import { tripGet } from '@/servises/tripService';
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Types } from 'trip-track-package';
 import { useTripContext } from '@/contexts/TripContext';
+import { useAuthContext } from '@/contexts/AuthContext';
+import useToggle from '@/hooks/useToggle';
+import UserOrGuestModal from '@/components/UserOrGuestModal';
 
 export default function BeforeJoinTripView() {
 	const { activate, data, status, loading, error } = useAxios({ manual: true });
 	const tripId = useIdFromParamsOrNavigate(navigationRoutes.notFound);
 	const { setTrip } = useTripContext();
+	const { user } = useAuthContext();
+	const nav = useNavigate();
+	const { isOpen, setIsOpen } = useToggle();
 
 	useEffect(() => {
 		if (!tripId) return;
@@ -22,6 +28,15 @@ export default function BeforeJoinTripView() {
 		if (!data) return;
 		setTrip(data);
 	}, [data]);
+
+	const handleOnjoin = () => {
+		if (!user) {
+			setIsOpen(true);
+			return;
+		}
+
+		nav(`${navigationRoutes.trip}?tripId=${tripId}`);
+	};
 
 	if (!status || loading || error) {
 		return <p>{loading ? 'Loading...' : error?.message}</p>;
@@ -44,7 +59,7 @@ export default function BeforeJoinTripView() {
 				{description}
 			</p>
 
-			{reward && reward.image && (
+			{reward?.image && (
 				<div className='flex w-[65%] flex-col items-center self-center rounded-xl border border-primary bg-light p-2 dark:bg-secondary'>
 					<p className='p-3 text-base font-medium'>{reward.title + ' 🏆 '}</p>
 					<img
@@ -56,11 +71,10 @@ export default function BeforeJoinTripView() {
 				</div>
 			)}
 
-			<Link to={`${navigationRoutes.trip}?tripId=${tripId}`}>
-				<Button primary className='w-full'>
-					join
-				</Button>
-			</Link>
+			<UserOrGuestModal open={isOpen} onClose={() => setIsOpen(false)} />
+			<Button onClick={handleOnjoin} primary className='w-full'>
+				join
+			</Button>
 		</div>
 	);
 }

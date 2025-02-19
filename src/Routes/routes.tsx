@@ -85,9 +85,9 @@ const routes: RouteObject[] = [
 					{
 						path: appRoutes.joinTrip,
 						element: (
-							<ProtectedRoute>
-								<BeforeJoinTripView />
-							</ProtectedRoute>
+							// <ProtectedRoute>
+							<BeforeJoinTripView />
+							// </ProtectedRoute>
 						),
 					},
 					{ path: appRoutes.profile, element: <div>profile</div> },

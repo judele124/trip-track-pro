@@ -10,32 +10,38 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 interface useMapInitReturn {
 	isMapReady: boolean;
 	mapRef: React.MutableRefObject<Map | null>;
+	error: boolean;
 }
 
 export default function useMapInit(
 	containerRef: RefObject<HTMLDivElement>
 ): useMapInitReturn {
 	const [isMapReady, setMapReady] = useState<boolean>(false);
+	const [error, setError] = useState<boolean>(false);
 	const mapRef = useRef<Map | null>(null);
 
 	useEffect(() => {
-		if (!containerRef.current) return;
+		try {
+			if (!containerRef.current) return;
 
-		mapRef.current = new MB_Map({
-			container: containerRef.current,
-			style: MAX_BOX_STYLE,
-			center: INITIAL_CENTER,
-			zoom: INITIAL_ZOOM,
-		});
+			mapRef.current = new MB_Map({
+				container: containerRef.current,
+				style: MAX_BOX_STYLE,
+				center: INITIAL_CENTER,
+				zoom: INITIAL_ZOOM,
+			});
 
-		mapRef.current.on('load', () => {
-			setMapReady(true);
-		});
+			mapRef.current.on('load', () => {
+				setMapReady(true);
+			});
 
-		return () => {
-			mapRef.current?.remove();
-		};
+			return () => {
+				mapRef.current?.remove();
+			};
+		} catch (error) {
+			setError(true);
+		}
 	}, []);
 
-	return { isMapReady, mapRef };
+	return { isMapReady, mapRef, error };
 }
