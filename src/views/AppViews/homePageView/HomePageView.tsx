@@ -12,7 +12,7 @@ import useToggle from '@/hooks/useToggle';
 import { useEffect } from 'react';
 
 const HomePageView = () => {
-	const { user } = useAuthContext();
+	const { user, handleTokenValidation } = useAuthContext();
 	const { activate } = useAxios({
 		manual: true,
 	});
@@ -53,6 +53,8 @@ const HomePageView = () => {
 				url: '/auth/create-user-tokens',
 			});
 
+			await handleTokenValidation();
+			
 			setIsNameModalOpen(false);
 		}
 	};

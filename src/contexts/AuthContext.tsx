@@ -17,6 +17,7 @@ interface AuthProviderProps {
 }
 
 interface IAuthContextValue {
+	handleTokenValidation: () => Promise<void>;
 	logout: () => Promise<void>;
 	sendCode: (email: string) => Promise<void>;
 	verifyCode: (data: Types['Auth']['LoginSchema']) => Promise<void>;
@@ -105,6 +106,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 	return (
 		<AuthContext.Provider
 			value={{
+				handleTokenValidation,
 				sendCode: handleSendCode,
 				verifyCode: handleVerifyCode,
 				logout: handleLogout,
