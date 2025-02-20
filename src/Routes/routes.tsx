@@ -2,6 +2,7 @@ import NavbarLayout from '@/components/layouts/NavbarLayout';
 import PageLayout from '@/components/layouts/PageLayout';
 import TripLayout from '@/components/layouts/TripLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import MapContextProvider from '@/contexts/MapContext';
 import SocketProvider from '@/contexts/SocketContext';
 import BeforeJoinTripView from '@/views/AppViews/beforeJoinTripView';
 import CreateTripView from '@/views/AppViews/createTripView';
@@ -106,7 +107,9 @@ const routes: RouteObject[] = [
 				path: tripRoutes.map,
 				element: (
 					<ProtectedRoute>
-						<MapView />
+						<MapContextProvider>
+							<MapView />
+						</MapContextProvider>
 					</ProtectedRoute>
 				),
 			},

@@ -1,4 +1,3 @@
-import MapContextProvider from '@/contexts/MapContext';
 import useMapInit from './hooks/useMapInit';
 import { ReactNode, useRef } from 'react';
 import { useMapRoute } from './hooks/useMapRoute';
@@ -20,7 +19,7 @@ export default function Map({ children, routeOriginalPoints }: MapProps) {
 	});
 
 	return (
-		<MapContextProvider isMapReady={isMapReady} mapRef={mapRef}>
+		<>
 			{!isRouteReady ? (
 				<div className='page-colors flex size-full items-center justify-center'>
 					<div>
@@ -31,6 +30,6 @@ export default function Map({ children, routeOriginalPoints }: MapProps) {
 				<>{children}</>
 			)}
 			<div ref={conatinerRef} className='h-full w-full'></div>
-		</MapContextProvider>
+		</>
 	);
 }

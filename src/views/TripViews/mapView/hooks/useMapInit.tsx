@@ -1,6 +1,7 @@
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect } from 'react';
 import mapboxgl, { Map, Map as MB_Map } from 'mapbox-gl';
 import { MAPBOX_ACCESS_TOKEN } from '@/env.config';
+import { useMapContext } from '@/contexts/MapContext';
 
 const INITIAL_CENTER: [number, number] = [-74.0242, 40.6941];
 const INITIAL_ZOOM: number = 10.12;
@@ -15,8 +16,7 @@ interface useMapInitReturn {
 export default function useMapInit(
 	containerRef: RefObject<HTMLDivElement>
 ): useMapInitReturn {
-	const [isMapReady, setMapReady] = useState<boolean>(false);
-	const mapRef = useRef<Map | null>(null);
+	const { isMapReady, setMapReady, mapRef } = useMapContext();
 
 	useEffect(() => {
 		if (!containerRef.current) return;

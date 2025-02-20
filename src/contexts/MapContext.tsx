@@ -5,25 +5,27 @@ import {
 	ReactNode,
 	FC,
 	MutableRefObject,
+	useState,
+	useRef,
 } from 'react';
-
-export interface MapContextValue {}
-
-const MapContext = createContext<MapContextValue | null>(null);
 
 interface MapContextProviderProps {
 	children: ReactNode;
-	isMapReady: boolean;
-	mapRef: MutableRefObject<Map | null>;
 }
+
+const MapContext = createContext<{
+	isMapReady: boolean;
+	setMapReady: React.Dispatch<React.SetStateAction<boolean>>;
+	mapRef: MutableRefObject<Map | null>;
+} | null>(null);
 
 const MapContextProvider: FC<MapContextProviderProps> = ({
 	children,
-	isMapReady,
-	mapRef,
 }: MapContextProviderProps) => {
+	const [isMapReady, setMapReady] = useState<boolean>(false);
+	const mapRef = useRef<Map | null>(null);
 	return (
-		<MapContext.Provider value={{ isMapReady, mapRef }}>
+		<MapContext.Provider value={{ isMapReady, setMapReady, mapRef }}>
 			{children}
 		</MapContext.Provider>
 	);
