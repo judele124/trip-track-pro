@@ -2,6 +2,7 @@ import Icon from '@/components/icons/Icon';
 import Modal from '@/components/ui/Modal';
 import { ExperienceType, Types } from 'trip-track-package';
 import InfoExperienceData from './InfoExperienceData';
+import TriviaExperienceData from './TriviaExperienceData';
 
 interface IExperienceModalProps {
 	open: boolean;
@@ -25,7 +26,16 @@ export default function ExirienceModal({
 					<h3 className='text-xl font-semibold'>{experience.type}</h3>
 				</div>
 				{experience.type === ExperienceType.INFO && (
-					<InfoExperienceData info={experience.data.text} />
+					<InfoExperienceData
+						data={experience.data}
+						onClose={onBackdropClick}
+					/>
+				)}
+				{experience.type === ExperienceType.TRIVIA && (
+					<TriviaExperienceData
+						data={experience.data}
+						onClose={onBackdropClick}
+					/>
 				)}
 			</div>
 		</Modal>

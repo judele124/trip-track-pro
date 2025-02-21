@@ -47,7 +47,7 @@ const Button = forwardRef(
 				ref={ref}
 				{...props}
 				type={type}
-				className={`hover:bg-opacity-80 ${className}`}
+				className={`disabled:bg-gray-500 ${className}`}
 			>
 				{children}
 			</button>

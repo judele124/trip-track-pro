@@ -11,14 +11,11 @@ interface IStopMarkerProps {
 export default function StopMarker({ stop }: IStopMarkerProps) {
 	const { isOpen, toggle } = useToggle();
 
-	console.log(stop);
-
 	return (
 		<>
 			<Button
-				disabled={!stop.experience}
 				onClick={toggle}
-				className='relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 bg-light text-dark dark:bg-dark dark:text-light'
+				className={`relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 bg-light text-dark dark:bg-dark dark:text-light ${!stop.experience ? 'cursor-default hover:bg-opacity-100' : ''}`}
 			>
 				<p className='overflow-hidden text-ellipsis whitespace-nowrap'>
 					{stop.address}
@@ -27,7 +24,7 @@ export default function StopMarker({ stop }: IStopMarkerProps) {
 					<Icon className='fill-primary' name={stop.experience.type} />
 				)}
 				<svg
-					className='absolute left-1/2 top-full size-5 -translate-x-1/2 fill-dark'
+					className='absolute left-1/2 top-full size-5 -translate-x-1/2 fill-light dark:fill-dark'
 					width='51'
 					height='60'
 					viewBox='0 0 51 60'
