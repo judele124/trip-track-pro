@@ -11,9 +11,11 @@ export default function InfoExperienceData({
 	onClose,
 }: InfoExperienceDataProps) {
 	return (
-		<div>
+		<div className='flex flex-col gap-2'>
 			<p>{data.text}</p>
-			<Button onClick={onClose}>Close</Button>
+			<Button className='w-full' onClick={onClose}>
+				Close
+			</Button>
 		</div>
 	);
 }
