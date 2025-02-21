@@ -7,7 +7,10 @@ import {
 	MutableRefObject,
 } from 'react';
 
-export interface MapContextValue {}
+export interface MapContextValue {
+	isMapReady: boolean;
+	mapRef: MutableRefObject<Map | null>;
+}
 
 const MapContext = createContext<MapContextValue | null>(null);
 
