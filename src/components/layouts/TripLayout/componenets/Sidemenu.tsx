@@ -39,13 +39,15 @@ export default function Sidemenu({
 					<li
 						key={title}
 						onClick={onClick}
-						className={`group flex gap-2 p-3 ${i != menuItems.length - 1 && 'border-b-2 border-secondary'}`}
+						className={`group flex justify-start gap-2 p-3 ${i != menuItems.length - 1 && 'border-b-2 border-secondary'}`}
 					>
-						<Icon
-							name={icon}
-							className='transition-all group-hover:fill-primary'
-						/>
-						<p className='transition-all group-hover:font-semibold'>{title}</p>
+						<i>
+							<Icon
+								name={icon}
+								className='transition-all group-hover:fill-primary'
+							/>
+						</i>
+						<p className='transition-all'>{title}</p>
 					</li>
 				))}
 			</ul>
