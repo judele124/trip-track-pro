@@ -23,11 +23,11 @@ export default function MapView() {
 			<Map routeOriginalPoints={stops}>
 				{trip?.stops.map((stop) => {
 					return (
-						<GeneralMarker location={stop.location}>
-							<StopMarker
-								stop={stop}
-								key={`${stop.location.lat}-${stop.location.lon}`}
-							/>
+						<GeneralMarker
+							key={`${stop.location.lat}-${stop.location.lon}`}
+							location={stop.location}
+						>
+							<StopMarker stop={stop} />
 						</GeneralMarker>
 					);
 				})}
