@@ -84,11 +84,7 @@ const routes: RouteObject[] = [
 					},
 					{
 						path: appRoutes.joinTrip,
-						element: (
-							// <ProtectedRoute>
-							<BeforeJoinTripView />
-							// </ProtectedRoute>
-						),
+						element: <BeforeJoinTripView />,
 					},
 					{ path: appRoutes.profile, element: <div>profile</div> },
 					{ path: '*', element: <PageNotFoundView /> },
