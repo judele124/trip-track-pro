@@ -1,19 +1,26 @@
-import useToggle from '@/hooks/useToggle';
-import Modal from './ui/Modal';
-import Input from './ui/Input';
-import Button from './ui/Button';
+import Modal from '../ui/Modal';
+import Input from '../ui/Input';
+import Button from '../ui/Button';
 import { useEffect, useState } from 'react';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import useAxios from '@/hooks/useAxios';
 import { API_BASE_URL } from '@/env.config';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import InputFeildError from './ui/InputFeildError';
+import InputFeildError from '../ui/InputFeildError';
 import { Schemas } from 'trip-track-package';
-import { z } from 'zod';
+import { useAuthContext } from '@/contexts/AuthContext';
 
-export default function InputUserAvatarModal() {
+const LOADER_GIF =
+	'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200w.gif?cid=6c09b952aui5tunhas7rsybn9vumavkvdfvz88bxyjecfghh&ep=v1_gifs_search&rid=200w.gif&ct=g';
+
+interface IUserInputNameModalProps {
+	onSubmit: ({ name, imageUrl }: { name: string; imageUrl: string }) => void;
+}
+
+export default function UserInputNameModal({
+	onSubmit,
+}: IUserInputNameModalProps) {
 	const { user } = useAuthContext();
 	const {
 		activate,
@@ -22,41 +29,40 @@ export default function InputUserAvatarModal() {
 	} = useAxios({
 		manual: true,
 	});
-	const [randomNameError, setRandomNameError] = useState<string | null>(null);
-	const [updateNameError, setUpdateNameError] = useState<string | null>(null);
 
 	const {
+		trigger,
 		watch,
 		formState: { errors },
 		handleSubmit,
 		setValue,
-	} = useForm<z.infer<typeof Schemas.user>>({
-		resolver: zodResolver(Schemas.user),
+	} = useForm<{ name: string }>({
+		resolver: zodResolver(
+			Schemas.user.pick({
+				name: true,
+			})
+		),
 	});
 
-	const { isOpen, setIsOpen } = useToggle(!user?.name ? true : false);
-
+	const [randomNameError, setRandomNameError] = useState<string | null>(null);
 	const [inputValue, setInputValue] = useState('');
 	const inputValueDebaunced = useDebouncedValue(inputValue, 500);
+	const name = watch('name');
 
 	useEffect(() => {
-		if (!user || user.name) return;
+		if (!user) return;
 
 		activate({
 			url: `${API_BASE_URL}/user/random-name`,
 		}).then(({ data: name }) => setInputValue(name));
-		setValue('email', user.email);
-	}, [user]);
-
-	const name = watch('name');
-
-	useEffect(() => {
-		setValue('imageUrl', `https://robohash.org/${name}.png`);
-	}, [name]);
+	}, []);
 
 	useEffect(() => {
 		if (!inputValueDebaunced) return;
 		setValue('name', inputValueDebaunced);
+		trigger('name').then((isValid) => {
+			if (!isValid) setValue('name', inputValueDebaunced);
+		});
 	}, [inputValueDebaunced]);
 
 	const handleGenerateRandomName = async () => {
@@ -68,54 +74,28 @@ export default function InputUserAvatarModal() {
 			setRandomNameError(error.message);
 			return;
 		}
+
 		setValue('name', name);
-		setValue('imageUrl', `https://robohash.org/${name}.png`);
+		setInputValue(name);
 	};
-
-	const onSubmit = async (formState: z.infer<typeof Schemas.user>) => {
-		try {
-			// update mongo
-			const { error } = await activate({
-				url: `${API_BASE_URL}/user/profile`,
-				method: 'PUT',
-				data: formState,
-			});
-
-			if (error && 'status' in error && error.status === 404) {
-				setUpdateNameError('User not found');
-				return;
-			}
-			// update user tokens
-			await activate({
-				url: `${API_BASE_URL}/auth/create-user-tokens`,
-			});
-			setIsOpen(false);
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	if (!user || user.name) return null;
-
-	const imageSrc = loading
-		? 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200w.gif?cid=6c09b952aui5tunhas7rsybn9vumavkvdfvz88bxyjecfghh&ep=v1_gifs_search&rid=200w.gif&ct=g'
-		: watch('imageUrl');
 
 	return (
 		<Modal
 			containerClassName='page-padding w-[95vw] max-w-[400px]'
 			onBackdropClick={() => {}}
 			center={true}
-			open={isOpen}
+			open={true}
 		>
 			<form
-				onSubmit={handleSubmit(onSubmit)}
+				onSubmit={handleSubmit(({ name }) => {
+					onSubmit({ name, imageUrl: `https://robohash.org/${name}.png` });
+				})}
 				className='page-colors flex flex-col justify-center gap-2 rounded-2xl p-5 text-center'
 			>
 				<h5>This is you</h5>
 				<img
 					className='mx-auto size-28 rounded-full bg-secondary text-center'
-					src={imageSrc}
+					src={loading ? LOADER_GIF : `https://robohash.org/${name}.png`}
 					alt='User avatar image'
 				/>
 				{randomNameError ? (
@@ -123,7 +103,6 @@ export default function InputUserAvatarModal() {
 				) : (
 					<h6>{watch('name') ?? randomName}</h6>
 				)}
-
 				<p>see what happens when you type a new name</p>
 				{errors.name?.message && (
 					<InputFeildError message={errors.name.message} />
@@ -133,13 +112,12 @@ export default function InputUserAvatarModal() {
 					placeholder='Enter name'
 					onChange={(e) => setInputValue(e.target.value)}
 				/>
-				<Button disabled={loading} type='submit'>
+				<Button primary disabled={loading} type='submit'>
 					Confirm
 				</Button>
 				<Button type='button' onClick={handleGenerateRandomName}>
 					Generate Random Name
 				</Button>
-				{updateNameError && <InputFeildError message={updateNameError} />}
 			</form>
 		</Modal>
 	);

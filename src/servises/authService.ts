@@ -3,15 +3,9 @@ import { API_BASE_URL } from '../env.config';
 import { UseAxiosResponse } from '../hooks/useAxios';
 import { getErrorMessage } from '../utils/errorMessages';
 import { ServiceError } from '@/utils/ServiceError';
+import { IUserResponseData } from '@/types/user';
 
 type Activate = UseAxiosResponse['activate'];
-
-interface IUserResponseData {
-	email: string;
-	name?: string;
-	imageUrl?: string;
-	_id: string;
-}
 
 export const sendCode = async (
 	email: string,
