@@ -19,8 +19,6 @@ export default function BeforeJoinTripView() {
 	}, [tripId]);
 
 	useEffect(() => {
-		console.log(data);
-
 		if (!data) return;
 		setTrip(data);
 	}, [data]);
