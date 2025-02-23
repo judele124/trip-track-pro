@@ -10,20 +10,14 @@ import { useLocation } from 'react-router-dom';
 import { Types } from 'trip-track-package';
 import { ServiceError } from '@/utils/ServiceError';
 import { navigationRoutes } from '@/Routes/routes';
-
-interface IUser {
-	email: string;
-	name?: string;
-	imageUrl?: string;
-	_id: string;
-	isNew?: boolean;
-}
+import { IUserResponseData } from '@/types/user';
 
 interface AuthProviderProps {
 	children: React.ReactNode;
 }
 
 interface IAuthContextValue {
+	handleTokenValidation: () => Promise<void>;
 	logout: () => Promise<void>;
 	sendCode: (email: string) => Promise<void>;
 	verifyCode: (data: Types['Auth']['LoginSchema']) => Promise<void>;
@@ -36,7 +30,7 @@ interface IAuthContextValue {
 	sendCodeStatus: number | undefined;
 	verifyCodeStatus: number | undefined;
 	logoutStatus: number | undefined;
-	user: IUser | null;
+	user: IUserResponseData | null;
 }
 
 const AuthContext = createContext<null | IAuthContextValue>(null);
@@ -53,7 +47,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 	const [verifyCodeStatus, setVerifyCodeStatus] = useState<
 		number | undefined
 	>();
-	const [user, setUser] = useState<IUser | null>(null);
+	const [user, setUser] = useState<IUserResponseData | null>(null);
 	const { activate, loading, error, status } = useAxios({ manual: true });
 
 	const handleSendCode = async (email: string) => {
@@ -70,9 +64,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
 	const handleVerifyCode = async (data: Types['Auth']['VerifyCode']) => {
 		try {
-			const { user, status, isNew } = await verifyCode(data, activate);
+			const { user, status } = await verifyCode(data, activate);
 			setVerifyCodeStatus(status);
-			setUser({ ...user, isNew });
+			setUser(user);
 			setVerifyCodeError(null);
 		} catch (err: any) {
 			setVerifyCodeError(err);
@@ -112,6 +106,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 	return (
 		<AuthContext.Provider
 			value={{
+				handleTokenValidation,
 				sendCode: handleSendCode,
 				verifyCode: handleVerifyCode,
 				logout: handleLogout,
