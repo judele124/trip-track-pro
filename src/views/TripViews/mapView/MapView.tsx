@@ -12,11 +12,11 @@ import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 export default function MapView() {
 	const { trip } = useTripContext();
 	const { socket } = useTripSocket();
-	// const userLocation = useCurrentUserLocation({
-	// 	onLocationUpdate: (location) => {
-	// 		console.log('Location from socket', location);
-	// 	},
-	// });
+	const userLocation = useCurrentUserLocation({
+		onLocationUpdate: (location) => {
+			console.log('Location from socket', location);
+		},
+	});
 
 	const stops = trip?.stops.map((stop) => stop.location) || [];
 
@@ -30,24 +30,10 @@ export default function MapView() {
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
 			<Map routeOriginalPoints={stops}>
 				{userLocation && (
-					<GeneralMarker
-						location={{
-							lon: 34.8155556,
-							lat: 31.885675,
-						}}
-					>
+					<GeneralMarker location={userLocation}>
 						<UserMarker />
 					</GeneralMarker>
 				)}
-
-				<GeneralMarker
-					location={{
-						lon: 34.8155556,
-						lat: 31.885675,
-					}}
-				>
-					<UserMarker />
-				</GeneralMarker>
 
 				{trip?.stops.map((stop) => {
 					return (

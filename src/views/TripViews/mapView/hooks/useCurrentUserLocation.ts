@@ -14,26 +14,17 @@ export default function useCurrentUserLocation({
 	const currentUserLocationInterval = useRef<number>();
 
 	useEffect(() => {
-		currentUserLocationInterval.current = setInterval(() => {
-			navigator.geolocation.getCurrentPosition(
-				({ coords: { longitude: lon, latitude: lat } }) => {
-					onLocationUpdate({ lon, lat });
-					setUserCurrentLocation({ lon, lat });
-				},
-				(err) => {
-					console.error(err);
-				},
-				{
-					enableHighAccuracy: true,
-					maximumAge: 0,
-					timeout: 10000,
-				}
-			);
-		}, 5000);
+		navigator.geolocation.watchPosition((pos) => {
+			setUserCurrentLocation({
+				lon: pos.coords.longitude,
+				lat: pos.coords.latitude,
+			});
+		});
 
 		return () => {
 			clearInterval(currentUserLocationInterval.current);
 		};
 	}, []);
+	
 	return userCurrentLocation;
 }
