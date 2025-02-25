@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface IUseCurrentUserLocationProps {
 	onLocationUpdate: (location: { lon: number; lat: number }) => void;
@@ -11,20 +11,20 @@ export default function useCurrentUserLocation({
 		lon: number;
 		lat: number;
 	}>(null);
-	const currentUserLocationInterval = useRef<number>();
 
 	useEffect(() => {
-		navigator.geolocation.watchPosition((pos) => {
+		const watchId = navigator.geolocation.watchPosition((pos) => {
 			setUserCurrentLocation({
 				lon: pos.coords.longitude,
 				lat: pos.coords.latitude,
 			});
+			onLocationUpdate({ lon: pos.coords.longitude, lat: pos.coords.latitude });
 		});
 
 		return () => {
-			clearInterval(currentUserLocationInterval.current);
+			navigator.geolocation.clearWatch(watchId);
 		};
 	}, []);
-	
+
 	return userCurrentLocation;
 }

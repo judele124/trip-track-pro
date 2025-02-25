@@ -14,7 +14,7 @@ export default function MapView() {
 	const { socket } = useTripSocket();
 	const userLocation = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
-			console.log('Location from socket', location);
+			console.log('Location from useCurrentUserLocation', location);
 		},
 	});
 

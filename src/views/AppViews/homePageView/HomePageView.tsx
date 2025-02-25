@@ -54,10 +54,12 @@ const HomePageView = () => {
 			});
 
 			await handleTokenValidation();
-			
+
 			setIsNameModalOpen(false);
 		}
 	};
+
+	console.log(user);
 
 	return (
 		<>
