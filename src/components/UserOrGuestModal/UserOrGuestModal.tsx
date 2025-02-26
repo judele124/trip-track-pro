@@ -9,11 +9,13 @@ import Icon from '../icons/Icon';
 interface UserOrGuestModalProps {
 	open: boolean;
 	onClose: () => void;
+	tripId: string;
 }
 
 export default function UserOrGuestModal({
 	open,
 	onClose,
+	tripId,
 }: UserOrGuestModalProps) {
 	const { activate, loading, status, error } = useAxios({
 		manual: true,
@@ -33,7 +35,9 @@ export default function UserOrGuestModal({
 	};
 
 	const handleLoginAsUser = () => {
-		nav(navigationRoutes.login);
+		nav(navigationRoutes.login, {
+			state: { tripId },
+		});
 		onClose();
 	};
 

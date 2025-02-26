@@ -12,22 +12,29 @@ import useToggle from '@/hooks/useToggle';
 import UserOrGuestModal from '@/components/UserOrGuestModal';
 
 export default function BeforeJoinTripView() {
-	const { activate, data, status, loading, error } = useAxios({ manual: true });
+	const {
+		activate,
+		data: tripData,
+		status,
+		loading,
+		error,
+	} = useAxios({ manual: true });
+
 	const tripId = useIdFromParamsOrNavigate(navigationRoutes.notFound);
-	const { setTrip } = useTripContext();
+	const { setTrip, trip } = useTripContext();
 	const { user } = useAuthContext();
 	const nav = useNavigate();
 	const { isOpen, setIsOpen } = useToggle();
 
 	useEffect(() => {
-		if (!tripId) return;
+		if (!tripId || trip) return;
 		tripGet(activate, tripId);
 	}, [tripId]);
 
 	useEffect(() => {
-		if (!data) return;
-		setTrip(data);
-	}, [data]);
+		if (!tripData) return;
+		setTrip(tripData);
+	}, [tripData]);
 
 	const handleOnjoin = () => {
 		if (!user) {
@@ -42,7 +49,7 @@ export default function BeforeJoinTripView() {
 		return <p>{loading ? 'Loading...' : error?.message}</p>;
 	}
 
-	const { name, description, reward }: Trip = data;
+	const { name, description, reward, _id }: Trip = tripData;
 
 	return (
 		<div className='flex flex-col gap-6'>
@@ -70,7 +77,11 @@ export default function BeforeJoinTripView() {
 				</div>
 			)}
 
-			<UserOrGuestModal open={isOpen} onClose={() => setIsOpen(false)} />
+			<UserOrGuestModal
+				tripId={_id.toString()}
+				open={isOpen}
+				onClose={() => setIsOpen(false)}
+			/>
 			<Button onClick={handleOnjoin} primary className='w-full'>
 				join
 			</Button>
