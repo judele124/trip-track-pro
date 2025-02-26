@@ -1,5 +1,5 @@
 import { Map, Marker } from 'mapbox-gl';
-import { RefObject, useEffect } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
 
 interface IUseMarketProps {
 	ref: RefObject<HTMLElement | null>;
@@ -18,10 +18,11 @@ export default function useMarker({
 	location: { lat, lon },
 	toCenter,
 }: IUseMarketProps): IUseMarketReturn {
+	const markerRef = useRef<Marker | null>(null);
 	useEffect(() => {
 		if (!mapRef?.current || !isMapReady || !ref?.current) return;
 
-		const marker = new Marker({
+		markerRef.current = new Marker({
 			element: ref.current,
 		})
 			.setLngLat([lon, lat])
@@ -30,11 +31,16 @@ export default function useMarker({
 		if (toCenter) {
 			mapRef.current.setCenter([lon, lat]);
 		}
-
 		return () => {
-			marker.remove();
+			markerRef.current?.remove();
 		};
 	}, [isMapReady]);
+
+	useEffect(() => {
+		if (!markerRef.current) return;
+
+		markerRef.current.setLngLat([lon, lat]);
+	}, [lon, lat]);
 
 	return {};
 }
