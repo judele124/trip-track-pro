@@ -3,7 +3,6 @@ import {
 	ReactNode,
 	useContext,
 	useEffect,
-	useRef,
 	useState,
 } from 'react';
 import { io } from 'socket.io-client';
@@ -24,7 +23,6 @@ const tripSocketContext = createContext<ISocketContextValue | null>(null);
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
 	const [tripId, setTripId] = useState<string | null>(null);
-	const currentUserLocationInterval = useRef<number>();
 
 	const initialSocket = (tripId: string) => {
 		const socket: SocketClientType = io(API_BASE_URL, {
@@ -39,26 +37,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		if (!socket || !tripId) return;
 
 		socket.emit('joinTrip', tripId);
-
-		//updateLocation
-		currentUserLocationInterval.current = setInterval(() => {
-			navigator.geolocation.getCurrentPosition(
-				(position) => {
-					socket.emit('updateLocation', tripId, {
-						lon: position.coords.longitude,
-						lat: position.coords.latitude,
-					});
-				},
-				(err) => {
-					console.error(err);
-				},
-				{
-					enableHighAccuracy: true,
-					maximumAge: 0,
-					timeout: 10000,
-				}
-			);
-		}, 5000);
 
 		socket.on('tripJoined', (userId) => {
 			console.log('User joined trip:', userId);
@@ -91,8 +69,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		return () => {
 			socket.disconnect();
 			console.log('Socket disconnected');
-
-			clearInterval(currentUserLocationInterval.current);
 		};
 	}, [socket, tripId]);
 
