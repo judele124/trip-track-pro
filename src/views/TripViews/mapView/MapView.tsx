@@ -23,7 +23,9 @@ export default function MapView() {
 	const nav = useNavigate();
 
 	useEffect(() => {
-		if (!trip && !socket) nav(navigationRoutes.notFound);
+		if (!trip && !socket) {
+			nav(navigationRoutes.notFound);
+		}
 	}, []);
 
 	return (

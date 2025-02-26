@@ -1,5 +1,4 @@
-import { Map } from 'mapbox-gl';
-import { ReactNode, RefObject, useRef } from 'react';
+import { ReactNode, useRef } from 'react';
 import useMarker from '../hooks/useMarker';
 import { useMapContext } from '@/contexts/MapContext';
 
