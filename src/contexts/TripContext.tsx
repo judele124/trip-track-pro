@@ -1,9 +1,12 @@
+import { MapBoxDirectionsResponse } from '@/types/map';
 import { createContext, useContext, ReactNode, useState, FC } from 'react';
 import { Types } from 'trip-track-package';
 
 interface TripContextValue {
 	trip: Types['Trip']['Model'] | null;
 	setTrip: (trip: Types['Trip']['Model'] | null) => void;
+	tripRoute: MapBoxDirectionsResponse | null;
+	setTripRoute: (tripRoute: MapBoxDirectionsResponse) => void;
 }
 
 const TripContext = createContext<TripContextValue | null>(null);
@@ -14,9 +17,12 @@ interface TripProviderProps {
 
 const TripProvider: FC<TripProviderProps> = ({ children }) => {
 	const [trip, setTrip] = useState<Types['Trip']['Model'] | null>(null);
+	const [tripRoute, setTripRoute] = useState<null | MapBoxDirectionsResponse>(
+		null
+	);
 
 	return (
-		<TripContext.Provider value={{ trip, setTrip }}>
+		<TripContext.Provider value={{ trip, setTrip, tripRoute, setTripRoute }}>
 			{children}
 		</TripContext.Provider>
 	);
