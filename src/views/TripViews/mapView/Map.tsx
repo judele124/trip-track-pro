@@ -1,30 +1,39 @@
 import MapContextProvider from '@/contexts/MapContext';
 import useMapInit from './hooks/useMapInit';
-import { ReactNode, useRef } from 'react';
-import { useMapRoute } from './hooks/useMapRoute';
+import { ReactNode, useEffect, useRef } from 'react';
+import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import { Types } from 'trip-track-package';
 import Icon from '@/components/icons/Icon';
 import Button from '@/components/ui/Button';
 import { navigationRoutes } from '@/Routes/routes';
 import { Link } from 'react-router-dom';
+import { addRouteToMap } from '@/utils/map.functions';
+import { MapBoxDirectionsResponse } from '@/types/map';
 
 interface MapProps {
 	children?: ReactNode;
-	routeOriginalPoints: Types['Trip']['Stop']['Model']['location'][];
+	mapboxDirectionRoute: MapBoxDirectionsResponse | null;
 }
 
-export default function Map({ children, routeOriginalPoints }: MapProps) {
+export default function Map({ children, mapboxDirectionRoute }: MapProps) {
 	const conatinerRef = useRef<HTMLDivElement>(null);
 	const { isMapReady, mapRef, error } = useMapInit(conatinerRef);
-	const { isRouteReady } = useMapRoute({
-		points: routeOriginalPoints,
-		mapRef,
-		isMapReady,
-	});
+
+	useEffect(() => {
+		if (!isMapReady || !mapboxDirectionRoute || !mapRef.current) return;
+
+		addRouteToMap(mapRef.current, mapboxDirectionRoute);
+
+		mapRef.current.setCenter(
+			mapboxDirectionRoute.routes[0].geometry.coordinates[0] as [number, number]
+		);
+	}, [isMapReady, mapboxDirectionRoute]);
 
 	return (
 		<MapContextProvider isMapReady={isMapReady} mapRef={mapRef}>
-			{!isRouteReady ? (
+			{isMapReady && children}
+
+			{!isMapReady && (
 				<div className='page-colors page-x-padding flex size-full items-center justify-center'>
 					{error ? (
 						<div className='z-100 absolute left-1/2 top-1/2 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 text-center'>
@@ -41,8 +50,6 @@ export default function Map({ children, routeOriginalPoints }: MapProps) {
 						</div>
 					)}
 				</div>
-			) : (
-				<>{children}</>
 			)}
 			<div ref={conatinerRef} className='h-full w-full'></div>
 		</MapContextProvider>
