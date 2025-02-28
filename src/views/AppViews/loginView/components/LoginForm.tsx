@@ -2,7 +2,7 @@ import FormMultipleStages from '@/components/FormMultipleStages';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LoginFormStage1 from './LoginFormStage1';
 import LoginFormStage2 from './LoginFormStage2';
 import { Types, Schemas } from 'trip-track-package';
@@ -12,9 +12,9 @@ import { navigationRoutes } from '@/Routes/routes';
 const LoginFrom = () => {
 	const [currentStage, setCurrentStage] = useState(0);
 	const nav = useNavigate();
+	const { state } = useLocation();
 
 	const {
-		user,
 		sendCode,
 		verifyCode,
 		loading,
@@ -42,7 +42,11 @@ const LoginFrom = () => {
 
 	useEffect(() => {
 		if (verifyCodeStatus === 200) {
-			nav(navigationRoutes.app);
+			if (state?.tripId) {
+				nav(`${navigationRoutes.trip}?tripId=${state.tripId}`);
+			} else {
+				nav(navigationRoutes.app);
+			}
 		}
 	}, [verifyCodeStatus]);
 
