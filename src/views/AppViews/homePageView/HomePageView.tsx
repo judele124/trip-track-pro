@@ -36,13 +36,14 @@ const HomePageView = () => {
 		imageUrl: string;
 	}) => {
 		if (!user || user.role === 'guest') return;
-		const { _id, ...userRest } = user;
+		const { email, role } = user;
 
 		const { status } = await activate({
 			url: '/user/profile',
 			method: 'PUT',
 			data: {
-				...userRest,
+				email,
+				role,
 				name,
 				imageUrl,
 			},
