@@ -3,7 +3,7 @@ import Button from '@/components/ui/Button';
 import InputFeildError from '@/components/ui/InputFeildError';
 import Modal from '@/components/ui/Modal';
 import useAxios from '@/hooks/useAxios';
-import useIdFromParamsOrNavigate from '@/hooks/useIdFromParamsOrNavigate';
+import useIdFromParams from '@/hooks/useIdFromParams';
 import useToggle from '@/hooks/useToggle';
 import { navigationRoutes } from '@/Routes/routes';
 import { tripGet } from '@/servises/tripService';
@@ -14,7 +14,7 @@ import { Types } from 'trip-track-package';
 
 export default function ShareTrip() {
 	const nav = useNavigate();
-	const tripId = useIdFromParamsOrNavigate(navigationRoutes.notFound);
+	const tripId = useIdFromParams(() => nav(navigationRoutes.notFound));
 	const { isOpen: isQrModalOpen, toggle: toggleIsQrModalOpen } = useToggle();
 	const { activate, data, error, loading } = useAxios({ manual: true });
 	const [browserError, setBrowserError] = useState<string | null>(null);

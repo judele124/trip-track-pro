@@ -1,6 +1,6 @@
 import Button from '@/components/ui/Button';
 import useAxios from '@/hooks/useAxios';
-import useIdFromParamsOrNavigate from '@/hooks/useIdFromParamsOrNavigate';
+import useIdFromParams from '@/hooks/useIdFromParams';
 import { navigationRoutes } from '@/Routes/routes';
 import { tripGet } from '@/servises/tripService';
 import { useEffect } from 'react';
@@ -20,7 +20,13 @@ export default function BeforeJoinTripView() {
 		error,
 	} = useAxios({ manual: true });
 
-	const tripId = useIdFromParamsOrNavigate(navigationRoutes.notFound);
+	const tripId = useIdFromParams(() => {
+		const localStorageTripId = localStorage.getItem('tripId');
+		// nav(navigationRoutes.notFound);
+		if (localStorageTripId) {
+			tripGet(activate, localStorageTripId);
+		}
+	});
 	const { setTrip, trip } = useTripContext();
 	const { user } = useAuthContext();
 	const nav = useNavigate();
@@ -29,6 +35,7 @@ export default function BeforeJoinTripView() {
 	useEffect(() => {
 		if (!tripId || trip) return;
 		tripGet(activate, tripId);
+		localStorage.setItem('tripId', tripId);
 	}, [tripId]);
 
 	useEffect(() => {
