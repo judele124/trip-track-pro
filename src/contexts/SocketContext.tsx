@@ -1,4 +1,4 @@
-import {
+import React, {
 	createContext,
 	ReactNode,
 	useContext,
@@ -12,10 +12,19 @@ import { SocketClientType } from '@/types/socket';
 interface ISocketContextValue {
 	initialSocket: (tripId: string) => void;
 	socket: SocketClientType | null;
+	messages: IMessage[];
+	setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
 }
 
 interface ITripSocketProviderProps {
 	children: ReactNode;
+}
+
+export interface IMessage {
+	userId: string;
+	message: string;
+	timestamp: string;
+	isMyMessage: boolean;
 }
 
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
@@ -23,6 +32,7 @@ const tripSocketContext = createContext<ISocketContextValue | null>(null);
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
 	const [tripId, setTripId] = useState<string | null>(null);
+	const [messages, setMessages] = useState<IMessage[]>([]);
 
 	const initialSocket = (tripId: string) => {
 		const socket: SocketClientType = io(API_BASE_URL, {
@@ -50,8 +60,18 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			console.log('Experience finished:', userId);
 		});
 
-		socket.on('messageSent', (message) => {
+		socket.on('messageSent', (message, userId) => {
 			console.log('Message as received:', message);
+			const newMessage: IMessage = {
+				userId,
+				message,
+				timestamp: new Date().toLocaleTimeString([], {
+					hour: '2-digit',
+					minute: '2-digit',
+				}),
+				isMyMessage: false,
+			};
+			setMessages((prev) => [...prev, newMessage]);
 		});
 
 		socket.on('connect', () => {
@@ -73,7 +93,9 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	}, [socket, tripId]);
 
 	return (
-		<tripSocketContext.Provider value={{ initialSocket, socket }}>
+		<tripSocketContext.Provider
+			value={{ initialSocket, socket, messages, setMessages }}
+		>
 			{children}
 		</tripSocketContext.Provider>
 	);
