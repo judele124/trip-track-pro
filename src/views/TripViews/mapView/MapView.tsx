@@ -1,8 +1,6 @@
 import Map from './Map';
 import { useEffect, useMemo } from 'react';
 import { useTripContext } from '@/contexts/TripContext';
-import { useNavigate } from 'react-router-dom';
-import { navigationRoutes } from '@/Routes/routes';
 import { useTripSocket } from '@/contexts/SocketContext';
 import StopMarker from './components/StopMarker';
 import GeneralMarker from './components/GeneralMarker';

@@ -46,9 +46,6 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 
 	useEffect(() => {
 		if (tripId) tripGet(activate, tripId);
-		else {
-			console.error('Trip ID is required but not found!');
-		}
 	}, [tripId]);
 
 	return (
