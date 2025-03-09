@@ -12,7 +12,7 @@ import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
-	const { socket } = useTripSocket();
+	useTripSocket();
 	const userLocation = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			console.log('Location from useCurrentUserLocation', location);
@@ -28,14 +28,6 @@ export default function MapView() {
 		points,
 		runGetDirectionsRoute: !tripRoute,
 	});
-
-	const nav = useNavigate();
-
-	useEffect(() => {
-		if (!trip && !socket) {
-			nav(navigationRoutes.notFound);
-		}
-	}, []);
 
 	useEffect(() => {
 		if (!routeData) return;

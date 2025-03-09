@@ -1,47 +1,17 @@
 import Button from '@/components/ui/Button';
-import useAxios from '@/hooks/useAxios';
-import useIdFromParams from '@/hooks/useIdFromParams';
 import { navigationRoutes } from '@/Routes/routes';
-import { tripGet } from '@/servises/tripService';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trip } from '@/types/trip';
 import { useTripContext } from '@/contexts/TripContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import useToggle from '@/hooks/useToggle';
 import UserOrGuestModal from '@/components/UserOrGuestModal';
+import { Trip } from '@/types/trip';
 
 export default function BeforeJoinTripView() {
-	const {
-		activate,
-		data: tripData,
-		status,
-		loading,
-		error,
-	} = useAxios({ manual: true });
-
-	const tripId = useIdFromParams(() => {
-		const localStorageTripId = localStorage.getItem('tripId');
-		// nav(navigationRoutes.notFound);
-		if (localStorageTripId) {
-			tripGet(activate, localStorageTripId);
-		}
-	});
-	const { setTrip, trip } = useTripContext();
+	const { trip, loadingTrip, errorTrip, tripId } = useTripContext();
 	const { user } = useAuthContext();
 	const nav = useNavigate();
 	const { isOpen, setIsOpen } = useToggle();
-
-	useEffect(() => {
-		if (!tripId || trip) return;
-		tripGet(activate, tripId);
-		localStorage.setItem('tripId', tripId);
-	}, [tripId]);
-
-	useEffect(() => {
-		if (!tripData) return;
-		setTrip(tripData);
-	}, [tripData]);
 
 	const handleOnjoin = () => {
 		if (!user) {
@@ -49,14 +19,35 @@ export default function BeforeJoinTripView() {
 			return;
 		}
 
-		nav(`${navigationRoutes.trip}?tripId=${tripId}`);
+		nav(`${navigationRoutes.map}`);
 	};
 
-	if (!status || loading || error) {
-		return <p>{loading ? 'Loading...' : error?.message}</p>;
+	if (loadingTrip) return <p>Loading...</p>;
+
+	if (errorTrip) {
+		return <p>{errorTrip.message}</p>;
 	}
 
-	const { name, description, reward, _id }: Trip = tripData;
+	if (!tripId || !trip) {
+		return (
+			<div className='text-center'>
+				<p>
+					{!tripId
+						? '⚠️ Oops! No trip was found.'
+						: '🚨 Error: The trip could not be loaded.'}
+				</p>
+				<Button
+					className='mt-5 w-full'
+					onClick={() => nav(navigationRoutes.app)}
+					primary
+				>
+					Go Home
+				</Button>
+			</div>
+		);
+	}
+
+	const { name, description, reward, _id } = trip as Trip;
 
 	return (
 		<div className='flex flex-col gap-6'>
