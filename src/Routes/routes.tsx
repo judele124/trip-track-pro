@@ -8,7 +8,7 @@ import CreateTripView from '@/views/AppViews/createTripView';
 import FirstEntryView from '@/views/AppViews/firstEntryView/FirstEntryView';
 import HomePageView from '@/views/AppViews/homePageView';
 import LoginView from '@/views/AppViews/loginView/LoginView';
-import ProfileView from '@/views/AppViews/profileView/ProfileView';
+import ProfileView from '@/views/AppViews/profileView';
 import ShareTripView from '@/views/AppViews/shareTripView';
 import PageNotFoundView from '@/views/pageNotFoundView';
 import ChatView from '@/views/TripViews/chatView';
