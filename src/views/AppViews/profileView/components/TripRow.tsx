@@ -12,15 +12,16 @@ export default function TripRow({ trip, i, setIsOpen }: TripRowProps) {
 	return (
 		<div
 			key={i}
-			className={`flex w-full flex-row justify-between rounded-2xl border-2 border-primary bg-light px-2 py-3 dark:bg-dark`}
-			style={{ position: 'sticky', top: 0, zIndex: 10 + i }}
+			className={`flex items-center rounded-2xl border-2 border-primary bg-white px-2 py-3 dark:bg-dark`}
 		>
 			<p className='w-[45%]'>{trip.name}</p>
-			<Icon name={trip.reward ? 'vIcon' : 'xIcon'} />
-			<TripStatusButton status={trip.status} />
-			<button className='m-0 cursor-help p-0' onClick={() => setIsOpen(true)}>
-				<Icon name='threeDots' />
-			</button>
+			<div className='flex w-[55%] items-center justify-between'>
+				<TripStatusButton status={trip.status} />
+				{trip.reward && <span>🏆</span>}
+				<button className='m-0 cursor-help p-0' onClick={() => setIsOpen(true)}>
+					<Icon name='threeDots' />
+				</button>
+			</div>
 		</div>
 	);
 }
