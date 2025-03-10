@@ -9,16 +9,37 @@ interface TripRowProps {
 }
 
 export default function TripRow({ trip, i, setIsOpen }: TripRowProps) {
+	if (trip.name == 'test mongo id') {
+		console.log(trip);
+	}
+
 	return (
 		<div
 			key={i}
-			className={`flex items-center rounded-2xl border-2 border-primary bg-white px-2 py-3 dark:bg-dark`}
+			className={`flex items-center rounded-2xl border-2 border-primary bg-white px-4 py-2 dark:bg-dark`}
 		>
-			<p className='w-[45%]'>{trip.name}</p>
-			<div className='flex w-[55%] items-center justify-between'>
+			<div className='w-[55%]'>
+				<h4>{trip.name}</h4>
+				<div className='flex gap-1'>
+					<p className='overflow-hidden text-ellipsis whitespace-nowrap'>
+						{trip.stops[0].address ||
+							`${trip.stops[0].location.lon}-${trip.stops[0].location.lat}`}
+					</p>
+					<span>to</span>
+					<p className='w-full overflow-hidden text-ellipsis whitespace-nowrap'>
+						{trip.stops[trip.stops.length - 1].address ||
+							`${trip.stops[trip.stops.length - 1].location.lon}-${trip.stops[trip.stops.length - 1].location.lat}`}
+					</p>
+				</div>
+			</div>
+
+			<div className='flex w-[45%] items-center justify-between pl-2'>
 				<TripStatusButton status={trip.status} />
-				{trip.reward && <span>🏆</span>}
-				<button className='m-0 cursor-help p-0' onClick={() => setIsOpen(true)}>
+				{trip.reward && <span className='text-lg'>🏆</span>}
+				<button
+					className='m-0 -mx-2 p-0 transition-all hover:scale-110'
+					onClick={() => setIsOpen(true)}
+				>
 					<Icon name='threeDots' />
 				</button>
 			</div>

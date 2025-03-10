@@ -314,56 +314,50 @@ export default function Icon({
 		),
 		threeDots: (
 			<svg
-				className='text-gray-800 dark:text-white'
-				aria-hidden='true'
-				xmlns='http://www.w3.org/2000/svg'
-				width='24'
-				height='24'
-				fill='none'
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
 				viewBox='0 0 24 24'
 			>
 				<path
 					stroke='currentColor'
-					stroke-linecap='round'
-					stroke-width='3'
+					strokeLinecap='round'
+					strokeWidth='3'
 					d='M12 6h.01M12 12h.01M12 18h.01'
 				/>
 			</svg>
 		),
 		vIcon: (
 			<svg
-				className='rounded-md bg-green-600 text-white'
-				aria-hidden='true'
-				xmlns='http://www.w3.org/2000/svg'
-				width='24'
-				height='24'
-				fill='none'
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
 				viewBox='0 0 24 24'
 			>
 				<path
 					stroke='currentColor'
-					stroke-linecap='round'
-					stroke-linejoin='round'
-					stroke-width='2'
+					strokeLinecap='round'
+					strokeLinejoin='round'
+					strokeWidth='2'
 					d='M5 11.917 9.724 16.5 19 7.5'
 				/>
 			</svg>
 		),
 		xIcon: (
 			<svg
-				className='text-red-800'
-				aria-hidden='true'
-				xmlns='http://www.w3.org/2000/svg'
-				width='24'
-				height='24'
-				fill='none'
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
 				viewBox='0 0 24 24'
 			>
 				<path
 					stroke='currentColor'
-					stroke-linecap='round'
-					stroke-linejoin='round'
-					stroke-width='3'
+					strokeLinecap='round'
+					strokeLinejoin='round'
+					strokeWidth='3'
 					d='M6 18 17.94 6M18 18 6.06 6'
 				/>
 			</svg>

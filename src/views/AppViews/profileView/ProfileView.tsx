@@ -100,7 +100,7 @@ const ProfileView = () => {
 	const { isOpen, setIsOpen } = useToggle(false);
 
 	return (
-		<div className='flex size-full max-h-[600px] flex-col gap-4'>
+		<div className='flex size-full max-h-[600px] flex-col'>
 			{user && (
 				<UserDetailsComponent
 					className='border-b-2 border-primary p-2'
@@ -109,8 +109,8 @@ const ProfileView = () => {
 					{...(user.role !== 'guest' ? { email: user.email } : {})}
 				/>
 			)}
-			<h2>Trips</h2>
-			<div className='no-scrollbar flex h-full w-full flex-col overflow-y-auto'>
+			<h2 className='py-4 text-center'>Trips</h2>
+			<div className='no-scrollbar flex h-full w-full flex-col gap-2 overflow-y-auto'>
 				{data?.length ? (
 					data.map((trip: Trip, i: number) => (
 						<TripRow key={i} trip={trip} setIsOpen={setIsOpen} i={i} />
