@@ -1,16 +1,13 @@
 import Icon from '@/components/icons/Icon';
 import MapModal from '@/components/MapModal';
-import TripDetailsStops from '@/components/TripDetails';
+import TripDetailsStops from '@/components/TripDetailsStops';
 import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal';
 import { API_BASE_URL } from '@/env.config';
 import useAxios from '@/hooks/useAxios';
 import useToggle from '@/hooks/useToggle';
 import { Trip } from '@/types/trip';
 import { getErrorMessage } from '@/utils/errorMessages';
-import GeneralMarker from '@/views/TripViews/mapView/components/GeneralMarker';
 import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
-import Map from '@/views/TripViews/mapView/Map';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Types } from 'trip-track-package';
@@ -50,10 +47,12 @@ export default function TripDetailsView() {
 				<h1>{name}</h1>
 				{/* need to replace with status btn from profile page */}
 				<Button>{tripStatus}</Button>
+
 				<h3>Stops</h3>
 				<TripDetailsStops tripStops={stops} />
+
 				<Button
-					className='w-full bg-transparent text-dark underline dark:text-white'
+					className='w-full bg-transparent text-dark underline dark:text-light'
 					onClick={toggleMap}
 				>
 					Show on map

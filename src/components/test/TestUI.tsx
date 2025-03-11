@@ -1,4 +1,4 @@
-import TripDetailsStops from '../TripDetails';
+import TripDetailsStops from '../TripDetailsStops';
 import useAxios from '@/hooks/useAxios';
 import { API_BASE_URL } from '@/env.config';
 
