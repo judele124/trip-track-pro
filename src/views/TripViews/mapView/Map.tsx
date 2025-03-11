@@ -1,8 +1,6 @@
 import MapContextProvider from '@/contexts/MapContext';
 import useMapInit from './hooks/useMapInit';
 import { ReactNode, useEffect, useRef } from 'react';
-import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
-import { Types } from 'trip-track-package';
 import Icon from '@/components/icons/Icon';
 import Button from '@/components/ui/Button';
 import { navigationRoutes } from '@/Routes/routes';

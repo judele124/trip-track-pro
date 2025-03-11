@@ -3,6 +3,7 @@ export enum StatusCodes {
 	UNAUTHORIZED = 401,
 	FORBIDDEN = 403,
 	NOT_FOUND = 404,
+	VALIDATION_ERROR = 422,
 	INTERNAL_SERVER_ERROR = 500,
 }
 
@@ -15,6 +16,7 @@ const ERROR_MESSAGES: Record<StatusCodes, string> = {
 	[StatusCodes.NOT_FOUND]: 'Service not found. Please try again later.',
 	[StatusCodes.INTERNAL_SERVER_ERROR]:
 		'An unexpected error occurred. Please try again later.',
+	[StatusCodes.VALIDATION_ERROR]: 'Validation error. Please check your input.',
 };
 
 const DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred. Please try again.';
