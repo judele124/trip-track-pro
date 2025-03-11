@@ -1,6 +1,7 @@
 import Icon from '@/components/icons/Icon';
 import { Trip } from '@/types/trip';
 import TripStatusButton from './TripStatusButton';
+import { Types } from 'trip-track-package';
 
 interface TripRowProps {
 	trip: Trip;
@@ -9,31 +10,21 @@ interface TripRowProps {
 }
 
 export default function TripRow({ trip, i, setIsOpen }: TripRowProps) {
-	if (trip.name == 'test mongo id') {
-		console.log(trip);
-	}
-
 	return (
 		<div
 			key={i}
 			className={`flex items-center rounded-2xl border-2 border-primary bg-white px-4 py-2 dark:bg-dark`}
 		>
-			<div className='w-[55%]'>
-				<h4>{trip.name}</h4>
-				<div className='flex gap-1'>
-					<p className='overflow-hidden text-ellipsis whitespace-nowrap'>
-						{trip.stops[0].address ||
-							`${trip.stops[0].location.lon}-${trip.stops[0].location.lat}`}
-					</p>
+			<div className='w-[50%]'>
+				<h5 className='-mb-1'>{trip.name}</h5>
+				<div className='flex items-center justify-start gap-1'>
+					<AddressOrLocation stop={trip.stops[0]} />
 					<span>to</span>
-					<p className='w-full overflow-hidden text-ellipsis whitespace-nowrap'>
-						{trip.stops[trip.stops.length - 1].address ||
-							`${trip.stops[trip.stops.length - 1].location.lon}-${trip.stops[trip.stops.length - 1].location.lat}`}
-					</p>
+					<AddressOrLocation stop={trip.stops[trip.stops.length - 1]} />
 				</div>
 			</div>
 
-			<div className='flex w-[45%] items-center justify-between pl-2'>
+			<div className='flex w-[50%] items-center justify-between gap-2 pl-2'>
 				<TripStatusButton status={trip.status} />
 				{trip.reward && <span className='text-lg'>🏆</span>}
 				<button
@@ -44,5 +35,23 @@ export default function TripRow({ trip, i, setIsOpen }: TripRowProps) {
 				</button>
 			</div>
 		</div>
+	);
+}
+
+function AddressOrLocation({ stop }: { stop: Types['Trip']['Stop']['Model'] }) {
+	return stop.address ? (
+		<p
+			title={stop.address}
+			className='overflow-hidden text-ellipsis whitespace-nowrap text-sm'
+		>
+			{stop.address}
+		</p>
+	) : (
+		<p
+			title={`${stop.location.lon}-${stop.location.lat}`}
+			className='overflow-hidden text-ellipsis whitespace-nowrap text-sm'
+		>
+			{stop.location.lon}-{stop.location.lat}
+		</p>
 	);
 }
