@@ -11,8 +11,12 @@ import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapb
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Types } from 'trip-track-package';
+import TripStatusButton from '../profileView/components/TripStatusButton';
+import RewardDetails from './components/RewardDetails';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 export default function TripDetailsView() {
+	const { user } = useAuthContext();
 	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
 	const params = useParams();
 	const { data, loading, error, status } = useAxios({
@@ -35,24 +39,29 @@ export default function TripDetailsView() {
 
 	if (!data) return null;
 
-	const { name, status: tripStatus, stops } = data as Trip;
+	const { name, status: tripStatus, stops, creator } = data as Trip;
 
 	return (
 		<>
-			<div className='page-colors mx-auto h-full max-w-[400px]'>
+			<div className='page-colors mx-auto flex h-full max-w-[400px] flex-col gap-4'>
 				{loading && <Icon name='spinner' />}
 				{error && status && (
 					<p className='text-res-500'>{getErrorMessage(status)}</p>
 				)}
-				<h1>{name}</h1>
-				{/* need to replace with status btn from profile page */}
-				<Button>{tripStatus}</Button>
+				<div>
+					<h1 className='max-w-[70%] break-words'>
+						{name[0].toUpperCase() + name.slice(1)}
+					</h1>
+					<div className='flex gap-1'>
+						<TripStatusButton status={tripStatus} />
+						<RewardDetails reward={data.reward} />
+					</div>
+				</div>
 
-				<h3>Stops</h3>
-				<TripDetailsStops tripStops={stops} />
+				<TripDetailsStops tripStops={stops} isCreator={user?._id === creator} />
 
 				<Button
-					className='w-full bg-transparent text-dark underline dark:text-light'
+					className='bg-transparent text-dark underline dark:text-light'
 					onClick={toggleMap}
 				>
 					Show on map

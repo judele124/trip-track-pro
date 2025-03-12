@@ -37,6 +37,7 @@ const appRoutes = {
 	shareTrip: `share-trip`,
 	joinTrip: `join-trip`,
 	profile: 'profile',
+	trip: 'trip',
 	notFound: 'not-found',
 } as const;
 
@@ -47,6 +48,7 @@ export const navigationRoutes = {
 	shareTrip: `${baseRoutes.app}/${appRoutes.shareTrip}`,
 	joinTrip: `${baseRoutes.app}/${appRoutes.joinTrip}`,
 	profile: `${baseRoutes.app}/${appRoutes.profile}`,
+	tripDetails: `${baseRoutes.app}/${appRoutes.trip}`,
 
 	map: `${baseRoutes.trip}/${tripRoutes.map}`,
 	participants: `${baseRoutes.trip}/${tripRoutes.participants}`,
@@ -90,7 +92,7 @@ const routes: RouteObject[] = [
 					},
 					{ path: appRoutes.profile, element: <ProfileView /> },
 					{
-						path: 'trip/:tripId',
+						path: `${appRoutes.trip}/:tripId`,
 						element: (
 							<ProtectedRoute>
 								<TripDetailsView />

@@ -25,11 +25,14 @@ export default function MapModal({
 			open={mapOpen}
 			center
 			onBackdropClick={() => toggleMap()}
-			containerClassName='h-[80dvh] w-[90dvw] overflow-hidden rounded-2xl'
+			containerClassName='h-[80vh] w-[90vw] overflow-hidden rounded-2xl'
 		>
 			<Map mapboxDirectionRoute={routeData}>
 				{stops.map((stop: Types['Trip']['Stop']['Model']) => (
-					<GeneralMarker location={stop.location}>
+					<GeneralMarker
+						key={`${stop.location.lon}-${stop.location.lat}`}
+						location={stop.location}
+					>
 						<StopMarker disableExperience={disableExperiences} stop={stop} />
 					</GeneralMarker>
 				))}

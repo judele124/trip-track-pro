@@ -1,17 +1,21 @@
 import { ExperienceType, Types } from 'trip-track-package';
 import Button from './ui/Button';
 import Icon, { IconName } from './icons/Icon';
+import useToggle from '@/hooks/useToggle';
 
 interface TripDetailsProps {
 	tripStops: Types['Trip']['Stop']['Model'][];
+	isCreator?: boolean;
 }
 
-const TripDetailsStops = ({ tripStops }: TripDetailsProps) => {
+const TripDetailsStops = ({ tripStops, isCreator }: TripDetailsProps) => {
 	return (
-		<div className='flex max-h-[585px] flex-col gap-4'>
-			<div className='flex flex-col gap-2 overflow-y-auto'>
+		<div>
+			<h3>Stops</h3>
+			<div className='flex flex-col gap-2 overflow-y-auto overflow-x-hidden'>
 				{tripStops.map((stop: Types['Trip']['Stop']['Model'], i) => (
 					<StopDetails
+						isCreator={isCreator}
 						key={`${stop.location.lon} + ${stop.location.lat}`}
 						stop={stop}
 						icon={
@@ -22,7 +26,6 @@ const TripDetailsStops = ({ tripStops }: TripDetailsProps) => {
 					/>
 				))}
 			</div>
-			<Button>Edit</Button>
 		</div>
 	);
 };
@@ -32,13 +35,15 @@ export default TripDetailsStops;
 interface IStopDetailsProps {
 	stop: Types['Trip']['Stop']['Model'];
 	icon: IconName;
+	isCreator?: boolean;
 }
 
-function StopDetails({ stop, icon }: IStopDetailsProps) {
+function StopDetails({ stop, icon, isCreator }: IStopDetailsProps) {
+	const { isOpen: editMode, toggle: toggleEditMode } = useToggle();
 	return (
 		<div
 			key={stop.address || 'No address found'}
-			className='flex justify-start gap-2 rounded-2xl py-2'
+			className='flex w-full justify-start gap-2 rounded-2xl py-2'
 		>
 			<i className={`mt-2 w-8 ${icon === 'circle' ? 'scale-75' : ''}`}>
 				<Icon name={icon} className='fill-primary' />
@@ -57,6 +62,12 @@ function StopDetails({ stop, icon }: IStopDetailsProps) {
 					</Button>
 				)}
 			</div>
+
+			{isCreator && (
+				<button className='-mr-4 ml-auto' onClick={() => toggleEditMode()}>
+					<Icon name='threeDots' />
+				</button>
+			)}
 		</div>
 	);
 
