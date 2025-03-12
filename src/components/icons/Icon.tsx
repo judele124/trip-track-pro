@@ -20,7 +20,10 @@ export type IconName =
 	| 'trivia'
 	| 'share'
 	| 'spinner'
-	| 'info';
+	| 'info'
+	| 'threeDots'
+	| 'vIcon'
+	| 'xIcon';
 
 interface IIconProps {
 	fill?: SVGAttributes<SVGSVGElement>['fill'];
@@ -307,6 +310,56 @@ export default function Icon({
 				viewBox='0 0 512 512'
 			>
 				<path d='M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z' />
+			</svg>
+		),
+		threeDots: (
+			<svg
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
+				viewBox='0 0 24 24'
+			>
+				<path
+					stroke='currentColor'
+					strokeLinecap='round'
+					strokeWidth='3'
+					d='M12 6h.01M12 12h.01M12 18h.01'
+				/>
+			</svg>
+		),
+		vIcon: (
+			<svg
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
+				viewBox='0 0 24 24'
+			>
+				<path
+					stroke='currentColor'
+					strokeLinecap='round'
+					strokeLinejoin='round'
+					strokeWidth='2'
+					d='M5 11.917 9.724 16.5 19 7.5'
+				/>
+			</svg>
+		),
+		xIcon: (
+			<svg
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
+				viewBox='0 0 24 24'
+			>
+				<path
+					stroke='currentColor'
+					strokeLinecap='round'
+					strokeLinejoin='round'
+					strokeWidth='3'
+					d='M6 18 17.94 6M18 18 6.06 6'
+				/>
 			</svg>
 		),
 	};

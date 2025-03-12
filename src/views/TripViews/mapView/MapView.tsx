@@ -1,8 +1,6 @@
 import Map from './Map';
 import { useEffect, useMemo } from 'react';
 import { useTripContext } from '@/contexts/TripContext';
-import { useNavigate } from 'react-router-dom';
-import { navigationRoutes } from '@/Routes/routes';
 import { useTripSocket } from '@/contexts/SocketContext';
 import StopMarker from './components/StopMarker';
 import GeneralMarker from './components/GeneralMarker';
@@ -12,7 +10,7 @@ import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
-	const { socket } = useTripSocket();
+	useTripSocket();
 	const userLocation = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			console.log('Location from useCurrentUserLocation', location);
@@ -28,14 +26,6 @@ export default function MapView() {
 		points,
 		runGetDirectionsRoute: !tripRoute,
 	});
-
-	const nav = useNavigate();
-
-	useEffect(() => {
-		if (!trip && !socket) {
-			nav(navigationRoutes.notFound);
-		}
-	}, []);
 
 	useEffect(() => {
 		if (!routeData) return;

@@ -8,6 +8,7 @@ import CreateTripView from '@/views/AppViews/createTripView';
 import FirstEntryView from '@/views/AppViews/firstEntryView/FirstEntryView';
 import HomePageView from '@/views/AppViews/homePageView';
 import LoginView from '@/views/AppViews/loginView/LoginView';
+import ProfileView from '@/views/AppViews/profileView';
 import ShareTripView from '@/views/AppViews/shareTripView';
 import TripDetailsView from '@/views/AppViews/TripDetailsView';
 import PageNotFoundView from '@/views/pageNotFoundView';
@@ -87,7 +88,7 @@ const routes: RouteObject[] = [
 						path: appRoutes.joinTrip,
 						element: <BeforeJoinTripView />,
 					},
-					{ path: appRoutes.profile, element: <div>profile</div> },
+					{ path: appRoutes.profile, element: <ProfileView /> },
 					{
 						path: 'trip/:tripId',
 						element: (
