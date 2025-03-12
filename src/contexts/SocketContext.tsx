@@ -24,7 +24,6 @@ export interface IMessage {
 	userId: string;
 	message: string;
 	timestamp: string;
-	isMyMessage: boolean;
 }
 
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
@@ -69,7 +68,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 					hour: '2-digit',
 					minute: '2-digit',
 				}),
-				isMyMessage: false,
 			};
 			setMessages((prev) => [...prev, newMessage]);
 		});
