@@ -21,22 +21,19 @@ export default function MapModal({
 	disableExperiences,
 }: IMapModalProps) {
 	return (
-		<Modal
-			open={mapOpen}
-			center
-			onBackdropClick={() => toggleMap()}
-			containerClassName='h-[80vh] w-[90vw] overflow-hidden rounded-2xl'
-		>
-			<Map mapboxDirectionRoute={routeData}>
-				{stops.map((stop: Types['Trip']['Stop']['Model']) => (
-					<GeneralMarker
-						key={`${stop.location.lon}-${stop.location.lat}`}
-						location={stop.location}
-					>
-						<StopMarker disableExperience={disableExperiences} stop={stop} />
-					</GeneralMarker>
-				))}
-			</Map>
+		<Modal open={mapOpen} center onBackdropClick={() => toggleMap()}>
+			<div className='h-[80vh] w-[90vw] overflow-hidden rounded-2xl'>
+				<Map mapboxDirectionRoute={routeData}>
+					{stops.map((stop: Types['Trip']['Stop']['Model']) => (
+						<GeneralMarker
+							key={`${stop.location.lon}-${stop.location.lat}`}
+							location={stop.location}
+						>
+							<StopMarker disableExperience={disableExperiences} stop={stop} />
+						</GeneralMarker>
+					))}
+				</Map>
+			</div>
 		</Modal>
 	);
 }

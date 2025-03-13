@@ -2,7 +2,7 @@ import Icon from '@/components/icons/Icon';
 import { Trip } from '@/types/trip';
 import TripStatusButton from './TripStatusButton';
 import { Types } from 'trip-track-package';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { navigationRoutes } from '@/Routes/routes';
 
 interface TripRowProps {
@@ -14,10 +14,10 @@ interface TripRowProps {
 export default function TripRow({ trip, i, setIsOpen }: TripRowProps) {
 	const nav = useNavigate();
 	return (
-		<button
+		<div
 			onClick={() => nav(`${navigationRoutes.tripDetails}/${trip._id}`)}
 			key={i}
-			className={`flex items-center rounded-2xl border-2 border-primary bg-white px-4 py-2 text-left hover:bg-opacity-50 dark:bg-secondary dark:hover:bg-opacity-50`}
+			className={`flex cursor-pointer items-center rounded-2xl border-2 border-primary bg-white px-4 py-2 text-left hover:bg-opacity-50 dark:bg-secondary dark:hover:bg-opacity-50`}
 		>
 			<div className='w-[50%]'>
 				<h5 className='-mb-1'>
@@ -43,7 +43,7 @@ export default function TripRow({ trip, i, setIsOpen }: TripRowProps) {
 					<Icon name='threeDots' />
 				</button>
 			</div>
-		</button>
+		</div>
 	);
 }
 
