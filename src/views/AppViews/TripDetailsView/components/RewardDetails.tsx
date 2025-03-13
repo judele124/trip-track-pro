@@ -81,6 +81,9 @@ export default function RewardDetails({ reward, trip }: IRewardDetailsProps) {
 					<form
 						className={`page-colors relative flex w-full flex-col gap-2 rounded-2xl p-4 transition-all delay-150 duration-200 ease-in-out`}
 						onSubmit={handleSubmit((data) => {
+							// need to change it to a fetch call
+							// to update trip reward route specificly
+							// that is now in review in TT-93
 							const { name, stops, status, description, participants } = trip;
 							tripUpdate(activate, trip._id, {
 								name,

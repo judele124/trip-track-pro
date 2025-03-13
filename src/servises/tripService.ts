@@ -47,6 +47,7 @@ export const tripGet = async (
 	return { data, status };
 };
 
+// need to make it tripRewardUpdate
 export const tripUpdate = async (
 	activate: UseAxiosResponse['activate'],
 	id: string,
