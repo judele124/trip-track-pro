@@ -46,3 +46,17 @@ export const tripGet = async (
 
 	return { data, status };
 };
+
+export const tripUpdate = async (
+	activate: UseAxiosResponse['activate'],
+	id: string,
+	tripData: Omit<Types['Trip']['Model'], '_id' | 'creator' | 'guides'>
+) => {
+	const { data, status } = await activate({
+		url: `${API_BASE_URL}/trip/${id}`,
+		method: 'put',
+		data: tripData,
+	});
+
+	return { data, status };
+};

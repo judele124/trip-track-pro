@@ -54,7 +54,7 @@ export default function TripDetailsView() {
 					</h1>
 					<div className='flex gap-1'>
 						<TripStatusButton status={tripStatus} />
-						<RewardDetails reward={data.reward} />
+						<RewardDetails trip={data} reward={data.reward} />
 					</div>
 				</div>
 
