@@ -61,3 +61,20 @@ export const tripUpdate = async (
 
 	return { data, status };
 };
+
+export const rewardUpdate = async (
+	activate: UseAxiosResponse['activate'],
+	id: string,
+	rewardData: FormData
+) => {
+	const { data, status } = await activate({
+		url: `${API_BASE_URL}/trip/reward/${id}`,
+		method: 'put',
+		data: rewardData,
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	});
+
+	return { data, status };
+};

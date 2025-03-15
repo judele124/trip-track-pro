@@ -2,26 +2,25 @@ import Icon from '@/components/icons/Icon';
 import MapModal from '@/components/MapModal';
 import TripDetailsStops from '@/components/TripDetailsStops';
 import Button from '@/components/ui/Button';
-import { API_BASE_URL } from '@/env.config';
 import useAxios from '@/hooks/useAxios';
 import useToggle from '@/hooks/useToggle';
 import { Trip } from '@/types/trip';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Types } from 'trip-track-package';
 import TripStatusButton from '../profileView/components/TripStatusButton';
 import RewardDetails from './components/RewardDetails';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { tripGet } from '@/servises/tripService';
 
 export default function TripDetailsView() {
 	const { user } = useAuthContext();
 	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
 	const params = useParams();
-	const { data, loading, error, status } = useAxios({
-		url: `${API_BASE_URL}/trip/${params.tripId}`,
-		method: 'get',
+	const { data, loading, error, status, activate } = useAxios({
+		manual: true,
 	});
 
 	const points = useMemo(
@@ -37,9 +36,20 @@ export default function TripDetailsView() {
 		runGetDirectionsRoute: mapOpen,
 	});
 
+	useEffect(() => {
+		if (!params.tripId) return;
+		tripGet(activate, params.tripId);
+	}, []);
+
 	if (!data) return null;
 
-	const { name, status: tripStatus, stops, creator } = data as Trip;
+	const {
+		name,
+		status: tripStatus,
+		stops,
+		creator,
+		_id: tripId,
+	} = data as Trip;
 
 	return (
 		<>
@@ -49,12 +59,17 @@ export default function TripDetailsView() {
 					<p className='text-res-500'>{getErrorMessage(status)}</p>
 				)}
 				<div>
-					<h1 className='max-w-[70%] break-words'>
-						{name[0].toUpperCase() + name.slice(1)}
-					</h1>
+					<h1 className='text- max-w-[70%] break-words capitalize'>{name}</h1>
 					<div className='flex gap-1'>
 						<TripStatusButton status={tripStatus} />
-						<RewardDetails trip={data} reward={data.reward} />
+						<RewardDetails
+							reward={data.reward}
+							onUpdate={() => {
+								if (!params.tripId) return;
+								tripGet(activate, tripId);
+							}}
+							tripId={tripId}
+						/>
 					</div>
 				</div>
 
