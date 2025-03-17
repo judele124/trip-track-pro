@@ -8,9 +8,9 @@ import React, {
 import { io } from 'socket.io-client';
 import { API_BASE_URL } from '../env.config';
 import { SocketClientType } from '@/types/socket';
+import { useTripContext } from './TripContext';
 
 interface ISocketContextValue {
-	initialSocket: (tripId: string) => void;
 	socket: SocketClientType | null;
 	messages: IMessage[];
 	addMsgToMsgs: (message: IMessage) => void;
@@ -30,21 +30,22 @@ const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
-	const [tripId, setTripId] = useState<string | null>(null);
 	const [messages, setMessages] = useState<IMessage[]>([]);
+	const { tripId, trip } = useTripContext();
 
 	const addMsgToMsgs = (message: IMessage) => {
 		setMessages((prev) => [...prev, message]);
 	};
 
-	const initialSocket = (tripId: string) => {
-		const socket: SocketClientType = io(API_BASE_URL, {
+	useEffect(() => {
+		if (!tripId || !trip || socket) return;
+
+		const socketClient: SocketClientType = io(API_BASE_URL, {
 			query: { tripId },
 		});
 
-		setTripId(tripId);
-		setSocket(socket);
-	};
+		setSocket(socketClient);
+	}, [tripId, trip]);
 
 	useEffect(() => {
 		if (!socket || !tripId) return;
@@ -90,7 +91,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			socket.disconnect();
 			console.log('Socket disconnected');
 		};
-	}, [socket, tripId]);
+	}, [socket]);
 
 	return (
 		<tripSocketContext.Provider
