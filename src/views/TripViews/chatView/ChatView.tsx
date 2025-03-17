@@ -3,7 +3,6 @@ import Input from '@/components/ui/Input';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useTripSocket, IMessage } from '@/contexts/SocketContext';
 import { useTripContext } from '@/contexts/TripContext';
-import { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 interface FormValues {
@@ -15,9 +14,7 @@ const ChatView = () => {
 	const { user } = useAuthContext();
 	const { socket, messages, setMessages } = useTripSocket();
 	const { register, handleSubmit, reset } = useForm<FormValues>();
-	useEffect(() => {
-		console.log(user?._id);
-	}, [user]);
+
 	const handleSendMessage: SubmitHandler<FormValues> = ({ message }) => {
 		if (!trip || !user || !socket) return;
 
