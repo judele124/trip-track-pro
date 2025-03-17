@@ -18,15 +18,6 @@ const ChatView = () => {
 	const handleSendMessage: SubmitHandler<FormValues> = ({ message }) => {
 		if (!trip || !user || !socket) return;
 
-		// addMessage({
-		// 	userId: '',
-		// 	message,
-		// 	timestamp: new Date().toLocaleTimeString([], {
-		// 		hour: '2-digit',
-		// 		minute: '2-digit',
-		// 	}),
-		// });
-
 		socket.emit(
 			'sendMessage',
 			trip._id.toString(),
@@ -40,7 +31,7 @@ const ChatView = () => {
 		<div className='flex h-full flex-col px-4'>
 			<div
 				style={{ scrollbarWidth: 'none' }}
-				className='flex flex-grow flex-col justify-end py-4 gap-2 overflow-y-scroll'
+				className='flex flex-grow flex-col justify-end gap-2 overflow-y-scroll py-4'
 			>
 				{messages.map((message, index) => (
 					<Message message={message} key={index} userId={user?._id} />
