@@ -1,4 +1,4 @@
-import React, {
+import {
 	createContext,
 	ReactNode,
 	useContext,
@@ -96,7 +96,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	return (
 		<tripSocketContext.Provider
 			value={{
-				initialSocket,
 				socket,
 				messages,
 				addMsgToMsgs,
