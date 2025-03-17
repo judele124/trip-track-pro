@@ -59,7 +59,7 @@ export default ChatView;
 function Message({ message, userId }: { message: IMessage; userId?: string }) {
 	return (
 		<div
-			className={`w-fit max-w-[80%] rounded-2xl border-2 p-2 dark:text-dark ${
+			className={`w-fit max-w-[80%] rounded-2xl p-2 dark:text-dark ${
 				message.userId === userId
 					? 'self-start bg-green-200 text-left'
 					: 'self-end bg-blue-200 text-right'
@@ -69,7 +69,7 @@ function Message({ message, userId }: { message: IMessage; userId?: string }) {
 				<span className='font-semibold'>{message.userId}</span>
 			)}
 			<div
-				className={`flex flex-row ${message.userId !== userId ? 'flex-row-reverse' : ''}`}
+				className={`flex flex-row items-end ${message.userId !== userId ? 'flex-row-reverse' : ''}`}
 			>
 				<p className={`ml-2`}>{message.message}</p>
 				<span className='mx-3 text-xs text-gray-500'>{message.timestamp}</span>
