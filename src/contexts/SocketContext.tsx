@@ -13,7 +13,7 @@ interface ISocketContextValue {
 	initialSocket: (tripId: string) => void;
 	socket: SocketClientType | null;
 	messages: IMessage[];
-	setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>;
+	addMsgToMsgs: (message: IMessage) => void;
 }
 
 interface ITripSocketProviderProps {
@@ -32,6 +32,10 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
 	const [tripId, setTripId] = useState<string | null>(null);
 	const [messages, setMessages] = useState<IMessage[]>([]);
+
+	const addMsgToMsgs = (message: IMessage) => {
+		setMessages((prev) => [...prev, message]);
+	};
 
 	const initialSocket = (tripId: string) => {
 		const socket: SocketClientType = io(API_BASE_URL, {
@@ -60,16 +64,14 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		});
 
 		socket.on('messageSent', (message, userId) => {
-			console.log('Message as received:', message);
-			const newMessage: IMessage = {
+			addMsgToMsgs({
 				userId,
 				message,
 				timestamp: new Date().toLocaleTimeString([], {
 					hour: '2-digit',
 					minute: '2-digit',
 				}),
-			};
-			setMessages((prev) => [...prev, newMessage]);
+			});
 		});
 
 		socket.on('connect', () => {
@@ -92,7 +94,12 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 
 	return (
 		<tripSocketContext.Provider
-			value={{ initialSocket, socket, messages, setMessages }}
+			value={{
+				initialSocket,
+				socket,
+				messages,
+				addMsgToMsgs,
+			}}
 		>
 			{children}
 		</tripSocketContext.Provider>

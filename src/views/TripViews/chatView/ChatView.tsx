@@ -1,7 +1,7 @@
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { useTripSocket, IMessage } from '@/contexts/SocketContext';
+import { IMessage, useTripSocket } from '@/contexts/SocketContext';
 import { useTripContext } from '@/contexts/TripContext';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
@@ -12,22 +12,21 @@ interface FormValues {
 const ChatView = () => {
 	const { trip } = useTripContext();
 	const { user } = useAuthContext();
-	const { socket, messages, setMessages } = useTripSocket();
+	const { socket, messages } = useTripSocket();
 	const { register, handleSubmit, reset } = useForm<FormValues>();
 
 	const handleSendMessage: SubmitHandler<FormValues> = ({ message }) => {
 		if (!trip || !user || !socket) return;
 
-		const newMessage: IMessage = {
-			userId: '',
-			message,
-			timestamp: new Date().toLocaleTimeString([], {
-				hour: '2-digit',
-				minute: '2-digit',
-			}),
-		};
+		// addMessage({
+		// 	userId: '',
+		// 	message,
+		// 	timestamp: new Date().toLocaleTimeString([], {
+		// 		hour: '2-digit',
+		// 		minute: '2-digit',
+		// 	}),
+		// });
 
-		setMessages((prev) => [...prev, newMessage]);
 		socket.emit(
 			'sendMessage',
 			trip._id.toString(),
@@ -41,27 +40,10 @@ const ChatView = () => {
 		<div className='flex h-full flex-col px-4'>
 			<div
 				style={{ scrollbarWidth: 'none' }}
-				className='flex flex-grow flex-col gap-2 overflow-y-scroll'
+				className='flex flex-grow flex-col justify-end py-4 gap-2 overflow-y-scroll'
 			>
 				{messages.map((message, index) => (
-					<div
-						key={index + message.message}
-						className={`w-fit max-w-[80%] rounded-2xl border-2 p-2 dark:text-dark ${
-							message.userId === user?._id
-								? 'self-start bg-green-200 text-left'
-								: 'self-end bg-blue-200 text-right'
-						}`}
-					>
-						<span className='font-semibold'>{message.userId}</span>
-						<div
-							className={`flex flex-row ${message.userId !== user?._id ? 'flex-row-reverse' : ''}`}
-						>
-							<p className={`ml-2`}>{message.message}</p>
-							<span className='mx-3 text-xs text-gray-500'>
-								{message.timestamp}
-							</span>
-						</div>
-					</div>
+					<Message message={message} key={index} userId={user?._id} />
 				))}
 			</div>
 
@@ -82,3 +64,25 @@ const ChatView = () => {
 };
 
 export default ChatView;
+
+function Message({ message, userId }: { message: IMessage; userId?: string }) {
+	return (
+		<div
+			className={`w-fit max-w-[80%] rounded-2xl border-2 p-2 dark:text-dark ${
+				message.userId === userId
+					? 'self-start bg-green-200 text-left'
+					: 'self-end bg-blue-200 text-right'
+			}`}
+		>
+			{message.userId !== userId && (
+				<span className='font-semibold'>{message.userId}</span>
+			)}
+			<div
+				className={`flex flex-row ${message.userId !== userId ? 'flex-row-reverse' : ''}`}
+			>
+				<p className={`ml-2`}>{message.message}</p>
+				<span className='mx-3 text-xs text-gray-500'>{message.timestamp}</span>
+			</div>
+		</div>
+	);
+}
