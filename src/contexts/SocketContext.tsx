@@ -12,17 +12,30 @@ import { useTripContext } from './TripContext';
 
 interface ISocketContextValue {
 	socket: SocketClientType | null;
+	messages: IMessage[];
+	addMsgToMsgs: (message: IMessage) => void;
 }
 
 interface ITripSocketProviderProps {
 	children: ReactNode;
 }
 
+export interface IMessage {
+	userId: string;
+	message: string;
+	timestamp: string;
+}
+
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
+	const [messages, setMessages] = useState<IMessage[]>([]);
 	const { tripId, trip } = useTripContext();
+
+	const addMsgToMsgs = (message: IMessage) => {
+		setMessages((prev) => [...prev, message]);
+	};
 
 	useEffect(() => {
 		if (!tripId || !trip || socket) return;
@@ -51,8 +64,15 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			console.log('Experience finished:', userId);
 		});
 
-		socket.on('messageSent', (message) => {
-			console.log('Message as received:', message);
+		socket.on('messageSent', (message, userId) => {
+			addMsgToMsgs({
+				userId,
+				message,
+				timestamp: new Date().toLocaleTimeString([], {
+					hour: '2-digit',
+					minute: '2-digit',
+				}),
+			});
 		});
 
 		socket.on('connect', () => {
@@ -74,7 +94,13 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	}, [socket]);
 
 	return (
-		<tripSocketContext.Provider value={{ socket }}>
+		<tripSocketContext.Provider
+			value={{
+				socket,
+				messages,
+				addMsgToMsgs,
+			}}
+		>
 			{children}
 		</tripSocketContext.Provider>
 	);
