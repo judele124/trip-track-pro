@@ -5,7 +5,6 @@ import useToggle from '@/hooks/useToggle';
 import Button from '@/components/ui/Button';
 import { useFormContext } from 'react-hook-form';
 import { Types } from 'trip-track-package';
-import { useEffect } from 'react';
 
 interface IStopInputProps {
 	isMiddleStop?: boolean;
