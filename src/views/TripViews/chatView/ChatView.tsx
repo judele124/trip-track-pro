@@ -28,23 +28,24 @@ const ChatView = () => {
 	};
 
 	return (
-		<div className='flex h-full flex-col px-4'>
-			<div
-				style={{ scrollbarWidth: 'none' }}
-				className='flex flex-grow flex-col justify-end gap-2 overflow-y-scroll py-4'
-			>
+		<div className='flex h-full flex-col'>
+			<div className='flex-1 overflow-y-auto px-4 py-2'>
 				{messages.map((message, index) => (
 					<Message message={message} key={index} userId={user?._id} />
 				))}
 			</div>
 
-			<form onSubmit={handleSubmit(handleSendMessage)} className='flex gap-2'>
+			<form
+				className='page-colors flex gap-2 px-4 py-2'
+				onSubmit={handleSubmit(handleSendMessage)}
+			>
 				<Input
 					{...register('message', { required: true })}
 					type='text'
 					title='Message'
 					placeholder='Message'
 					autoComplete='off'
+					containerClassName='w-full'
 				/>
 				<Button primary type='submit'>
 					Send
@@ -59,20 +60,20 @@ export default ChatView;
 function Message({ message, userId }: { message: IMessage; userId?: string }) {
 	return (
 		<div
-			className={`w-fit max-w-[80%] rounded-2xl p-2 dark:text-dark ${
+			className={`my-2 w-fit max-w-[80%] rounded-2xl p-3 dark:text-dark ${
 				message.userId === userId
-					? 'self-start bg-green-200 text-left'
-					: 'self-end bg-blue-200 text-right'
+					? 'bg-green-200 text-left'
+					: 'ml-auto bg-sky-200 text-right'
 			}`}
 		>
 			{message.userId !== userId && (
 				<span className='font-semibold'>{message.userId}</span>
 			)}
-			<div
-				className={`flex flex-row items-end ${message.userId !== userId ? 'flex-row-reverse' : ''}`}
-			>
-				<p className={`ml-2`}>{message.message}</p>
-				<span className='mx-3 text-xs text-gray-500'>{message.timestamp}</span>
+			<div className='flex flex-row items-end gap-2'>
+				<span className='text-nowrap text-xs text-gray-500'>
+					{message.timestamp}
+				</span>
+				<p className='grow overflow-hidden break-words'>{message.message}</p>
 			</div>
 		</div>
 	);

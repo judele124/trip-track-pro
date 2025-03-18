@@ -22,7 +22,6 @@ export default function UserProfileModal({
 						name={user.name || 'Default'}
 						imageUrl={user.imageUrl || 'https://robohash.org/Default.png'}
 						{...(user.role !== 'guest' ? { email: user.email } : {})}
-						className={'border-2 border-primary dark:border-light'}
 					/>
 				)}
 				<div className='flex flex-col gap-2'>
