@@ -3,12 +3,17 @@ import Button from '@/components/ui/Button';
 import useToggle from '@/hooks/useToggle';
 import { Types } from 'trip-track-package';
 import ExirienceModal from './ExperienceModal';
+import Modal from '@/components/ui/Modal';
 
 interface IStopMarkerProps {
 	stop: Types['Trip']['Stop']['Model'];
+	disableExperience?: true;
 }
 
-export default function StopMarker({ stop }: IStopMarkerProps) {
+export default function StopMarker({
+	stop,
+	disableExperience,
+}: IStopMarkerProps) {
 	const { isOpen, toggle } = useToggle();
 
 	return (
@@ -33,12 +38,23 @@ export default function StopMarker({ stop }: IStopMarkerProps) {
 				</svg>
 			</Button>
 			{stop.experience && (
-				<ExirienceModal
-					open={isOpen}
-					onBackdropClick={toggle}
-					experience={stop.experience}
-					type={stop.experience.type}
-				/>
+				<>
+					{disableExperience && (
+						<Modal onBackdropClick={toggle} center open={isOpen}>
+							<div className='page-colors w-72 rounded-2xl px-6 py-5 text-center'>
+								<h4>Experience is available only when the trip is live</h4>
+							</div>
+						</Modal>
+					)}
+					{!disableExperience && (
+						<ExirienceModal
+							open={isOpen}
+							onBackdropClick={toggle}
+							experience={stop.experience}
+							type={stop.experience.type}
+						/>
+					)}
+				</>
 			)}
 		</>
 	);

@@ -17,17 +17,23 @@ export default function UserCreatedTrips() {
 		<>
 			<h3 className='py-3'>My trips</h3>
 			<div className='no-scrollbar flex h-full w-full flex-col gap-2 overflow-y-auto'>
-				{loading && <p>loading trips</p>}
 				{status && error && (
 					<p className='text-red-500'>{getErrorMessage(status)}</p>
 				)}
-				{!!data?.length ? (
-					data.map((trip: Trip, i: number) => (
-						<TripRow key={i} trip={trip} setIsOpen={setIsOpen} i={i} />
-					))
-				) : (
-					<p className='text-center'>No trips created yet</p>
-				)}
+				{loading && <p>loading trips</p>}
+				{!loading &&
+					(data.length > 0 ? (
+						data.map((tripItem: Trip, index: number) => (
+							<TripRow
+								key={tripItem._id}
+								trip={tripItem}
+								setIsOpen={setIsOpen}
+								i={index}
+							/>
+						))
+					) : (
+						<p className='text-center'>No trips created yet</p>
+					))}
 			</div>
 			<Modal
 				center

@@ -10,6 +10,7 @@ import HomePageView from '@/views/AppViews/homePageView';
 import LoginView from '@/views/AppViews/loginView/LoginView';
 import ProfileView from '@/views/AppViews/profileView';
 import ShareTripView from '@/views/AppViews/shareTripView';
+import TripDetailsView from '@/views/AppViews/TripDetailsView';
 import PageNotFoundView from '@/views/pageNotFoundView';
 import ChatView from '@/views/TripViews/chatView';
 import LoadingTripDataView from '@/views/TripViews/loadingTripDataView';
@@ -36,6 +37,7 @@ const appRoutes = {
 	shareTrip: `share-trip`,
 	joinTrip: `join-trip`,
 	profile: 'profile',
+	trip: 'trip',
 	notFound: 'not-found',
 } as const;
 
@@ -46,6 +48,7 @@ export const navigationRoutes = {
 	shareTrip: `${baseRoutes.app}/${appRoutes.shareTrip}`,
 	joinTrip: `${baseRoutes.app}/${appRoutes.joinTrip}`,
 	profile: `${baseRoutes.app}/${appRoutes.profile}`,
+	tripDetails: `${baseRoutes.app}/${appRoutes.trip}`,
 
 	map: `${baseRoutes.trip}/${tripRoutes.map}`,
 	participants: `${baseRoutes.trip}/${tripRoutes.participants}`,
@@ -88,6 +91,14 @@ const routes: RouteObject[] = [
 						element: <BeforeJoinTripView />,
 					},
 					{ path: appRoutes.profile, element: <ProfileView /> },
+					{
+						path: `${appRoutes.trip}/:tripId`,
+						element: (
+							<ProtectedRoute>
+								<TripDetailsView />
+							</ProtectedRoute>
+						),
+					},
 					{ path: '*', element: <PageNotFoundView /> },
 				],
 			},

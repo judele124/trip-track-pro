@@ -9,6 +9,6 @@ export type Trip = Omit<
 	guides: string[];
 	reward?: {
 		title: string;
-		image: string;
+		image?: string;
 	};
 };
