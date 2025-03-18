@@ -26,8 +26,6 @@ export default function StopInput({
 	} = useToggle();
 	const { isOpen: showBtn, setIsOpen: setShowBtn } = useToggle();
 
-	useEffect(() => {}, []);
-
 	return (
 		<div className='relative'>
 			<StopLocationInput

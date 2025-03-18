@@ -2,8 +2,6 @@ import { MapBoxDirectionsResponse } from '@/types/map';
 import { Map } from 'mapbox-gl';
 
 export function addRouteToMap(map: Map, routeData: MapBoxDirectionsResponse) {
-	console.log('routeData', routeData);
-
 	if (map.getSource('route')) {
 		try {
 			map.removeLayer('route');
