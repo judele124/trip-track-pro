@@ -1,55 +1,80 @@
+import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { IMessage, useTripSocket } from '@/contexts/SocketContext';
+import { useTripContext } from '@/contexts/TripContext';
+import { useForm, SubmitHandler } from 'react-hook-form';
+
+interface FormValues {
+	message: string;
+}
 
 const ChatView = () => {
-	const messages = [
-		{
-			id: 1,
-			name: 'Alice',
-			message: 'Hi there! How are you?',
-			timestamp: '10:00 AM',
-		},
-		{ id: 2, name: 'Bob', message: "I'm good, thanks! What about you?" },
-		{ id: 3, name: 'Charlie', message: "Hey everyone! What's up?" },
-		{ id: 4, name: 'Diana', message: 'Not much, just working on a project.' },
-		{ id: 5, name: 'Eve', message: 'Sounds interesting! Need any help?' },
-		{ id: 1, name: 'Alice', message: 'Hi there! How are you?' },
-		{ id: 2, name: 'Bob', message: "I'm good, thanks! What about you?" },
-		{ id: 3, name: 'Charlie', message: "Hey everyone! What's up?" },
-		{ id: 4, name: 'Diana', message: 'Not much, just working on a project.' },
-		{ id: 5, name: 'Eve', message: 'Sounds interesting! Need any help?' },
-	];
+	const { trip } = useTripContext();
+	const { user } = useAuthContext();
+	const { socket, messages } = useTripSocket();
+	const { register, handleSubmit, reset } = useForm<FormValues>();
+
+	const handleSendMessage: SubmitHandler<FormValues> = ({ message }) => {
+		if (!trip || !user || !socket) return;
+
+		socket.emit(
+			'sendMessage',
+			trip._id.toString(),
+			message,
+			user._id.toString()
+		);
+		reset();
+	};
+
 	return (
-		<div className='flex h-full flex-col px-4'>
-			<div
-				style={{ scrollbarWidth: 'none' }}
-				className='flex flex-grow flex-col gap-2 overflow-y-scroll'
-			>
+		<div className='flex h-full flex-col'>
+			<div className='flex-1 overflow-y-auto px-4 py-2'>
 				{messages.map((message, index) => (
-					<div
-						key={index + message.message}
-						className={`w-fit max-w-[80%] rounded-2xl border-2 p-2 dark:text-dark ${
-							message.id === 1
-								? 'self-start bg-green-200 text-left'
-								: 'self-end bg-blue-200 text-right'
-						}`}
-					>
-						<span className='font-semibold'>{message.name}</span>
-						<p className='ml-2'>
-							{message.id === 1 ? message.message : ''}{' '}
-							<span className='text-xs text-gray-500'>
-								{new Date().toLocaleTimeString([], {
-									hour: '2-digit',
-									minute: '2-digit',
-								})}
-							</span>{' '}
-							{message.id !== 1 ? message.message : ''}
-						</p>
-					</div>
+					<Message message={message} key={index} userId={user?._id} />
 				))}
 			</div>
-			<Input name='message' type='text' placeholder='Type a message...' />
+
+			<form
+				className='page-colors flex gap-2 px-4 py-2'
+				onSubmit={handleSubmit(handleSendMessage)}
+			>
+				<Input
+					{...register('message', { required: true })}
+					type='text'
+					title='Message'
+					placeholder='Message'
+					autoComplete='off'
+					containerClassName='w-full'
+				/>
+				<Button primary type='submit'>
+					Send
+				</Button>
+			</form>
 		</div>
 	);
 };
 
 export default ChatView;
+
+function Message({ message, userId }: { message: IMessage; userId?: string }) {
+	return (
+		<div
+			className={`my-2 w-fit max-w-[80%] rounded-2xl p-3 dark:text-dark ${
+				message.userId === userId
+					? 'bg-green-200 text-left'
+					: 'ml-auto bg-sky-200 text-right'
+			}`}
+		>
+			{message.userId !== userId && (
+				<span className='font-semibold'>{message.userId}</span>
+			)}
+			<div className='flex flex-row items-end gap-2'>
+				<span className='text-nowrap text-xs text-gray-500'>
+					{message.timestamp}
+				</span>
+				<p className='grow overflow-hidden break-words'>{message.message}</p>
+			</div>
+		</div>
+	);
+}

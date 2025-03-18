@@ -9,7 +9,7 @@ type ClientEventPayloads = {
 	joinTrip: [tripId: string];
 	updateLocation: [tripId: string, location: LocationPayload];
 	finishExperience: [tripId: string];
-	sendMessage: [tripId: string, message: string];
+	sendMessage: [tripId: string, message: string, userId: string];
 	'connect-error': [error: Error];
 };
 
@@ -17,7 +17,7 @@ type ServerEventPayloads = {
 	tripJoined: [userSocketId: string];
 	locationUpdated: [userSocketId: string, location: LocationPayload];
 	experienceFinished: [userSocketId: string];
-	messageSent: [message: string];
+	messageSent: [message: string, userId: string];
 	tripStatusChanged: [tripId: string, status: string];
 	error: [
 		data: string | { message: string; errorDetails: Record<string, any> },
