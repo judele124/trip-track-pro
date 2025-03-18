@@ -23,12 +23,14 @@ export default function TripDetailsView() {
 		manual: true,
 	});
 
+	const tripData = data as Trip | undefined;
+
 	const points = useMemo(
 		() =>
-			data?.stops.map(
+			tripData?.stops.map(
 				(stop: Types['Trip']['Stop']['Model']) => stop.location
 			) || [],
-		[data]
+		[tripData]
 	);
 
 	const { routeData } = useMapboxDirectionRoute({
@@ -41,16 +43,6 @@ export default function TripDetailsView() {
 		tripGet(activate, params.tripId);
 	}, []);
 
-	if (!data) return null;
-
-	const {
-		name,
-		status: tripStatus,
-		stops,
-		creator,
-		_id: tripId,
-	} = data as Trip;
-
 	return (
 		<>
 			<div className='page-colors mx-auto flex h-full max-w-[400px] flex-col gap-4'>
@@ -58,37 +50,48 @@ export default function TripDetailsView() {
 				{error && status && (
 					<p className='text-res-500'>{getErrorMessage(status)}</p>
 				)}
-				<div>
-					<h1 className='text- max-w-[70%] break-words capitalize'>{name}</h1>
-					<div className='flex gap-1'>
-						<TripStatusButton status={tripStatus} />
-						<RewardDetails
-							reward={data.reward}
-							onUpdate={() => {
-								if (!params.tripId) return;
-								tripGet(activate, tripId);
-							}}
-							tripId={tripId}
+				{tripData && (
+					<>
+						<div>
+							<h1 className='max-w-[70%] break-words capitalize'>
+								{tripData.name}
+							</h1>
+							<div className='mt-2 flex gap-1'>
+								<TripStatusButton status={tripData.status} />
+								<RewardDetails
+									reward={tripData.reward}
+									onUpdate={() => {
+										if (!params.tripId) return;
+										tripGet(activate, tripData._id);
+									}}
+									tripId={tripData._id}
+								/>
+							</div>
+						</div>
+
+						<TripDetailsStops
+							tripStops={tripData.stops}
+							isCreator={user?._id === tripData.creator}
 						/>
-					</div>
-				</div>
 
-				<TripDetailsStops tripStops={stops} isCreator={user?._id === creator} />
-
-				<Button
-					className='bg-transparent text-dark underline dark:text-light'
-					onClick={toggleMap}
-				>
-					Show on map
-				</Button>
+						<Button
+							className='bg-transparent text-dark underline dark:text-light'
+							onClick={toggleMap}
+						>
+							Show on map
+						</Button>
+					</>
+				)}
 			</div>
-			<MapModal
-				disableExperiences
-				mapOpen={mapOpen}
-				toggleMap={toggleMap}
-				routeData={routeData}
-				stops={stops}
-			/>
+			{tripData && (
+				<MapModal
+					disableExperiences
+					mapOpen={mapOpen}
+					toggleMap={toggleMap}
+					routeData={routeData}
+					stops={tripData.stops}
+				/>
+			)}
 		</>
 	);
 }

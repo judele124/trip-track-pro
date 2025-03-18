@@ -28,6 +28,13 @@ export default function RewardDetails({
 	const { isOpen, toggle } = useToggle();
 	const { isOpen: editModeIsOpen, toggle: toggleEditMode } = useToggle();
 
+	useEffect(() => {
+		if (isOpen && !reward) {
+			toggleEditMode();
+			toggle();
+		}
+	}, [isOpen]);
+
 	return (
 		<>
 			<button
@@ -36,29 +43,26 @@ export default function RewardDetails({
 			>
 				{reward ? `${reward?.title} 🏆` : 'Add reward'}
 			</button>
+
 			{reward && (
 				<Modal open={isOpen} onBackdropClick={toggle} center>
 					<div className='page-colors w-[90vw] max-w-[400px] rounded-3xl p-5 text-center'>
-						<h3>
-							{!reward.image ? 'No reward image was uploaded' : reward.title}
-						</h3>
+						<h3>{reward.title}</h3>
 						{reward.image && (
 							<img className='mt-2 rounded-2xl' src={reward.image} alt='' />
 						)}
 						<div className='mt-2 flex items-center gap-2'>
-							<Button
-								className='w-full text-white dark:bg-secondary'
-								onClick={toggle}
-							>
+							<Button className='w-full' onClick={toggle}>
 								Close
 							</Button>
-							<Button className='w-full' onClick={toggleEditMode}>
+							<Button className='w-full' primary onClick={toggleEditMode}>
 								Edit
 							</Button>
 						</div>
 					</div>
 				</Modal>
 			)}
+
 			<RewardDetailsModalForm
 				isOpen={editModeIsOpen}
 				toggle={toggleEditMode}
@@ -119,6 +123,12 @@ function RewardDetailsModalForm({
 		}
 	}, [updatedTripData]);
 
+	const cancelUpdate = () => {
+		setValue('image', undefined);
+		setValue('title', '');
+		toggle();
+	};
+
 	const { ref, ...rewardImageRegisterReturn } = register('image', {
 		onChange: (e) => setValue('image', e.target.files[0] || undefined),
 	});
@@ -127,7 +137,7 @@ function RewardDetailsModalForm({
 		<Modal
 			containerClassName='w-full page-x-padding max-w-[450px]'
 			open={isOpen}
-			onBackdropClick={toggle}
+			onBackdropClick={cancelUpdate}
 			center
 		>
 			<form
@@ -175,11 +185,7 @@ function RewardDetailsModalForm({
 				<Button
 					type='button'
 					className='bg-transparent px-0 py-0 text-dark underline underline-offset-1 dark:text-light'
-					onClick={() => {
-						setValue('image', undefined);
-						setValue('title', '');
-						toggle();
-					}}
+					onClick={cancelUpdate}
 				>
 					Cancel
 				</Button>
