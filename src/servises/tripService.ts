@@ -47,21 +47,6 @@ export const tripGet = async (
 	return { data, status };
 };
 
-// need to make it tripRewardUpdate
-export const tripUpdate = async (
-	activate: UseAxiosResponse['activate'],
-	id: string,
-	tripData: Omit<Types['Trip']['Model'], '_id' | 'creator' | 'guides'>
-) => {
-	const { data, status } = await activate({
-		url: `${API_BASE_URL}/trip/${id}`,
-		method: 'put',
-		data: tripData,
-	});
-
-	return { data, status };
-};
-
 export const rewardUpdate = async (
 	activate: UseAxiosResponse['activate'],
 	id: string,
