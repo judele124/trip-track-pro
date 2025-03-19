@@ -47,7 +47,7 @@ export default function BeforeJoinTripView() {
 		);
 	}
 
-	const { name, description, reward, _id } = trip as Trip;
+	const { name, description, reward, _id } = trip;
 
 	return (
 		<div className='flex flex-col gap-6'>

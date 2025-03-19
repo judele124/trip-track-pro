@@ -11,10 +11,11 @@ import {
 import { Types } from 'trip-track-package';
 import useTripId from '@/hooks/useTripId';
 import { tripGet } from '@/servises/tripService';
+import { Trip } from '@/types/trip';
 
 interface TripContextValue {
-	trip: Types['Trip']['Model'] | null;
-	setTrip: (trip: Types['Trip']['Model'] | null) => void;
+	trip: Trip | null;
+	setTrip: (trip: Trip | null) => void;
 	tripRoute: MapBoxDirectionsResponse | null;
 	setTripRoute: (tripRoute: MapBoxDirectionsResponse) => void;
 	loadingTrip: boolean;
@@ -30,7 +31,7 @@ interface TripProviderProps {
 
 const TripProvider: FC<TripProviderProps> = ({ children }) => {
 	const tripId = useTripId();
-	const [trip, setTrip] = useState<Types['Trip']['Model'] | null>(null);
+	const [trip, setTrip] = useState<Trip | null>(null);
 	const [tripRoute, setTripRoute] = useState<null | MapBoxDirectionsResponse>(
 		null
 	);
