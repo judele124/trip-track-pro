@@ -8,7 +8,6 @@ import {
 	FC,
 	useEffect,
 } from 'react';
-import { Types } from 'trip-track-package';
 import useTripId from '@/hooks/useTripId';
 import { tripGet } from '@/servises/tripService';
 import { Trip } from '@/types/trip';
