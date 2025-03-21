@@ -5,7 +5,6 @@ import { useTripContext } from '@/contexts/TripContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import useToggle from '@/hooks/useToggle';
 import UserOrGuestModal from '@/components/UserOrGuestModal';
-import { Trip } from '@/types/trip';
 
 export default function BeforeJoinTripView() {
 	const { trip, loadingTrip, errorTrip, tripId } = useTripContext();
@@ -47,7 +46,7 @@ export default function BeforeJoinTripView() {
 		);
 	}
 
-	const { name, description, reward, _id } = trip as Trip;
+	const { name, description, reward, _id } = trip;
 
 	return (
 		<div className='flex flex-col gap-6'>
