@@ -13,11 +13,6 @@ interface IFirstStageInput extends InputHTMLAttributes<HTMLInputElement> {
 
 const firstStageInputs: IFirstStageInput[] = [
 	{
-		name: 'groupName',
-		title: 'Enter group name',
-		placeholder: 'Enter group name',
-	},
-	{
 		name: 'name',
 		title: 'Enter trip name',
 		placeholder: 'Enter trip name',
