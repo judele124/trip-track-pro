@@ -7,6 +7,8 @@ import s3ImgSrcDark from '../../assets/s3-trophy-dark.svg';
 import Button from '@/components/ui/Button';
 import useFirstEntry from '../../hooks/useFirstEntry';
 import ImageLightDark from '@/components/ui/ImageLightDark';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { navigationRoutes } from '@/Routes/routes';
 
 interface FirstEntryContent {
 	imgSrc: { dark: string; light: string };
@@ -32,9 +34,27 @@ const firstEntryContentData: FirstEntryContent[] = [
 	},
 ];
 
+interface LocationState {
+	params: string;
+	redirectRoute: string;
+}
+
 const FirstEntryContent = () => {
+	const { state } = useLocation() as { state: LocationState | null };
+	const nav = useNavigate();
 	const { index, handleNext, endFirstEntry } = useFirstEntry(
-		firstEntryContentData.length
+		firstEntryContentData.length,
+		() => {
+			localStorage.setItem('notFirstEntry', 'true');
+
+			if (!state || !state.redirectRoute) {
+				nav(navigationRoutes.app);
+				return;
+			}
+
+			const { params, redirectRoute } = state;
+			nav(`${redirectRoute}${params}`);
+		}
 	);
 
 	return (
