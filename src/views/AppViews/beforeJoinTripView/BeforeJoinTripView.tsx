@@ -5,21 +5,18 @@ import { useTripContext } from '@/contexts/TripContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import useToggle from '@/hooks/useToggle';
 import UserOrGuestModal from '@/components/UserOrGuestModal';
+import TripNotActiveMessage from '@/components/TripNotActiveMessage';
 
 export default function BeforeJoinTripView() {
 	const { trip, loadingTrip, errorTrip, tripId } = useTripContext();
 	const { user } = useAuthContext();
 	const nav = useNavigate();
-	const { isOpen, setIsOpen } = useToggle();
-
-	const handleOnjoin = () => {
-		if (!user) {
-			setIsOpen(true);
-			return;
-		}
-
-		nav(`${navigationRoutes.map}`);
-	};
+	const {
+		isOpen: isUserOrGuestModalOpen,
+		setIsOpen: setIsUserOrGuestModalOpen,
+	} = useToggle();
+	const { isOpen: isTripNotActiveOpen, setIsOpen: setIsTripNotActiveOpen } =
+		useToggle();
 
 	if (loadingTrip) return <p>Loading...</p>;
 
@@ -47,6 +44,20 @@ export default function BeforeJoinTripView() {
 	}
 
 	const { name, description, reward, _id } = trip;
+
+	const handleOnjoin = () => {
+		if (trip.status !== 'started') {
+			setIsTripNotActiveOpen(true);
+			return;
+		}
+
+		if (!user) {
+			setIsUserOrGuestModalOpen(true);
+			return;
+		}
+
+		nav(`${navigationRoutes.map}`);
+	};
 
 	return (
 		<div className='flex flex-col gap-6'>
@@ -76,9 +87,16 @@ export default function BeforeJoinTripView() {
 
 			<UserOrGuestModal
 				tripId={_id.toString()}
-				open={isOpen}
-				onClose={() => setIsOpen(false)}
+				open={isUserOrGuestModalOpen}
+				onClose={() => setIsUserOrGuestModalOpen(false)}
 			/>
+
+			<TripNotActiveMessage
+				trip={trip}
+				onClose={() => setIsTripNotActiveOpen(false)}
+				isOpen={isTripNotActiveOpen}
+			/>
+
 			<Button onClick={handleOnjoin} primary className='w-full'>
 				join
 			</Button>

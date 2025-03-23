@@ -5,6 +5,7 @@ import { useTripContext } from '@/contexts/TripContext';
 import { navigationRoutes } from '@/Routes/routes';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/icons/Icon';
+import TripNotActiveMessage from '@/components/TripNotActiveMessage';
 
 const TripLayout = () => {
 	let { pathname } = useLocation();
@@ -43,14 +44,7 @@ const TripLayout = () => {
 								</Button>
 							</div>
 						) : trip.status !== 'started' ? (
-							<div className='page-padding flex h-full flex-col items-center justify-center text-center'>
-								<p className='text-lg font-medium'>
-									⚠️ This trip hasn't started yet!
-								</p>
-								<p className='mt-2 text-sm text-dark/70 dark:text-light/70'>
-									Wait for the trip organizer to start the trip
-								</p>
-							</div>
+							<TripNotActiveMessage trip={trip} />
 						) : (
 							<Outlet />
 						)}
