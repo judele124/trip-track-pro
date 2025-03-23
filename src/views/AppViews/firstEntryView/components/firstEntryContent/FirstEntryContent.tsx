@@ -63,7 +63,7 @@ const FirstEntryContent = () => {
 				{renderText(firstEntryContentData[index].text)}
 			</p>
 			<ImageLightDark
-				className='break-x-padding h-full max-h-56 w-[100vw] max-w-none object-contain'
+				className='break-x-padding h-full max-h-56 w-[100vw] max-w-none object-contain text-center sm:w-auto'
 				srcDark={firstEntryContentData[index].imgSrc.dark}
 				srcLight={firstEntryContentData[index].imgSrc.light}
 				alt={firstEntryContentData[index].imgAlt}
