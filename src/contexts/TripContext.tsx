@@ -20,6 +20,7 @@ interface TripContextValue {
 	loadingTrip: boolean;
 	errorTrip: Error | null;
 	tripId: string;
+	status: number | undefined;
 }
 
 const TripContext = createContext<TripContextValue | null>(null);
@@ -39,6 +40,7 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 		activate,
 		loading: loadingTrip,
 		error: errorTrip,
+		status,
 	} = useAxios({
 		manual: true,
 		onSuccess: ({ data }) => setTrip(data),
@@ -58,6 +60,7 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 				loadingTrip,
 				errorTrip,
 				tripId,
+				status,
 			}}
 		>
 			{children}
