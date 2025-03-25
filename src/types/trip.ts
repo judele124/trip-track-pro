@@ -5,7 +5,7 @@ export type Trip = Omit<
 	'reward' | '_id' | 'creator' | 'guides'
 > & {
 	_id: string;
-	creator: string;
+	creator: Types['User']['Model'];
 	guides: string[];
 	reward?: {
 		title: string;
