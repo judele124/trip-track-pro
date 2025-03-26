@@ -2,6 +2,7 @@ import UserDetailsComponent from '@/components/UserDetailsComponent';
 import { useAuthContext } from '@/contexts/AuthContext';
 import UserCreatedTrips from './components/UserCreatedTrips';
 import Icon from '@/components/icons/Icon';
+import UserInParticipantsTrips from './components/UserInParticipantsTrips';
 
 const ProfileView = () => {
 	const { user, loading } = useAuthContext();
@@ -25,6 +26,7 @@ const ProfileView = () => {
 				/>
 			)}
 			<UserCreatedTrips />
+			<UserInParticipantsTrips />
 		</div>
 	);
 };
