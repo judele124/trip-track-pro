@@ -65,6 +65,7 @@ const HomePageView = () => {
 			<div className='flex flex-col gap-4'>
 				<Logo />
 				<ImageLightDark
+					className='mx-auto max-w-[400px]'
 					srcDark={imgSrcDark}
 					srcLight={imgSrcLight}
 					alt='illustration of a map'
