@@ -21,7 +21,7 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [amountError, setAmountError] = useState<boolean>(false);
 	const [amountOptions, setAmountOptions] = useState<number>(
-		watch(`stops.${stopIndex}.experience.data.options`)?.length || 1
+		watch(`stops.${stopIndex}.experience.data.options`)?.length || 2
 	);
 
 	const handleInputAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
