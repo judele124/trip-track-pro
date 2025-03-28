@@ -2,18 +2,24 @@ import Button from '@/components/ui/Button';
 import useAxios from '@/hooks/useAxios';
 import { API_BASE_URL } from '@/env.config';
 import TripsList from './TripsList';
-import { useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const filterList = ['createdTrips', 'joinedTrips'] as const;
 
+const tripsShowcaseContext = createContext<{
+	getCreatedTripsData: () => void;
+} | null>(null);
+
 export default function TripsShowcase() {
 	const {
+		activate,
 		data: createdTripsData,
 		loading: createdTripsLoading,
 		error: createdTripsError,
 		status: createdTripsStatus,
 	} = useAxios({
 		url: `${API_BASE_URL}/trip/getAll`,
+		manual: true,
 	});
 	const {
 		data: joinedTripsData,
@@ -28,8 +34,16 @@ export default function TripsShowcase() {
 		filterList[0]
 	);
 
+	const getCreatedTripsData = () => {
+		activate();
+	};
+
+	useEffect(() => {
+		getCreatedTripsData();
+	}, []);
+
 	return (
-		<>
+		<tripsShowcaseContext.Provider value={{ getCreatedTripsData }}>
 			{/* buttons */}
 			<div className='mt-2'>
 				<Button
@@ -53,7 +67,7 @@ export default function TripsShowcase() {
 				{filter === 'createdTrips' ? 'Created Trips' : 'Joined trips'}
 			</h3>
 
-			<div className='no-scrollbar flex h-full w-full flex-col gap-2 overflow-y-auto'>
+			<div className='no-scrollbar flex w-full flex-col gap-2 overflow-y-auto pb-10'>
 				{!createdTripsLoading && (
 					<TripsList
 						data={
@@ -75,6 +89,16 @@ export default function TripsShowcase() {
 					/>
 				)}
 			</div>
-		</>
+		</tripsShowcaseContext.Provider>
 	);
 }
+
+export const useTripShowcase = () => {
+	const context = useContext(tripsShowcaseContext);
+	if (!context) {
+		throw new Error(
+			'useTripShowcase must be used inside of a TripsShowcaseProvider'
+		);
+	}
+	return context;
+};
