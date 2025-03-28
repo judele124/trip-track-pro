@@ -9,7 +9,7 @@ const LoginView = () => {
 			<h1>Login</h1>
 			<LoginForm />
 			<ImageLightDark
-				className='grow overflow-hidden object-contain'
+				className='mx-auto max-w-[400px] grow overflow-hidden object-contain'
 				srcDark={loginImgDark}
 				srcLight={loginImgLight}
 			/>
