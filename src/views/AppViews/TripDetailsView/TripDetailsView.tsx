@@ -71,7 +71,7 @@ export default function TripDetailsView() {
 
 						<TripDetailsStops
 							tripStops={tripData.stops}
-							isCreator={user?._id === tripData.creator}
+							isCreator={user?._id === tripData.creator._id}
 						/>
 
 						<Button
