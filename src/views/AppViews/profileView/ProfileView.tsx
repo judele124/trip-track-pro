@@ -1,7 +1,7 @@
 import UserDetailsComponent from '@/components/UserDetailsComponent';
 import { useAuthContext } from '@/contexts/AuthContext';
-import UserCreatedTrips from './components/UserCreatedTrips';
 import Icon from '@/components/icons/Icon';
+import TripsShowcase from './components/TripsShowcase';
 
 const ProfileView = () => {
 	const { user, loading } = useAuthContext();
@@ -24,7 +24,7 @@ const ProfileView = () => {
 					{...(user.role !== 'guest' ? { email: user.email } : {})}
 				/>
 			)}
-			<UserCreatedTrips />
+			<TripsShowcase />
 		</div>
 	);
 };
