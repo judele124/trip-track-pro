@@ -55,7 +55,7 @@ export const verifyCode = async (
 export const logout = async (
 	activate: Activate
 ): Promise<{ status: number; data?: any }> => {
-	const url = `${API_BASE_URL}/auth/logout`;
+	const url = `${API_BASE_URL}/user/logout`;
 	const { error, data, status } = await activate({
 		url,
 		method: 'post',

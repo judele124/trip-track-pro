@@ -8,6 +8,7 @@ import CreateTripView from '@/views/AppViews/createTripView';
 import FirstEntryView from '@/views/AppViews/firstEntryView/FirstEntryView';
 import HomePageView from '@/views/AppViews/homePageView';
 import LoginView from '@/views/AppViews/loginView/LoginView';
+import LogoutView from '@/views/AppViews/logoutView';
 import ProfileView from '@/views/AppViews/profileView';
 import ShareTripView from '@/views/AppViews/shareTripView';
 import TripDetailsView from '@/views/AppViews/TripDetailsView';
@@ -32,6 +33,7 @@ const tripRoutes = {
 
 const appRoutes = {
 	login: `login`,
+	logout: `logout`,
 	firstEntry: `first-entry`,
 	createTrip: `create-trip`,
 	shareTrip: `share-trip`,
@@ -49,6 +51,7 @@ export const navigationRoutes = {
 	joinTrip: `${baseRoutes.app}/${appRoutes.joinTrip}`,
 	profile: `${baseRoutes.app}/${appRoutes.profile}`,
 	tripDetails: `${baseRoutes.app}/${appRoutes.trip}`,
+	logout: `${baseRoutes.app}/${appRoutes.logout}`,
 
 	map: `${baseRoutes.trip}/${tripRoutes.map}`,
 	participants: `${baseRoutes.trip}/${tripRoutes.participants}`,
@@ -70,6 +73,7 @@ const routes: RouteObject[] = [
 				children: [
 					{ path: appRoutes.firstEntry, element: <FirstEntryView /> },
 					{ path: appRoutes.login, element: <LoginView /> },
+					{ path: appRoutes.logout, element: <LogoutView /> },
 					{
 						path: appRoutes.createTrip,
 						element: (

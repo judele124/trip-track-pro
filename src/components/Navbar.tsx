@@ -1,10 +1,16 @@
+import { Link } from 'react-router-dom';
 import { useDarkMode } from '../contexts/DarkModeContext';
+import Icon from './icons/Icon';
+import { navigationRoutes } from '@/Routes/routes';
 
 export default function Navbar() {
 	return (
 		<div className='mb-3 flex items-center justify-between'>
 			<BackButton />
-			<ToggleDarkMode />
+			<div className='flex gap-3'>
+				<LogoutBtn />
+				<ToggleDarkMode />
+			</div>
 		</div>
 	);
 }
@@ -42,5 +48,19 @@ export const ToggleDarkMode = () => {
 		>
 			{isDarkMode ? '🌙' : '☀️'}
 		</button>
+	);
+};
+
+export const LogoutBtn = () => {
+	return (
+		<Link
+			to={navigationRoutes.logout}
+			className='group flex size-8 items-center justify-center gap-1.5 rounded-full border-2 border-primary px-1.5 py-1 transition-transform hover:size-fit'
+		>
+			<Icon size='20' fill={'#ce5737'} name='logout' />
+			<span className='hidden text-sm text-dark group-hover:block dark:text-light'>
+				logout
+			</span>
+		</Link>
 	);
 };
