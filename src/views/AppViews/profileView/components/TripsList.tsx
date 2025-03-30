@@ -7,6 +7,7 @@ interface ITripListProps {
 	status: number | undefined;
 	loading: boolean;
 	hasError: boolean;
+	isCreatedTrips: boolean;
 }
 
 export default function TripsList({
@@ -14,6 +15,7 @@ export default function TripsList({
 	hasError,
 	loading,
 	status,
+	isCreatedTrips,
 }: ITripListProps) {
 	return (
 		<>
@@ -23,7 +25,12 @@ export default function TripsList({
 			{loading && <p>loading trips</p>}
 			{data?.length > 0 ? (
 				data.map((tripItem: Trip, index: number) => (
-					<TripRow key={tripItem._id} trip={tripItem} i={index} />
+					<TripRow
+						key={tripItem._id}
+						trip={tripItem}
+						i={index}
+						isCreator={isCreatedTrips}
+					/>
 				))
 			) : (
 				<p className='text-center'>No trips created yet</p>

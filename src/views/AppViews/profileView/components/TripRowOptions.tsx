@@ -1,69 +1,41 @@
 import Icon from '@/components/icons/Icon';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
-import { API_BASE_URL } from '@/env.config';
-import useAxios from '@/hooks/useAxios';
 import useToggle from '@/hooks/useToggle';
 import { Trip } from '@/types/trip';
 import { useRef } from 'react';
 import { TripStatusArray } from 'trip-track-package';
-import { useTripShowcase } from './TripsShowcase';
-
-const options = ['start', 'complete', 'delete', 'cancel'] as const;
+import useTripOption, {
+	creatorTripsOptionsActions,
+	joinedTripsOptionsActions,
+} from '../hooks/useTripOption';
 
 const tripStatusToOptionMap: Record<
 	(typeof TripStatusArray)[number],
-	(typeof options)[number][]
+	(
+		| typeof creatorTripsOptionsActions
+		| typeof joinedTripsOptionsActions
+	)[number][]
 > = {
-	created: ['start', 'cancel'],
-	started: ['complete'],
+	created: ['start', 'cancel', 'join', 'leave'],
+	started: ['complete', 'join', 'leave'],
 	completed: ['delete'],
 	cancelled: ['delete'],
 };
 
 interface ITripRowOptions {
 	trip: Trip;
+	isCreator: boolean;
 }
 
-export default function TripRowOptions({ trip }: ITripRowOptions) {
+export default function TripRowOptions({ trip, isCreator }: ITripRowOptions) {
 	const { isOpen, setIsOpen } = useToggle();
 	const dotsRef = useRef<HTMLButtonElement>(null);
-	const { activate } = useAxios({
-		manual: true,
+
+	const { handleActions, allowedActions } = useTripOption({
+		tripId: trip._id,
+		isCreator,
 	});
-	const { getCreatedTripsData } = useTripShowcase();
-
-	const handleActions = async (action: (typeof options)[number]) => {
-		switch (action) {
-			case 'start':
-				await activate({
-					method: 'POST',
-					url: `${API_BASE_URL}/trip/start/${trip._id}`,
-				});
-				break;
-			case 'complete':
-				await activate({
-					method: 'POST',
-					url: `${API_BASE_URL}/trip/end/${trip._id}`,
-				});
-
-				break;
-			case 'cancel':
-				// TODO:
-				// create a cancel route in be and then call it here
-				alert('functionality is not active yet');
-				break;
-			case 'delete':
-				// TODO:
-				// create a delete route in be and then call it here
-				alert('functionality is not active yet');
-				break;
-			default:
-				break;
-		}
-
-		await getCreatedTripsData();
-	};
 
 	return (
 		<>

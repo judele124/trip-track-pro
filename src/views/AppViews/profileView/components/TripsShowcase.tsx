@@ -70,6 +70,7 @@ export default function TripsShowcase() {
 			<div className='no-scrollbar flex w-full flex-col gap-2 overflow-y-auto pb-10'>
 				{!createdTripsLoading && (
 					<TripsList
+						isCreatedTrips={filter === 'createdTrips'}
 						data={
 							filter === 'createdTrips' ? createdTripsData : joinedTripsData
 						}
