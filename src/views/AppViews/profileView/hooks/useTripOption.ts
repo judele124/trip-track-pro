@@ -1,6 +1,9 @@
 import useAxios from '@/hooks/useAxios';
 import { useTripShowcase } from '../components/TripsShowcase';
-import { API_BASE_URL } from '@/env.config';
+import { useNavigate } from 'react-router-dom';
+import { navigationRoutes } from '@/Routes/routes';
+import { endTrip, joinTrip, startTrip } from '@/servises/tripService';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 export const creatorTripsOptionsActions = [
 	'start',
@@ -9,52 +12,49 @@ export const creatorTripsOptionsActions = [
 	'cancel',
 ] as const;
 export const joinedTripsOptionsActions = ['join', 'leave'] as const;
-type CreatorActions = typeof creatorTripsOptionsActions;
-type ParticipantsActions = typeof creatorTripsOptionsActions;
 
-type CreatorAction = CreatorActions[number];
-type ParticipantAction = ParticipantsActions[number];
-
-export type ActionOption = CreatorAction | ParticipantAction;
+export type ActionOption =
+	| (typeof creatorTripsOptionsActions)[number]
+	| (typeof joinedTripsOptionsActions)[number];
 
 interface IUseTripOptions {
 	tripId: string;
-	isCreator: boolean;
 }
 
 interface IUseTripOptionsReturn {
 	handleActions: (action: ActionOption) => Promise<void>;
-	allowedActions:
-		| typeof creatorTripsOptionsActions
-		| typeof joinedTripsOptionsActions;
 }
 
 export default function useTripOption({
 	tripId,
-	isCreator,
 }: IUseTripOptions): IUseTripOptionsReturn {
+	const nav = useNavigate();
+	const { user } = useAuthContext();
 	const { activate } = useAxios({
 		manual: true,
 	});
 	const { getCreatedTripsData } = useTripShowcase();
 
 	const handleActions = async (action: ActionOption) => {
-		if (!isCreator) {
-			throw new Error(`You are not authorized to perform the ${action} action`);
-		}
 		switch (action) {
-			case 'start':
-				await activate({
-					method: 'POST',
-					url: `${API_BASE_URL}/trip/start/${tripId}`,
-				});
-				break;
-			case 'complete':
-				await activate({
-					method: 'POST',
-					url: `${API_BASE_URL}/trip/end/${tripId}`,
+			case 'join':
+				await joinTrip(activate, tripId, {
+					name: user?.name,
+					imageUrl: user?.imageUrl,
 				});
 
+				nav(`${navigationRoutes.joinTrip}?tripId=${tripId}`);
+				break;
+			case 'start':
+				await startTrip(activate, tripId);
+				break;
+			case 'complete':
+				await endTrip(activate, tripId);
+				break;
+			case 'leave':
+				// TODO:
+				// create a cancel route in be and then call it here
+				alert('functionality is not active yet');
 				break;
 			case 'cancel':
 				// TODO:
@@ -67,7 +67,7 @@ export default function useTripOption({
 				alert('functionality is not active yet');
 				break;
 			default:
-				break;
+				throw new Error(`Action ${action} doesn't exist`);
 		}
 
 		await getCreatedTripsData();
@@ -75,8 +75,5 @@ export default function useTripOption({
 
 	return {
 		handleActions,
-		allowedActions: isCreator
-			? creatorTripsOptionsActions
-			: joinedTripsOptionsActions,
 	};
 }
