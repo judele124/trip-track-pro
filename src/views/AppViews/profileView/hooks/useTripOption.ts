@@ -2,7 +2,13 @@ import useAxios from '@/hooks/useAxios';
 import { useTripShowcase } from '../components/TripsShowcase';
 import { useNavigate } from 'react-router-dom';
 import { navigationRoutes } from '@/Routes/routes';
-import { endTrip, joinTrip, startTrip } from '@/servises/tripService';
+import {
+	deleteTrip,
+	endTrip,
+	joinTrip,
+	leaveTrip,
+	startTrip,
+} from '@/servises/tripService';
 import { useAuthContext } from '@/contexts/AuthContext';
 
 export const creatorTripsOptionsActions = [
@@ -52,9 +58,7 @@ export default function useTripOption({
 				await endTrip(activate, tripId);
 				break;
 			case 'leave':
-				// TODO:
-				// create a cancel route in be and then call it here
-				alert('functionality is not active yet');
+				await leaveTrip(activate, tripId);
 				break;
 			case 'cancel':
 				// TODO:
@@ -62,9 +66,7 @@ export default function useTripOption({
 				alert('functionality is not active yet');
 				break;
 			case 'delete':
-				// TODO:
-				// create a delete route in be and then call it here
-				alert('functionality is not active yet');
+				await deleteTrip(activate, tripId);
 				break;
 			default:
 				throw new Error(`Action ${action} doesn't exist`);

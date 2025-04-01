@@ -99,7 +99,7 @@ export const joinTrip = async (
 		}
 
 		const { data, status, error } = await activate({
-			url: `http://localhost:3000/trip/user-join/${id}`,
+			url: `${API_BASE_URL}/trip/user-join/${id}`,
 			method: 'POST',
 			data: userData,
 		});
@@ -117,4 +117,29 @@ export const joinTrip = async (
 	} catch (error) {
 		throw error;
 	}
+};
+
+export const leaveTrip = async (
+	activate: UseAxiosResponse['activate'],
+	id: string
+) => {
+	await activate({
+		url: `${API_BASE_URL}/trip/user-leave/${id}`,
+		method: 'DELETE',
+	});
+
+	await activate({
+		url: `${API_BASE_URL}/trip/remove-user-from-participants/${id}`,
+		method: 'PUT',
+	});
+};
+
+export const deleteTrip = async (
+	activate: UseAxiosResponse['activate'],
+	id: string
+) => {
+	await activate({
+		url: `${API_BASE_URL}/trip/${id}`,
+		method: 'DELETE',
+	});
 };
