@@ -18,11 +18,11 @@ export default function CreateTripView() {
 			) : (
 				<ShareTrip />
 			)}
-			<ProgressLine
+			{/* <ProgressLine
 				className='absolute bottom-5 mt-auto w-full'
 				length={3}
 				index={currentFormStage}
-			/>
+			/> */}
 		</>
 	);
 }

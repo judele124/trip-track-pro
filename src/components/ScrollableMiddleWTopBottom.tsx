@@ -10,9 +10,9 @@ export default function ScrollableMiddleWTopBottom({
 	middle: ReactNode | null;
 }) {
 	return (
-		<div className='relative flex h-full flex-col'>
+		<div className='relative flex grow flex-col overflow-hidden'>
 			{top && <div>{top}</div>}
-			{middle && <div className='grow overflow-y-hidden'>{middle}</div>}
+			{middle && <div className='overflow-y-auto'>{middle}</div>}
 			{bottom && <div>{bottom}</div>}
 		</div>
 	);

@@ -3,6 +3,7 @@ import { useTripShowcase } from '../components/TripsShowcase';
 import { useNavigate } from 'react-router-dom';
 import { navigationRoutes } from '@/Routes/routes';
 import {
+	cancelTrip,
 	deleteTrip,
 	endTrip,
 	joinTrip,
@@ -61,9 +62,7 @@ export default function useTripOption({
 				await leaveTrip(activate, tripId);
 				break;
 			case 'cancel':
-				// TODO:
-				// create a cancel route in be and then call it here
-				alert('functionality is not active yet');
+				await cancelTrip(activate, tripId);
 				break;
 			case 'delete':
 				await deleteTrip(activate, tripId);
