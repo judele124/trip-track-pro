@@ -62,14 +62,16 @@ const HomePageView = () => {
 
 	return (
 		<>
-			<div className='flex flex-col gap-4'>
+			<div className='flex flex-col gap-4 overflow-hidden'>
 				<Logo />
-				<ImageLightDark
-					className='mx-auto max-w-[400px]'
-					srcDark={imgSrcDark}
-					srcLight={imgSrcLight}
-					alt='illustration of a map'
-				/>
+				<div className='flex-1 overflow-hidden'>
+					<ImageLightDark
+						className='mx-auto size-full'
+						srcDark={imgSrcDark}
+						srcLight={imgSrcLight}
+						alt='illustration of a map'
+					/>
+				</div>
 				<div>
 					<Link to={navigationRoutes.createTrip}>
 						<Button primary className='mb-1 w-full'>
