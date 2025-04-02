@@ -82,7 +82,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 		} catch (err: any) {
 			setVerifyCodeError(err);
 			setVerifyCodeStatus(undefined);
-			console.error(err);
+			throw err;
 		}
 	};
 

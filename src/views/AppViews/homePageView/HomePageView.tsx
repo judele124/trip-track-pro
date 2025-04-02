@@ -64,32 +64,17 @@ const HomePageView = () => {
 		<>
 			<div className='flex flex-col gap-4 overflow-hidden'>
 				<Logo />
-				<div className='flex-1 overflow-hidden'>
-					<ImageLightDark
-						className='mx-auto size-full'
-						srcDark={imgSrcDark}
-						srcLight={imgSrcLight}
-						alt='illustration of a map'
-					/>
-				</div>
-				<div>
-					<Link to={navigationRoutes.createTrip}>
-						<Button primary className='mb-1 w-full'>
-							Create a new trip
-						</Button>
-					</Link>
-					{user ? (
-						<Link to={navigationRoutes.profile}>
-							<Button className='flex w-full items-center justify-center gap-4'>
-								{user.name}'s Profile
-							</Button>
-						</Link>
-					) : (
-						<Link to={navigationRoutes.login}>
-							<Button className='w-full'>Login</Button>
-						</Link>
-					)}
-				</div>
+				<ImageLightDark
+					className='mx-auto size-full'
+					srcDark={imgSrcDark}
+					srcLight={imgSrcLight}
+					alt='illustration of a map'
+				/>
+				<Link to={navigationRoutes.createTrip}>
+					<Button primary className='mb-1 w-full'>
+						Create a new trip
+					</Button>
+				</Link>
 			</div>
 
 			{isNameModalOpen && (
