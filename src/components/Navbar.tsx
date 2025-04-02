@@ -1,14 +1,34 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDarkMode } from '../contexts/DarkModeContext';
-import Icon from './icons/Icon';
 import { navigationRoutes } from '@/Routes/routes';
+import { useAuthContext } from '@/contexts/AuthContext';
+import Button from './ui/Button';
 
 export default function Navbar() {
+	const { user } = useAuthContext();
+	const isLoggedIn = user != null;
+
 	return (
 		<div className='mb-3 flex items-center justify-between'>
 			<BackButton />
-			<div className='flex gap-3'>
-				<LogoutBtn />
+			<div className='flex items-center gap-3'>
+				{isLoggedIn ? (
+					<>
+						<Link
+							to={`${navigationRoutes.profile}`}
+							className='bg-transparent px-0 py-0'
+						>
+							<img
+								className='size-8 rounded-full bg-slate-400'
+								src={`https://robohash.org/${user.name}.png`}
+								alt={`${user.name} profile picture`}
+							/>
+						</Link>
+						<LogoutBtn />
+					</>
+				) : (
+					<LoginBtn />
+				)}
 				<ToggleDarkMode />
 			</div>
 		</div>
@@ -52,15 +72,27 @@ export const ToggleDarkMode = () => {
 };
 
 export const LogoutBtn = () => {
+	const nav = useNavigate();
+
 	return (
-		<Link
-			to={navigationRoutes.logout}
-			className='group flex size-8 items-center justify-center gap-1.5 rounded-full border-2 border-primary px-1.5 py-1 transition-transform hover:size-fit'
+		<Button
+			className='rounded-lg py-1'
+			onClick={() => nav(navigationRoutes.logout)}
 		>
-			<Icon size='20' fill={'#ce5737'} name='logout' />
-			<span className='hidden text-sm text-dark group-hover:block dark:text-light'>
-				logout
-			</span>
-		</Link>
+			Logout
+		</Button>
+	);
+};
+
+export const LoginBtn = () => {
+	const nav = useNavigate();
+
+	return (
+		<Button
+			className='rounded-lg py-1'
+			onClick={() => nav(navigationRoutes.login)}
+		>
+			Login
+		</Button>
 	);
 };

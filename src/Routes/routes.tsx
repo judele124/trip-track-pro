@@ -67,10 +67,10 @@ const routes: RouteObject[] = [
 		path: `${baseRoutes.app}/*`,
 		element: <PageLayout />,
 		children: [
-			{ index: true, element: <HomePageView /> },
 			{
 				element: <NavbarLayout />,
 				children: [
+					{ index: true, element: <HomePageView /> },
 					{ path: appRoutes.firstEntry, element: <FirstEntryView /> },
 					{ path: appRoutes.login, element: <LoginView /> },
 					{ path: appRoutes.logout, element: <LogoutView /> },

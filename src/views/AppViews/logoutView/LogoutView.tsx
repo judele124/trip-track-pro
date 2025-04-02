@@ -4,64 +4,38 @@ import imgSrcLight from '@/views/AppViews/homePageView/assets/start-screen-light
 import imgSrcDark from '@/views/AppViews/homePageView/assets/start-screen-dark.svg';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { navigationRoutes } from '@/Routes/routes';
+import { getErrorMessage } from '@/utils/errorMessages';
+
 const LogoutView = () => {
-	const { logout, logoutError, user } = useAuthContext();
-	const [isClicked, setIsClicked] = useState(false);
+	const { logout, logoutError, user, logoutStatus } = useAuthContext();
+	const nav = useNavigate();
 
 	return (
-		<div className='mt-10 flex flex-col'>
-			<Logo />
+		<div className='relative mt-10 flex grow flex-col'>
 			<ImageLightDark
-				className='mx-auto blur-sm'
+				className='absolute inset-0 top-1/2 mx-auto -translate-y-1/2 blur-sm'
 				srcDark={imgSrcDark}
 				srcLight={imgSrcLight}
 				alt='rocket'
 			/>
 			<div className='page-colors page-padding absolute top-1/2 m-4 flex -translate-y-1/2 flex-col gap-3 rounded-2xl border-4 border-dark text-white dark:border-primary'>
-				{!isClicked ? (
-					<>
-						<h1 className='text-2xl'>Goodbye {user?.name}!</h1>
-						<p className='text-pretty'>
-							Thank you for joining us on this journey! We hope you had a great
-							time exploring with us.
-						</p>
-						<p className='text-xs text-red-700'>
-							*You will need to sign in again to access your account.
-						</p>
-						<Button
-							className='border-2 border-primary bg-black text-primary'
-							onClick={() => {
-								setIsClicked(true);
-								logout();
-							}}
-						>
-							Log out
-						</Button>
-
-						<Button
-							primary
-							className='-mt-2'
-							onClick={() => {
-								history.back();
-								setIsClicked(false);
-							}}
-						>
-							Cancel
-						</Button>
-					</>
-				) : (
-					<>
-						{logoutError && isClicked ? (
-							<p className='text-red-700'>{logoutError.message}</p>
-						) : (
-							<p className='text-lg text-black dark:text-white'>
-								The journey never truly ends! We’ll be waiting for you to
-								continue your adventure.
-							</p>
-						)}
-					</>
-				)}
+				<h1 className='text-2xl'>Goodbye {user?.name}!</h1>
+				<p className='text-pretty'>
+					Thank you for joining us on this journey! We hope you had a great time
+					exploring with us.
+				</p>
+				<p>You will need to sign in again to access your account.</p>
+				<Button
+					onClick={async () => {
+						await logout();
+						nav(navigationRoutes.app);
+					}}
+				>
+					Log out
+				</Button>
+				{logoutError && logoutStatus && <p>{getErrorMessage(logoutStatus)}</p>}
 			</div>
 		</div>
 	);
