@@ -5,7 +5,7 @@ import loginImgDark from './assets/loginImgDark.svg';
 
 const LoginView = () => {
 	return (
-		<div className='flex h-full flex-col items-center gap-4 overflow-hidden pt-10'>
+		<div className='flex h-full flex-col items-center gap-4 overflow-hidden'>
 			<h1>Login</h1>
 			<LoginForm />
 			<ImageLightDark

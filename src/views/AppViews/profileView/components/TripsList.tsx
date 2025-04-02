@@ -1,15 +1,13 @@
 import { Trip } from '@/types/trip';
 import TripRow from './TripRow';
 import { getErrorMessage } from '@/utils/errorMessages';
-import Button from '@/components/ui/Button';
-import useToggle from '@/hooks/useToggle';
-import Modal from '@/components/ui/Modal';
 
 interface ITripListProps {
 	data: Trip[];
 	status: number | undefined;
 	loading: boolean;
 	hasError: boolean;
+	isCreatedTrips: boolean;
 }
 
 export default function TripsList({
@@ -17,8 +15,8 @@ export default function TripsList({
 	hasError,
 	loading,
 	status,
+	isCreatedTrips,
 }: ITripListProps) {
-	const { isOpen, setIsOpen } = useToggle();
 	return (
 		<>
 			{status && hasError && (
@@ -30,24 +28,13 @@ export default function TripsList({
 					<TripRow
 						key={tripItem._id}
 						trip={tripItem}
-						setIsOpen={setIsOpen}
 						i={index}
+						isCreator={isCreatedTrips}
 					/>
 				))
 			) : (
 				<p className='text-center'>No trips created yet</p>
 			)}
-			<Modal
-				center
-				backgroundClassname='bg-transparent'
-				onBackdropClick={() => setIsOpen(false)}
-				open={isOpen}
-			>
-				<div className='flex w-48 flex-col rounded-2xl border-2 border-primary bg-light p-4'>
-					<Button primary>Start trip</Button>
-					<Button className='underline'>Delete</Button>
-				</div>
-			</Modal>
 		</>
 	);
 }
