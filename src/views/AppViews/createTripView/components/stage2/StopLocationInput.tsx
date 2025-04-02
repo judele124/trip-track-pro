@@ -22,12 +22,14 @@ interface IStopLocationInputProps {
 	title?: string;
 	icon?: IconName;
 	iconFill?: string;
+	textContent?: string;
 }
 
 export default function StopLocationInput({
 	iconFill = '#383644',
 	icon,
 	onValueChange,
+	textContent = 'default',
 }: IStopLocationInputProps) {
 	const [isAddressGeoLocationError, setIsAddressGeoLocationError] =
 		useState(false);
@@ -73,7 +75,7 @@ export default function StopLocationInput({
 						icon={loading ? 'spinner' : icon}
 						type='input'
 						iconFill={iconFill}
-						elemTextContent={(item) => item?.description || 'default'}
+						elemTextContent={(item) => item?.description || textContent}
 						onChange={(e) => setInputValue(e.target.value)}
 					/>
 					<DropdownMenu<PlacePrediction>
