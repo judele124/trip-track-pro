@@ -1,10 +1,36 @@
+import { Link, useNavigate } from 'react-router-dom';
 import { useDarkMode } from '../contexts/DarkModeContext';
+import { navigationRoutes } from '@/Routes/routes';
+import { useAuthContext } from '@/contexts/AuthContext';
+import Button from './ui/Button';
 
 export default function Navbar() {
+	const { user } = useAuthContext();
+	const isLoggedIn = user != null;
+
 	return (
 		<div className='mb-3 flex items-center justify-between'>
 			<BackButton />
-			<ToggleDarkMode />
+			<div className='flex items-center gap-3'>
+				{isLoggedIn ? (
+					<>
+						<Link
+							to={`${navigationRoutes.profile}`}
+							className='bg-transparent px-0 py-0'
+						>
+							<img
+								className='size-8 rounded-full bg-slate-400'
+								src={`https://robohash.org/${user.name}.png`}
+								alt={`${user.name} profile picture`}
+							/>
+						</Link>
+						<LogoutBtn />
+					</>
+				) : (
+					<LoginBtn />
+				)}
+				<ToggleDarkMode />
+			</div>
 		</div>
 	);
 }
@@ -42,5 +68,31 @@ export const ToggleDarkMode = () => {
 		>
 			{isDarkMode ? '🌙' : '☀️'}
 		</button>
+	);
+};
+
+export const LogoutBtn = () => {
+	const nav = useNavigate();
+
+	return (
+		<Button
+			className='rounded-lg py-1'
+			onClick={() => nav(navigationRoutes.logout)}
+		>
+			Logout
+		</Button>
+	);
+};
+
+export const LoginBtn = () => {
+	const nav = useNavigate();
+
+	return (
+		<Button
+			className='rounded-lg py-1'
+			onClick={() => nav(navigationRoutes.login)}
+		>
+			Login
+		</Button>
 	);
 };

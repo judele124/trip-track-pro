@@ -143,3 +143,16 @@ export const deleteTrip = async (
 		method: 'DELETE',
 	});
 };
+
+export const cancelTrip = async (
+	activate: UseAxiosResponse['activate'],
+	id: string
+) => {
+	await activate({
+		url: `${API_BASE_URL}/trip/status/${id}`,
+		method: 'PUT',
+		data: {
+			status: 'cancelled',
+		},
+	});
+};
