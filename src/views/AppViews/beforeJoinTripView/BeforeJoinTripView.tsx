@@ -6,6 +6,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import useToggle from '@/hooks/useToggle';
 import UserOrGuestModal from '@/components/UserOrGuestModal';
 import TripNotActiveMessage from '@/components/TripNotActiveMessage';
+import TripCancelledMessage from '@/components/TripCancelledMessage';
 
 export default function BeforeJoinTripView() {
 	const { trip, loadingTrip, errorTrip, tripId } = useTripContext();
@@ -16,6 +17,9 @@ export default function BeforeJoinTripView() {
 		setIsOpen: setIsUserOrGuestModalOpen,
 	} = useToggle();
 	const { isOpen: isTripNotActiveOpen, setIsOpen: setIsTripNotActiveOpen } =
+		useToggle();
+
+	const { isOpen: isTripCancelledOpen, setIsOpen: setIsTripCancelledOpen } =
 		useToggle();
 
 	if (loadingTrip) return <p>Loading...</p>;
@@ -46,6 +50,11 @@ export default function BeforeJoinTripView() {
 	const { name, description, reward, _id } = trip;
 
 	const handleOnjoin = () => {
+		if (trip.status === 'cancelled') {
+			setIsTripCancelledOpen(true);
+			return;
+		}
+
 		if (trip.status !== 'started') {
 			setIsTripNotActiveOpen(true);
 			return;
@@ -95,6 +104,12 @@ export default function BeforeJoinTripView() {
 				trip={trip}
 				onClose={() => setIsTripNotActiveOpen(false)}
 				isOpen={isTripNotActiveOpen}
+			/>
+
+			<TripCancelledMessage
+				trip={trip}
+				onClose={() => setIsTripCancelledOpen(false)}
+				isOpen={isTripCancelledOpen}
 			/>
 
 			<Button onClick={handleOnjoin} primary className='w-full'>
