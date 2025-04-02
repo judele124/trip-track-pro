@@ -4,11 +4,13 @@ import BottomNavigation from './componenets/BottomNavigation';
 import { useTripContext } from '@/contexts/TripContext';
 import { navigationRoutes } from '@/Routes/routes';
 import Button from '@/components/ui/Button';
+import Icon from '@/components/icons/Icon';
+import TripNotActiveMessage from '@/components/TripNotActiveMessage';
 
 const TripLayout = () => {
 	let { pathname } = useLocation();
 	const title = titleFromPath(pathname);
-	const { trip, tripId, loadingTrip } = useTripContext();
+	const { trip, tripId, loadingTrip, status } = useTripContext();
 	const nav = useNavigate();
 
 	return (
@@ -18,23 +20,35 @@ const TripLayout = () => {
 
 			{/* main content */}
 			<div className='-z-10 grow overflow-hidden bg-secondary/20'>
-				{!loadingTrip && (!tripId || !trip) ? (
-					<div className='page-padding text-center'>
-						<p>
-							{!tripId
-								? '⚠️ Oops! No trip was found.'
-								: '🚨 Error: The trip could not be loaded.'}
-						</p>
-						<Button
-							className='mt-5 w-full'
-							onClick={() => nav(navigationRoutes.app)}
-							primary
-						>
-							Go Home
-						</Button>
+				{loadingTrip && (
+					<div className='flex h-full items-center justify-center'>
+						<Icon size='50' className='fill-primary' name='spinner' />
 					</div>
-				) : (
-					<Outlet />
+				)}
+
+				{status && (
+					<>
+						{!trip ? (
+							<div className='page-padding text-center'>
+								<p>
+									{!tripId
+										? '⚠️ Oops! No trip was found.'
+										: '🚨 Error: The trip could not be loaded.'}
+								</p>
+								<Button
+									className='mt-5 w-full'
+									onClick={() => nav(navigationRoutes.app)}
+									primary
+								>
+									Go Home
+								</Button>
+							</div>
+						) : trip.status !== 'started' ? (
+							<TripNotActiveMessage trip={trip} />
+						) : (
+							<Outlet />
+						)}
+					</>
 				)}
 			</div>
 

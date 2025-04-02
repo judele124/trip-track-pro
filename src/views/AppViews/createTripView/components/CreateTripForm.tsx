@@ -44,7 +44,6 @@ export default function CreateTripForm({
 		),
 		defaultValues: {
 			description: '',
-			groupName: '',
 			name: '',
 			reward: undefined,
 			stops: [],

@@ -9,10 +9,10 @@ import { useEffect, useRef } from 'react';
 import Input from '@/components/ui/Input';
 import { mergeRefs } from '@/utils/functions';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { rewardSchema } from '@/validationSchemas/trip';
 import useAxios from '@/hooks/useAxios';
 import { rewardUpdate } from '@/servises/tripService';
 import { getErrorMessage } from '@/utils/errorMessages';
+import { Schemas } from 'trip-track-package';
 
 interface IRewardDetailsProps {
 	reward: Trip['reward'];
@@ -96,7 +96,7 @@ function RewardDetailsModalForm({
 		title: string;
 		image?: File | undefined;
 	}>({
-		resolver: zodResolver(rewardSchema),
+		resolver: zodResolver(Schemas.trip.reward),
 	});
 
 	const {

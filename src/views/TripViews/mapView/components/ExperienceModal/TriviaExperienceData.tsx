@@ -28,7 +28,7 @@ export default function TriviaExperienceData({
 	}, [selectedOption]);
 
 	const getButtonStyle = (option: string) => {
-		if (!selectedOption) return 'bg-dark hover:bg-opacity-80';
+		if (!selectedOption) return 'bg-dark dark:bg-light hover:bg-opacity-80';
 
 		if (option === data.answer) {
 			return 'bg-green-500 cursor-default';

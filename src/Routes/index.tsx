@@ -29,13 +29,24 @@ function renderRoutes(ch: RouteObject[]): ReactNode[] {
 }
 
 export default function AllRoutes() {
-	const { pathname } = useLocation();
+	const { pathname, search } = useLocation();
 	const nav = useNavigate();
+
 	useEffect(() => {
-		if (pathname === '/') {
+		const isFirstEntry = localStorage.getItem('notFirstEntry') !== 'true';
+
+		if (isFirstEntry) {
+			nav(navigationRoutes.firstEntry, {
+				state: {
+					redirectRoute: pathname,
+					params: search,
+				},
+			});
+		} else if (pathname === '/') {
 			nav(navigationRoutes.app);
 		}
 	}, []);
+
 	return (
 		<TripProvider>
 			<Routes>{renderRoutes(routes)}</Routes>

@@ -56,7 +56,7 @@ export default function TripDetailsView() {
 							<h1 className='max-w-[70%] break-words capitalize'>
 								{tripData.name}
 							</h1>
-							<div className='mt-2 flex gap-1'>
+							<div className='mt-2 flex items-start gap-1'>
 								<TripStatusButton status={tripData.status} />
 								<RewardDetails
 									reward={tripData.reward}
@@ -71,7 +71,7 @@ export default function TripDetailsView() {
 
 						<TripDetailsStops
 							tripStops={tripData.stops}
-							isCreator={user?._id === tripData.creator}
+							isCreator={user?._id === tripData.creator._id}
 						/>
 
 						<Button
