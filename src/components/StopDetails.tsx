@@ -1,7 +1,7 @@
 import Icon, { IconName } from './icons/Icon';
 import useToggle from '@/hooks/useToggle';
 import Modal from './ui/Modal';
-import { Types, ExperienceType } from 'trip-track-package';
+import { Types } from 'trip-track-package';
 import { useFormContext } from 'react-hook-form';
 import StopLocationInput from '@/views/AppViews/createTripView/components/stage2/StopLocationInput';
 import Button from './ui/Button';
@@ -19,8 +19,63 @@ export interface IUseFromStopsData {
 	stops: Types['Trip']['Stop']['Model'][];
 }
 const StopDetails = ({ stop, icon, editMode, index }: IStopDetailsProps) => {
-	const { isOpen, toggle } = useToggle();
+	return (
+		<>
+			{editMode ? (
+				<StopEditMode index={index} stop={stop} />
+			) : (
+				<div className='relative flex h-12 w-full items-center justify-start gap-2 rounded-2xl border-2 border-primary'>
+					{/* icon */}
+					<i
+						className={`ml-2 w-8 ${editMode || icon === 'circle' ? 'scale-75' : ''}`}
+					>
+						<Icon
+							name={!editMode ? icon : 'grid-dots'}
+							className='fill-primary'
+						/>
+					</i>
+
+					{/* address */}
+					<p className='overflow-hidden text-ellipsis text-nowrap'>
+						{stop.address || 'No address found'}
+					</p>
+
+					{/* experience button */}
+					{stop.experience && (
+						<div className='absolute bottom-0 right-0 top-0 flex gap-2 py-1.5 pr-1.5'>
+							<Button
+								className='flex items-center justify-center gap-1 rounded-xl py-1 text-sm font-semibold'
+								type='button'
+								primary
+							>
+								{`${stop.experience.type.charAt(0).toUpperCase()}${stop.experience.type.substring(1)}`}
+								<i>
+									<Icon
+										name={stop.experience.type}
+										size='18'
+										className='fill-white'
+									/>
+								</i>
+							</Button>
+						</div>
+					)}
+				</div>
+			)}
+		</>
+	);
+};
+
+export default StopDetails;
+
+function StopEditMode({
+	stop,
+	index,
+}: {
+	index: number;
+	stop: Types['Trip']['Stop']['Model'];
+}) {
 	const { setValue, watch } = useFormContext<IUseFromStopsData>();
+	const { isOpen, toggle: toggleExperienceModal } = useToggle();
 
 	useEffect(() => {
 		if (stop.experience) {
@@ -28,69 +83,55 @@ const StopDetails = ({ stop, icon, editMode, index }: IStopDetailsProps) => {
 		}
 	}, [stop]);
 
-	console.log('reactHookFormsMethods', watch());
+	const handleInputOnValueChange = (
+		stop: Types['Trip']['Stop']['Model'] | undefined
+	) => {
+		if (!stop) return;
+		setValue(`stops.${index}.address`, stop.address);
+		setValue(`stops.${index}.location`, stop.location);
+	};
+
+	const handleOnEditExperience = () => {
+		toggleExperienceModal();
+	};
 
 	return (
-		<>
-			<div
-				key={stop.address || 'No address found'}
-				className='flex w-full justify-start gap-2 rounded-2xl py-2'
-			>
-				<i className={`mt-2 w-8 ${icon === 'circle' ? 'scale-75' : ''}`}>
-					<Icon name={icon} className='fill-primary' />
-				</i>
+		<div className='relative w-full'>
+			<StopLocationInput
+				icon='grid-dots'
+				textContent={watch(`stops.${index}.address`) || stop.address}
+				title='Stop Location'
+				className='h-12'
+				onValueChange={handleInputOnValueChange}
+			/>
 
-				<div className='flex flex-col items-start gap-2'>
-					{!editMode ? (
-						<p className='font-semibold'>
-							{stop.address || 'No address found'}
-						</p>
-					) : (
-						<StopLocationInput
-							textContent={watch(`stops.${index}.address`) || stop.address}
-							title='Stop Location'
-							onValueChange={(stop) => {
-								if (!stop) return;
-								setValue(`stops.${index}.address`, stop.address);
-								setValue(`stops.${index}.location`, stop.location);
-							}}
+			{/* experience button */}
+			<div className='absolute bottom-0 right-0 top-0 flex gap-2 py-2 pr-2'>
+				<Button
+					className='flex items-center justify-center gap-1 rounded-xl py-1 text-sm font-semibold'
+					type='button'
+					onClick={handleOnEditExperience}
+					primary
+				>
+					{stop.experience
+						? `${stop.experience.type.charAt(0).toUpperCase()}${stop.experience.type.substring(1)}`
+						: 'Add Experience'}
+					<i>
+						<Icon
+							name={stop.experience?.type || 'plus'}
+							size='18'
+							className='fill-white'
 						/>
-					)}
-					{stop.experience && (
-						<Button
-							type='button'
-							onClick={() => {
-								if (!editMode) return;
-								toggle();
-							}}
-							className={`flex items-center justify-center gap-2 rounded-lg py-1`}
-							primary
-						>
-							<p className='text-white dark:text-dark'>
-								{stop.experience.type}
-							</p>
-							<IconType type={stop.experience.type} />
-						</Button>
-					)}
-				</div>
+					</i>
+				</Button>
 			</div>
-			<Modal open={isOpen} onBackdropClick={toggle} center>
+			<Modal open={isOpen} onBackdropClick={toggleExperienceModal} center>
 				<ExperienceForm
-					onCencel={() => toggle()}
-					onConfirm={() => toggle()}
+					onCencel={() => toggleExperienceModal()}
+					onConfirm={() => toggleExperienceModal()}
 					index={index}
 				/>
 			</Modal>
-		</>
-	);
-};
-
-export default StopDetails;
-
-export function IconType({ type }: { type: ExperienceType }) {
-	return (
-		<div>
-			<Icon size='20' className='fill-white dark:fill-dark' name={type} />
 		</div>
 	);
 }

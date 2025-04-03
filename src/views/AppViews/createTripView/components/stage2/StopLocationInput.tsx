@@ -23,6 +23,7 @@ interface IStopLocationInputProps {
 	icon?: IconName;
 	iconFill?: string;
 	textContent?: string;
+	className?: string;
 }
 
 export default function StopLocationInput({
@@ -30,6 +31,7 @@ export default function StopLocationInput({
 	icon,
 	onValueChange,
 	textContent = 'default',
+	className = '',
 }: IStopLocationInputProps) {
 	const [isAddressGeoLocationError, setIsAddressGeoLocationError] =
 		useState(false);
@@ -69,9 +71,10 @@ export default function StopLocationInput({
 
 	return (
 		<>
-			<div className='relative'>
+			<div className={`relative`}>
 				<Dropdown list={suggestions?.predictions}>
 					<DropdownTriggerElement<PlacePrediction>
+						className={className}
 						icon={loading ? 'spinner' : icon}
 						type='input'
 						iconFill={iconFill}

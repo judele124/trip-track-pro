@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from './ui/Button';
 import StopDetails, { IUseFromStopsData } from './StopDetails';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import Modal from './ui/Modal';
 
 interface ITripDetailsProps {
@@ -32,8 +32,6 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 		index: number,
 		stop: Types['Trip']['Stop']['Model']
 	) => {
-		console.log('index', index);
-
 		const newStops = [...stops];
 		newStops.splice(index, 0, stop);
 		setStops(newStops);
@@ -42,20 +40,25 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 	return (
 		<FormProvider handleSubmit={handleSubmit} {...reactHookFormsMethods}>
 			<form onSubmit={handleSubmit(onSubmit)}>
-				<div className='flex items-center gap-2'>
-					<h3>Stops</h3>
-					{
-						<Button
-							type={`${!editMode ? 'submit' : 'button'}`}
-							onClick={toggleEditMode}
-							className={`flex rounded-xl py-1`}
-							primary
-						>
-							{!editMode ? 'Edit' : 'Done'}
-							<Icon size='20' className='ml-2' name='edit' />
-						</Button>
-					}
+				<div className='mb-2 flex items-start justify-between'>
+					<h4>Stops</h4>
+					<Button
+						type={`${!editMode ? 'submit' : 'button'}`}
+						onClick={toggleEditMode}
+						className='flex justify-center gap-1 rounded-md px-2 py-1 text-sm font-normal text-white dark:text-dark'
+					>
+						{!editMode ? 'Edit' : 'Done'}
+						<i>
+							<Icon
+								size='17'
+								className='-mb-1 fill-white dark:fill-dark'
+								name='edit'
+							/>
+						</i>
+					</Button>
 				</div>
+
+				{/* stops */}
 				<div className='flex max-h-[50vh] flex-col gap-2 overflow-y-auto overflow-x-hidden'>
 					{stops.map((stop, i: number) => (
 						<div
@@ -73,13 +76,9 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 								}
 								editMode={editMode}
 							/>
-							{i == stops.length - 2 && editMode && (
-								<Button onClick={toggleAddStop} className='-ml-2 w-[73%]'>
-									add
-								</Button>
-							)}
 						</div>
 					))}
+					{editMode && <Button onClick={toggleAddStop}>add</Button>}
 				</div>
 			</form>
 			<Modal open={addStopIsOpen} onBackdropClick={toggleAddStop} center>

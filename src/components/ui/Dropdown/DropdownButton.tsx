@@ -9,6 +9,7 @@ interface IDropdownButtonProps {
 	autoFocus?: boolean;
 	onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 	iconFill?: string;
+	className?: string;
 }
 
 export default function DropdownButton({
@@ -17,6 +18,7 @@ export default function DropdownButton({
 	value,
 	autoFocus,
 	onClick,
+	className,
 }: IDropdownButtonProps) {
 	const buttonRef = useRef<HTMLButtonElement>(null);
 	const { toggle, isOpen } = useDropdown();
@@ -32,7 +34,7 @@ export default function DropdownButton({
 				toggle();
 				onClick?.(e);
 			}}
-			className='flex w-full items-center justify-start border-2 border-black bg-white text-dark'
+			className={`flex w-full items-center justify-start border-2 border-black bg-white text-dark ${className}`}
 			aria-haspopup='listbox'
 			aria-expanded={isOpen}
 		>

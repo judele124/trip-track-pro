@@ -56,6 +56,7 @@ export default function TripDetailsView() {
 							<h1 className='max-w-[70%] break-words capitalize'>
 								{tripData.name}
 							</h1>
+							{tripData.description && <p>{tripData.description}</p>}
 							<div className='mt-2 flex items-start gap-1'>
 								<TripStatusButton status={tripData.status} />
 								<RewardDetails

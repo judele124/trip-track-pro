@@ -9,6 +9,7 @@ type CommonDropdownTriggerElementProps<T> = {
 	autoFocus?: boolean;
 	icon?: IconName;
 	iconFill?: string;
+	className?: string;
 };
 
 type IDropdownTriggerElementProps<T> = CommonDropdownTriggerElementProps<T> &
@@ -35,6 +36,7 @@ export default function DropdownTriggerElement<T>({
 	autoFocus = false,
 	onChange,
 	onClick,
+	className = '',
 	...props
 }: IDropdownTriggerElementProps<T>) {
 	const { list, selectedIndex } = useDropdown<T>();
@@ -42,6 +44,7 @@ export default function DropdownTriggerElement<T>({
 	if (type === 'input') {
 		return (
 			<DropdownInput
+				className={className}
 				{...props}
 				icon={icon}
 				iconFill={iconFill}
@@ -54,6 +57,7 @@ export default function DropdownTriggerElement<T>({
 
 	return (
 		<DropdownButton
+			className={className}
 			value={value(list?.[selectedIndex])}
 			onClick={onClick}
 			autoFocus={autoFocus}

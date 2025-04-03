@@ -23,7 +23,9 @@ export type IconName =
 	| 'info'
 	| 'threeDots'
 	| 'vIcon'
-	| 'xIcon';
+	| 'xIcon'
+	| 'plus'
+	| 'grid-dots';
 
 interface IIconProps {
 	fill?: SVGAttributes<SVGSVGElement>['fill'];
@@ -41,6 +43,18 @@ export default function Icon({
 	className = '',
 }: IIconProps) {
 	const icons: Record<IconName, ReactElement<SVGSVGElement>> = {
+		plus: (
+			<svg
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
+				xmlns='http://www.w3.org/2000/svg'
+				viewBox='0 0 448 512'
+			>
+				<path d='M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z' />
+			</svg>
+		),
 		info: (
 			<svg
 				width={size}
@@ -360,6 +374,23 @@ export default function Icon({
 					strokeWidth='3'
 					d='M6 18 17.94 6M18 18 6.06 6'
 				/>
+			</svg>
+		),
+		'grid-dots': (
+			<svg
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
+				viewBox='0 0 111 177'
+				xmlns='http://www.w3.org/2000/svg'
+			>
+				<circle cx='20.5' cy='20.5' r='20.5' />
+				<circle cx='90.5' cy='20.5' r='20.5' />
+				<circle cx='20.5' cy='88.5' r='20.5' />
+				<circle cx='90.5' cy='88.5' r='20.5' />
+				<circle cx='20.5' cy='156.5' r='20.5' />
+				<circle cx='90.5' cy='156.5' r='20.5' />
 			</svg>
 		),
 	};
