@@ -58,7 +58,7 @@ const FirstEntryContent = () => {
 	);
 
 	return (
-		<div className='flex h-full w-full flex-col gap-4'>
+		<div className='flex grow flex-col gap-4 overflow-hidden'>
 			<p className='h-[64px] text-center text-lg font-semibold leading-tight'>
 				{renderText(firstEntryContentData[index].text)}
 			</p>

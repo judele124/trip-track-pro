@@ -90,7 +90,7 @@ export default function CreateTripForm({
 		<>
 			<FormProvider handleSubmit={handleSubmit} {...reactHookFormsMethods}>
 				<FormMultipleStages
-					className='flex flex-col gap-3'
+					className='flex grow flex-col gap-3 overflow-y-hidden'
 					onLastStageSubmit={handleSubmit(handleTripCreate)}
 					onMultipleStageSubmit={(e, { incrementStage }) => {
 						handleSubmit(() => {

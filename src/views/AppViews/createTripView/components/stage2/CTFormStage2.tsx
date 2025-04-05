@@ -16,8 +16,7 @@ export default function CTFormStage2() {
 	return (
 		<>
 			<ScrollableMiddleWTopBottom
-				top={null}
-				middle={
+				top={
 					<>
 						<div ref={containerRef} className='pb-4'>
 							{errors.stops && (
@@ -30,25 +29,27 @@ export default function CTFormStage2() {
 							<p className={`mb-1 pl-5 text-start font-semibold`}>First Stop</p>
 							<StopInput index={0} />
 						</div>
-						<>
-							{middleStopsCount > 0 && (
-								<p className={`mb-1 pl-5 text-start font-semibold`}>
-									Middle Stops
-								</p>
-							)}
-							<div
-								className={`flex max-h-[40vh] flex-col gap-2 ${middleStopsCount > 3 && 'overflow-y-scroll'}`}
-							>
-								{[...Array(middleStopsCount)].map((_, i) => (
-									<StopInput
-										onRemove={() => setMiddleStopsCount((prev) => prev - 1)}
-										isMiddleStop
-										index={i + 1}
-										key={i + 1}
-									/>
-								))}
-							</div>
-						</>
+						{middleStopsCount > 0 && (
+							<p className={`mb-1 pl-5 text-start font-semibold`}>
+								Middle Stops
+							</p>
+						)}
+					</>
+				}
+				middle={
+					<>
+						<div
+							className={`flex flex-col gap-2 ${middleStopsCount > 3 && 'overflow-y-scroll'}`}
+						>
+							{[...Array(middleStopsCount)].map((_, i) => (
+								<StopInput
+									onRemove={() => setMiddleStopsCount((prev) => prev - 1)}
+									isMiddleStop
+									index={i + 1}
+									key={i + 1}
+								/>
+							))}
+						</div>
 					</>
 				}
 				bottom={
