@@ -7,6 +7,8 @@ import StopLocationInput from '@/views/AppViews/createTripView/components/stage2
 import Button from './ui/Button';
 import { useEffect } from 'react';
 import ExperienceForm from '@/views/AppViews/createTripView/components/stage2/ExperienceForm';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface IStopDetailsProps {
 	stop: Types['Trip']['Stop']['Model'];
@@ -18,88 +20,99 @@ interface IStopDetailsProps {
 export interface IUseFromStopsData {
 	stops: Types['Trip']['Stop']['Model'][];
 }
+
 const StopDetails = ({ stop, icon, editMode, index }: IStopDetailsProps) => {
+	if (editMode) {
+		return <StopEditMode index={index} stop={stop} />;
+	}
+
 	return (
-		<>
-			{editMode ? (
-				<StopEditMode index={index} stop={stop} />
-			) : (
-				<div className='relative flex h-12 w-full items-center justify-start gap-2 rounded-2xl border-2 border-primary'>
-					{/* icon */}
-					<i
-						className={`ml-2 w-8 ${editMode || icon === 'circle' ? 'scale-75' : ''}`}
+		<div className='relative flex h-12 w-full items-center justify-start gap-2 rounded-2xl border-2 border-primary'>
+			{/* icon */}
+			<i
+				className={`ml-2 w-8 ${editMode || icon === 'circle' ? 'scale-75' : ''}`}
+			>
+				<Icon name={!editMode ? icon : 'grid-dots'} className='fill-primary' />
+			</i>
+
+			{/* address */}
+			<p className='overflow-hidden text-ellipsis text-nowrap'>
+				{stop.address || 'No address found'}
+			</p>
+
+			{/* experience button */}
+			{stop.experience && (
+				<div className='absolute bottom-0 right-0 top-0 flex gap-2 py-1.5 pr-1.5'>
+					<Button
+						className='flex items-center justify-center gap-1 rounded-xl py-1 text-sm font-semibold'
+						type='button'
+						primary
 					>
-						<Icon
-							name={!editMode ? icon : 'grid-dots'}
-							className='fill-primary'
-						/>
-					</i>
-
-					{/* address */}
-					<p className='overflow-hidden text-ellipsis text-nowrap'>
-						{stop.address || 'No address found'}
-					</p>
-
-					{/* experience button */}
-					{stop.experience && (
-						<div className='absolute bottom-0 right-0 top-0 flex gap-2 py-1.5 pr-1.5'>
-							<Button
-								className='flex items-center justify-center gap-1 rounded-xl py-1 text-sm font-semibold'
-								type='button'
-								primary
-							>
-								{`${stop.experience.type.charAt(0).toUpperCase()}${stop.experience.type.substring(1)}`}
-								<i>
-									<Icon
-										name={stop.experience.type}
-										size='18'
-										className='fill-white'
-									/>
-								</i>
-							</Button>
-						</div>
-					)}
+						{`${stop.experience.type.charAt(0).toUpperCase()}${stop.experience.type.substring(1)}`}
+						<i>
+							<Icon
+								name={stop.experience.type}
+								size='18'
+								className='fill-white'
+							/>
+						</i>
+					</Button>
 				</div>
 			)}
-		</>
+		</div>
 	);
 };
 
 export default StopDetails;
 
-function StopEditMode({
-	stop,
-	index,
-}: {
+interface IStopEditMode {
 	index: number;
-	stop: Types['Trip']['Stop']['Model'];
-}) {
+	stop: Types['Trip']['Stop']['Model'] | null;
+}
+
+function StopEditMode({ stop, index }: IStopEditMode) {
 	const { setValue, watch } = useFormContext<IUseFromStopsData>();
 	const { isOpen, toggle: toggleExperienceModal } = useToggle();
+	const { setNodeRef, attributes, transform, transition, listeners } =
+		useSortable({
+			id: index,
+		});
 
 	useEffect(() => {
-		if (stop.experience) {
-			setValue(`stops.${index}`, stop);
-		}
+		if (!stop?.experience) return;
+
+		setValue(`stops.${index}`, stop);
 	}, [stop]);
 
 	const handleInputOnValueChange = (
 		stop: Types['Trip']['Stop']['Model'] | undefined
 	) => {
 		if (!stop) return;
+
 		setValue(`stops.${index}.address`, stop.address);
 		setValue(`stops.${index}.location`, stop.location);
 	};
 
-	const handleOnEditExperience = () => {
-		toggleExperienceModal();
+	const handleOnEditExperience = () => toggleExperienceModal();
+
+	const style = {
+		transform: CSS.Translate.toString(transform),
+		transition,
 	};
 
 	return (
-		<div className='relative w-full'>
+		<div
+			{...listeners}
+			{...attributes}
+			ref={setNodeRef}
+			style={style}
+			className='relative w-full'
+		>
 			<StopLocationInput
 				icon='grid-dots'
-				textContent={watch(`stops.${index}.address`) || stop.address}
+				textContent={
+					watch(`stops.${index}.address`) || stop?.address || 'Enter address'
+				}
 				title='Stop Location'
 				className='h-12'
 				onValueChange={handleInputOnValueChange}
@@ -113,12 +126,12 @@ function StopEditMode({
 					onClick={handleOnEditExperience}
 					primary
 				>
-					{stop.experience
+					{stop?.experience
 						? `${stop.experience.type.charAt(0).toUpperCase()}${stop.experience.type.substring(1)}`
 						: 'Add Experience'}
 					<i>
 						<Icon
-							name={stop.experience?.type || 'plus'}
+							name={stop?.experience?.type || 'plus'}
 							size='18'
 							className='fill-white'
 						/>
