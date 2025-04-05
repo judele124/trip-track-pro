@@ -32,6 +32,7 @@ export default function StopLocationInput({
 	onValueChange,
 	textContent = 'default',
 	className = '',
+	...props
 }: IStopLocationInputProps) {
 	const [isAddressGeoLocationError, setIsAddressGeoLocationError] =
 		useState(false);

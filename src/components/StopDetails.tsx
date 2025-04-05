@@ -67,7 +67,7 @@ export default StopDetails;
 
 interface IStopEditMode {
 	index: number;
-	stop: Types['Trip']['Stop']['Model'] | null;
+	stop: Types['Trip']['Stop']['Model'];
 }
 
 function StopEditMode({ stop, index }: IStopEditMode) {
@@ -80,7 +80,6 @@ function StopEditMode({ stop, index }: IStopEditMode) {
 
 	useEffect(() => {
 		if (!stop?.experience) return;
-
 		setValue(`stops.${index}`, stop);
 	}, [stop]);
 
@@ -88,7 +87,6 @@ function StopEditMode({ stop, index }: IStopEditMode) {
 		stop: Types['Trip']['Stop']['Model'] | undefined
 	) => {
 		if (!stop) return;
-
 		setValue(`stops.${index}.address`, stop.address);
 		setValue(`stops.${index}.location`, stop.location);
 	};
@@ -110,9 +108,7 @@ function StopEditMode({ stop, index }: IStopEditMode) {
 		>
 			<StopLocationInput
 				icon='grid-dots'
-				textContent={
-					watch(`stops.${index}.address`) || stop?.address || 'Enter address'
-				}
+				textContent={watch(`stops.${index}.address`) || stop.address}
 				title='Stop Location'
 				className='h-12'
 				onValueChange={handleInputOnValueChange}
@@ -126,12 +122,12 @@ function StopEditMode({ stop, index }: IStopEditMode) {
 					onClick={handleOnEditExperience}
 					primary
 				>
-					{stop?.experience
+					{stop.experience
 						? `${stop.experience.type.charAt(0).toUpperCase()}${stop.experience.type.substring(1)}`
 						: 'Add Experience'}
 					<i>
 						<Icon
-							name={stop?.experience?.type || 'plus'}
+							name={stop.experience?.type || 'plus'}
 							size='18'
 							className='fill-white'
 						/>

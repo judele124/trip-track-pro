@@ -37,8 +37,11 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 
 	const tripIds = useMemo(() => stops.map((_, i) => i), [stops]);
 
+	console.log(reactHookFormsMethods.watch());
+	console.log(reactHookFormsMethods.formState.errors);
+
 	const onSubmit = (data: IUseFromStopsData) => {
-		reactHookFormsMethods.reset(data);
+		console.log(data);
 	};
 
 	const handleDragEnd = ({ over, active }: DragEndEvent) => {
@@ -52,15 +55,7 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 	};
 
 	const handleAddStop = () => {
-		setStops((prev) => [
-			...prev,
-			{
-				location: {
-					lon: 10,
-					lat: 10,
-				},
-			},
-		]);
+		setStops((prev) => [...prev, prev[prev.length - 1]]);
 	};
 
 	return (
@@ -71,8 +66,8 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 
 					{/* edit button */}
 					<Button
-						type={`${!editMode ? 'submit' : 'button'}`}
-						onClick={toggleEditMode}
+						type={editMode ? 'submit' : 'button'}
+						onClick={editMode ? () => null : toggleEditMode}
 						className='flex justify-center gap-1 rounded-md px-2 py-1 text-sm font-normal text-white dark:text-dark'
 					>
 						{!editMode ? 'Edit' : 'Done'}

@@ -1,9 +1,9 @@
-import { MouseEvent, useEffect, useRef } from 'react';
+import { HTMLAttributes, MouseEvent, useEffect, useRef } from 'react';
 import Button from '../Button';
 import { useDropdown } from './Dropdown';
 import Icon, { IconName } from '@/components/icons/Icon';
 
-interface IDropdownButtonProps {
+interface IDropdownButtonProps extends HTMLAttributes<HTMLButtonElement> {
 	icon?: IconName;
 	value: string;
 	autoFocus?: boolean;
@@ -19,6 +19,7 @@ export default function DropdownButton({
 	autoFocus,
 	onClick,
 	className,
+	...props
 }: IDropdownButtonProps) {
 	const buttonRef = useRef<HTMLButtonElement>(null);
 	const { toggle, isOpen } = useDropdown();
@@ -37,6 +38,7 @@ export default function DropdownButton({
 			className={`flex w-full items-center justify-start border-2 border-black bg-white text-dark ${className}`}
 			aria-haspopup='listbox'
 			aria-expanded={isOpen}
+			{...props}
 		>
 			{icon && (
 				<div className='absolute left-3 top-1/2 -translate-y-1/2'>
