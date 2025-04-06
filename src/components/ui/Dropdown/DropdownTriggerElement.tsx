@@ -11,6 +11,7 @@ type CommonDropdownTriggerElementProps<T> = {
 	iconFill?: string;
 	className?: string;
 	iconContainerAttributes?: HTMLAttributes<HTMLDivElement>;
+	setNodeRef: (node: HTMLInputElement | HTMLButtonElement) => void;
 };
 
 type IDropdownTriggerElementProps<T> = CommonDropdownTriggerElementProps<T> &
@@ -39,6 +40,7 @@ export default function DropdownTriggerElement<T>({
 	onClick,
 	className = '',
 	iconContainerAttributes,
+	setNodeRef,
 	...props
 }: IDropdownTriggerElementProps<T>) {
 	const { list, selectedIndex } = useDropdown<T>();
@@ -46,6 +48,7 @@ export default function DropdownTriggerElement<T>({
 	if (type === 'input') {
 		return (
 			<DropdownInput
+				setNodeRef={setNodeRef}
 				className={className}
 				{...props}
 				icon={icon}

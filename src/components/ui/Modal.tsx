@@ -56,6 +56,7 @@ const Modal: FC<ModalProps> = ({
 	const [positions, setPositions] = useState([0, 0, 0, 0]);
 	const childrenRef = useRef<HTMLDivElement>(null);
 	const backgroundRef = useRef<HTMLDivElement>(null);
+	console.log(positions);
 
 	useEffect(() => {
 		if (center || !anchorElement?.current || !childrenRef.current || !open)

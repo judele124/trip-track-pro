@@ -1,31 +1,22 @@
 import Icon, { IconName } from '../../../../components/icons/Icon';
 import { Types } from 'trip-track-package';
 import Button from '../../../../components/ui/Button';
-import StopEditMode from './StopEditMode';
 
 interface IStopDetailsProps {
 	stop: Types['Trip']['Stop']['Model'];
 	icon: IconName;
-	editMode?: boolean;
-	index: number;
 }
 
 export interface IUseFromStopsData {
 	stops: Types['Trip']['Stop']['Model'][];
 }
 
-const StopDetails = ({ stop, icon, editMode, index }: IStopDetailsProps) => {
-	if (editMode) {
-		return <StopEditMode index={index} stop={stop} />;
-	}
-
+const StopDetails = ({ stop, icon }: IStopDetailsProps) => {
 	return (
 		<div className='relative flex h-12 w-full items-center justify-start gap-2 rounded-2xl border-2 border-primary'>
 			{/* icon */}
-			<i
-				className={`ml-2 w-8 ${editMode || icon === 'circle' ? 'scale-75' : ''}`}
-			>
-				<Icon name={!editMode ? icon : 'grid-dots'} className='fill-primary' />
+			<i className={`ml-2 w-8 ${icon === 'circle' ? 'scale-75' : ''}`}>
+				<Icon name={icon} className='fill-primary' />
 			</i>
 
 			{/* address */}

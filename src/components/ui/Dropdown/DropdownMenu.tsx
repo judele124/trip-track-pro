@@ -1,6 +1,7 @@
 import DropdownMenuItem from './DropdownMenuItem';
 import { useDropdown } from './Dropdown';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, RefObject, useEffect } from 'react';
+import Modal from '../Modal';
 
 export type RenderItem<T> = ({
 	isSelected,
@@ -13,11 +14,13 @@ export type RenderItem<T> = ({
 interface IDropdownMenuProps<T> {
 	renderItem: RenderItem<T>;
 	setSelected: (item: T) => void;
+	anchorElement: RefObject<HTMLElement>;
 }
 
 export default function DropdownMenu<T>({
 	renderItem,
 	setSelected,
+	anchorElement,
 }: IDropdownMenuProps<T>) {
 	const {
 		selectedIndex,
@@ -68,21 +71,29 @@ export default function DropdownMenu<T>({
 	if (!list || !list.length || !isOpen) return null;
 
 	return (
-		<ul
-			onMouseOver={(e) => e.stopPropagation()}
-			className='absolute top-14 z-50 max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
-			role='listbox'
+		<Modal
+			containerClassName='w-auto'
+			open
+			anchorElement={anchorElement}
+			anchorTo='bottom'
 		>
-			{list.map((item, i) => (
-				<DropdownMenuItem
-					item={item}
-					renderItem={renderItem}
-					isSelected={selectedIndex === i}
-					isSuggested={i === suggestedIndex}
-					i={i}
-					key={i}
-				/>
-			))}
-		</ul>
+			<ul
+				style={{ left: 0, right: 0 }}
+				onMouseOver={(e) => e.stopPropagation()}
+				className='absolute top-14 z-50 max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
+				role='listbox'
+			>
+				{list.map((item, i) => (
+					<DropdownMenuItem
+						item={item}
+						renderItem={renderItem}
+						isSelected={selectedIndex === i}
+						isSuggested={i === suggestedIndex}
+						i={i}
+						key={i}
+					/>
+				))}
+			</ul>
+		</Modal>
 	);
 }
