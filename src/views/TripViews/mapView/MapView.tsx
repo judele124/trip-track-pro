@@ -7,6 +7,7 @@ import GeneralMarker from './components/GeneralMarker';
 import UserMarker from './components/UserMarker';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
+import DirectionComponent from './components/DirectionComponent';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
@@ -18,13 +19,16 @@ export default function MapView() {
 	});
 
 	const points = useMemo(
-		() => trip?.stops.map((stop) => stop.location) || [],
-		[trip]
+		() =>
+			userLocation
+				? [userLocation, ...(trip?.stops.map((stop) => stop.location) || [])]
+				: [],
+		[trip, userLocation]
 	);
 
 	const { routeData } = useMapboxDirectionRoute({
 		points,
-		runGetDirectionsRoute: !tripRoute,
+		runGetDirectionsRoute: !tripRoute && !!userLocation,
 	});
 
 	useEffect(() => {
@@ -52,6 +56,7 @@ export default function MapView() {
 					);
 				})}
 			</Map>
+			<DirectionComponent userLocation={userLocation} routeData={tripRoute} />
 		</div>
 	);
 }

@@ -27,7 +27,7 @@ export const useMapboxDirectionRoute = ({
 		const getDirectionsRoute = (points: IUseMapRoute['points']) => {
 			const coords = points.map((p) => `${p.lon},${p.lat}`).join(';');
 			activate({
-				url: `https://api.mapbox.com/directions/v5/mapbox/walking/${coords}?geometries=geojson&access_token=${mapboxgl.accessToken}&steps=true&overview=full`,
+				url: `https://api.mapbox.com/directions/v5/mapbox/walking/${coords}?geometries=geojson&access_token=${mapboxgl.accessToken}&steps=true&overview=full&language=${navigator.language}`,
 				method: 'GET',
 				withCredentials: false,
 			});
