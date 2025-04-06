@@ -1,6 +1,6 @@
 import Icon from '@/components/icons/Icon';
 import MapModal from '@/components/MapModal';
-import TripDetailsStops from '@/components/TripDetailsStops';
+import TripDetailsStops from '@/views/AppViews/TripDetailsView/components/TripDetailsStops';
 import Button from '@/components/ui/Button';
 import useAxios from '@/hooks/useAxios';
 import useToggle from '@/hooks/useToggle';

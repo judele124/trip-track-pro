@@ -24,7 +24,7 @@ type ModalAnchor =
 type CommonProps = {
 	backgroundClassname?: string;
 	open: boolean;
-	onBackdropClick: (e: MouseEvent<HTMLDivElement>) => void;
+	onBackdropClick?: (e: MouseEvent<HTMLDivElement>) => void;
 	children?: ReactNode;
 	containerClassName?: string;
 };
@@ -188,7 +188,7 @@ const Modal: FC<ModalProps> = ({
 			ref={backgroundRef}
 			onClick={(e) => {
 				e.stopPropagation();
-				onBackdropClick(e);
+				onBackdropClick?.(e);
 			}}
 			className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
 		>

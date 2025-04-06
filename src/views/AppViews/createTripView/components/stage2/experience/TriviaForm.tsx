@@ -85,6 +85,11 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
 
 	return (
 		<>
+			{experienceDataErrors &&
+			'message' in experienceDataErrors &&
+			experienceDataErrors.message ? (
+				<InputFeildError message={'Please fill out the fields'} />
+			) : null}
 			{experienceDataErrors?.question && (
 				<InputFeildError
 					message={experienceDataErrors?.question?.message as string}

@@ -17,14 +17,15 @@ export default function StopInput({
 	onRemove,
 	isMiddleStop,
 }: IStopInputProps) {
-	const { setValue, resetField } = useFormContext<Types['Trip']['Model']>();
+	const { setValue, resetField, watch } =
+		useFormContext<Types['Trip']['Model']>();
 	const {
 		isOpen: isModalOpan,
 		setIsOpen: setIsModalOpen,
 		toggle: toggleModal,
 	} = useToggle();
 	const { isOpen: showBtn, setIsOpen: setShowBtn } = useToggle();
-
+	const stopExperience = watch(`stops.${index}.experience`);
 	return (
 		<div className='relative'>
 			<StopLocationInput
@@ -51,7 +52,9 @@ export default function StopInput({
 						onClick={() => toggleModal()}
 						primary
 					>
-						Add Experience
+						{stopExperience?.type
+							? `${stopExperience.type.charAt(0).toUpperCase()}${stopExperience.type.substring(1)}`
+							: 'Add Experience'}
 					</Button>
 				)}
 				{isMiddleStop && (
@@ -70,8 +73,7 @@ export default function StopInput({
 				containerClassName='w-full'
 			>
 				<ExperienceForm
-					onCencel={() => setIsModalOpen(false)}
-					onConfirm={() => setIsModalOpen(false)}
+					closeModal={() => setIsModalOpen(false)}
 					index={index}
 				/>
 			</Modal>

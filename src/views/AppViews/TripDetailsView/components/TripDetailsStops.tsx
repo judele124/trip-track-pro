@@ -1,9 +1,9 @@
-import Icon from './icons/Icon';
+import Icon from '../../../../components/icons/Icon';
 import useToggle from '@/hooks/useToggle';
 import { Schemas, Types } from 'trip-track-package';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Button from './ui/Button';
+import Button from '../../../../components/ui/Button';
 import StopDetails, { IUseFromStopsData } from './StopDetails';
 import { useEffect, useMemo, useState } from 'react';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
@@ -13,7 +13,7 @@ import {
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import ScrollableMiddleWTopBottom from './ScrollableMiddleWTopBottom';
+import ScrollableMiddleWTopBottom from '../../../../components/ScrollableMiddleWTopBottom';
 
 interface ITripDetailsProps {
 	tripStops: Types['Trip']['Stop']['Model'][];
@@ -36,21 +36,23 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 		reactHookFormsMethods.setValue('stops', stops);
 	}, [stops]);
 
-	const tripIds = useMemo(() => stops.map((_, i) => i), [stops]);
+	const formStops = reactHookFormsMethods.watch('stops') || [];
+
+	const tripIds = useMemo(() => formStops.map((_, i) => i), [formStops]);
 
 	const onSubmit = (data: IUseFromStopsData) => {
-		console.log(data);
-		console.log(tripStops);
+		console.log('update submited', data);
 	};
 
 	const handleDragEnd = ({ over, active }: DragEndEvent) => {
-		setStops((prevStops) => {
-			if (!over) return prevStops;
+		if (!over) return;
 
-			const oldIndex = prevStops.findIndex((_, i) => i === active.id);
-			const newIndex = prevStops.findIndex((_, i) => i === over.id);
-			return arrayMove(prevStops, oldIndex, newIndex);
-		});
+		const oldIndex = formStops.findIndex((_, i) => i === active.id);
+		const newIndex = formStops.findIndex((_, i) => i === over.id);
+		reactHookFormsMethods.setValue(
+			'stops',
+			arrayMove(formStops, oldIndex, newIndex)
+		);
 	};
 
 	const handleAddStop = () => {
@@ -96,7 +98,7 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 							top={null}
 							middle={
 								<div className='flex flex-col gap-2 overflow-x-clip overflow-y-visible'>
-									{stops.map((stop, i: number) => (
+									{formStops.map((stop, i: number) => (
 										<StopDetails
 											index={i}
 											key={`${stop.location.lon}-${stop.location.lat}-${i}`}
