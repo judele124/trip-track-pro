@@ -45,7 +45,7 @@ export default function TripDetailsView() {
 
 	return (
 		<>
-			<div className='page-colors mx-auto flex h-full max-w-[400px] flex-col gap-4'>
+			<div className='page-colors mx-auto flex h-full max-w-[400px] flex-col gap-4 overflow-hidden'>
 				{loading && <Icon name='spinner' />}
 				{error && status && (
 					<p className='text-res-500'>{getErrorMessage(status)}</p>

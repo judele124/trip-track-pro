@@ -99,19 +99,17 @@ function StopEditMode({ stop, index }: IStopEditMode) {
 	};
 
 	return (
-		<div
-			{...listeners}
-			{...attributes}
-			ref={setNodeRef}
-			style={style}
-			className='relative w-full'
-		>
+		<div ref={setNodeRef} style={style} className='relative w-full'>
 			<StopLocationInput
 				icon='grid-dots'
 				textContent={watch(`stops.${index}.address`) || stop.address}
 				title='Stop Location'
 				className='h-12'
 				onValueChange={handleInputOnValueChange}
+				triggerElementIconAttributes={{
+					...listeners,
+					...attributes,
+				}}
 			/>
 
 			{/* experience button */}

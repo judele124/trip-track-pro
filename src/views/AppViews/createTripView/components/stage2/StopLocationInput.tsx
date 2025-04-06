@@ -5,7 +5,7 @@ import {
 	PlacePrediction,
 	useAddressSugestions,
 } from '@/hooks/useAddressSuggestions';
-import { useEffect, useState } from 'react';
+import { HTMLAttributes, useEffect, useState } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import axios from 'axios';
 import { API_BASE_URL } from '@/env.config';
@@ -24,6 +24,7 @@ interface IStopLocationInputProps {
 	iconFill?: string;
 	textContent?: string;
 	className?: string;
+	triggerElementIconAttributes?: HTMLAttributes<HTMLDivElement>;
 }
 
 export default function StopLocationInput({
@@ -32,7 +33,7 @@ export default function StopLocationInput({
 	onValueChange,
 	textContent = 'default',
 	className = '',
-	...props
+	triggerElementIconAttributes,
 }: IStopLocationInputProps) {
 	const [isAddressGeoLocationError, setIsAddressGeoLocationError] =
 		useState(false);
@@ -81,6 +82,7 @@ export default function StopLocationInput({
 						iconFill={iconFill}
 						elemTextContent={(item) => item?.description || textContent}
 						onChange={(e) => setInputValue(e.target.value)}
+						iconContainerAttributes={triggerElementIconAttributes}
 					/>
 					<DropdownMenu<PlacePrediction>
 						setSelected={handleAddressSelection}

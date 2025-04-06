@@ -10,6 +10,7 @@ interface IDropdownButtonProps extends HTMLAttributes<HTMLButtonElement> {
 	onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 	iconFill?: string;
 	className?: string;
+	iconContainerAttributes?: HTMLAttributes<HTMLDivElement>;
 }
 
 export default function DropdownButton({
@@ -19,6 +20,7 @@ export default function DropdownButton({
 	autoFocus,
 	onClick,
 	className,
+	iconContainerAttributes,
 	...props
 }: IDropdownButtonProps) {
 	const buttonRef = useRef<HTMLButtonElement>(null);
@@ -41,7 +43,10 @@ export default function DropdownButton({
 			{...props}
 		>
 			{icon && (
-				<div className='absolute left-3 top-1/2 -translate-y-1/2'>
+				<div
+					{...iconContainerAttributes}
+					className='absolute left-3 top-1/2 -translate-y-1/2'
+				>
 					<Icon fill={iconFill} name={icon} />
 				</div>
 			)}

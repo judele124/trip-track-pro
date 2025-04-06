@@ -13,6 +13,7 @@ import {
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import ScrollableMiddleWTopBottom from './ScrollableMiddleWTopBottom';
 
 interface ITripDetailsProps {
 	tripStops: Types['Trip']['Stop']['Model'][];
@@ -37,11 +38,9 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 
 	const tripIds = useMemo(() => stops.map((_, i) => i), [stops]);
 
-	console.log(reactHookFormsMethods.watch());
-	console.log(reactHookFormsMethods.formState.errors);
-
 	const onSubmit = (data: IUseFromStopsData) => {
 		console.log(data);
+		console.log(tripStops);
 	};
 
 	const handleDragEnd = ({ over, active }: DragEndEvent) => {
@@ -60,7 +59,10 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 
 	return (
 		<FormProvider handleSubmit={handleSubmit} {...reactHookFormsMethods}>
-			<form onSubmit={handleSubmit(onSubmit)}>
+			<form
+				className='flex grow flex-col overflow-hidden'
+				onSubmit={handleSubmit(onSubmit)}
+			>
 				<div className='mb-2 flex items-start justify-between'>
 					<h4>Stops</h4>
 
@@ -82,32 +84,43 @@ const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
 				</div>
 
 				{/* stops */}
-				<div className='flex max-h-[50vh] flex-col gap-2 overflow-y-auto overflow-x-hidden'>
-					<DndContext
-						modifiers={[restrictToVerticalAxis]}
-						onDragEnd={handleDragEnd}
+				<DndContext
+					modifiers={[restrictToVerticalAxis]}
+					onDragEnd={handleDragEnd}
+				>
+					<SortableContext
+						strategy={verticalListSortingStrategy}
+						items={tripIds}
 					>
-						<SortableContext
-							strategy={verticalListSortingStrategy}
-							items={tripIds}
-						>
-							{stops.map((stop, i: number) => (
-								<StopDetails
-									index={i}
-									key={`${stop.location.lon}-${stop.location.lat}-${i}`}
-									stop={stop}
-									icon={
-										(i == 0 && 'location') ||
-										(i == stops.length - 1 && 'flag') ||
-										'circle'
-									}
-									editMode={editMode}
-								/>
-							))}
-						</SortableContext>
-					</DndContext>
-					{editMode && <Button onClick={handleAddStop}>add stop</Button>}
-				</div>
+						<ScrollableMiddleWTopBottom
+							top={null}
+							middle={
+								<div className='flex flex-col gap-2 overflow-x-clip overflow-y-visible'>
+									{stops.map((stop, i: number) => (
+										<StopDetails
+											index={i}
+											key={`${stop.location.lon}-${stop.location.lat}-${i}`}
+											stop={stop}
+											icon={
+												(i == 0 && 'location') ||
+												(i == stops.length - 1 && 'flag') ||
+												'circle'
+											}
+											editMode={editMode}
+										/>
+									))}
+								</div>
+							}
+							bottom={
+								editMode && (
+									<Button className='mt-2 w-full' onClick={handleAddStop}>
+										add stop
+									</Button>
+								)
+							}
+						/>
+					</SortableContext>
+				</DndContext>
 			</form>
 		</FormProvider>
 	);

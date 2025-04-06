@@ -70,7 +70,7 @@ export default function DropdownMenu<T>({
 	return (
 		<ul
 			onMouseOver={(e) => e.stopPropagation()}
-			className='absolute top-14 z-10 max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
+			className='absolute top-14 z-50 max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
 			role='listbox'
 		>
 			{list.map((item, i) => (

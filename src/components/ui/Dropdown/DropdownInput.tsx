@@ -1,5 +1,6 @@
 import {
 	ChangeEvent,
+	HTMLAttributes,
 	InputHTMLAttributes,
 	KeyboardEvent,
 	useEffect,
@@ -15,6 +16,7 @@ interface IDropdownInputProps extends InputHTMLAttributes<HTMLInputElement> {
 	value: string;
 	autoFocus: boolean;
 	iconFill?: string;
+	iconContainerAttributes?: HTMLAttributes<HTMLDivElement>;
 }
 
 export default function DropdownInput({
@@ -23,6 +25,7 @@ export default function DropdownInput({
 	autoFocus,
 	onChange,
 	iconFill,
+	iconContainerAttributes,
 	...props
 }: IDropdownInputProps) {
 	const { open, isOpen, resetSelectedIndex } = useDropdown();
@@ -41,6 +44,7 @@ export default function DropdownInput({
 	return (
 		<div className='relative'>
 			<Input
+				iconContainerAttributes={iconContainerAttributes}
 				iconFill={iconFill}
 				ref={inputRef}
 				icon={icon}
@@ -59,6 +63,7 @@ export default function DropdownInput({
 					if (e.key === 'Backspace') {
 						resetSelectedIndex();
 					}
+					props.onKeyDown?.(e);
 				}}
 				aria-haspopup='listbox'
 				aria-expanded={isOpen}
