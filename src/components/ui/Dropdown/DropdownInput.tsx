@@ -67,6 +67,7 @@ export default function DropdownInput({
 				}}
 				aria-haspopup='listbox'
 				aria-expanded={isOpen}
+				onBlur={() => setInputValue(value)}
 				{...props}
 			/>
 		</div>
