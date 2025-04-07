@@ -27,9 +27,8 @@ export default function TripCancelledMessage({
 
 	return (
 		<Modal open={isOpen} center onBackdropClick={() => onClose?.()}>
-			<div className='page-colors flex max-w-[400px] flex-col items-center gap-4 rounded-2xl p-6 text-center'>
+			<div className='page-colors flex w-[90vw] max-w-[400px] flex-col items-center gap-4 rounded-2xl p-6 text-center'>
 				<h2 className='text-xl font-semibold'>Trip Cancelled</h2>
-
 				<div className='flex flex-col gap-2'>
 					{isCreator ? (
 						<p className='text-sm'>You have cancelled the trip.</p>
