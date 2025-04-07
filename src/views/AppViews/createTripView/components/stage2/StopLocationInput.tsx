@@ -44,8 +44,6 @@ export default function StopLocationInput({
 		query: debouncedInputValue,
 	});
 
-	const triggerElementRef = useRef<HTMLElement | null>(null);
-
 	const getGeoLocationFromAddress = async (
 		address: string
 	): Promise<GoogleGeocodeResults['geometry']['location']> => {
@@ -78,7 +76,6 @@ export default function StopLocationInput({
 			<div className={`relative`}>
 				<Dropdown list={suggestions?.predictions}>
 					<DropdownTriggerElement<PlacePrediction>
-						setNodeRef={(node) => (triggerElementRef.current = node)}
 						className={className}
 						icon={loading ? 'spinner' : icon}
 						type='input'
@@ -88,7 +85,6 @@ export default function StopLocationInput({
 						iconContainerAttributes={triggerElementIconAttributes}
 					/>
 					<DropdownMenu<PlacePrediction>
-						anchorElement={triggerElementRef}
 						setSelected={handleAddressSelection}
 						renderItem={({ item }) => <div>{item.description}</div>}
 					/>

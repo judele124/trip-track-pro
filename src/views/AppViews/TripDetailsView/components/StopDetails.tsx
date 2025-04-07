@@ -1,6 +1,7 @@
 import Icon, { IconName } from '../../../../components/icons/Icon';
 import { Types } from 'trip-track-package';
 import Button from '../../../../components/ui/Button';
+import { wordToCamelcase } from '@/utils/functions';
 
 interface IStopDetailsProps {
 	stop: Types['Trip']['Stop']['Model'];
@@ -32,7 +33,7 @@ const StopDetails = ({ stop, icon }: IStopDetailsProps) => {
 						type='button'
 						primary
 					>
-						{`${stop.experience.type.charAt(0).toUpperCase()}${stop.experience.type.substring(1)}`}
+						{`${wordToCamelcase(stop.experience.type)}`}
 						<i>
 							<Icon
 								name={stop.experience.type}

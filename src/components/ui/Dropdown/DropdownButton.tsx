@@ -23,8 +23,8 @@ export default function DropdownButton({
 	iconContainerAttributes,
 	...props
 }: IDropdownButtonProps) {
-	const buttonRef = useRef<HTMLButtonElement>(null);
-	const { toggle, isOpen } = useDropdown();
+	const buttonRef = useRef<HTMLButtonElement | null>(null);
+	const { toggle, isOpen, triggerElementRef } = useDropdown();
 
 	useEffect(() => {
 		if (autoFocus) buttonRef.current?.focus();
@@ -32,7 +32,11 @@ export default function DropdownButton({
 
 	return (
 		<Button
-			ref={buttonRef}
+			ref={(node) => {
+				if (!node) return;
+				triggerElementRef.current = node;
+				buttonRef.current = node;
+			}}
 			onClick={(e) => {
 				toggle();
 				onClick?.(e);

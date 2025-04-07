@@ -9,6 +9,7 @@ import { IUseFromStopsData } from './StopDetails';
 import useToggle from '@/hooks/useToggle';
 import { Types } from 'trip-track-package';
 import { CSS } from '@dnd-kit/utilities';
+import { wordToCamelcase } from '@/utils/functions';
 
 interface IStopEditMode {
 	index: number;
@@ -20,7 +21,7 @@ export default function StopEditMode({ stop, index }: IStopEditMode) {
 	const { isOpen, toggle: toggleExperienceModal } = useToggle();
 	const { setNodeRef, attributes, transform, transition, listeners } =
 		useSortable({
-			id: index,
+			id: `${stop.location.lat}-${stop.location.lon}-${index}`,
 		});
 
 	const handleInputOnValueChange = (
@@ -61,7 +62,7 @@ export default function StopEditMode({ stop, index }: IStopEditMode) {
 					primary
 				>
 					{stop.experience?.type
-						? `${stop.experience.type.charAt(0).toUpperCase()}${stop.experience.type.substring(1)}`
+						? `${wordToCamelcase(stop.experience.type)}`
 						: 'Add Experience'}
 					<i>
 						<Icon

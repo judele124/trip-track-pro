@@ -17,7 +17,6 @@ interface IDropdownInputProps extends InputHTMLAttributes<HTMLInputElement> {
 	autoFocus: boolean;
 	iconFill?: string;
 	iconContainerAttributes?: HTMLAttributes<HTMLDivElement>;
-	setNodeRef?: (node: HTMLInputElement) => void;
 }
 
 export default function DropdownInput({
@@ -27,10 +26,9 @@ export default function DropdownInput({
 	onChange,
 	iconFill,
 	iconContainerAttributes,
-	setNodeRef,
 	...props
 }: IDropdownInputProps) {
-	const { open, isOpen, resetSelectedIndex } = useDropdown();
+	const { isOpen, resetSelectedIndex, triggerElementRef } = useDropdown();
 	const [inputValue, setInputValue] = useState(value || '');
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -51,7 +49,7 @@ export default function DropdownInput({
 				ref={(node) => {
 					if (!node) return;
 					inputRef.current = node;
-					setNodeRef?.(node);
+					triggerElementRef.current = node;
 				}}
 				icon={icon}
 				value={inputValue}

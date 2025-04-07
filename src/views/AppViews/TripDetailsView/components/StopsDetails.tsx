@@ -7,11 +7,13 @@ import Icon from '@/components/icons/Icon';
 interface IStopsDetailsProps {
 	stops: Types['Trip']['Stop']['Model'][];
 	toggleEditMode: () => void;
+	isCreator: boolean;
 }
 
 export default function StopsDetails({
 	stops,
 	toggleEditMode,
+	isCreator,
 }: IStopsDetailsProps) {
 	return (
 		<ScrollableMiddleWTopBottom
@@ -20,27 +22,28 @@ export default function StopsDetails({
 					<h4>Stops</h4>
 
 					{/* edit button */}
-					<Button
-						type={'button'}
-						onClick={toggleEditMode}
-						className='flex justify-center gap-1 rounded-md px-2 py-1 text-sm font-normal text-white dark:text-dark'
-					>
-						Edit stops
-						<i>
-							<Icon
-								size='17'
-								className='-mb-1 fill-white dark:fill-dark'
-								name='edit'
-							/>
-						</i>
-					</Button>
+					{isCreator && (
+						<Button
+							type={'button'}
+							onClick={toggleEditMode}
+							className='flex justify-center gap-1 rounded-md px-2 py-1 text-sm font-normal text-white dark:text-dark'
+						>
+							Edit stops
+							<i>
+								<Icon
+									size='17'
+									className='-mb-1 fill-white dark:fill-dark'
+									name='edit'
+								/>
+							</i>
+						</Button>
+					)}
 				</div>
 			}
 			middle={
 				<div className='flex flex-col gap-2 overflow-x-clip overflow-y-visible'>
 					{stops.map((stop, i: number) => (
 						<StopDetails
-							index={i}
 							key={`${stop.location.lon}-${stop.location.lat}-${i}`}
 							stop={stop}
 							icon={

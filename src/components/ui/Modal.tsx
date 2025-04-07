@@ -28,7 +28,7 @@ type CommonProps = {
 	children?: ReactNode;
 	containerClassName?: string;
 	containerStyles?: CSSProperties;
-	modalContainer?: Element | DocumentFragment;
+	backdropBlur?: 'none' | 'sm' | '0' | 'lg';
 };
 
 type ModalProps = CommonProps &
@@ -55,7 +55,7 @@ const Modal: FC<ModalProps> = ({
 	containerClassName = '',
 	children,
 	containerStyles,
-	modalContainer,
+	backdropBlur = 'sm',
 }) => {
 	const [positions, setPositions] = useState([0, 0, 0, 0]);
 	const childrenRef = useRef<HTMLDivElement>(null);
@@ -195,7 +195,7 @@ const Modal: FC<ModalProps> = ({
 				e.stopPropagation();
 				onBackdropClick?.(e);
 			}}
-			className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
+			className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-${backdropBlur} transition-opacity duration-150 ${backgroundClassname}`}
 		>
 			<div
 				className={`relative w-fit ${containerClassName}`}

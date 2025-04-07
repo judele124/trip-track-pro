@@ -1,5 +1,6 @@
 import { API_BASE_URL } from '@/env.config';
 import { UseAxiosResponse } from '@/hooks/useAxios';
+import { Trip } from '@/types/trip';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { ServiceError } from '@/utils/ServiceError';
 import { Types } from 'trip-track-package';
@@ -44,6 +45,22 @@ export const tripGet = async (
 		url: `${API_BASE_URL}/trip/${id}`,
 		method: 'get',
 	});
+
+	return { data, status };
+};
+
+export const tripUpdate = async (
+	activate: UseAxiosResponse['activate'],
+	id: string,
+	tripData: Partial<Trip>
+) => {
+	const { data, status } = await activate({
+		url: `${API_BASE_URL}/trip/${id}`,
+		method: 'PUT',
+		data: tripData,
+	});
+	console.log(tripData);
+	console.log(data);
 
 	return { data, status };
 };

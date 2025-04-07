@@ -9,7 +9,8 @@ import { ExperienceType, Types } from 'trip-track-package';
 import InputFeildError from '@/components/ui/InputFeildError';
 import InfoForm from './experience/InfoForm';
 import Icon from '@/components/icons/Icon';
-import { FormEvent, useRef } from 'react';
+import { FormEvent } from 'react';
+import { wordToCamelcase } from '@/utils/functions';
 
 interface IExperienceFormProps {
 	index: number;
@@ -25,10 +26,6 @@ const ExperienceForm = ({ index, closeModal }: IExperienceFormProps) => {
 		trigger,
 		formState: { errors },
 	} = useFormContext<Types['Trip']['Model']>();
-
-	const dropdownButtonRef = useRef<HTMLInputElement | HTMLButtonElement | null>(
-		null
-	);
 
 	const validateExperience = async () => {
 		if (
@@ -86,14 +83,12 @@ const ExperienceForm = ({ index, closeModal }: IExperienceFormProps) => {
 				list={experienceTypeValues}
 			>
 				<DropdownTriggerElement<ExperienceType>
-					setNodeRef={(node) => {
-						dropdownButtonRef.current = node;
-					}}
 					type='button'
-					elemTextContent={(item) => item?.toString() || 'Select Experience'}
+					elemTextContent={(item) =>
+						item ? wordToCamelcase(item.toString()) : 'Select Experience'
+					}
 				/>
 				<DropdownMenu<ExperienceType>
-					anchorElement={dropdownButtonRef}
 					setSelected={(item) => {
 						if (item === selectedExperienceType) return;
 
@@ -105,7 +100,7 @@ const ExperienceForm = ({ index, closeModal }: IExperienceFormProps) => {
 							}
 						});
 					}}
-					renderItem={({ item }) => <div>{item}</div>}
+					renderItem={({ item }) => <div>{wordToCamelcase(item)}</div>}
 				/>
 			</Dropdown>
 

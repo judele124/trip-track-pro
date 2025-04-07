@@ -1,6 +1,6 @@
 import DropdownMenuItem from './DropdownMenuItem';
 import { useDropdown } from './Dropdown';
-import { ReactNode, RefObject, useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import Modal from '../Modal';
 
 export type RenderItem<T> = ({
@@ -14,13 +14,11 @@ export type RenderItem<T> = ({
 interface IDropdownMenuProps<T> {
 	renderItem: RenderItem<T>;
 	setSelected: (item: T) => void;
-	anchorElement: RefObject<HTMLElement>;
 }
 
 export default function DropdownMenu<T>({
 	renderItem,
 	setSelected,
-	anchorElement,
 }: IDropdownMenuProps<T>) {
 	const {
 		selectedIndex,
@@ -32,6 +30,7 @@ export default function DropdownMenu<T>({
 		incrementSuggestedIndex,
 		close,
 		open,
+		triggerElementRef,
 	} = useDropdown<T>();
 
 	const handleSelection = (index: number) => {
@@ -58,7 +57,7 @@ export default function DropdownMenu<T>({
 	};
 
 	useEffect(() => {
-		if (!list || !list.length) return;
+		if (!list || !list.length || selectedIndex >= 0) return;
 		open();
 	}, [list]);
 
@@ -74,18 +73,19 @@ export default function DropdownMenu<T>({
 		setSelected(list[selectedIndex]);
 	}, [selectedIndex]);
 
-	if (!list || !list.length || !anchorElement.current) return null;
+	if (!list || !list.length || !triggerElementRef.current) return null;
 
-	const { width: anchorElementWidth } =
-		anchorElement.current.getBoundingClientRect();
+	const { width: triggerElementWidth } =
+		triggerElementRef.current.getBoundingClientRect();
 
 	return (
 		<Modal
+			backdropBlur='none'
+			backgroundClassname='bg-transparent'
 			onBackdropClick={close}
-			backgroundClassname='bg-transparent backdrop-blur-0'
-			containerStyles={{ width: anchorElementWidth }}
+			containerStyles={{ width: triggerElementWidth }}
 			open={isOpen}
-			anchorElement={anchorElement}
+			anchorElement={triggerElementRef}
 			anchorTo='top'
 		>
 			<ul

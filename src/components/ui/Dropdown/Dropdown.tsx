@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useContext, useEffect, useRef } from 'react';
+import {
+	createContext,
+	MutableRefObject,
+	ReactNode,
+	useContext,
+	useRef,
+} from 'react';
 import useToggle from '../../../hooks/useToggle';
 import { useCounter } from '../../../hooks/useCounter';
 import DropdownMenu from './DropdownMenu';
@@ -18,6 +24,7 @@ interface IDropdownContext<T> {
 	close: () => void;
 	open: () => void;
 	toggle: () => void;
+	triggerElementRef: MutableRefObject<HTMLElement | null>;
 }
 
 interface IDropdownProps<T> {
@@ -60,6 +67,7 @@ export default function Dropdown<T>({
 	});
 
 	const dropdownRef = useRef<HTMLDivElement>(null);
+	const triggerElementRef = useRef<HTMLElement | null>(null);
 
 	return (
 		<DropdownContext.Provider
@@ -76,6 +84,7 @@ export default function Dropdown<T>({
 				close,
 				open,
 				toggle,
+				triggerElementRef,
 			}}
 		>
 			<div ref={dropdownRef} className='relative w-full'>

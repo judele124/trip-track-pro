@@ -1,21 +1,29 @@
 import useToggle from '@/hooks/useToggle';
-import { Types } from 'trip-track-package';
 import StopsDetails from './StopsDetails';
 import EditDetailsStops from './EditDetailsStops';
+import { Trip } from '@/types/trip';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 interface ITripDetailsProps {
-	tripStops: Types['Trip']['Stop']['Model'][];
-	isCreator?: boolean;
+	trip: Trip;
 }
 
-const TripDetailsStops = ({ tripStops }: ITripDetailsProps) => {
+const TripDetailsStops = ({ trip }: ITripDetailsProps) => {
+	const { user } = useAuthContext();
 	const { isOpen: editMode, toggle: toggleEditMode } = useToggle();
 
-	if (editMode) {
-		return <EditDetailsStops stops={tripStops} />;
+	const isCreator = user?._id === trip.creator._id;
+	if (isCreator && editMode) {
+		return <EditDetailsStops trip={trip} />;
 	}
 
-	return <StopsDetails toggleEditMode={toggleEditMode} stops={tripStops} />;
+	return (
+		<StopsDetails
+			isCreator={isCreator}
+			toggleEditMode={toggleEditMode}
+			stops={trip.stops}
+		/>
+	);
 };
 
 export default TripDetailsStops;

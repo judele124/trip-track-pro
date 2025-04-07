@@ -4,7 +4,6 @@ import Button from '@/components/ui/Button';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
-	arrayMove,
 	SortableContext,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
@@ -12,14 +11,18 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { Schemas, Types } from 'trip-track-package';
 import { IUseFromStopsData } from './StopDetails';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import StopEditMode from './StopEditMode';
+import { tripUpdate } from '@/servises/tripService';
+import useAxios from '@/hooks/useAxios';
+import { Trip } from '@/types/trip';
 
 interface IEditDetailsStopsProps {
-	stops: Types['Trip']['Stop']['Model'][];
+	trip: Trip;
 }
 
-export default function EditDetailsStops({ stops }: IEditDetailsStopsProps) {
+export default function EditDetailsStops({ trip }: IEditDetailsStopsProps) {
+	const { activate, status, error, loading } = useAxios({ manual: true });
 	const { handleSubmit, ...reactHookFormsMethods } = useForm<IUseFromStopsData>(
 		{
 			resolver: zodResolver(Schemas.trip.multipleStepsTripSchema[1]),
@@ -27,24 +30,43 @@ export default function EditDetailsStops({ stops }: IEditDetailsStopsProps) {
 	);
 
 	useEffect(() => {
-		reactHookFormsMethods.setValue('stops', stops);
-	}, [stops]);
+		reactHookFormsMethods.setValue('stops', trip.stops);
+	}, [trip]);
 
-	const stopsIds = useMemo(() => stops.map((_, i) => i), [stops]);
+	const stopsFromFormState = reactHookFormsMethods.watch('stops');
 
-	const onSubmit = async (data: IUseFromStopsData) => {
-		console.log('update submited', data);
+	const stopsIds = useMemo(
+		() =>
+			stopsFromFormState?.map(
+				(stop, i) => `${stop.location.lat}-${stop.location.lon}-${i}`
+			) || [],
+		[stopsFromFormState]
+	);
+
+	const onSubmit = async (newStopsData: IUseFromStopsData) => {
+		await tripUpdate(activate, trip._id, newStopsData);
 	};
 
 	const handleDragEnd = ({ over, active }: DragEndEvent) => {
 		if (!over) return;
 
-		const oldIndex = stops.findIndex((_, i) => i === active.id);
-		const newIndex = stops.findIndex((_, i) => i === over.id);
+		function arrayMove<T>(array: T[], fromIndex: number, toIndex: number): T[] {
+			const newArray = [...array];
+			const [movedItem] = newArray.splice(fromIndex, 1);
+			newArray.splice(toIndex, 0, movedItem);
+			return newArray;
+		}
+
+		const oldIndex = stopsFromFormState.findIndex(
+			(s, i) => `${s.location.lat}-${s.location.lon}-${i}` === active.id
+		);
+		const newIndex = stopsFromFormState.findIndex(
+			(s, i) => `${s.location.lat}-${s.location.lon}-${i}` === over.id
+		);
 
 		reactHookFormsMethods.setValue(
 			'stops',
-			arrayMove(stops, oldIndex, newIndex)
+			arrayMove(stopsFromFormState, oldIndex, newIndex)
 		);
 	};
 
@@ -95,7 +117,7 @@ export default function EditDetailsStops({ stops }: IEditDetailsStopsProps) {
 							top={null}
 							middle={
 								<div className='flex flex-col gap-2 overflow-x-clip overflow-y-visible'>
-									{stops.map((stop, i: number) => (
+									{stopsFromFormState?.map((stop, i: number) => (
 										<StopEditMode
 											key={`${stop.location.lat}-${stop.location.lon}-${i}`}
 											index={i}

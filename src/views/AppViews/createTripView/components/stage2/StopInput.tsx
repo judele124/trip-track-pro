@@ -5,6 +5,7 @@ import useToggle from '@/hooks/useToggle';
 import Button from '@/components/ui/Button';
 import { useFormContext } from 'react-hook-form';
 import { Types } from 'trip-track-package';
+import { wordToCamelcase } from '@/utils/functions';
 
 interface IStopInputProps {
 	isMiddleStop?: boolean;
@@ -53,7 +54,7 @@ export default function StopInput({
 						primary
 					>
 						{stopExperience?.type
-							? `${stopExperience.type.charAt(0).toUpperCase()}${stopExperience.type.substring(1)}`
+							? `${wordToCamelcase(stopExperience.type)}`
 							: 'Add Experience'}
 					</Button>
 				)}

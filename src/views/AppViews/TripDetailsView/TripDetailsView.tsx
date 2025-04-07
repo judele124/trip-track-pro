@@ -12,11 +12,9 @@ import { useParams } from 'react-router-dom';
 import { Types } from 'trip-track-package';
 import TripStatusButton from '../profileView/components/TripStatusButton';
 import RewardDetails from './components/RewardDetails';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { tripGet } from '@/servises/tripService';
 
 export default function TripDetailsView() {
-	const { user } = useAuthContext();
 	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
 	const params = useParams();
 	const { data, loading, error, status, activate } = useAxios({
@@ -70,10 +68,7 @@ export default function TripDetailsView() {
 							</div>
 						</div>
 
-						<TripDetailsStops
-							tripStops={tripData.stops}
-							isCreator={user?._id === tripData.creator._id}
-						/>
+						<TripDetailsStops trip={tripData} />
 
 						<Button
 							className='bg-transparent text-dark underline dark:text-light'
