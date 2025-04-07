@@ -75,7 +75,7 @@ export default function StopEditMode({ stop, index }: IStopEditMode) {
 								<Icon
 									name={stop.experience?.type || 'plus'}
 									size='18'
-									className='fill-white'
+									className='-mb-0.5 fill-white'
 								/>
 							</i>
 						</>

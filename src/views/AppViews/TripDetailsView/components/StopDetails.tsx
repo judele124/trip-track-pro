@@ -29,7 +29,7 @@ const StopDetails = ({ stop, icon }: IStopDetailsProps) => {
 			{stop.experience && (
 				<div className='absolute bottom-0 right-0 top-0 flex gap-2 py-1.5 pr-1.5'>
 					<Button
-						className='flex items-center justify-center gap-1 rounded-xl py-1 text-sm font-semibold'
+						className='flex cursor-default items-center justify-center gap-1 rounded-lg px-2 py-1 text-sm font-normal'
 						type='button'
 						primary
 					>

@@ -68,7 +68,13 @@ export default function TripDetailsView() {
 							</div>
 						</div>
 
-						<TripDetailsStops trip={tripData} />
+						<TripDetailsStops
+							getUpdatedTrip={async () => {
+								if (!params.tripId) return;
+								tripGet(activate, params.tripId);
+							}}
+							trip={tripData}
+						/>
 
 						<Button
 							className='bg-transparent text-dark underline dark:text-light'

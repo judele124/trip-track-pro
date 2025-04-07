@@ -16,13 +16,27 @@ import StopEditMode from './StopEditMode';
 import { tripUpdate } from '@/servises/tripService';
 import useAxios from '@/hooks/useAxios';
 import { Trip } from '@/types/trip';
+import { getErrorMessage } from '@/utils/errorMessages';
+import InputFeildError from '@/components/ui/InputFeildError';
 
 interface IEditDetailsStopsProps {
 	trip: Trip;
+	toggleEditMode: () => void;
+	getUpdatedTrip: () => Promise<void>;
 }
 
-export default function EditDetailsStops({ trip }: IEditDetailsStopsProps) {
+export default function EditDetailsStops({
+	trip,
+	toggleEditMode,
+	getUpdatedTrip,
+}: IEditDetailsStopsProps) {
 	const { activate, status, error, loading } = useAxios({ manual: true });
+
+	useEffect(() => {
+		if (!status || error) return;
+		toggleEditMode();
+	}, [status, error]);
+
 	const { handleSubmit, ...reactHookFormsMethods } = useForm<IUseFromStopsData>(
 		{
 			resolver: zodResolver(Schemas.trip.multipleStepsTripSchema[1]),
@@ -45,6 +59,7 @@ export default function EditDetailsStops({ trip }: IEditDetailsStopsProps) {
 
 	const onSubmit = async (newStopsData: IUseFromStopsData) => {
 		await tripUpdate(activate, trip._id, newStopsData);
+		await getUpdatedTrip();
 	};
 
 	const handleDragEnd = ({ over, active }: DragEndEvent) => {
@@ -76,6 +91,9 @@ export default function EditDetailsStops({ trip }: IEditDetailsStopsProps) {
 		reactHookFormsMethods.setValue('stops', [currentStops[0], ...currentStops]);
 	};
 
+	const handleOnCancel = () => {
+		toggleEditMode();
+	};
 	return (
 		<FormProvider handleSubmit={handleSubmit} {...reactHookFormsMethods}>
 			<form
@@ -125,9 +143,41 @@ export default function EditDetailsStops({ trip }: IEditDetailsStopsProps) {
 								</div>
 							}
 							bottom={
-								<Button primary className='mt-2 w-full' type='submit'>
-									Submit
-								</Button>
+								<>
+									<div className='mt-2 flex gap-2'>
+										<Button
+											onClick={handleOnCancel}
+											className='flex-1'
+											type='button'
+										>
+											Cancel
+										</Button>
+
+										<Button
+											primary
+											className={`flex-1 ${
+												status ? (error ? 'bg-red-500' : 'bg-green-500') : ''
+											}`}
+											type='submit'
+										>
+											{!status
+												? loading
+													? 'Updating trip...'
+													: 'Submit'
+												: error
+													? getErrorMessage(status)
+													: 'Trip updated'}
+										</Button>
+									</div>
+									{reactHookFormsMethods.formState.errors.stops?.message && (
+										<InputFeildError
+											className='text-center'
+											message={
+												reactHookFormsMethods.formState.errors.stops.message
+											}
+										/>
+									)}
+								</>
 							}
 						/>
 					</SortableContext>
