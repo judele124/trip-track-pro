@@ -1,4 +1,3 @@
-import Icon from '@/components/icons/Icon';
 import useMarker from '../hooks/useMarker';
 import { useRef } from 'react';
 import { useMapContext } from '@/contexts/MapContext';
