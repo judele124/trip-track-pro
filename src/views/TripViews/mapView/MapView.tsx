@@ -19,15 +19,12 @@ export default function MapView() {
 	});
 
 	const points = useMemo(
-		() =>
-			userLocation
-				? [userLocation, ...(trip?.stops.map((stop) => stop.location) || [])]
-				: [],
-		[trip, userLocation]
+		() => trip?.stops.map((stop) => stop.location) || [],
+		[trip]
 	);
 
 	const { routeData } = useMapboxDirectionRoute({
-		points,
+		points: userLocation ? [userLocation, ...points] : points,
 		runGetDirectionsRoute: !tripRoute && !!userLocation,
 	});
 

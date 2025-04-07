@@ -26,7 +26,10 @@ export type IconName =
 	| 'xIcon'
 	| 'logout'
 	| 'userWalking'
-	| 'clock';
+	| 'clock'
+	| 'leftTurnArrow'
+	| 'rightTurnArrow'
+	| 'StraightArrow';
 
 interface IIconProps {
 	fill?: SVGAttributes<SVGSVGElement>['fill'];
@@ -436,6 +439,56 @@ export default function Icon({
 					clipRule='evenodd'
 					d='M13.6581 5.92896C14.5569 5.92896 15.2855 6.56989 15.2855 7.36053V14.3419L18.7923 17.0155C19.4714 17.5333 19.5449 18.4375 18.9562 19.0349C18.3676 19.6324 17.3399 19.697 16.6607 19.1792L12.5923 16.0774C12.2357 15.8055 12.0308 15.4108 12.0308 14.9956V7.36053C12.0308 6.56989 12.7593 5.92896 13.6581 5.92896Z'
 					fill={fill}
+				/>
+			</svg>
+		),
+		leftTurnArrow: (
+			<svg
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
+				id='Layer_1'
+				data-name='Layer 1'
+				xmlns='http://www.w3.org/2000/svg'
+				viewBox='0 0 122.88 115.96'
+			>
+				<title>turn-left-arrow</title>
+				<path d='M122.88,116V78.14c0-18.66-2.57-32.35-11.19-42.15-8.84-10-22.31-14.32-43.51-13.42v0H49.36V5.66c-.11-2.24-.87-3.84-2.27-4.77-3.52-2.35-7,.44-9.53,2.69-7.3,6.51-31.36,25-35.44,28.54a5.58,5.58,0,0,0,0,8.76c4,3.38,27.21,21.08,34.72,27.89,2.66,2.39,6.43,5.89,10.25,3.35,1.4-.93,2.16-2.53,2.27-4.78V48.29H68.18l.55,0c13-.6,20.28.91,23.65,4.75,3.66,4.16,4.76,12.63,4.76,25.15V116Z' />
+			</svg>
+		),
+		rightTurnArrow: (
+			<svg
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
+				id='Layer_1'
+				data-name='Layer 1'
+				xmlns='http://www.w3.org/2000/svg'
+				viewBox='0 0 122.88 115.96'
+			>
+				<title>turn-right-arrow</title>
+				<path d='M0,116V78.14C0,59.48,2.57,45.79,11.19,36,20,25.94,33.5,21.67,54.7,22.57v0H73.52V5.66c.11-2.24.87-3.84,2.27-4.77,3.52-2.35,7,.44,9.53,2.69,7.3,6.51,31.36,25,35.44,28.54a5.58,5.58,0,0,1,0,8.76C116.79,44.26,93.55,62,86,68.77c-2.66,2.39-6.43,5.89-10.25,3.35-1.4-.93-2.16-2.53-2.27-4.78V48.29H54.7l-.55,0c-13-.6-20.28.91-23.65,4.75-3.66,4.16-4.76,12.63-4.76,25.15V116Z' />
+			</svg>
+		),
+		StraightArrow: (
+			<svg
+				width={size}
+				height={size}
+				className={`${className}`}
+				fill={fill}
+				xmlns='http://www.w3.org/2000/svg'
+				shapeRendering='geometricPrecision'
+				textRendering='geometricPrecision'
+				imageRendering='optimizeQuality'
+				fillRule='evenodd'
+				clipRule='evenodd'
+				viewBox='0 0 463.96 512'
+			>
+				<path
+					fillRule='nonzero'
+					d='M332.67 512V268.5h92.3c15.48-.68 26.47-5.77 32.82-15.42 17.21-25.8-5.25-52.31-22.6-69.25L261.61 14.33c-17.29-19.11-41.93-19.11-59.22 0L24.42 188.72C8.03 204.78-9.67 229.27 6.21 253.08c6.35 9.65 17.34 14.74 32.81 15.42h92.31V512h201.34z'
 				/>
 			</svg>
 		),
