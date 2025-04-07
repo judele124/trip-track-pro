@@ -8,7 +8,7 @@ import {
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Schemas, Types } from 'trip-track-package';
+import { Schemas } from 'trip-track-package';
 import { IUseFromStopsData } from './StopDetails';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo } from 'react';
@@ -73,10 +73,7 @@ export default function EditDetailsStops({ trip }: IEditDetailsStopsProps) {
 	const handleAddStop = () => {
 		const currentStops = reactHookFormsMethods.watch('stops');
 
-		reactHookFormsMethods.setValue('stops', [
-			...currentStops,
-			currentStops[currentStops.length - 1],
-		]);
+		reactHookFormsMethods.setValue('stops', [currentStops[0], ...currentStops]);
 	};
 
 	return (
@@ -90,15 +87,16 @@ export default function EditDetailsStops({ trip }: IEditDetailsStopsProps) {
 
 					{/* edit button */}
 					<Button
-						type='submit'
+						type='button'
+						onClick={handleAddStop}
 						className='flex justify-center gap-1 rounded-md px-2 py-1 text-sm font-normal text-white dark:text-dark'
 					>
-						Submit
+						Add stop
 						<i>
 							<Icon
 								size='17'
-								className='-mb-1 fill-white dark:fill-dark'
-								name='edit'
+								className='fill-white dark:fill-dark'
+								name='plus'
 							/>
 						</i>
 					</Button>
@@ -127,8 +125,8 @@ export default function EditDetailsStops({ trip }: IEditDetailsStopsProps) {
 								</div>
 							}
 							bottom={
-								<Button className='mt-2 w-full' onClick={handleAddStop}>
-									add stop
+								<Button primary className='mt-2 w-full' type='submit'>
+									Submit
 								</Button>
 							}
 						/>

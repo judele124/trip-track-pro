@@ -34,6 +34,13 @@ export default function StopEditMode({ stop, index }: IStopEditMode) {
 
 	const handleOnEditExperience = () => toggleExperienceModal();
 
+	const handleOnDeleteStop = () => {
+		const newStops = [...watch('stops')];
+		if (!newStops) return;
+		newStops.splice(index, 1);
+		setValue('stops', newStops);
+	};
+
 	const style = {
 		transform: CSS.Translate.toString(transform),
 		transition,
@@ -54,26 +61,36 @@ export default function StopEditMode({ stop, index }: IStopEditMode) {
 			/>
 
 			{/* experience button */}
-			<div className='absolute bottom-0 right-0 top-0 flex gap-2 py-2 pr-2'>
+			<div className='absolute bottom-0 right-0 top-0 flex gap-1 py-2 pr-2'>
 				<Button
-					className='flex items-center justify-center gap-1 rounded-xl py-1 text-sm font-semibold'
+					className='relative flex items-center justify-center gap-1 rounded-lg px-2 py-1 text-sm font-normal'
 					type='button'
 					onClick={handleOnEditExperience}
 					primary
 				>
-					{stop.experience?.type
-						? `${wordToCamelcase(stop.experience.type)}`
-						: 'Add Experience'}
-					<i>
-						<Icon
-							name={stop.experience?.type || 'plus'}
-							size='18'
-							className='fill-white'
-						/>
-					</i>
+					{stop.experience?.type ? (
+						<>
+							{`${wordToCamelcase(stop.experience.type)}`}
+							<i>
+								<Icon
+									name={stop.experience?.type || 'plus'}
+									size='18'
+									className='fill-white'
+								/>
+							</i>
+						</>
+					) : (
+						'Add Experience'
+					)}
 				</Button>
+				<i
+					onClick={handleOnDeleteStop}
+					className='content-center rounded-lg bg-red-500 px-2 py-1'
+				>
+					<Icon name='trash' size='16' fill='white' />
+				</i>
 			</div>
-			<Modal open={isOpen} center>
+			<Modal containerClassName='w-full' open={isOpen} center>
 				<ExperienceForm closeModal={toggleExperienceModal} index={index} />
 			</Modal>
 		</div>
