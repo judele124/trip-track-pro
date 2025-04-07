@@ -5,7 +5,7 @@ import {
 	PlacePrediction,
 	useAddressSugestions,
 } from '@/hooks/useAddressSuggestions';
-import { HTMLAttributes, useEffect, useRef, useState } from 'react';
+import { HTMLAttributes, RefObject, useEffect, useRef, useState } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import axios from 'axios';
 import { API_BASE_URL } from '@/env.config';

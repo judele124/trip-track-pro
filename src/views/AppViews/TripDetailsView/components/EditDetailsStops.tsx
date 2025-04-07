@@ -10,14 +10,15 @@ import {
 } from '@dnd-kit/sortable';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Schemas, Types } from 'trip-track-package';
-import StopDetails, { IUseFromStopsData } from './StopDetails';
+import { IUseFromStopsData } from './StopDetails';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import StopEditMode from './StopEditMode';
 
 interface IEditDetailsStopsProps {
 	stops: Types['Trip']['Stop']['Model'][];
 }
+
 export default function EditDetailsStops({ stops }: IEditDetailsStopsProps) {
 	const { handleSubmit, ...reactHookFormsMethods } = useForm<IUseFromStopsData>(
 		{
@@ -40,7 +41,6 @@ export default function EditDetailsStops({ stops }: IEditDetailsStopsProps) {
 
 		const oldIndex = stops.findIndex((_, i) => i === active.id);
 		const newIndex = stops.findIndex((_, i) => i === over.id);
-		console.log(oldIndex, newIndex);
 
 		reactHookFormsMethods.setValue(
 			'stops',

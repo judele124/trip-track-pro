@@ -61,18 +61,6 @@ export default function Dropdown<T>({
 
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
-	const handleClickOutside = (e: MouseEvent) => {
-		if (!dropdownRef.current?.contains(e.target as Node) && isOpen) {
-			close();
-		}
-	};
-
-	useEffect(() => {
-		if (!isOpen) return;
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => document.removeEventListener('mousedown', handleClickOutside);
-	}, [isOpen]);
-
 	return (
 		<DropdownContext.Provider
 			value={{

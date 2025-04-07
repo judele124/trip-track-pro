@@ -58,11 +58,8 @@ export default function DropdownInput({
 				onChange={(e) => {
 					onChange?.(e as ChangeEvent<HTMLInputElement>);
 					setInputValue(e.target.value);
-					open();
 				}}
-				onFocus={() => open()}
 				onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-					open();
 					if (e.key === 'Escape') {
 						e.currentTarget.blur();
 					}

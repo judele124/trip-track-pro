@@ -31,6 +31,7 @@ export default function DropdownMenu<T>({
 		decrementSuggestedIndex,
 		incrementSuggestedIndex,
 		close,
+		open,
 	} = useDropdown<T>();
 
 	const handleSelection = (index: number) => {
@@ -57,30 +58,39 @@ export default function DropdownMenu<T>({
 	};
 
 	useEffect(() => {
-		if (!isOpen || !list || !list.length) return;
+		if (!list || !list.length) return;
+		open();
+	}, [list]);
+
+	useEffect(() => {
+		if (!isOpen) return;
 
 		document.addEventListener('keydown', handleKeyDown);
 		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [suggestedIndex, isOpen, list]);
+	}, [suggestedIndex, isOpen]);
 
 	useEffect(() => {
 		if (!list || !list.length || selectedIndex < 0) return;
 		setSelected(list[selectedIndex]);
 	}, [selectedIndex]);
 
-	if (!list || !list.length || !isOpen) return null;
+	if (!list || !list.length || !anchorElement.current) return null;
+
+	const { width: anchorElementWidth } =
+		anchorElement.current.getBoundingClientRect();
 
 	return (
 		<Modal
-			containerClassName='w-auto'
-			open
+			onBackdropClick={close}
+			backgroundClassname='bg-transparent backdrop-blur-0'
+			containerStyles={{ width: anchorElementWidth }}
+			open={isOpen}
 			anchorElement={anchorElement}
-			anchorTo='bottom'
+			anchorTo='top'
 		>
 			<ul
-				style={{ left: 0, right: 0 }}
 				onMouseOver={(e) => e.stopPropagation()}
-				className='absolute top-14 z-50 max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
+				className='max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
 				role='listbox'
 			>
 				{list.map((item, i) => (

@@ -9,7 +9,6 @@ import { IUseFromStopsData } from './StopDetails';
 import useToggle from '@/hooks/useToggle';
 import { Types } from 'trip-track-package';
 import { CSS } from '@dnd-kit/utilities';
-import { useRef } from 'react';
 
 interface IStopEditMode {
 	index: number;

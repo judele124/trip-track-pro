@@ -27,6 +27,8 @@ type CommonProps = {
 	onBackdropClick?: (e: MouseEvent<HTMLDivElement>) => void;
 	children?: ReactNode;
 	containerClassName?: string;
+	containerStyles?: CSSProperties;
+	modalContainer?: Element | DocumentFragment;
 };
 
 type ModalProps = CommonProps &
@@ -52,11 +54,12 @@ const Modal: FC<ModalProps> = ({
 	center,
 	containerClassName = '',
 	children,
+	containerStyles,
+	modalContainer,
 }) => {
 	const [positions, setPositions] = useState([0, 0, 0, 0]);
 	const childrenRef = useRef<HTMLDivElement>(null);
 	const backgroundRef = useRef<HTMLDivElement>(null);
-	console.log(positions);
 
 	useEffect(() => {
 		if (center || !anchorElement?.current || !childrenRef.current || !open)
@@ -117,6 +120,7 @@ const Modal: FC<ModalProps> = ({
 				// Modal's top edge is aligned with the anchor's bottom edge, centered horizontally
 				const centerHorizontal =
 					anchorElementRect.left + anchorElementRect.width / 2;
+
 				setPositions([
 					anchorElementRect.top - childrenRect.height, // Top of the modal
 					centerHorizontal + childrenRect.width / 2, // Right
@@ -197,7 +201,7 @@ const Modal: FC<ModalProps> = ({
 				className={`relative w-fit ${containerClassName}`}
 				ref={childrenRef}
 				onClick={(e) => e.stopPropagation()}
-				style={getPositionStyles(center, positions)}
+				style={{ ...getPositionStyles(center, positions), ...containerStyles }}
 			>
 				{children}
 			</div>
