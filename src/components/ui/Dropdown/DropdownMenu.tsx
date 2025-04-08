@@ -58,6 +58,7 @@ export default function DropdownMenu<T>({
 
 	useEffect(() => {
 		if (!list || !list.length || selectedIndex >= 0) return;
+		triggerElementRef.current?.scrollIntoView();
 		open();
 	}, [list]);
 
@@ -90,7 +91,7 @@ export default function DropdownMenu<T>({
 		>
 			<ul
 				onMouseOver={(e) => e.stopPropagation()}
-				className='max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
+				className='max-h-48 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
 				role='listbox'
 			>
 				{list.map((item, i) => (

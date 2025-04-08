@@ -3,6 +3,7 @@ import {
 	MutableRefObject,
 	ReactNode,
 	useContext,
+	useEffect,
 	useRef,
 } from 'react';
 import useToggle from '../../../hooks/useToggle';
@@ -66,7 +67,6 @@ export default function Dropdown<T>({
 		initial,
 	});
 
-	const dropdownRef = useRef<HTMLDivElement>(null);
 	const triggerElementRef = useRef<HTMLElement | null>(null);
 
 	return (
@@ -87,9 +87,7 @@ export default function Dropdown<T>({
 				triggerElementRef,
 			}}
 		>
-			<div ref={dropdownRef} className='relative w-full'>
-				{children}
-			</div>
+			<div className='relative w-full'>{children}</div>
 		</DropdownContext.Provider>
 	);
 }

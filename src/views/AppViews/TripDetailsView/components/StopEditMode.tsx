@@ -10,6 +10,7 @@ import useToggle from '@/hooks/useToggle';
 import { Types } from 'trip-track-package';
 import { CSS } from '@dnd-kit/utilities';
 import { wordToCamelcase } from '@/utils/functions';
+import { useDarkMode } from '@/contexts/DarkModeContext';
 
 interface IStopEditMode {
 	index: number;
@@ -17,6 +18,7 @@ interface IStopEditMode {
 }
 
 export default function StopEditMode({ stop, index }: IStopEditMode) {
+	const { isDarkMode } = useDarkMode();
 	const { setValue, watch } = useFormContext<IUseFromStopsData>();
 	const { isOpen, toggle: toggleExperienceModal } = useToggle();
 	const { setNodeRef, attributes, transform, transition, listeners } =
@@ -47,9 +49,10 @@ export default function StopEditMode({ stop, index }: IStopEditMode) {
 	};
 
 	return (
-		<div ref={setNodeRef} style={style} className='relative w-full'>
+		<div ref={setNodeRef} style={style} className='bg-da relative w-full'>
 			<StopLocationInput
 				icon='grid-dots'
+				iconFill={isDarkMode ? '#ebe2d4' : '#383644'}
 				textContent={watch(`stops.${index}.address`) || stop.address}
 				title='Stop Location'
 				className='h-12'
