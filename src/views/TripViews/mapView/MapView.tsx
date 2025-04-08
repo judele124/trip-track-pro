@@ -35,11 +35,7 @@ export default function MapView() {
 	return (
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
 			<Map mapboxDirectionRoute={tripRoute}>
-				{userLocation && (
-					<GeneralMarker location={userLocation}>
-						<UserMarker />
-					</GeneralMarker>
-				)}
+				{userLocation && <UserMarker location={userLocation} />}
 
 				{trip?.stops.map((stop) => {
 					return (
