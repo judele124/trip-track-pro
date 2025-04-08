@@ -1,6 +1,6 @@
 import Icon from '@/components/icons/Icon';
 import MapModal from '@/components/MapModal';
-import TripDetailsStops from '@/components/TripDetailsStops';
+import TripDetailsStops from '@/views/AppViews/TripDetailsView/components/TripDetailsStops';
 import Button from '@/components/ui/Button';
 import useAxios from '@/hooks/useAxios';
 import useToggle from '@/hooks/useToggle';
@@ -12,11 +12,9 @@ import { useParams } from 'react-router-dom';
 import { Types } from 'trip-track-package';
 import TripStatusButton from '../profileView/components/TripStatusButton';
 import RewardDetails from './components/RewardDetails';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { tripGet } from '@/servises/tripService';
 
 export default function TripDetailsView() {
-	const { user } = useAuthContext();
 	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
 	const params = useParams();
 	const { data, loading, error, status, activate } = useAxios({
@@ -45,7 +43,7 @@ export default function TripDetailsView() {
 
 	return (
 		<>
-			<div className='page-colors mx-auto flex h-full max-w-[400px] flex-col gap-4'>
+			<div className='page-colors mx-auto flex h-full w-full max-w-[400px] flex-col gap-4 overflow-hidden'>
 				{loading && <Icon name='spinner' />}
 				{error && status && (
 					<p className='text-res-500'>{getErrorMessage(status)}</p>
@@ -56,6 +54,7 @@ export default function TripDetailsView() {
 							<h1 className='max-w-[70%] break-words capitalize'>
 								{tripData.name}
 							</h1>
+							{tripData.description && <p>{tripData.description}</p>}
 							<div className='mt-2 flex items-start gap-1'>
 								<TripStatusButton status={tripData.status} />
 								<RewardDetails
@@ -70,8 +69,11 @@ export default function TripDetailsView() {
 						</div>
 
 						<TripDetailsStops
-							tripStops={tripData.stops}
-							isCreator={user?._id === tripData.creator._id}
+							getUpdatedTrip={async () => {
+								if (!params.tripId) return;
+								tripGet(activate, params.tripId);
+							}}
+							trip={tripData}
 						/>
 
 						<Button
