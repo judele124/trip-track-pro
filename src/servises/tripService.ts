@@ -52,15 +52,13 @@ export const tripGet = async (
 export const tripUpdate = async (
 	activate: UseAxiosResponse['activate'],
 	id: string,
-	tripData: Partial<Trip>
+	tripData: Partial<Omit<Trip, 'reward'>>
 ) => {
 	const { data, status } = await activate({
 		url: `${API_BASE_URL}/trip/${id}`,
 		method: 'PUT',
 		data: tripData,
 	});
-	console.log(tripData);
-	console.log(data);
 
 	return { data, status };
 };
