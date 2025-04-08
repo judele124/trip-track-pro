@@ -97,7 +97,7 @@ export default function EditDetailsStops({
 	return (
 		<FormProvider handleSubmit={handleSubmit} {...reactHookFormsMethods}>
 			<form
-				className='flex grow flex-col overflow-visible'
+				className='flex grow flex-col overflow-hidden'
 				onSubmit={handleSubmit(onSubmit)}
 			>
 				<div className='mb-2 flex items-start justify-between'>
@@ -132,7 +132,7 @@ export default function EditDetailsStops({
 						<ScrollableMiddleWTopBottom
 							top={null}
 							middle={
-								<div className='flex flex-col gap-2 overflow-x-clip overflow-y-visible'>
+								<div className='flex flex-col gap-2 overflow-x-clip overflow-y-visible pb-8'>
 									{stopsFromFormState?.map((stop, i: number) => (
 										<StopEditMode
 											key={`${stop.location.lat}-${stop.location.lon}-${i}`}

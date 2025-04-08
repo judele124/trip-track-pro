@@ -14,8 +14,14 @@ export default forwardRef<HTMLDivElement, IScrollableMiddleWTopBottomProps>(
 		return (
 			<div ref={ref} className='relative flex grow flex-col overflow-hidden'>
 				{top && <div>{top}</div>}
-				{middle && <div className='overflow-y-auto'>{middle}</div>}
-				{bottom && <div>{bottom}</div>}
+				{middle && (
+					<div className='relative flex grow flex-col overflow-hidden'>
+						<div className='pointer-events-none absolute z-10 h-5 w-full bg-gradient-to-b from-dark to-transparent'></div>
+						<div className='relative overflow-y-auto'>{middle}</div>
+						<div className='pointer-events-none absolute bottom-0 z-10 h-10 w-full bg-gradient-to-t from-dark to-transparent'></div>
+					</div>
+				)}
+				{bottom && <div className='relative'>{bottom}</div>}
 			</div>
 		);
 	}

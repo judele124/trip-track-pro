@@ -3,7 +3,6 @@ import {
 	MutableRefObject,
 	ReactNode,
 	useContext,
-	useEffect,
 	useRef,
 } from 'react';
 import useToggle from '../../../hooks/useToggle';
