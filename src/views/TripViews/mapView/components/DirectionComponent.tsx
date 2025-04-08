@@ -8,16 +8,6 @@ function getDistance(a: { lat: number; lon: number }, b: number[]) {
 	const dy = a.lon - b[0];
 	return Math.sqrt(dx * dx + dy * dy);
 }
-type ManeuverStep = {
-	maneuver: {
-		location: [number, number];
-		instruction: string;
-		modifier: string;
-	};
-	distance: number;
-	duration: number;
-	name: string;
-};
 
 interface DirectionProps {
 	userLocation?: { lat: number; lon: number } | null;
@@ -25,17 +15,15 @@ interface DirectionProps {
 }
 
 const directions: Record<string, IconName> = {
-	straight: 'StraightArrow',
-	right: 'rightTurnArrow',
-	left: 'leftTurnArrow',
+	straight: 'directionStraightArrow',
+	right: 'directionRightArrow',
+	left: 'directionLeftArrow',
 };
 
 const DirectionComponent = ({ userLocation, routeData }: DirectionProps) => {
 	const nextSteps = useMemo(() => {
 		if (!userLocation || !routeData?.routes?.[0]?.legs?.[0]?.steps) return [];
-		const steps = routeData.routes[0].legs.flatMap(
-			(leg) => leg.steps
-		) as ManeuverStep[];
+		const steps = routeData.routes[0].legs.flatMap((leg) => leg.steps);
 
 		let closestStepIndex = 0;
 		let minDistance = Infinity;
@@ -59,7 +47,9 @@ const DirectionComponent = ({ userLocation, routeData }: DirectionProps) => {
 							className={`flex items-center justify-between p-2 text-gray-800 dark:text-light ${index < nextSteps.length - 1 ? 'border-b-2 border-primary' : ''}`}
 						>
 							<Icon
-								name={directions[step.maneuver.modifier] || 'StraightArrow'}
+								name={
+									directions[step.maneuver.modifier] || 'directionStraightArrow'
+								}
 								size='18'
 								fill='#ce5737'
 								className='mr-2'

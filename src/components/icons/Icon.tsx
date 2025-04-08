@@ -27,9 +27,9 @@ export type IconName =
 	| 'logout'
 	| 'userWalking'
 	| 'clock'
-	| 'leftTurnArrow'
-	| 'rightTurnArrow'
-	| 'StraightArrow';
+	| 'directionLeftArrow'
+	| 'directionRightArrow'
+	| 'directionStraightArrow';
 
 interface IIconProps {
 	fill?: SVGAttributes<SVGSVGElement>['fill'];
@@ -408,7 +408,7 @@ export default function Icon({
 				width={size}
 				height={size}
 				viewBox='0 0 18 24'
-				fill='none'
+				fill={fill}
 				xmlns='http://www.w3.org/2000/svg'
 			>
 				<circle cx='9.86969' cy='2.32281' r='2.32281' fill={fill} />
@@ -425,7 +425,7 @@ export default function Icon({
 				width={size}
 				height={size}
 				viewBox='0 0 28 28'
-				fill='none'
+				fill={fill}
 				xmlns='http://www.w3.org/2000/svg'
 			>
 				<path
@@ -442,7 +442,7 @@ export default function Icon({
 				/>
 			</svg>
 		),
-		leftTurnArrow: (
+		directionLeftArrow: (
 			<svg
 				width={size}
 				height={size}
@@ -457,7 +457,7 @@ export default function Icon({
 				<path d='M122.88,116V78.14c0-18.66-2.57-32.35-11.19-42.15-8.84-10-22.31-14.32-43.51-13.42v0H49.36V5.66c-.11-2.24-.87-3.84-2.27-4.77-3.52-2.35-7,.44-9.53,2.69-7.3,6.51-31.36,25-35.44,28.54a5.58,5.58,0,0,0,0,8.76c4,3.38,27.21,21.08,34.72,27.89,2.66,2.39,6.43,5.89,10.25,3.35,1.4-.93,2.16-2.53,2.27-4.78V48.29H68.18l.55,0c13-.6,20.28.91,23.65,4.75,3.66,4.16,4.76,12.63,4.76,25.15V116Z' />
 			</svg>
 		),
-		rightTurnArrow: (
+		directionRightArrow: (
 			<svg
 				width={size}
 				height={size}
@@ -472,7 +472,7 @@ export default function Icon({
 				<path d='M0,116V78.14C0,59.48,2.57,45.79,11.19,36,20,25.94,33.5,21.67,54.7,22.57v0H73.52V5.66c.11-2.24.87-3.84,2.27-4.77,3.52-2.35,7,.44,9.53,2.69,7.3,6.51,31.36,25,35.44,28.54a5.58,5.58,0,0,1,0,8.76C116.79,44.26,93.55,62,86,68.77c-2.66,2.39-6.43,5.89-10.25,3.35-1.4-.93-2.16-2.53-2.27-4.78V48.29H54.7l-.55,0c-13-.6-20.28.91-23.65,4.75-3.66,4.16-4.76,12.63-4.76,25.15V116Z' />
 			</svg>
 		),
-		StraightArrow: (
+		directionStraightArrow: (
 			<svg
 				width={size}
 				height={size}
