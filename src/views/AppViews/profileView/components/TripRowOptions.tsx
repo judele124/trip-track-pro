@@ -10,6 +10,7 @@ import useTripOption, {
 	joinedTripsOptionsActions,
 } from '../hooks/useTripOption';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { wordToCamelcase } from '@/utils/functions';
 
 const tripStatusToOptionMap: Record<
 	(typeof TripStatusArray)[number],
@@ -90,7 +91,7 @@ export default function TripRowOptions({ trip, isCreator }: ITripRowOptions) {
 								}`}
 								onClick={() => handleActions(o)}
 							>
-								{o.charAt(0).toUpperCase() + o.substring(1)}
+								{wordToCamelcase(o)}
 							</Button>
 						);
 					})}

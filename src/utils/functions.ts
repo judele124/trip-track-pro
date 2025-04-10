@@ -50,6 +50,10 @@ export function canBrowserShareData(data: ShareData) {
 	return navigator.canShare(data);
 }
 
+export const wordToCamelcase = (word: string) => {
+	return word.charAt(0).toUpperCase() + word.substring(1);
+};
+
 export function calculateDistance(
 	lat1: number,
 	lon1: number,

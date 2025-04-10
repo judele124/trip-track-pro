@@ -5,7 +5,7 @@ import {
 	PlacePrediction,
 	useAddressSugestions,
 } from '@/hooks/useAddressSuggestions';
-import { useEffect, useState } from 'react';
+import { HTMLAttributes, useEffect, useState } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import axios from 'axios';
 import { API_BASE_URL } from '@/env.config';
@@ -22,12 +22,18 @@ interface IStopLocationInputProps {
 	title?: string;
 	icon?: IconName;
 	iconFill?: string;
+	textContent?: string;
+	className?: string;
+	triggerElementIconAttributes?: HTMLAttributes<HTMLDivElement>;
 }
 
 export default function StopLocationInput({
 	iconFill = '#383644',
 	icon,
 	onValueChange,
+	textContent = 'default',
+	className = '',
+	triggerElementIconAttributes,
 }: IStopLocationInputProps) {
 	const [isAddressGeoLocationError, setIsAddressGeoLocationError] =
 		useState(false);
@@ -67,14 +73,16 @@ export default function StopLocationInput({
 
 	return (
 		<>
-			<div className='relative'>
+			<div className={`relative`}>
 				<Dropdown list={suggestions?.predictions}>
 					<DropdownTriggerElement<PlacePrediction>
+						className={className}
 						icon={loading ? 'spinner' : icon}
 						type='input'
 						iconFill={iconFill}
-						elemTextContent={(item) => item?.description || 'default'}
+						elemTextContent={(item) => item?.description || textContent}
 						onChange={(e) => setInputValue(e.target.value)}
+						iconContainerAttributes={triggerElementIconAttributes}
 					/>
 					<DropdownMenu<PlacePrediction>
 						setSelected={handleAddressSelection}
