@@ -5,7 +5,7 @@ import { useTripSocket } from '@/contexts/SocketContext';
 import StopMarker from './components/StopMarker';
 import GeneralMarker from './components/GeneralMarker';
 import UserMarker from './components/UserMarker';
-import useCurrentUserLocation from './hooks/useCurrentUserLocation';
+// import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import useFakeUserLocation from './tests/useFakeUserLocation';
@@ -15,11 +15,11 @@ export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
 	useTripSocket();
 
-	const userLocation = useCurrentUserLocation({
-		onLocationUpdate: (location) => {
-			console.log('Location from useCurrentUserLocation', location);
-		},
-	});
+	// const userLocation = useCurrentUserLocation({
+	// 	onLocationUpdate: (location) => {
+	// 		console.log('Location from useCurrentUserLocation', location);
+	// 	},
+	// });
 
 	const points = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
@@ -48,7 +48,7 @@ export default function MapView() {
 
 	const fakeUserLocation = useFakeUserLocation({
 		points: pointsForFakeUserLocation || [],
-		speed: 5,
+		speed: 0,
 		onLocationUpdate: (location) => {
 			console.log('Location from fakeUserLocation', location);
 		},
