@@ -5,9 +5,22 @@ interface MapboxWaypoint {
 	name: string;
 }
 
+type DirectionStep = {
+	maneuver: {
+		location: [number, number];
+		instruction: string;
+		modifier: string;
+		type: string;
+	};
+	distance: number;
+	duration: number;
+	geometry: Feature<LineString>['geometry'];
+	name: string;
+};
+
 interface MapboxRoute {
 	legs: {
-		steps: [];
+		steps: DirectionStep[];
 		weight: number;
 		distance: number;
 		summary: string;
@@ -23,4 +36,5 @@ export interface MapBoxDirectionsResponse {
 	waypoints: MapboxWaypoint[];
 	routes: MapboxRoute[];
 	code: string;
+	uuid: string;
 }

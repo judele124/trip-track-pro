@@ -5,12 +5,15 @@ import { useTripSocket } from '@/contexts/SocketContext';
 import StopMarker from './components/StopMarker';
 import GeneralMarker from './components/GeneralMarker';
 import UserMarker from './components/UserMarker';
-import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
+import DirectionComponent from './components/DirectionComponent';
+import MapRoute from './components/MapRoute';
+import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
 	useTripSocket();
+
 	const userLocation = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			console.log('Location from useCurrentUserLocation', location);
@@ -34,9 +37,9 @@ export default function MapView() {
 
 	return (
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
-			<Map mapboxDirectionRoute={tripRoute}>
+			<Map>
 				{userLocation && <UserMarker location={userLocation} />}
-
+				{tripRoute && <MapRoute route={tripRoute} />}
 				{trip?.stops.map((stop) => {
 					return (
 						<GeneralMarker
@@ -48,6 +51,10 @@ export default function MapView() {
 					);
 				})}
 			</Map>
+			<DirectionComponent
+				steps={tripRoute?.routes[0].legs[0].steps || []}
+				nextStepIndex={0}
+			/>
 		</div>
 	);
 }
