@@ -1,13 +1,13 @@
 import useMarker from '../hooks/useMarker';
 import { useRef } from 'react';
-import { useMapContext } from '@/contexts/MapContext';
+import { useMap } from '../Map';
 
 export default function UserMarker({
 	location,
 }: {
 	location: { lon: number; lat: number };
 }) {
-	const { isMapReady, mapRef } = useMapContext();
+	const { isMapReady, mapRef } = useMap();
 	const marketElementRef = useRef(
 		(() => {
 			const userIcon = document.createElement('div');

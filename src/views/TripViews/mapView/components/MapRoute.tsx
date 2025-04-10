@@ -1,4 +1,4 @@
-import { useMapContext } from '@/contexts/MapContext';
+import { useMap } from '../Map';
 import { MapBoxDirectionsResponse } from '@/types/map';
 import { useEffect } from 'react';
 
@@ -7,7 +7,7 @@ interface IMapRouteProps {
 }
 
 export default function MapRoute({ route }: IMapRouteProps) {
-	const { addRoute } = useMapContext();
+	const { addRoute } = useMap();
 	useEffect(() => {
 		addRoute(route);
 	}, []);

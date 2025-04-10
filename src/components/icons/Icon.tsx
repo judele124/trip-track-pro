@@ -398,6 +398,7 @@ export default function Icon({
 			<svg
 				width={size}
 				height={size}
+				className={`${className}`}
 				viewBox='0 0 128.000000 128.000000'
 				preserveAspectRatio='xMidYMid meet'
 			>
@@ -434,6 +435,7 @@ export default function Icon({
 				width={size}
 				height={size}
 				viewBox='0 0 18 24'
+				className={`${className}`}
 				fill={fill}
 				xmlns='http://www.w3.org/2000/svg'
 			>
@@ -450,6 +452,7 @@ export default function Icon({
 				width={size}
 				height={size}
 				viewBox='0 0 28 28'
+				className={`${className}`}
 				fill={fill}
 				xmlns='http://www.w3.org/2000/svg'
 			>

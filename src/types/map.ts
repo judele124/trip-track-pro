@@ -1,4 +1,4 @@
-import { Feature, LineString, GeoJSON } from 'geojson';
+import { Feature, LineString } from 'geojson';
 
 interface MapboxWaypoint {
 	location: [number, number];
