@@ -1,12 +1,10 @@
 import Icon from '@/components/icons/Icon';
 import { MapBoxDirectionsResponse } from '@/types/map';
-import { useEffect, useState } from 'react';
 import { IconName } from '@/components/icons/Icon';
-import { calculateDistance } from '@/utils/functions';
 
-interface DirectionProps {
-	userLocation?: { lat: number; lon: number } | null;
-	steps?: MapBoxDirectionsResponse['routes'][0]['legs'][0]['steps'] | null;
+interface DirectionComponentProps {
+	steps: MapBoxDirectionsResponse['routes'][0]['legs'][0]['steps'];
+	nextStepIndex: number;
 }
 
 const directions: Record<string, IconName> = {
@@ -15,36 +13,11 @@ const directions: Record<string, IconName> = {
 	left: 'directionLeftArrow',
 };
 
-const DirectionComponent = ({ userLocation, steps }: DirectionProps) => {
-	const [userStepIndex, _] = useState(0);
-
-	useEffect(() => {
-		if (!steps || steps.length === 0 || !userLocation) return;
-		console.table({
-			user: [userLocation.lat, userLocation.lon],
-			step: steps?.[0].maneuver.location,
-		});
-
-		const distance = calculateDistance(
-			userLocation.lat,
-			userLocation.lon,
-			steps?.[0].maneuver.location[1],
-			steps?.[0].maneuver.location[1]
-		);
-
-		console.log(distance);
-
-		// console.log(
-		// 	calculateDistance(
-		// 		userLocation.lat,
-		// 		userLocation.lon,
-		// 		steps?.[0].maneuver.location[0],
-		// 		steps?.[0].maneuver.location[1]
-		// 	)
-		// );
-	}, [userLocation]);
-
-	const nextStep = steps?.[userStepIndex];
+const DirectionComponent = ({
+	steps,
+	nextStepIndex,
+}: DirectionComponentProps) => {
+	const nextStep = steps[nextStepIndex];
 
 	return (
 		<div className='page-colors absolute bottom-24 left-1/2 z-50 max-h-[50vh] w-[90vw] max-w-[380px] -translate-x-1/2 overflow-y-auto rounded-2xl border-2 border-primary text-sm'>
