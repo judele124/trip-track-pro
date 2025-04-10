@@ -22,11 +22,7 @@ export default function UserInputNameModal({
 	onSubmit,
 }: IUserInputNameModalProps) {
 	const { user } = useAuthContext();
-	const {
-		activate,
-		data: randomName,
-		loading,
-	} = useAxios({
+	const { activate, loading } = useAxios({
 		manual: true,
 	});
 
@@ -47,7 +43,7 @@ export default function UserInputNameModal({
 	const [randomNameError, setRandomNameError] = useState<string | null>(null);
 	const [inputValue, setInputValue] = useState('');
 	const inputValueDebaunced = useDebouncedValue(inputValue, 500);
-	const name = watch('name');
+	const name = watch('name') || '';
 
 	useEffect(() => {
 		if (!user) return;
@@ -93,16 +89,13 @@ export default function UserInputNameModal({
 				className='page-colors flex flex-col justify-center gap-2 rounded-2xl p-5 text-center'
 			>
 				<h5>This is you</h5>
-				<img
-					className='mx-auto size-28 rounded-full bg-secondary text-center'
-					src={loading ? LOADER_GIF : `https://robohash.org/${name}.png`}
-					alt='User avatar image'
-				/>
-				{randomNameError ? (
-					<h6>{randomNameError}</h6>
-				) : (
-					<h6>{watch('name') ?? randomName}</h6>
-				)}
+				<div className='mx-auto size-28 overflow-hidden rounded-full bg-secondary text-center'>
+					<img
+						className={`size-full`}
+						src={!name ? LOADER_GIF : `https://robohash.org/${name}.png`}
+					/>
+				</div>
+				{randomNameError ? <h6>{randomNameError}</h6> : <h6>{name}</h6>}
 				<p>see what happens when you type a new name</p>
 				{errors.name?.message && (
 					<InputFeildError message={errors.name.message} />
