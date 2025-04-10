@@ -9,6 +9,7 @@ import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import useFakeUserLocation from './tests/useFakeUserLocation';
+import MapRoute from './components/MapRoute';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
@@ -32,18 +33,24 @@ export default function MapView() {
 
 	const pointsForFakeUserLocation = useMemo(
 		() =>
-			tripRoute?.routes[0].geometry.coordinates.map((coord) => ({
-				lat: coord[1],
-				lon: coord[0],
-			})) || [],
+			tripRoute?.routes[0].legs[0].steps.map(
+				({
+					maneuver: {
+						location: [lon, lat],
+					},
+				}) => ({
+					lat,
+					lon,
+				})
+			) || [],
 		[tripRoute]
 	);
 
 	const fakeUserLocation = useFakeUserLocation({
 		points: pointsForFakeUserLocation || [],
-		speed: 10,
+		speed: 5,
 		onLocationUpdate: (location) => {
-			console.log('Location from useCurrentUserLocation', location);
+			console.log('Location from fakeUserLocation', location);
 		},
 	});
 
@@ -54,10 +61,10 @@ export default function MapView() {
 
 	return (
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
-			<Map mapboxDirectionRoute={tripRoute}>
-				{userLocation && <UserMarker location={userLocation} />}
+			<Map>
+				{/* {userLocation && <UserMarker location={userLocation} />} */}
 				{fakeUserLocation && <UserMarker location={fakeUserLocation} />}
-
+				{tripRoute && <MapRoute route={tripRoute} />}
 				{trip?.stops.map((stop) => {
 					return (
 						<GeneralMarker
@@ -71,7 +78,7 @@ export default function MapView() {
 			</Map>
 			<DirectionComponent
 				userLocation={fakeUserLocation}
-				routeData={tripRoute}
+				steps={tripRoute?.routes[0].legs[0].steps}
 			/>
 		</div>
 	);

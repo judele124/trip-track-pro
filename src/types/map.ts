@@ -1,4 +1,4 @@
-import { Feature, LineString } from 'geojson';
+import { Feature, LineString, GeoJSON } from 'geojson';
 
 interface MapboxWaypoint {
 	location: [number, number];
@@ -14,6 +14,7 @@ type DirectionStep = {
 	};
 	distance: number;
 	duration: number;
+	geometry: Feature<LineString>['geometry'];
 	name: string;
 };
 
@@ -35,4 +36,5 @@ export interface MapBoxDirectionsResponse {
 	waypoints: MapboxWaypoint[];
 	routes: MapboxRoute[];
 	code: string;
+	uuid: string;
 }

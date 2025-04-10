@@ -11,26 +11,22 @@ import Modal from '@/components/ui/Modal';
 
 interface MapProps {
 	children?: ReactNode;
-	mapboxDirectionRoute: MapBoxDirectionsResponse | null;
 }
 
-export default function Map({ children, mapboxDirectionRoute }: MapProps) {
+export default function Map({ children }: MapProps) {
 	const conatinerRef = useRef<HTMLDivElement>(null);
 	const { isMapReady, mapRef, error } = useMapInit(conatinerRef);
 	const [routeError, setRouteError] = useState<Error | null>(null);
+	const [routes, setRoutes] = useState<MapBoxDirectionsResponse[]>([]);
+
 	useEffect(() => {
-		if (!isMapReady || !mapboxDirectionRoute || !mapRef.current) return;
-		if (mapboxDirectionRoute.code === 'NoRoute') {
-			setRouteError(new Error('No route found'));
-			return;
-		}
+		if (!isMapReady || !mapRef.current) return;
 
-		addRouteToMap(mapRef.current, mapboxDirectionRoute);
-
-		mapRef.current.setCenter(
-			mapboxDirectionRoute.routes[0].geometry.coordinates[0] as [number, number]
+		routes.forEach(
+			(r: MapBoxDirectionsResponse) =>
+				mapRef.current && addRouteToMap(mapRef.current, r)
 		);
-	}, [isMapReady, mapboxDirectionRoute]);
+	}, [isMapReady, routes]);
 
 	return (
 		<>
@@ -45,7 +41,12 @@ export default function Map({ children, mapboxDirectionRoute }: MapProps) {
 					</div>
 				</Modal>
 			)}
-			<MapContextProvider isMapReady={isMapReady} mapRef={mapRef}>
+			<MapContextProvider
+				routes={routes}
+				setRoutes={setRoutes}
+				isMapReady={isMapReady}
+				mapRef={mapRef}
+			>
 				{isMapReady && children}
 
 				{!isMapReady && (
