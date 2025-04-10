@@ -1,6 +1,7 @@
 import DropdownMenuItem from './DropdownMenuItem';
 import { useDropdown } from './Dropdown';
 import { ReactNode, useEffect } from 'react';
+import Modal from '../Modal';
 
 export type RenderItem<T> = ({
 	isSelected,
@@ -28,6 +29,8 @@ export default function DropdownMenu<T>({
 		decrementSuggestedIndex,
 		incrementSuggestedIndex,
 		close,
+		open,
+		triggerElementRef,
 	} = useDropdown<T>();
 
 	const handleSelection = (index: number) => {
@@ -54,35 +57,54 @@ export default function DropdownMenu<T>({
 	};
 
 	useEffect(() => {
-		if (!isOpen || !list || !list.length) return;
+		if (!list || !list.length || selectedIndex >= 0) return;
+		triggerElementRef.current?.scrollIntoView();
+		open();
+	}, [list]);
+
+	useEffect(() => {
+		if (!isOpen) return;
 
 		document.addEventListener('keydown', handleKeyDown);
 		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [suggestedIndex, isOpen, list]);
+	}, [suggestedIndex, isOpen]);
 
 	useEffect(() => {
 		if (!list || !list.length || selectedIndex < 0) return;
 		setSelected(list[selectedIndex]);
 	}, [selectedIndex]);
 
-	if (!list || !list.length || !isOpen) return null;
+	if (!list || !list.length || !triggerElementRef.current) return null;
+
+	const { width: triggerElementWidth } =
+		triggerElementRef.current.getBoundingClientRect();
 
 	return (
-		<ul
-			onMouseOver={(e) => e.stopPropagation()}
-			className='absolute top-14 z-10 max-h-60 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
-			role='listbox'
+		<Modal
+			backdropBlur='none'
+			backgroundClassname='bg-transparent'
+			onBackdropClick={close}
+			containerStyles={{ width: triggerElementWidth }}
+			open={isOpen}
+			anchorElement={triggerElementRef}
+			anchorTo='top'
 		>
-			{list.map((item, i) => (
-				<DropdownMenuItem
-					item={item}
-					renderItem={renderItem}
-					isSelected={selectedIndex === i}
-					isSuggested={i === suggestedIndex}
-					i={i}
-					key={i}
-				/>
-			))}
-		</ul>
+			<ul
+				onMouseOver={(e) => e.stopPropagation()}
+				className='max-h-48 w-full overflow-y-auto rounded-2xl border-2 border-dark bg-white shadow-lg'
+				role='listbox'
+			>
+				{list.map((item, i) => (
+					<DropdownMenuItem
+						item={item}
+						renderItem={renderItem}
+						isSelected={selectedIndex === i}
+						isSuggested={i === suggestedIndex}
+						i={i}
+						key={i}
+					/>
+				))}
+			</ul>
+		</Modal>
 	);
 }

@@ -24,9 +24,11 @@ type ModalAnchor =
 type CommonProps = {
 	backgroundClassname?: string;
 	open: boolean;
-	onBackdropClick: (e: MouseEvent<HTMLDivElement>) => void;
+	onBackdropClick?: (e: MouseEvent<HTMLDivElement>) => void;
 	children?: ReactNode;
 	containerClassName?: string;
+	containerStyles?: CSSProperties;
+	backdropBlur?: 'none' | 'sm' | '0' | 'lg';
 };
 
 type ModalProps = CommonProps &
@@ -52,6 +54,8 @@ const Modal: FC<ModalProps> = ({
 	center,
 	containerClassName = '',
 	children,
+	containerStyles,
+	backdropBlur = 'sm',
 }) => {
 	const [positions, setPositions] = useState([0, 0, 0, 0]);
 	const childrenRef = useRef<HTMLDivElement>(null);
@@ -116,6 +120,7 @@ const Modal: FC<ModalProps> = ({
 				// Modal's top edge is aligned with the anchor's bottom edge, centered horizontally
 				const centerHorizontal =
 					anchorElementRect.left + anchorElementRect.width / 2;
+
 				setPositions([
 					anchorElementRect.top - childrenRect.height, // Top of the modal
 					centerHorizontal + childrenRect.width / 2, // Right
@@ -188,15 +193,15 @@ const Modal: FC<ModalProps> = ({
 			ref={backgroundRef}
 			onClick={(e) => {
 				e.stopPropagation();
-				onBackdropClick(e);
+				onBackdropClick?.(e);
 			}}
-			className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 ${backgroundClassname}`}
+			className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-${backdropBlur} transition-opacity duration-150 ${backgroundClassname}`}
 		>
 			<div
 				className={`relative w-fit ${containerClassName}`}
 				ref={childrenRef}
 				onClick={(e) => e.stopPropagation()}
-				style={getPositionStyles(center, positions)}
+				style={{ ...getPositionStyles(center, positions), ...containerStyles }}
 			>
 				{children}
 			</div>

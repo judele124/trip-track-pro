@@ -1,5 +1,6 @@
 import {
 	ChangeEvent,
+	HTMLAttributes,
 	InputHTMLAttributes,
 	KeyboardEvent,
 	useEffect,
@@ -15,6 +16,7 @@ interface IDropdownInputProps extends InputHTMLAttributes<HTMLInputElement> {
 	value: string;
 	autoFocus: boolean;
 	iconFill?: string;
+	iconContainerAttributes?: HTMLAttributes<HTMLDivElement>;
 }
 
 export default function DropdownInput({
@@ -23,11 +25,12 @@ export default function DropdownInput({
 	autoFocus,
 	onChange,
 	iconFill,
+	iconContainerAttributes,
 	...props
 }: IDropdownInputProps) {
-	const { open, isOpen, resetSelectedIndex } = useDropdown();
+	const { isOpen, resetSelectedIndex, triggerElementRef } = useDropdown();
 	const [inputValue, setInputValue] = useState(value || '');
-	const inputRef = useRef<HTMLInputElement>(null);
+	const inputRef = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
 		setInputValue(value || '');
@@ -41,27 +44,31 @@ export default function DropdownInput({
 	return (
 		<div className='relative'>
 			<Input
+				iconContainerAttributes={iconContainerAttributes}
 				iconFill={iconFill}
-				ref={inputRef}
+				ref={(node) => {
+					if (!node) return;
+					inputRef.current = node;
+					triggerElementRef.current = node;
+				}}
 				icon={icon}
 				value={inputValue}
 				onChange={(e) => {
 					onChange?.(e as ChangeEvent<HTMLInputElement>);
 					setInputValue(e.target.value);
-					open();
 				}}
-				onFocus={() => open()}
 				onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-					open();
 					if (e.key === 'Escape') {
 						e.currentTarget.blur();
 					}
 					if (e.key === 'Backspace') {
 						resetSelectedIndex();
 					}
+					props.onKeyDown?.(e);
 				}}
 				aria-haspopup='listbox'
 				aria-expanded={isOpen}
+				onBlur={() => setInputValue(value)}
 				{...props}
 			/>
 		</div>

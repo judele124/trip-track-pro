@@ -21,7 +21,7 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [amountError, setAmountError] = useState<boolean>(false);
 	const [amountOptions, setAmountOptions] = useState<number>(
-		watch(`stops.${stopIndex}.experience.data.options`)?.length || 1
+		watch(`stops.${stopIndex}.experience.data.options`)?.length || 2
 	);
 
 	const handleInputAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -85,6 +85,11 @@ const TriviaForm = ({ index: stopIndex }: { index: number }) => {
 
 	return (
 		<>
+			{experienceDataErrors &&
+			'message' in experienceDataErrors &&
+			experienceDataErrors.message ? (
+				<InputFeildError message={'Please fill out the fields'} />
+			) : null}
 			{experienceDataErrors?.question && (
 				<InputFeildError
 					message={experienceDataErrors?.question?.message as string}
