@@ -6,33 +6,33 @@ type Store = {
 	[x: string]: any;
 };
 
-export type UseAxiosRequestConfig = AxiosRequestConfig & {
+export type UseAxiosRequestConfig<T> = AxiosRequestConfig & {
 	uuid?: string;
 	manual?: boolean;
 	immutable?: boolean;
 	keepPreviousData?: boolean;
 	purgeNull?: boolean;
-	onSuccess?: (res: { status: number; data?: any }) => void;
+	onSuccess?: (res: { status: number; data?: T }) => void;
 	onError?: (res: {
 		status?: number;
 		error: AxiosError | Error;
-		data?: any;
+		data?: T;
 	}) => void;
 };
 
-export type UseAxiosResponse = {
+export type UseAxiosResponse<T> = {
 	loading: boolean;
 	status?: number;
 	error?: any;
-	data?: any;
+	data?: T;
 	activate: (
-		config?: UseAxiosRequestConfig
+		config?: UseAxiosRequestConfig<T>
 	) => Promise<{ status: number; error?: AxiosError | Error; data?: any }>;
 };
 
 const store: Store = {};
 
-const useAxios = ({
+const useAxios = <T>({
 	uuid,
 	manual,
 	immutable,
@@ -41,10 +41,12 @@ const useAxios = ({
 	onSuccess: initialOnSuccess,
 	onError: initialOnError,
 	...initialAxiosOptions
-}: UseAxiosRequestConfig): UseAxiosResponse => {
+}: UseAxiosRequestConfig<T>): UseAxiosResponse<T> => {
 	const [status, setStatus] = useState<number | undefined>();
 	const [error, setError] = useState<number | undefined>();
-	const [data, setData] = useState<any>(uuid ? store[uuid] : undefined);
+	const [data, setData] = useState<T | undefined>(
+		uuid ? store[uuid] : undefined
+	);
 	const [loading, setLoading] = useState(!manual && (!immutable || !data));
 
 	useLayoutEffect(() => {
