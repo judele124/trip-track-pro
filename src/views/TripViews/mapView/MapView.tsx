@@ -9,14 +9,16 @@ import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
+import OtherUserMarker from './components/OtherUserMarker';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
-	useTripSocket();
+	const { usersLocations, socket } = useTripSocket();
 
 	const userLocation = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
-			console.log('Location from useCurrentUserLocation', location);
+			if (!trip || !socket) return;
+			socket.emit('updateLocation', trip._id.toString(), location);
 		},
 	});
 
@@ -40,6 +42,9 @@ export default function MapView() {
 			<Map>
 				{userLocation && <UserMarker location={userLocation} />}
 				{tripRoute && <MapRoute route={tripRoute} />}
+				{usersLocations.map(({ id, location }) => (
+					<OtherUserMarker location={location} key={id} />
+				))}
 				{trip?.stops.map((stop) => {
 					return (
 						<GeneralMarker

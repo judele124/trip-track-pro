@@ -25,11 +25,17 @@ export interface IRedisUserTripData {
 	userId: string;
 }
 
+export interface IUserLocation {
+	id: string;
+	location: { lat: number; lon: number };
+}
+
 interface ISocketContextValue {
 	socket: SocketClientType | null;
 	messages: IMessage[];
 	addMsgToMsgs: (message: IMessage) => void;
 	usersInLiveTripData: IRedisUserTripData[] | undefined;
+	usersLocations: IUserLocation[];
 }
 
 interface ITripSocketProviderProps {
@@ -42,6 +48,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
 	const [messages, setMessages] = useState<IMessage[]>([]);
 	const { tripId, trip } = useTripContext();
+	const [usersLocations, setUsersLocations] = useState<IUserLocation[]>([]);
 
 	const { activate, data: usersInLiveTripData } = useAxios<
 		IRedisUserTripData[]
@@ -76,6 +83,17 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 
 		socket.on('locationUpdated', (userId, location) => {
 			console.log('Location updated:', userId, location);
+			setUsersLocations((prev) => {
+				const index = prev.findIndex((user) => user.id === userId);
+				if (index === -1) {
+					return [...prev, { id: userId, location }];
+				}
+				return [
+					...prev.slice(0, index),
+					{ id: userId, location },
+					...prev.slice(index + 1),
+				];
+			});
 		});
 
 		socket.on('experienceFinished', (userId) => {
@@ -118,6 +136,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				messages,
 				addMsgToMsgs,
 				usersInLiveTripData,
+				usersLocations,
 			}}
 		>
 			{children}

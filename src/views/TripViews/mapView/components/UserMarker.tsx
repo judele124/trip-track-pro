@@ -2,11 +2,11 @@ import useMarker from '../hooks/useMarker';
 import { useRef } from 'react';
 import { useMap } from '../Map';
 
-export default function UserMarker({
-	location,
-}: {
+interface IUserMarkerProps {
 	location: { lon: number; lat: number };
-}) {
+}
+
+export default function UserMarker({ location }: IUserMarkerProps) {
 	const { isMapReady, mapRef } = useMap();
 	const marketElementRef = useRef(
 		(() => {
