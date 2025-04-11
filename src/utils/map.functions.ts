@@ -50,3 +50,73 @@ export function calculateDistanceOnEarth(
 	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 	return R * c; // Distance in kilometers
 }
+
+export function findNextStepPoint(
+	userLocation: Point,
+	routePoints: Point[],
+	lastStepIndex: number
+): number {
+	let nextClosestStepIndex = -1;
+	let minDistanceToNextStep = Infinity;
+
+	for (let i = 0; i < routePoints.length; i++) {
+		const distance = calculateDistanceOnEarth(userLocation, routePoints[i]);
+
+		if (distance < minDistanceToNextStep) {
+			minDistanceToNextStep = distance;
+			nextClosestStepIndex = i;
+		}
+	}
+
+	// If we couldn't find a next station, use the last point of the route
+	if (nextClosestStepIndex === -1) {
+		nextClosestStepIndex = routePoints.length - 1;
+	}
+	return nextClosestStepIndex;
+}
+
+export function distanceToSegment(point: Point, segment: Point[]) {
+	const [p1, p2] = segment;
+	// Convert to Cartesian coordinates (simplified for small distances)
+	const x = point.lon - p1.lon;
+	const y = point.lat - p1.lat;
+	const dx = p2.lon - p1.lon;
+	const dy = p2.lat - p1.lat;
+
+	const segmentLengthSquared = dx * dx + dy * dy;
+	if (segmentLengthSquared === 0) return calculateDistanceOnEarth(point, p1);
+
+	// Project point onto segment
+	const t = Math.max(0, Math.min(1, (x * dx + y * dy) / segmentLengthSquared));
+	const projectionLon = p1.lon + t * dx;
+	const projectionLat = p1.lat + t * dy;
+
+	return calculateDistanceOnEarth(point, {
+		lon: projectionLon,
+		lat: projectionLat,
+	});
+}
+export function isOutOfRouteBetweenSteps({
+	lastStepIndex,
+	routePoints,
+	threshold = 0.05, // 50 meters = 0.05 kilometers
+	userLocation,
+}: {
+	userLocation: Point;
+	routePoints: Point[];
+	lastStepIndex: number;
+	threshold: number;
+}) {
+	// Find the next segment based on user's progress along the route
+	const nextStationIndex = findNextStepPoint(
+		userLocation,
+		routePoints,
+		lastStepIndex
+	);
+	const prevIndex = Math.max(0, nextStationIndex - 1);
+	const segment = [routePoints[prevIndex], routePoints[nextStationIndex]];
+	// Calculate distance to this segment
+	const distance = distanceToSegment(userLocation, segment);
+
+	return { isOut: distance > threshold, nextStationIndex };
+}

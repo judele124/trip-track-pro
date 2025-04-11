@@ -1,11 +1,13 @@
 import useMarker from '../hooks/useMarker';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useMap } from '../Map';
 
 export default function UserMarker({
 	location,
+	centerInitialMapView,
 }: {
 	location: { lon: number; lat: number };
+	centerInitialMapView?: boolean;
 }) {
 	const { isMapReady, mapRef } = useMap();
 	const marketElementRef = useRef(
@@ -21,6 +23,11 @@ export default function UserMarker({
 			return userIcon;
 		})()
 	);
+
+	useEffect(() => {
+		if (!mapRef.current || !centerInitialMapView) return;
+		mapRef.current.setCenter([location.lon, location.lat]);
+	}, [centerInitialMapView]);
 
 	useMarker({
 		ref: marketElementRef,
