@@ -1,7 +1,7 @@
 import Modal from './ui/Modal';
-import GeneralMarker from '@/views/TripViews/mapView/components/GeneralMarker';
+import GeneralMarker from '@/views/TripViews/mapView/components/Markers/GeneralMarker';
 import Map from '@/views/TripViews/mapView/Map';
-import StopMarker from '@/views/TripViews/mapView/components/StopMarker';
+import StopMarker from '@/views/TripViews/mapView/components/Markers/StopMarker';
 import { MapBoxDirectionsResponse } from '@/types/map';
 import { Types } from 'trip-track-package';
 

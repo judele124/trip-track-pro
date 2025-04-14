@@ -2,14 +2,14 @@ import Map from './Map';
 import { useEffect, useMemo } from 'react';
 import { useTripContext } from '@/contexts/TripContext';
 import { useTripSocket } from '@/contexts/SocketContext';
-import StopMarker from './components/StopMarker';
-import GeneralMarker from './components/GeneralMarker';
-import UserMarker from './components/UserMarker';
+import StopMarker from './components/Markers/StopMarker';
+import GeneralMarker from './components/Markers/GeneralMarker';
+import CurrentUserMarker from './components/Markers/CurrentUserMarker';
 import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
-import OtherUserMarker from './components/OtherUserMarker';
+import OtherUserMarker from './components/Markers/OtherUserMarker';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
@@ -40,15 +40,17 @@ export default function MapView() {
 	return (
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
 			<Map>
-				{userLocation && <UserMarker location={userLocation} />}
 				{tripRoute && <MapRoute route={tripRoute} />}
+
+				{userLocation && <CurrentUserMarker location={userLocation} />}
 				{usersLocations.map(({ id, location }) => (
 					<OtherUserMarker location={location} key={id} />
 				))}
-				{trip?.stops.map((stop) => {
+
+				{trip?.stops.map((stop, i) => {
 					return (
 						<GeneralMarker
-							key={`${stop.location.lat}-${stop.location.lon}`}
+							key={`${stop.location.lat}-${stop.location.lon}-${i}`}
 							location={stop.location}
 						>
 							<StopMarker stop={stop} />
