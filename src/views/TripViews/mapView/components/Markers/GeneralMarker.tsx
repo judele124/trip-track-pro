@@ -48,9 +48,6 @@ export default function GeneralMarker({
 		}
 	}, [children, childrenAsInnerHtmlString, childrenAsInnerHtmlStringClassName]);
 
-	console.log('location', location);
-	console.log('ref', ref);
-
 	return children ? (
 		<div ref={(node) => node && (ref.current = node)}>{children}</div>
 	) : null;
