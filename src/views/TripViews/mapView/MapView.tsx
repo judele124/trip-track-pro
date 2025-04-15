@@ -1,5 +1,5 @@
 import Map from './Map';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTripContext } from '@/contexts/TripContext';
 import { useTripSocket } from '@/contexts/SocketContext';
 import StopMarker from './components/StopMarker';
@@ -8,18 +8,18 @@ import UserMarker from './components/UserMarker';
 import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
-import useCurrentUserLocation from './hooks/useCurrentUserLocation';
-import useCurrentUserBearing from './hooks/useCurrentUserBearing';
+import useFakeUserLocation from './tests/useFakeUserLocation';
+// import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
 	useTripSocket();
 
-	const userLocation = useCurrentUserLocation({
-		onLocationUpdate: (location) => {
-			console.log('Location from useCurrentUserLocation', location);
-		},
-	});
+	// const userLocation = useCurrentUserLocation({
+	// 	onLocationUpdate: (location) => {
+	// 		console.log('Location from useCurrentUserLocation', location);
+	// 	},
+	// });
 
 	const points = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
@@ -31,37 +31,26 @@ export default function MapView() {
 		runGetDirectionsRoute: !tripRoute,
 	});
 
+	const fakePoints = useMemo(() => {
+		return (
+			routeData?.routes[0].geometry.coordinates.map((coord) => ({
+				lat: coord[1],
+				lon: coord[0],
+			})) || []
+		);
+	}, [routeData]);
+
+	const fakeLocation = useFakeUserLocation({ points: fakePoints, speed: 10 });
+
 	useEffect(() => {
 		if (!routeData) return;
 		setTripRoute(routeData);
 	}, [routeData]);
 
-	const bearing = useCurrentUserBearing({ userLocation });
-
-	const [nextStepIndex, setNextStepIndex] = useState<number>(0);
-
 	return (
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
 			<Map>
-				{routeData?.routes[0].legs[0].steps.map(
-					(
-						{
-							maneuver: {
-								location: [lon, lat],
-							},
-						},
-						i
-					) => {
-						return (
-							<GeneralMarker key={`${lat}-${lon}`} location={{ lat, lon }}>
-								<div
-									className={`rounded-full bg-red-500 ${i === nextStepIndex ? 'size-5 animate-bounce bg-blue-500' : 'size-2'}`}
-								></div>
-							</GeneralMarker>
-						);
-					}
-				)}
-				{userLocation && <UserMarker location={userLocation} />}
+				{fakeLocation && <UserMarker location={fakeLocation} />}
 				{tripRoute && <MapRoute route={tripRoute} />}
 				{trip?.stops.map((stop) => {
 					return (
@@ -73,14 +62,13 @@ export default function MapView() {
 						</GeneralMarker>
 					);
 				})}
+				{tripRoute?.routes[0].legs[0].steps && (
+					<DirectionComponent
+						userLocation={fakeLocation}
+						steps={tripRoute.routes[0].legs[0].steps}
+					/>
+				)}
 			</Map>
-
-			{tripRoute?.routes[0].legs[0].steps && (
-				<DirectionComponent
-					steps={tripRoute.routes[0].legs[0].steps}
-					nextStepIndex={nextStepIndex}
-				/>
-			)}
 		</div>
 	);
 }

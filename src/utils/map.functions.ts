@@ -32,11 +32,11 @@ export function addRouteToMap(map: Map, routeData: MapBoxDirectionsResponse) {
 	});
 }
 
-type Point = { lon: number; lat: number };
+type Point = [number, number];
 
 export function calculateDistanceOnEarth(
-	{ lat: lat1, lon: lon1 }: Point,
-	{ lat: lat2, lon: lon2 }: Point
+	[lat1, lon1]: Point,
+	[lat2, lon2]: Point
 ) {
 	const R = 6371; // Radius of Earth in kilometers
 	const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -78,23 +78,20 @@ export function findNextStepPoint(
 export function distanceToSegment(point: Point, segment: Point[]) {
 	const [p1, p2] = segment;
 	// Convert to Cartesian coordinates (simplified for small distances)
-	const x = point.lon - p1.lon;
-	const y = point.lat - p1.lat;
-	const dx = p2.lon - p1.lon;
-	const dy = p2.lat - p1.lat;
+	const x = point[0] - p1[0];
+	const y = point[1] - p1[1];
+	const dx = p2[0] - p1[0];
+	const dy = p2[1] - p1[1];
 
 	const segmentLengthSquared = dx * dx + dy * dy;
 	if (segmentLengthSquared === 0) return calculateDistanceOnEarth(point, p1);
 
 	// Project point onto segment
 	const t = Math.max(0, Math.min(1, (x * dx + y * dy) / segmentLengthSquared));
-	const projectionLon = p1.lon + t * dx;
-	const projectionLat = p1.lat + t * dy;
+	const projectionLon = p1[0] + t * dx;
+	const projectionLat = p1[1] + t * dy;
 
-	return calculateDistanceOnEarth(point, {
-		lon: projectionLon,
-		lat: projectionLat,
-	});
+	return calculateDistanceOnEarth(point, [projectionLon, projectionLat]);
 }
 export function isOutOfRouteBetweenSteps({
 	lastStepIndex,
