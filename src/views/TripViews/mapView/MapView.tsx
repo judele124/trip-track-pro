@@ -40,7 +40,13 @@ export default function MapView() {
 		);
 	}, [routeData]);
 
-	const fakeLocation = useFakeUserLocation({ points: fakePoints, speed: 10 });
+	const userFakePoints = [...fakePoints];
+	userFakePoints.splice(3, 0, { lat: 31.7472120058, lon: 34.988442 });
+
+	const fakeLocation = useFakeUserLocation({
+		points: userFakePoints,
+		speed: 10,
+	});
 
 	useEffect(() => {
 		if (!routeData) return;
@@ -52,7 +58,7 @@ export default function MapView() {
 			<Map>
 				{fakeLocation && <UserMarker location={fakeLocation} />}
 				{tripRoute && <MapRoute route={tripRoute} />}
-				{trip?.stops.map((stop) => {
+				{/* {trip?.stops.map((stop) => {
 					return (
 						<GeneralMarker
 							key={`${stop.location.lat}-${stop.location.lon}`}
@@ -61,11 +67,12 @@ export default function MapView() {
 							<StopMarker stop={stop} />
 						</GeneralMarker>
 					);
-				})}
+				})} */}
 				{tripRoute?.routes[0].legs[0].steps && (
 					<DirectionComponent
 						userLocation={fakeLocation}
 						steps={tripRoute.routes[0].legs[0].steps}
+						fakePoints={fakePoints}
 					/>
 				)}
 			</Map>

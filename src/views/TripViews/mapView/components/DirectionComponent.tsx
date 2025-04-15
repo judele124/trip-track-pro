@@ -5,11 +5,16 @@ import { useEffect, useState } from 'react';
 import useCurrentUserBearing from '../hooks/useCurrentUserBearing';
 import GeneralMarker from './GeneralMarker';
 import { useMap } from '../Map';
-import { calculateDistanceOnEarth } from '@/utils/map.functions';
+import {
+	calculateDistanceOnEarth,
+	findNextStepPoint,
+	isOutOfRouteBetweenSteps,
+} from '@/utils/map.functions';
 
 interface DirectionComponentProps {
 	steps: MapBoxDirectionsResponse['routes'][0]['legs'][0]['steps'];
 	userLocation: { lat: number; lon: number } | null;
+	fakePoints: { lat: number; lon: number }[];
 }
 
 const directions: Record<string, IconName> = {
@@ -21,6 +26,7 @@ const directions: Record<string, IconName> = {
 const DirectionComponent = ({
 	steps,
 	userLocation,
+	fakePoints,
 }: DirectionComponentProps) => {
 	const { mapRef } = useMap();
 	const bearing = useCurrentUserBearing({ userLocation });
@@ -40,11 +46,27 @@ const DirectionComponent = ({
 	useEffect(() => {
 		if (!steps || steps.length === 0 || !userLocation) return;
 		const { lat, lon } = userLocation;
+		const [stapLon, atapLat] = steps[nextStepIndex].maneuver.location;
 		const userToStepDistance = calculateDistanceOnEarth(
 			[lat, lon],
-			steps[nextStepIndex].maneuver.location
+			[atapLat, stapLon]
 		);
 
+		const nextStap = findNextStepPoint(
+			[lat, lon],
+			steps.map((step) => step.maneuver.location),
+			nextStepIndex
+		);
+		console.log('nextStap', nextStap);
+
+		console.log(
+			isOutOfRouteBetweenSteps({
+				userLocation: [lat, lon],
+				routePoints: fakePoints.map((point) => [point.lon, point.lat]),
+				lastStepIndex: nextStepIndex,
+				threshold: 0.02,
+			})
+		);
 		console.log('userToStepDistance', userToStepDistance);
 	}, [userLocation]);
 
@@ -98,6 +120,21 @@ const DirectionComponent = ({
 						<GeneralMarker key={`${lat}-${lon}`} location={{ lat, lon }}>
 							<div
 								className={`rounded-full bg-red-500 ${i === nextStepIndex ? 'size-6 animate-bounce bg-blue-500' : 'size-2'}`}
+							></div>
+						</GeneralMarker>
+					);
+				}
+			)}
+			{fakePoints.map(
+				(
+					{ lon, lat },
+
+					i
+				) => {
+					return (
+						<GeneralMarker key={`${lat}-${lon}-fake-p`} location={{ lat, lon }}>
+							<div
+								className={`rounded-full bg-black ${i === nextStepIndex ? 'size-6 animate-bounce bg-blue-500' : 'size-2'}`}
 							></div>
 						</GeneralMarker>
 					);

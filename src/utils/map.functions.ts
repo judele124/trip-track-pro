@@ -60,7 +60,9 @@ export function findNextStepPoint(
 	let minDistanceToNextStep = Infinity;
 
 	for (let i = 0; i < routePoints.length; i++) {
-		const distance = calculateDistanceOnEarth(userLocation, routePoints[i]);
+		const [lon, lat] = routePoints[i];
+		const distance = calculateDistanceOnEarth(userLocation, [lat, lon]);
+		// console.log(distance);
 
 		if (distance < minDistanceToNextStep) {
 			minDistanceToNextStep = distance;
@@ -76,23 +78,30 @@ export function findNextStepPoint(
 }
 
 export function distanceToSegment(point: Point, segment: Point[]) {
-	const [p1, p2] = segment;
-	// Convert to Cartesian coordinates (simplified for small distances)
-	const x = point[0] - p1[0];
-	const y = point[1] - p1[1];
-	const dx = p2[0] - p1[0];
-	const dy = p2[1] - p1[1];
+	const [lon1, lat1] = segment[0]; // Convert to [lat, lon]
+	const [lon2, lat2] = segment[1];
+
+	const p1: Point = [lat1, lon1];
+	const p2: Point = [lat2, lon2];
+
+	// Continue using the original logic with converted points
+	const x = point[1] - p1[1]; // delta lon
+	const y = point[0] - p1[0]; // delta lat
+	const dx = p2[1] - p1[1]; // delta lon of segment
+	const dy = p2[0] - p1[0]; // delta lat of segment
 
 	const segmentLengthSquared = dx * dx + dy * dy;
-	if (segmentLengthSquared === 0) return calculateDistanceOnEarth(point, p1);
+	if (segmentLengthSquared === 0) {
+		return calculateDistanceOnEarth(point, p1);
+	}
 
-	// Project point onto segment
 	const t = Math.max(0, Math.min(1, (x * dx + y * dy) / segmentLengthSquared));
-	const projectionLon = p1[0] + t * dx;
-	const projectionLat = p1[1] + t * dy;
+	const projectionLat = p1[0] + t * dy;
+	const projectionLon = p1[1] + t * dx;
 
-	return calculateDistanceOnEarth(point, [projectionLon, projectionLat]);
+	return calculateDistanceOnEarth(point, [projectionLat, projectionLon]);
 }
+
 export function isOutOfRouteBetweenSteps({
 	lastStepIndex,
 	routePoints,
