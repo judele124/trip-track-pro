@@ -9,18 +9,17 @@ import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
-import useFakeUserLocation from './tests/useFakeUserLocation';
-import { calculateDistanceOnEarth } from '@/utils/map.functions';
+import useCurrentUserBearing from './hooks/useCurrentUserBearing';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
 	useTripSocket();
 
-	// const userLocation = useCurrentUserLocation({
-	// 	onLocationUpdate: (location) => {
-	// 		console.log('Location from useCurrentUserLocation', location);
-	// 	},
-	// });
+	const userLocation = useCurrentUserLocation({
+		onLocationUpdate: (location) => {
+			console.log('Location from useCurrentUserLocation', location);
+		},
+	});
 
 	const points = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
@@ -32,47 +31,12 @@ export default function MapView() {
 		runGetDirectionsRoute: !tripRoute,
 	});
 
-	const fakeUserPath = useMemo(() => {
-		return (
-			routeData?.routes[0].legs[0].steps.flatMap(
-				({ geometry: { coordinates } }) => {
-					return coordinates.map(([lon, lat]) => ({ lon, lat }));
-				}
-			) || []
-		);
-	}, [routeData]);
-
 	useEffect(() => {
 		if (!routeData) return;
 		setTripRoute(routeData);
 	}, [routeData]);
 
-	const fakeUserLocation = useFakeUserLocation({
-		points: fakeUserPath,
-		speed: 10,
-		onLocationUpdate: (location) => {
-			if (!tripRoute) return;
-
-			let nextClosestStepIndex = -1;
-			let minDistanceToNextStep = Infinity;
-
-			const routePoints = tripRoute.routes[0].legs[0].steps.map((step) => ({
-				lat: step.maneuver.location[1],
-				lon: step.maneuver.location[0],
-			}));
-
-			for (let i = 0; i < routePoints.length; i++) {
-				const distance = calculateDistanceOnEarth(location, routePoints[i]);
-
-				if (distance < minDistanceToNextStep) {
-					minDistanceToNextStep = distance;
-					nextClosestStepIndex = i;
-				}
-			}
-
-			setNextStepIndex(nextClosestStepIndex);
-		},
-	});
+	const bearing = useCurrentUserBearing({ userLocation });
 
 	const [nextStepIndex, setNextStepIndex] = useState<number>(0);
 
@@ -97,7 +61,7 @@ export default function MapView() {
 						);
 					}
 				)}
-				{fakeUserLocation && <UserMarker location={fakeUserLocation} />}
+				{userLocation && <UserMarker location={userLocation} />}
 				{tripRoute && <MapRoute route={tripRoute} />}
 				{trip?.stops.map((stop) => {
 					return (

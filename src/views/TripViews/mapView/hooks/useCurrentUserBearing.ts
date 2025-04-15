@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 interface IuseCurrentUserBearingProps {
-	userLocation: { lat: number; lon: number };
+	userLocation: { lat: number; lon: number } | null;
 }
 
 export default function useCurrentUserBearing({
@@ -11,6 +11,8 @@ export default function useCurrentUserBearing({
 	const [bearing, setBearing] = useState(0);
 
 	useEffect(() => {
+		if (!userLocation) return;
+
 		if (!lastLocation.current) {
 			lastLocation.current = userLocation;
 			return;
