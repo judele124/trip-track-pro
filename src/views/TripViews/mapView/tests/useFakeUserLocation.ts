@@ -74,7 +74,7 @@ export default function useFakeUserLocation({
 		}, updateIntervalMs);
 
 		return () => clearInterval(interval);
-	}, [points, speed, updateIntervalMs]);
+	}, [points, speed, updateIntervalMs, onLocationUpdate]);
 
 	return location;
 }
