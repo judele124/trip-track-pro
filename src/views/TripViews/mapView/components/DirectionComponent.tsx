@@ -46,8 +46,6 @@ const DirectionComponent = ({
 			zoom: 18,
 			speed: 3,
 		});
-
-		console.log('nextStepIndex', nextStepIndex);
 	}, [nextStepIndex]);
 
 	useEffect(() => {
@@ -64,17 +62,15 @@ const DirectionComponent = ({
 			steps.map((step) => step.maneuver.location),
 			nextStepIndex
 		);
-		console.log('nextStap', nextStap);
 
-		console.log(
-			isOutOfRouteBetweenSteps({
-				userLocation: [lat, lon],
-				routePoints: fakePoints.map((point) => [point.lon, point.lat]),
-				lastStepIndex: nextStepIndex,
-				threshold: 0.02,
-			})
-		);
-		console.log('userToStepDistance', userToStepDistance);
+		const isOutOfRoute = isOutOfRouteBetweenSteps({
+			userLocation: [lat, lon],
+			routePoints: fakePoints.map((point) => [point.lon, point.lat]),
+			lastStepIndex: nextStepIndex,
+			threshold: 0.02,
+		});
+
+		console.log('isOutOfRoute', isOutOfRoute);
 	}, [userLocation]);
 
 	const nextStep = steps[nextStepIndex];
