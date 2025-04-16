@@ -1,8 +1,7 @@
 import Icon from '@/components/icons/Icon';
-import { DirectionStep, MapBoxDirectionsResponse } from '@/types/map';
+import { DirectionStep } from '@/types/map';
 import { IconName } from '@/components/icons/Icon';
-import { useEffect, useState } from 'react';
-import useCurrentUserBearing from '../hooks/useCurrentUserBearing';
+import { useEffect } from 'react';
 import GeneralMarker from './GeneralMarker';
 import { useMap } from '../Map';
 import {
@@ -65,17 +64,17 @@ const DirectionComponent = ({
 			steps.map((step) => step.maneuver.location),
 			nextStepIndex
 		);
-		// console.log('nextStap', nextStap);
+		console.log('nextStap', nextStap);
 
-		// console.log(
-		isOutOfRouteBetweenSteps({
-			userLocation: [lat, lon],
-			routePoints: fakePoints.map((point) => [point.lon, point.lat]),
-			lastStepIndex: nextStepIndex,
-			threshold: 0.02,
-		});
-		// );
-		// console.log('userToStepDistance', userToStepDistance);
+		console.log(
+			isOutOfRouteBetweenSteps({
+				userLocation: [lat, lon],
+				routePoints: fakePoints.map((point) => [point.lon, point.lat]),
+				lastStepIndex: nextStepIndex,
+				threshold: 0.02,
+			})
+		);
+		console.log('userToStepDistance', userToStepDistance);
 	}, [userLocation]);
 
 	const nextStep = steps[nextStepIndex];
