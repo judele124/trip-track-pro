@@ -17,7 +17,7 @@ import { tripGet } from '@/servises/tripService';
 export default function TripDetailsView() {
 	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
 	const params = useParams();
-	const { data, loading, error, status, activate } = useAxios({
+	const { data, loading, error, status, activate } = useAxios<Trip>({
 		manual: true,
 	});
 

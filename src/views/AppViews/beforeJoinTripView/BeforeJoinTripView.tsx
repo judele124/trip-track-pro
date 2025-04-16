@@ -7,6 +7,8 @@ import useToggle from '@/hooks/useToggle';
 import UserOrGuestModal from '@/components/UserOrGuestModal';
 import TripNotActiveMessage from '@/components/TripNotActiveMessage';
 import TripCancelledMessage from '@/components/TripCancelledMessage';
+import { joinTrip } from '@/servises/tripService';
+import useAxios from '@/hooks/useAxios';
 
 export default function BeforeJoinTripView() {
 	const { trip, loadingTrip, errorTrip, tripId } = useTripContext();
@@ -21,6 +23,10 @@ export default function BeforeJoinTripView() {
 
 	const { isOpen: isTripCancelledOpen, setIsOpen: setIsTripCancelledOpen } =
 		useToggle();
+
+	const { activate } = useAxios({
+		manual: true,
+	});
 
 	if (loadingTrip) return <p>Loading...</p>;
 
@@ -49,7 +55,7 @@ export default function BeforeJoinTripView() {
 
 	const { name, description, reward, _id } = trip;
 
-	const handleOnjoin = () => {
+	const handleOnjoin = async () => {
 		if (trip.status === 'cancelled') {
 			setIsTripCancelledOpen(true);
 			return;
@@ -64,6 +70,11 @@ export default function BeforeJoinTripView() {
 			setIsUserOrGuestModalOpen(true);
 			return;
 		}
+
+		await joinTrip(activate, tripId, {
+			name: user?.name,
+			imageUrl: user?.imageUrl,
+		});
 
 		nav(`${navigationRoutes.map}`);
 	};

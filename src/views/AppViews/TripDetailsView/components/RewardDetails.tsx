@@ -105,7 +105,7 @@ function RewardDetailsModalForm({
 		error,
 		status,
 		data: updatedTripData,
-	} = useAxios({
+	} = useAxios<Trip>({
 		manual: true,
 	});
 

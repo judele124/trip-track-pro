@@ -22,7 +22,7 @@ export default function UserInputNameModal({
 	onSubmit,
 }: IUserInputNameModalProps) {
 	const { user } = useAuthContext();
-	const { activate, loading } = useAxios({
+	const { activate, loading } = useAxios<string>({
 		manual: true,
 	});
 
@@ -50,7 +50,7 @@ export default function UserInputNameModal({
 
 		activate({
 			url: `${API_BASE_URL}/user/random-name`,
-		}).then(({ data: name }) => setInputValue(name));
+		}).then(({ data: name }) => name && setInputValue(name));
 	}, []);
 
 	useEffect(() => {
@@ -71,8 +71,10 @@ export default function UserInputNameModal({
 			return;
 		}
 
-		setValue('name', name);
-		setInputValue(name);
+		if (name) {
+			setValue('name', name);
+			setInputValue(name);
+		}
 	};
 
 	return (

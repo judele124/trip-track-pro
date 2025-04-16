@@ -41,9 +41,9 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 		loading: loadingTrip,
 		error: errorTrip,
 		status,
-	} = useAxios({
+	} = useAxios<Trip>({
 		manual: true,
-		onSuccess: ({ data }) => setTrip(data),
+		onSuccess: ({ data }) => data && setTrip(data),
 	});
 
 	useEffect(() => {
