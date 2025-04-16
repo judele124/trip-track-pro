@@ -1,5 +1,5 @@
 import Icon from '@/components/icons/Icon';
-import { MapBoxDirectionsResponse } from '@/types/map';
+import { DirectionStep, MapBoxDirectionsResponse } from '@/types/map';
 import { IconName } from '@/components/icons/Icon';
 import { useEffect, useState } from 'react';
 import useCurrentUserBearing from '../hooks/useCurrentUserBearing';
@@ -10,9 +10,10 @@ import {
 	findNextStepPoint,
 	isOutOfRouteBetweenSteps,
 } from '@/utils/map.functions';
+import useNextStepIndex from '../hooks/useNextStepIndex';
 
 interface DirectionComponentProps {
-	steps: MapBoxDirectionsResponse['routes'][0]['legs'][0]['steps'];
+	steps: DirectionStep[];
 	userLocation: { lat: number; lon: number } | null;
 	fakePoints: { lat: number; lon: number }[];
 }
@@ -29,8 +30,10 @@ const DirectionComponent = ({
 	fakePoints,
 }: DirectionComponentProps) => {
 	const { mapRef } = useMap();
-	const bearing = useCurrentUserBearing({ userLocation });
-	const [nextStepIndex, setNextStepIndex] = useState<number>(0);
+	const { nextStepIndex, userToStepNextDistance } = useNextStepIndex({
+		userLocation,
+		steps,
+	});
 
 	useEffect(() => {
 		if (!mapRef.current || steps.length === 0 || !steps[nextStepIndex]) return;
@@ -39,8 +42,13 @@ const DirectionComponent = ({
 			maneuver: { location },
 		} = steps[nextStepIndex];
 
-		mapRef.current.setCenter(location);
-		mapRef.current.setZoom(22);
+		mapRef.current.flyTo({
+			center: location,
+			zoom: 18,
+			speed: 3,
+		});
+
+		console.log('nextStepIndex', nextStepIndex);
 	}, [nextStepIndex]);
 
 	useEffect(() => {
@@ -57,17 +65,17 @@ const DirectionComponent = ({
 			steps.map((step) => step.maneuver.location),
 			nextStepIndex
 		);
-		console.log('nextStap', nextStap);
+		// console.log('nextStap', nextStap);
 
-		console.log(
-			isOutOfRouteBetweenSteps({
-				userLocation: [lat, lon],
-				routePoints: fakePoints.map((point) => [point.lon, point.lat]),
-				lastStepIndex: nextStepIndex,
-				threshold: 0.02,
-			})
-		);
-		console.log('userToStepDistance', userToStepDistance);
+		// console.log(
+		isOutOfRouteBetweenSteps({
+			userLocation: [lat, lon],
+			routePoints: fakePoints.map((point) => [point.lon, point.lat]),
+			lastStepIndex: nextStepIndex,
+			threshold: 0.02,
+		});
+		// );
+		// console.log('userToStepDistance', userToStepDistance);
 	}, [userLocation]);
 
 	const nextStep = steps[nextStepIndex];
@@ -95,9 +103,7 @@ const DirectionComponent = ({
 						<div className='flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300'>
 							<div className='flex flex-row items-center text-center'>
 								<Icon name='userWalking' fill='#ce5737' />{' '}
-								{Math.round(nextStep.distance) > 1000
-									? `${(Math.round(nextStep.distance) / 1000).toFixed(1)} km`
-									: `${Math.round(nextStep.distance)} meters`}
+								{`${Math.floor(userToStepNextDistance.current)} meters`}
 							</div>
 							<div className='flex min-w-[45%] items-center gap-x-0.5 border-l-2 border-gray-500 pl-1'>
 								<Icon name='clock' fill='#ce5737' size='16' />{' '}
@@ -117,9 +123,9 @@ const DirectionComponent = ({
 					i
 				) => {
 					return (
-						<GeneralMarker key={`${lat}-${lon}`} location={{ lat, lon }}>
+						<GeneralMarker key={`${lat}-${lon}-${i}`} location={{ lat, lon }}>
 							<div
-								className={`rounded-full bg-red-500 ${i === nextStepIndex ? 'size-6 animate-bounce bg-blue-500' : 'size-2'}`}
+								className={`rounded-full bg-red-500 ${i === nextStepIndex ? 'size-10 animate-bounce bg-blue-500' : 'size-5'}`}
 							></div>
 						</GeneralMarker>
 					);
@@ -132,7 +138,10 @@ const DirectionComponent = ({
 					i
 				) => {
 					return (
-						<GeneralMarker key={`${lat}-${lon}-fake-p`} location={{ lat, lon }}>
+						<GeneralMarker
+							key={`${lat}-${lon}-fake-p-${i}`}
+							location={{ lat, lon }}
+						>
 							<div
 								className={`rounded-full bg-black ${i === nextStepIndex ? 'size-6 animate-bounce bg-blue-500' : 'size-2'}`}
 							></div>

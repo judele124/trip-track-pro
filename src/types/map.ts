@@ -1,16 +1,18 @@
 import { Feature, LineString } from 'geojson';
 
-interface MapboxWaypoint {
+export interface MapboxWaypoint {
 	location: [number, number];
 	name: string;
 }
 
-type DirectionStep = {
+export type DirectionStep = {
 	maneuver: {
 		location: [number, number];
 		instruction: string;
 		modifier: string;
 		type: string;
+		bearing_before: number;
+		bearing_after: number;
 	};
 	distance: number;
 	duration: number;
@@ -18,7 +20,7 @@ type DirectionStep = {
 	name: string;
 };
 
-interface MapboxRoute {
+export interface MapboxRoute {
 	legs: {
 		steps: DirectionStep[];
 		weight: number;

@@ -40,12 +40,9 @@ export default function MapView() {
 		);
 	}, [routeData]);
 
-	const userFakePoints = [...fakePoints];
-	userFakePoints.splice(3, 0, { lat: 31.7472120058, lon: 34.988442 });
-
 	const fakeLocation = useFakeUserLocation({
-		points: userFakePoints,
-		speed: 10,
+		points: fakePoints,
+		speed: 30,
 	});
 
 	useEffect(() => {
