@@ -51,25 +51,25 @@ export function calculateDistanceOnEarth(
 	return R * c; // Distance in kilometers
 }
 
-export function findNextStepPoint(
+export function findClosestPoint(
 	userLocation: Point,
 	routePoints: Point[],
 	lastStepIndex: number
 ): number {
 	let nextClosestStepIndex = -1;
 	let minDistanceToNextStep = Infinity;
-
-	for (let i = 0; i < routePoints.length; i++) {
+	for (
+		let i = Math.max(0, lastStepIndex - 3);
+		i < lastStepIndex + 3 && i < routePoints.length;
+		i++
+	) {
 		const [lon, lat] = routePoints[i];
 		const distance = calculateDistanceOnEarth(userLocation, [lat, lon]);
-		// console.log(distance);
-
 		if (distance < minDistanceToNextStep) {
 			minDistanceToNextStep = distance;
 			nextClosestStepIndex = i;
 		}
 	}
-
 	// If we couldn't find a next station, use the last point of the route
 	if (nextClosestStepIndex === -1) {
 		nextClosestStepIndex = routePoints.length - 1;
@@ -102,6 +102,30 @@ export function distanceToSegment(point: Point, segment: Point[]) {
 	return calculateDistanceOnEarth(point, [projectionLat, projectionLon]);
 }
 
+function getNextStepIndex({
+	userLocation,
+	routePoints,
+	closestPointIndex,
+}: {
+	userLocation: Point;
+	routePoints: Point[];
+	closestPointIndex: number;
+}): number {
+	const closestPoint = routePoints[closestPointIndex];
+	const next =
+		routePoints[Math.min(closestPointIndex + 1, routePoints.length - 1)];
+	const prev = routePoints[Math.max(closestPointIndex - 1, 0)];
+
+	if (!next) return closestPointIndex;
+
+	const nextDistance = distanceToSegment(userLocation, [closestPoint, next]);
+	const prevDistance = distanceToSegment(userLocation, [closestPoint, prev]);
+
+	return nextDistance < prevDistance
+		? closestPointIndex + 1
+		: closestPointIndex;
+}
+
 export function isOutOfRouteBetweenSteps({
 	lastStepIndex,
 	routePoints,
@@ -114,15 +138,25 @@ export function isOutOfRouteBetweenSteps({
 	threshold: number;
 }) {
 	// Find the next segment based on user's progress along the route
-	const nextStationIndex = findNextStepPoint(
+	const closestPointIndex = findClosestPoint(
 		userLocation,
 		routePoints,
 		lastStepIndex
 	);
+
+	const nextStationIndex = getNextStepIndex({
+		userLocation,
+		routePoints,
+		closestPointIndex,
+	});
 	const prevIndex = Math.max(0, nextStationIndex - 1);
 	const segment = [routePoints[prevIndex], routePoints[nextStationIndex]];
 	// Calculate distance to this segment
-	const distance = distanceToSegment(userLocation, segment);
-
-	return { isOut: distance > threshold, nextStationIndex };
+	const distanceToSeg = distanceToSegment(userLocation, segment);
+	const distanceToNextPoint = calculateDistanceOnEarth(
+		userLocation,
+		routePoints[nextStationIndex]
+	);
+	const isOut = Math.min(distanceToSeg, distanceToNextPoint) > threshold;
+	return { isOut, nextStationIndex };
 }

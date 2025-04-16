@@ -9,7 +9,7 @@ import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
 import useFakeUserLocation from './tests/useFakeUserLocation';
-// import useCurrentUserLocation from './hooks/useCurrentUserLocation';
+import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
@@ -39,6 +39,15 @@ export default function MapView() {
 			})) || []
 		);
 	}, [routeData]);
+
+	// const userfakePoints = [
+	// 	...fakePoints.slice(0, 3),
+	// 	{
+	// 		lat: 31.747944,
+	// 		lon: 34.98899,
+	// 	},
+	// 	...fakePoints.slice(3),
+	// ];
 
 	const fakeLocation = useFakeUserLocation({
 		points: fakePoints,

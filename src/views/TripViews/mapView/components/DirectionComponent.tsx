@@ -1,14 +1,10 @@
 import Icon from '@/components/icons/Icon';
 import { DirectionStep } from '@/types/map';
 import { IconName } from '@/components/icons/Icon';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import GeneralMarker from './GeneralMarker';
 import { useMap } from '../Map';
-import {
-	calculateDistanceOnEarth,
-	findNextStepPoint,
-	isOutOfRouteBetweenSteps,
-} from '@/utils/map.functions';
+import { isOutOfRouteBetweenSteps } from '@/utils/map.functions';
 import useNextStepIndex from '../hooks/useNextStepIndex';
 
 interface DirectionComponentProps {
@@ -33,6 +29,7 @@ const DirectionComponent = ({
 		userLocation,
 		steps,
 	});
+	const nextUserCheckpoint = useRef(0);
 
 	useEffect(() => {
 		if (!mapRef.current || steps.length === 0 || !steps[nextStepIndex]) return;
@@ -46,31 +43,25 @@ const DirectionComponent = ({
 			zoom: 18,
 			speed: 3,
 		});
+		console.log('nextStepIndex', nextStepIndex);
 	}, [nextStepIndex]);
 
 	useEffect(() => {
 		if (!steps || steps.length === 0 || !userLocation) return;
+
 		const { lat, lon } = userLocation;
-		const [stapLon, atapLat] = steps[nextStepIndex].maneuver.location;
-		const userToStepDistance = calculateDistanceOnEarth(
-			[lat, lon],
-			[atapLat, stapLon]
-		);
-
-		const nextStap = findNextStepPoint(
-			[lat, lon],
-			steps.map((step) => step.maneuver.location),
-			nextStepIndex
-		);
-
 		const isOutOfRoute = isOutOfRouteBetweenSteps({
 			userLocation: [lat, lon],
 			routePoints: fakePoints.map((point) => [point.lon, point.lat]),
-			lastStepIndex: nextStepIndex,
+			lastStepIndex: nextUserCheckpoint.current,
 			threshold: 0.02,
 		});
 
-		console.log('isOutOfRoute', isOutOfRoute);
+		nextUserCheckpoint.current = isOutOfRoute.nextStationIndex;
+
+		if (isOutOfRoute.isOut) {
+			console.log('isOutOfRoute');
+		}
 	}, [userLocation]);
 
 	const nextStep = steps[nextStepIndex];
@@ -126,24 +117,18 @@ const DirectionComponent = ({
 					);
 				}
 			)}
-			{fakePoints.map(
-				(
-					{ lon, lat },
-
-					i
-				) => {
-					return (
-						<GeneralMarker
-							key={`${lat}-${lon}-fake-p-${i}`}
-							location={{ lat, lon }}
-						>
-							<div
-								className={`rounded-full bg-black ${i === nextStepIndex ? 'size-6 animate-bounce bg-blue-500' : 'size-2'}`}
-							></div>
-						</GeneralMarker>
-					);
-				}
-			)}
+			{fakePoints.map(({ lon, lat }, i) => {
+				return (
+					<GeneralMarker
+						key={`${lat}-${lon}-fake-p-${i}`}
+						location={{ lat, lon }}
+					>
+						<div
+							className={`rounded-full bg-black ${i === nextUserCheckpoint.current ? 'size-6 bg-green-500' : i === nextUserCheckpoint.current - 1 ? 'size-6 bg-orange-500' : 'size-2'}`}
+						></div>
+					</GeneralMarker>
+				);
+			})}
 		</>
 	);
 };
