@@ -6,9 +6,9 @@ import { ServiceError } from '@/utils/ServiceError';
 import { Types } from 'trip-track-package';
 
 export const tripCreate = async (
-	activate: UseAxiosResponse['activate'],
+	activate: UseAxiosResponse<Trip>['activate'],
 	tripData: Types['Trip']['Model']
-): Promise<{ status: number; data?: any }> => {
+): Promise<{ status: number; data?: Trip }> => {
 	const formData = new FormData();
 
 	const rewardImage = tripData.reward?.image;
@@ -38,7 +38,7 @@ export const tripCreate = async (
 };
 
 export const tripGet = async (
-	activate: UseAxiosResponse['activate'],
+	activate: UseAxiosResponse<Trip>['activate'],
 	id: string
 ) => {
 	const { data, status } = await activate({
@@ -50,7 +50,7 @@ export const tripGet = async (
 };
 
 export const tripUpdate = async (
-	activate: UseAxiosResponse['activate'],
+	activate: UseAxiosResponse<Trip>['activate'],
 	id: string,
 	tripData: Partial<Omit<Trip, 'reward'>>
 ) => {
@@ -64,7 +64,7 @@ export const tripUpdate = async (
 };
 
 export const rewardUpdate = async (
-	activate: UseAxiosResponse['activate'],
+	activate: UseAxiosResponse<Trip>['activate'],
 	id: string,
 	rewardData: FormData
 ) => {

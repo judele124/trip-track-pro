@@ -20,14 +20,14 @@ export type UseAxiosRequestConfig<T> = AxiosRequestConfig & {
 	}) => void;
 };
 
-export type UseAxiosResponse<T> = {
+export type UseAxiosResponse<T = any> = {
 	loading: boolean;
 	status?: number;
 	error?: any;
 	data?: T;
 	activate: (
 		config?: UseAxiosRequestConfig<T>
-	) => Promise<{ status: number; error?: AxiosError | Error; data?: any }>;
+	) => Promise<{ status: number; error?: AxiosError | Error; data?: T }>;
 };
 
 const store: Store = {};

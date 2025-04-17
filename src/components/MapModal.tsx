@@ -4,11 +4,12 @@ import Map from '@/views/TripViews/mapView/Map';
 import StopMarker from '@/views/TripViews/mapView/components/Markers/StopMarker';
 import { MapBoxDirectionsResponse } from '@/types/map';
 import { Types } from 'trip-track-package';
+import MapRoute from '@/views/TripViews/mapView/components/MapRoute';
 
 interface IMapModalProps {
 	mapOpen: boolean;
 	toggleMap: () => void;
-	routeData: MapBoxDirectionsResponse | null;
+	routeData: MapBoxDirectionsResponse | null | undefined;
 	stops: Types['Trip']['Stop']['Model'][];
 	disableExperiences?: true;
 }
@@ -16,14 +17,15 @@ interface IMapModalProps {
 export default function MapModal({
 	mapOpen,
 	toggleMap,
-	routeData,
 	stops,
 	disableExperiences,
+	routeData,
 }: IMapModalProps) {
 	return (
 		<Modal open={mapOpen} center onBackdropClick={() => toggleMap()}>
 			<div className='h-[80vh] w-[90vw] overflow-hidden rounded-2xl'>
-				<Map mapboxDirectionRoute={routeData}>
+				<Map>
+					{routeData && <MapRoute route={routeData} />}
 					{stops.map((stop: Types['Trip']['Stop']['Model']) => (
 						<GeneralMarker
 							key={`${stop.location.lon}-${stop.location.lat}`}

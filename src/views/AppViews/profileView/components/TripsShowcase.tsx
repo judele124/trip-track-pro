@@ -3,6 +3,7 @@ import useAxios from '@/hooks/useAxios';
 import { API_BASE_URL } from '@/env.config';
 import TripsList from './TripsList';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { Trip } from '@/types/trip';
 
 const filterList = ['createdTrips', 'joinedTrips'] as const;
 
@@ -13,20 +14,21 @@ const tripsShowcaseContext = createContext<{
 export default function TripsShowcase() {
 	const {
 		activate,
-		data: createdTripsData,
+		data: createdTripsData = [],
 		loading: createdTripsLoading,
 		error: createdTripsError,
 		status: createdTripsStatus,
-	} = useAxios({
+	} = useAxios<Trip[]>({
 		url: `${API_BASE_URL}/trip/getAll`,
 		manual: true,
 	});
+
 	const {
-		data: joinedTripsData,
+		data: joinedTripsData = [],
 		loading: joinedTripsLoading,
 		error: joinedTripsError,
 		status: joinedTripsStatus,
-	} = useAxios({
+	} = useAxios<Trip[]>({
 		url: `${API_BASE_URL}/trip/user-in-participants`,
 	});
 
