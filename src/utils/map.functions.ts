@@ -1,25 +1,36 @@
 import { MapBoxDirectionsResponse } from '@/types/map';
-import { Map } from 'mapbox-gl';
+import {
+	Map,
+	LayerSpecification,
+	CircleLayerSpecification,
+	GeoJSONSource,
+	GeoJSONSourceSpecification,
+} from 'mapbox-gl';
 
-export function addRouteToMap(map: Map, routeData: MapBoxDirectionsResponse) {
-	if (map.getSource('route')) {
-		try {
-			map.removeLayer('route');
-			map.removeSource('route');
-		} catch (error) {
-			console.error('Error removing existing route:', error);
-		}
-	}
+type Point = [number, number];
 
-	map.addSource('route', {
+// map drawing functions
+export function addRouteToMap(
+	key: string,
+	map: Map,
+	routeData: MapBoxDirectionsResponse
+) {
+	const sourceData: GeoJSONSourceSpecification = {
 		type: 'geojson',
-		data: routeData.routes[0].geometry,
-	});
+		data: {
+			type: 'Feature',
+			properties: {},
+			geometry: {
+				type: 'LineString',
+				coordinates: routeData.routes[0].geometry.coordinates,
+			},
+		},
+	};
 
-	map.addLayer({
-		id: 'route',
+	const layerData: LayerSpecification = {
+		id: key,
 		type: 'line',
-		source: 'route',
+		source: key,
 		layout: {
 			'line-join': 'round',
 			'line-cap': 'round',
@@ -29,16 +40,81 @@ export function addRouteToMap(map: Map, routeData: MapBoxDirectionsResponse) {
 			'line-width': 5,
 			'line-opacity': 0.75,
 		},
-	});
+	};
+
+	addSourceAndLayerToMap(key, map, sourceData, layerData);
 }
 
-type Point = [number, number];
+export function addSourceAndLayerToMap(
+	key: string,
+	map: Map,
+	sourceData: GeoJSONSourceSpecification,
+	layerData: LayerSpecification
+) {
+	if (!sourceData.data) {
+		throw new Error("sourceData.data doesn't exist");
+	}
+
+	const existingSource = map.getSource(key);
+
+	if (existingSource) {
+		if (existingSource.type === 'geojson') {
+			try {
+				existingSource.setData(sourceData.data);
+				return;
+			} catch (error) {
+				console.error('Error updating existing route:', error);
+			}
+		} else {
+			try {
+				map.removeLayer(key);
+				map.removeSource(key);
+			} catch (error) {
+				console.error('Error removing existing route:', error);
+			}
+		}
+	}
+
+	map.addSource(key, sourceData);
+
+	if (!map.getLayer(key)) {
+		map.addLayer(layerData);
+	}
+}
+
+export function addCircleRadiusToLocation<K extends string>(
+	key: K,
+	map: Map,
+	coordinates: [number, number],
+	circleData: CircleLayerSpecification
+) {
+	const sourceData: GeoJSONSourceSpecification = {
+		type: 'geojson',
+		data: {
+			type: 'FeatureCollection',
+			features: [
+				{
+					type: 'Feature',
+					properties: {},
+					geometry: {
+						type: 'Point',
+						coordinates,
+					},
+				},
+			],
+		},
+	};
+
+	addSourceAndLayerToMap(key, map, sourceData, circleData);
+}
+
+// map navigation helper functions
 
 export function calculateDistanceOnEarth(
 	[lat1, lon1]: Point,
 	[lat2, lon2]: Point
 ) {
-	const R = 6371; // Radius of Earth in kilometers
+	const R = 6378137; // Radius of Earth in meters
 	const dLat = (lat2 - lat1) * (Math.PI / 180);
 	const dLon = (lon2 - lon1) * (Math.PI / 180);
 	const a =
@@ -48,7 +124,7 @@ export function calculateDistanceOnEarth(
 			Math.sin(dLon / 2) *
 			Math.sin(dLon / 2);
 	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	return R * c; // Distance in kilometers
+	return R * c; // Distance in meters
 }
 
 export function findClosestPoint(
@@ -129,7 +205,7 @@ function getNextStepIndex({
 export function isOutOfRouteBetweenSteps({
 	lastStepIndex,
 	routePoints,
-	threshold = 0.05, // 50 meters = 0.05 kilometers
+	threshold = 50, // 50 meters
 	userLocation,
 }: {
 	userLocation: Point;
@@ -159,4 +235,28 @@ export function isOutOfRouteBetweenSteps({
 	);
 	const isOut = Math.min(distanceToSeg, distanceToNextPoint) > threshold;
 	return { isOut, nextStationIndex };
+}
+
+export function metersToPixels(
+	map: mapboxgl.Map,
+	meters: number,
+	[lon, lat]: [number, number]
+): number {
+	const metersPerDegreeLat = 111320; // 1 degree ≈ 111.32 km
+	const metersPerDegreeLon = (40075000 * Math.cos((lat * Math.PI) / 180)) / 360;
+
+	const deltaLat = meters / metersPerDegreeLat;
+	const deltaLon = meters / metersPerDegreeLon;
+
+	const origin = map.project([lon, lat]);
+	const pointNorth = map.project([lon, lat + deltaLat]);
+	const pointEast = map.project([lon + deltaLon, lat]);
+
+	const distNorth = Math.hypot(
+		pointNorth.x - origin.x,
+		pointNorth.y - origin.y
+	);
+	const distEast = Math.hypot(pointEast.x - origin.x, pointEast.y - origin.y);
+
+	return Math.max(distNorth, distEast);
 }

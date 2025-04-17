@@ -51,7 +51,7 @@ export default function MapView() {
 
 	const fakeLocation = useFakeUserLocation({
 		points: fakePoints,
-		speed: 30,
+		speed: 5,
 	});
 
 	useEffect(() => {
@@ -64,7 +64,7 @@ export default function MapView() {
 			<Map>
 				{fakeLocation && <UserMarker location={fakeLocation} />}
 				{tripRoute && <MapRoute route={tripRoute} />}
-				{/* {trip?.stops.map((stop) => {
+				{trip?.stops.map((stop) => {
 					return (
 						<GeneralMarker
 							key={`${stop.location.lat}-${stop.location.lon}`}
@@ -73,12 +73,11 @@ export default function MapView() {
 							<StopMarker stop={stop} />
 						</GeneralMarker>
 					);
-				})} */}
+				})}
 				{tripRoute?.routes[0].legs[0].steps && (
 					<DirectionComponent
 						userLocation={fakeLocation}
 						steps={tripRoute.routes[0].legs[0].steps}
-						fakePoints={fakePoints}
 					/>
 				)}
 			</Map>

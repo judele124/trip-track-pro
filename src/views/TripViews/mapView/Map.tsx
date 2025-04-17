@@ -39,8 +39,8 @@ export default function Map({ children }: MapProps) {
 		if (!isMapReady || !mapRef.current) return;
 
 		routes.forEach(
-			(r: MapBoxDirectionsResponse) =>
-				mapRef.current && addRouteToMap(mapRef.current, r)
+			(r: MapBoxDirectionsResponse, i: number) =>
+				mapRef.current && addRouteToMap(`route-${i}`, mapRef.current, r)
 		);
 	}, [isMapReady, routes]);
 
