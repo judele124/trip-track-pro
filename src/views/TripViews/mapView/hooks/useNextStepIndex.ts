@@ -1,5 +1,8 @@
 import { DirectionStep } from '@/types/map';
-import { calculateDistanceOnEarth } from '@/utils/map.functions';
+import {
+	calculateDistanceOnEarth,
+	getBearingDiff,
+} from '@/utils/map.functions';
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import useCurrentUserBearing from './useCurrentUserBearing';
 
@@ -13,8 +16,8 @@ interface IUseNextStepIndexReturn {
 	userToStepNextDistance: MutableRefObject<number>;
 }
 
-export const RANGE_THRESHOLD = 5; // in meters
-export const ANGLE_THRESHOLD = 20; // degrees
+export const RANGE_STEP_THRESHOLD = 5; // in meters
+export const ANGLE_STEP_THRESHOLD = 20; // degrees
 
 export default function useNextStepIndex({
 	userLocation,
@@ -37,23 +40,27 @@ export default function useNextStepIndex({
 			currentStep.maneuver.location
 		);
 
-		if (userToStepNextDistance.current < RANGE_THRESHOLD) {
+		if (userToStepNextDistance.current < RANGE_STEP_THRESHOLD) {
 			wasInStepRange.current[nextStepIndex] = true;
 		}
 
 		const bearingToCompare = currentStep.maneuver.bearing_after;
 
 		if (wasInStepRange.current[nextStepIndex]) {
-			if (getBearingDiff(bearing, bearingToCompare) < ANGLE_THRESHOLD) {
+			const userDistanceToNextPoint = calculateDistanceOnEarth(
+				[lon, lat],
+				steps[nextStepIndex + 1].maneuver.location
+			);
+			if (userDistanceToNextPoint < RANGE_STEP_THRESHOLD) {
+				wasInStepRange.current[nextStepIndex + 1] = true;
+				setNextStepIndex((prev) => prev + 1);
+			} else if (
+				getBearingDiff(bearing, bearingToCompare) < ANGLE_STEP_THRESHOLD
+			) {
 				setNextStepIndex((prev) => prev + 1);
 			}
 		}
 	}, [userLocation]);
 
 	return { nextStepIndex, userToStepNextDistance };
-}
-
-function getBearingDiff(b1: number, b2: number) {
-	const diff = Math.abs(b1 - b2);
-	return diff > 180 ? 360 - diff : diff;
 }

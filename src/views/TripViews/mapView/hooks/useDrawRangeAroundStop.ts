@@ -2,7 +2,7 @@ import {
 	addCircleRadiusToLocation,
 	metersToPixels,
 } from '@/utils/map.functions';
-import { RANGE_THRESHOLD } from './useNextStepIndex';
+import { RANGE_STEP_THRESHOLD } from './useNextStepIndex';
 import { MutableRefObject, useEffect, useRef } from 'react';
 import { Map } from 'mapbox-gl';
 
@@ -21,7 +21,7 @@ export default function useDrawRangeAroundStop({
 	mapRef,
 	location,
 	color = '#3887be',
-	circleRadius = RANGE_THRESHOLD,
+	circleRadius = RANGE_STEP_THRESHOLD,
 }: IuseDrawRangeAroundStopProps) {
 	const animatedCircleInterval = useRef<NodeJS.Timeout | null>(null);
 	const id = useRef<number | null>(null);

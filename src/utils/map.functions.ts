@@ -151,86 +151,67 @@ export function findClosestPoint(
 	return nextClosestStepIndex;
 }
 
-export function distanceToSegment(point: Point, segment: Point[]) {
-	// Continue using the original logic with converted points
-	const x = point[0] - segment[0][0]; // delta lon
-	const y = point[1] - segment[0][1]; // delta lat
-	const dx = segment[1][0] - segment[0][0]; // delta lon of segment
-	const dy = segment[1][1] - segment[0][1]; // delta lat of segment
+/**
+ * Calculates the shortest distance from a point (lon, lat) to a segment (two lon-lat points),
+ * and returns the distance in meters using Haversine formula.
+ */
+export function distancePointToSegment(
+	point: Point,
+	segment: [Point, Point]
+): number {
+	const [px, py] = point;
+	const [[x1, y1], [x2, y2]] = segment;
 
-	const segmentLengthSquared = dx * dx + dy * dy;
-	if (segmentLengthSquared === 0) {
+	const dx = x2 - x1;
+	const dy = y2 - y1;
+
+	const lengthSquared = dx * dx + dy * dy;
+
+	// Segment is just a single point
+	if (lengthSquared === 0) {
 		return calculateDistanceOnEarth(point, segment[0]);
 	}
 
-	const t = Math.max(0, Math.min(1, (x * dx + y * dy) / segmentLengthSquared));
-	const projectionLon = segment[0][0] + t * dx;
-	const projectionLat = segment[0][1] + t * dy;
+	// Project point onto the segment (in lon-lat coordinate space)
+	let t = ((px - x1) * dx + (py - y1) * dy) / lengthSquared;
+	t = Math.max(0, Math.min(1, t));
 
-	return calculateDistanceOnEarth(point, [projectionLat, projectionLon]);
+	// Find the closest point on the segment
+	const closest: Point = [x1 + t * dx, y1 + t * dy];
+
+	// Use your haversine-based function to get distance in meters
+	return calculateDistanceOnEarth(point, closest);
 }
 
-function getNextStepIndex({
-	userLocation,
-	routePoints,
-	closestPointIndex,
-}: {
+type isOutOfRouteBetweenStepsProps = {
 	userLocation: Point;
 	routePoints: Point[];
-	closestPointIndex: number;
-}): number {
-	const closestPoint = routePoints[closestPointIndex];
-	const nextIndex = Math.min(closestPointIndex + 1, routePoints.length - 1);
-	const prevIndex = Math.max(closestPointIndex - 1, 0);
-
-	console.table({ closestPointIndex, nextIndex, prevIndex });
-
-	const next = routePoints[nextIndex];
-	const prev = routePoints[prevIndex];
-
-	if (!next) return closestPointIndex;
-
-	const nextDistance = distanceToSegment(userLocation, [closestPoint, next]);
-	const prevDistance = distanceToSegment(userLocation, [closestPoint, prev]);
-
-	return nextDistance < prevDistance
-		? closestPointIndex + 1
-		: closestPointIndex;
-}
+	nextPointIndex: number;
+	threshold: number;
+};
 
 export function isOutOfRouteBetweenSteps({
-	lastStepIndex,
+	nextPointIndex,
 	routePoints,
 	threshold = 50, // 50 meters
 	userLocation,
-}: {
-	userLocation: Point;
-	routePoints: Point[];
-	lastStepIndex: number;
-	threshold: number;
-}) {
-	const closestPointIndex = findClosestPoint(
-		userLocation,
-		routePoints,
-		lastStepIndex
-	);
-
-	const nextPointIndex = getNextStepIndex({
-		userLocation,
-		routePoints,
-		closestPointIndex,
-	});
-
+}: isOutOfRouteBetweenStepsProps) {
 	const prevIndex = Math.max(0, nextPointIndex - 1);
-	const segment = [routePoints[prevIndex], routePoints[nextPointIndex]];
+
+	const segment: [Point, Point] = [
+		routePoints[prevIndex],
+		routePoints[nextPointIndex],
+	];
+
 	// Calculate distance to this segment
-	const distanceToSeg = distanceToSegment(userLocation, segment);
+	const distanceToSeg = distancePointToSegment(userLocation, segment);
+
 	const distanceToNextPoint = calculateDistanceOnEarth(
 		userLocation,
 		routePoints[nextPointIndex]
 	);
 	const isOut = Math.min(distanceToSeg, distanceToNextPoint) > threshold;
-	return { isOut, nextPointIndex };
+	return isOut;
 }
 
 export function metersToPixels(
@@ -294,4 +275,27 @@ export function offsetLocationByMeters(
 	const newLon = (newLonRad * 180) / Math.PI;
 
 	return [newLon, newLat];
+}
+
+export function getBearing([lon1, lat1]: Point, [lon2, lat2]: Point): number {
+	const toRadians = (deg: number) => (deg * Math.PI) / 180;
+	const toDegrees = (rad: number) => (rad * 180) / Math.PI;
+
+	const φ1 = toRadians(lat1);
+	const φ2 = toRadians(lat2);
+	const Δλ = toRadians(lon2 - lon1);
+
+	const y = Math.sin(Δλ) * Math.cos(φ2);
+	const x =
+		Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+
+	const θ = Math.atan2(y, x);
+	const bearing = (toDegrees(θ) + 360) % 360;
+
+	return bearing;
+}
+
+export function getBearingDiff(b1: number, b2: number) {
+	const diff = Math.abs(b1 - b2);
+	return diff > 180 ? 360 - diff : diff;
 }

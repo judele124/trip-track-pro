@@ -1,3 +1,4 @@
+import { getBearing } from '@/utils/map.functions';
 import { useEffect, useRef, useState } from 'react';
 
 interface IuseCurrentUserBearingProps {
@@ -19,10 +20,8 @@ export default function useCurrentUserBearing({
 		}
 
 		const bearing = getBearing(
-			lastLocation.current.lat,
-			lastLocation.current.lon,
-			userLocation.lat,
-			userLocation.lon
+			[lastLocation.current.lon, lastLocation.current.lat],
+			[userLocation.lon, userLocation.lat]
 		);
 
 		setBearing(bearing);
@@ -31,29 +30,6 @@ export default function useCurrentUserBearing({
 			lastLocation.current = userLocation;
 		};
 	}, [userLocation]);
-
-	return bearing;
-}
-
-function getBearing(
-	lat1: number,
-	lon1: number,
-	lat2: number,
-	lon2: number
-): number {
-	const toRadians = (deg: number) => (deg * Math.PI) / 180;
-	const toDegrees = (rad: number) => (rad * 180) / Math.PI;
-
-	const φ1 = toRadians(lat1);
-	const φ2 = toRadians(lat2);
-	const Δλ = toRadians(lon2 - lon1);
-
-	const y = Math.sin(Δλ) * Math.cos(φ2);
-	const x =
-		Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
-
-	const θ = Math.atan2(y, x);
-	const bearing = (toDegrees(θ) + 360) % 360;
 
 	return bearing;
 }

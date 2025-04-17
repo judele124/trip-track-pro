@@ -3,9 +3,7 @@ import { DirectionStep } from '@/types/map';
 import { IconName } from '@/components/icons/Icon';
 import { useEffect } from 'react';
 import { useMap } from '../Map';
-import { Point } from '@/utils/map.functions';
 import useNextStepIndex from '../hooks/useNextStepIndex';
-import GeneralMarker from './GeneralMarker';
 import useCurrentUserOutOfTripRoute from '../hooks/useCurrentUserOutOfTripRoute';
 
 interface DirectionComponentProps {
@@ -29,12 +27,16 @@ const DirectionComponent = ({
 		steps,
 	});
 
-	const { isOutOfRoute, nextGeometryPoint } = useCurrentUserOutOfTripRoute({
+	const isOutOfRoute = useCurrentUserOutOfTripRoute({
 		userLocation,
 		geometryPoints: steps.flatMap(
 			({ geometry: { coordinates } }) => coordinates
 		),
 	});
+
+	useEffect(() => {
+		console.log('isOutOfRoute', isOutOfRoute);
+	}, [isOutOfRoute]);
 
 	useEffect(() => {
 		if (!mapRef.current || steps.length === 0 || !steps[nextStepIndex]) return;
@@ -85,23 +87,6 @@ const DirectionComponent = ({
 					</div>
 				)}
 			</div>
-
-			{steps
-				.flatMap(({ geometry: { coordinates } }) => coordinates)
-				.map(([lon, lat]: Point, i) => {
-					return (
-						<GeneralMarker
-							location={{ lat, lon }}
-							key={`${lon}-${lat}-marker-${i}`}
-						>
-							<div
-								className={`rounded-lg px-2 py-2 text-xl ${i >= nextGeometryPoint.current && i <= nextGeometryPoint.current + 1 ? 'bg-red-500' : 'bg-white'} opacity-40`}
-							>
-								{i}
-							</div>
-						</GeneralMarker>
-					);
-				})}
 		</>
 	);
 };

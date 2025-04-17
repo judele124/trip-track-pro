@@ -10,17 +10,16 @@ import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
 import useFakeUserLocation from './tests/useFakeUserLocation';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
-import { offsetLocationByMeters } from '@/utils/map.functions';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
 	useTripSocket();
 
-	// const userLocation = useCurrentUserLocation({
-	// 	onLocationUpdate: (location) => {
-	// 		console.log('Location from useCurrentUserLocation', location);
-	// 	},
-	// });
+	const userLocation = useCurrentUserLocation({
+		onLocationUpdate: (location) => {
+			console.log('Location from useCurrentUserLocation', location);
+		},
+	});
 
 	const points = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
@@ -36,25 +35,19 @@ export default function MapView() {
 		if (!routeData) {
 			return [];
 		}
-		return routeData.routes[0].geometry.coordinates.map(([lon, lat], i) => {
-			if (i == 7) {
-				const [lonRes, latRes] = offsetLocationByMeters([lon, lat], 100, 45);
+		return routeData.routes[0].legs[0].steps
+			.flatMap(({ geometry: { coordinates: c } }) => c)
+			.map(([lon, lat], i) => {
 				return {
-					lat: latRes,
-					lon: lonRes,
+					lat,
+					lon,
 				};
-			}
-
-			return {
-				lat,
-				lon,
-			};
-		});
+			});
 	}, [routeData]);
 
 	const fakeLocation = useFakeUserLocation({
 		points: fakePoints,
-		speed: 5,
+		speed: 30,
 	});
 
 	useEffect(() => {
