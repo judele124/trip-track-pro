@@ -11,23 +11,32 @@ interface IuseDrawRangeAroundStopProps {
 	mapRef: MutableRefObject<Map | null>;
 	location: [number, number];
 	color?: string;
+	circleRadius?: number;
 }
+
+let id_GENERATOR = 0;
 
 export default function useDrawRangeAroundStop({
 	isMapReady,
 	mapRef,
 	location,
 	color = '#3887be',
+	circleRadius = RANGE_THRESHOLD,
 }: IuseDrawRangeAroundStopProps) {
 	const animatedCircleInterval = useRef<NodeJS.Timeout | null>(null);
+	const id = useRef<number | null>(null);
 
 	useEffect(() => {
 		if (!isMapReady || !mapRef.current) return;
 
-		const circleOuterId = 'circle-outer';
+		if (id.current === null) {
+			id.current = id_GENERATOR++;
+		}
+
+		const circleOuterId = `circle-outer-${id.current}`;
 		const radiusInPixels = metersToPixels(
 			mapRef.current,
-			RANGE_THRESHOLD,
+			circleRadius,
 			location
 		);
 
@@ -45,7 +54,7 @@ export default function useDrawRangeAroundStop({
 			},
 		});
 
-		const circleInnerId = 'circle-inner';
+		const circleInnerId = `circle-inner-${id.current}`;
 
 		addCircleRadiusToLocation(circleInnerId, mapRef.current, location, {
 			id: circleInnerId,
@@ -67,7 +76,7 @@ export default function useDrawRangeAroundStop({
 
 			const updatedRadius = metersToPixels(
 				mapRef.current,
-				RANGE_THRESHOLD,
+				circleRadius,
 				location
 			);
 
@@ -89,7 +98,7 @@ export default function useDrawRangeAroundStop({
 			if (!mapRef.current) return;
 			const updatedRadius = metersToPixels(
 				mapRef.current,
-				RANGE_THRESHOLD,
+				circleRadius,
 				location
 			);
 

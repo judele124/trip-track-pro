@@ -14,7 +14,7 @@ interface IUseNextStepIndexReturn {
 }
 
 export const RANGE_THRESHOLD = 5; // in meters
-export const ANGLE_THRESHOLD = 40; // degrees
+export const ANGLE_THRESHOLD = 20; // degrees
 
 export default function useNextStepIndex({
 	userLocation,
@@ -28,54 +28,26 @@ export default function useNextStepIndex({
 
 	useEffect(() => {
 		if (!userLocation || !steps[nextStepIndex]) return;
-		const calculateDistanceFromUserToStepInMeters = (
-			step: DirectionStep,
-			userLocation: { lat: number; lon: number }
-		) => {
-			const stepLocation: [number, number] = [
-				step.maneuver.location[1],
-				step.maneuver.location[0],
-			];
+		const { lat, lon } = userLocation;
 
-			return calculateDistanceOnEarth(
-				[userLocation.lat, userLocation.lon],
-				stepLocation
-			);
-		};
+		const currentStep = steps[nextStepIndex];
 
-		userToStepNextDistance.current = calculateDistanceFromUserToStepInMeters(
-			steps[nextStepIndex],
-			userLocation
+		userToStepNextDistance.current = calculateDistanceOnEarth(
+			[lon, lat],
+			currentStep.maneuver.location
 		);
 
-		[nextStepIndex, nextStepIndex + 1].forEach((i) => {
-			const step = steps[i];
-			if (!step) return;
+		if (userToStepNextDistance.current < RANGE_THRESHOLD) {
+			wasInStepRange.current[nextStepIndex] = true;
+		}
 
-			const distance = calculateDistanceFromUserToStepInMeters(
-				step,
-				userLocation
-			);
+		const bearingToCompare = currentStep.maneuver.bearing_after;
 
-			// console.log('user distance to step', i, Math.floor(distance), 'meters');
-
-			const bearingToCompare = step.maneuver.bearing_after;
-
-			if (distance < RANGE_THRESHOLD) {
-				wasInStepRange.current[i] = true;
-				// console.log('user in step range', nextStepIndex);
-			} else if (wasInStepRange.current[i]) {
-				if (getBearingDiff(bearing, bearingToCompare) < ANGLE_THRESHOLD) {
-					if (i === nextStepIndex) {
-						// console.log('user is heading toward step', nextStepIndex + 1);
-						setNextStepIndex((prev) => prev + 1);
-					}
-				} else {
-					// console.log('⚠️ יצאת אבל לא הלכת בכיוון הנכון!');
-				}
-				wasInStepRange.current[i] = false;
+		if (wasInStepRange.current[nextStepIndex]) {
+			if (getBearingDiff(bearing, bearingToCompare) < ANGLE_THRESHOLD) {
+				setNextStepIndex((prev) => prev + 1);
 			}
-		});
+		}
 	}, [userLocation]);
 
 	return { nextStepIndex, userToStepNextDistance };

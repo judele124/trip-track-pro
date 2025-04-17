@@ -1,11 +1,12 @@
 import Icon from '@/components/icons/Icon';
 import { DirectionStep } from '@/types/map';
 import { IconName } from '@/components/icons/Icon';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect } from 'react';
 import { useMap } from '../Map';
-import { isOutOfRouteBetweenSteps } from '@/utils/map.functions';
+import { Point } from '@/utils/map.functions';
 import useNextStepIndex from '../hooks/useNextStepIndex';
-import useDrawRangeAroundStop from '../hooks/useDrawRangeAroundStop';
+import GeneralMarker from './GeneralMarker';
+import useCurrentUserOutOfTripRoute from '../hooks/useCurrentUserOutOfTripRoute';
 
 interface DirectionComponentProps {
 	steps: DirectionStep[];
@@ -22,19 +23,18 @@ const DirectionComponent = ({
 	steps,
 	userLocation,
 }: DirectionComponentProps) => {
-	const { mapRef, isMapReady } = useMap();
+	const { mapRef } = useMap();
 	const { nextStepIndex, userToStepNextDistance } = useNextStepIndex({
 		userLocation,
 		steps,
 	});
 
-	useDrawRangeAroundStop({
-		isMapReady,
-		mapRef,
-		location: steps[nextStepIndex]?.maneuver.location,
+	const { isOutOfRoute, nextGeometryPoint } = useCurrentUserOutOfTripRoute({
+		userLocation,
+		geometryPoints: steps.flatMap(
+			({ geometry: { coordinates } }) => coordinates
+		),
 	});
-
-	const nextUserCheckpoint = useRef(0);
 
 	useEffect(() => {
 		if (!mapRef.current || steps.length === 0 || !steps[nextStepIndex]) return;
@@ -45,28 +45,10 @@ const DirectionComponent = ({
 
 		mapRef.current.flyTo({
 			center: location,
-			zoom: 19,
+			zoom: 22,
 			speed: 3,
 		});
 	}, [nextStepIndex]);
-
-	// useEffect(() => {
-	// 	if (!steps || steps.length === 0 || !userLocation) return;
-
-	// 	const { lat, lon } = userLocation;
-	// 	const isOutOfRoute = isOutOfRouteBetweenSteps({
-	// 		userLocation: [lat, lon],
-	// 		routePoints: fakePoints.map((point) => [point.lon, point.lat]),
-	// 		lastStepIndex: nextUserCheckpoint.current,
-	// 		threshold: 0.02,
-	// 	});
-
-	// 	nextUserCheckpoint.current = isOutOfRoute.nextStationIndex;
-
-	// 	if (isOutOfRoute.isOut) {
-	// 		console.log('isOutOfRoute');
-	// 	}
-	// }, [userLocation]);
 
 	const nextStep = steps[nextStepIndex];
 
@@ -103,6 +85,23 @@ const DirectionComponent = ({
 					</div>
 				)}
 			</div>
+
+			{steps
+				.flatMap(({ geometry: { coordinates } }) => coordinates)
+				.map(([lon, lat]: Point, i) => {
+					return (
+						<GeneralMarker
+							location={{ lat, lon }}
+							key={`${lon}-${lat}-marker-${i}`}
+						>
+							<div
+								className={`rounded-lg px-2 py-2 text-xl ${i >= nextGeometryPoint.current && i <= nextGeometryPoint.current + 1 ? 'bg-red-500' : 'bg-white'} opacity-40`}
+							>
+								{i}
+							</div>
+						</GeneralMarker>
+					);
+				})}
 		</>
 	);
 };

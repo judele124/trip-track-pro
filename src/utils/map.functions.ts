@@ -3,11 +3,10 @@ import {
 	Map,
 	LayerSpecification,
 	CircleLayerSpecification,
-	GeoJSONSource,
 	GeoJSONSourceSpecification,
 } from 'mapbox-gl';
 
-type Point = [number, number];
+export type Point = [number, number] | number[];
 
 // map drawing functions
 export function addRouteToMap(
@@ -111,8 +110,8 @@ export function addCircleRadiusToLocation<K extends string>(
 // map navigation helper functions
 
 export function calculateDistanceOnEarth(
-	[lat1, lon1]: Point,
-	[lat2, lon2]: Point
+	[lon1, lat1]: Point,
+	[lon2, lat2]: Point
 ) {
 	const R = 6378137; // Radius of Earth in meters
 	const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -139,8 +138,7 @@ export function findClosestPoint(
 		i < lastStepIndex + 3 && i < routePoints.length;
 		i++
 	) {
-		const [lon, lat] = routePoints[i];
-		const distance = calculateDistanceOnEarth(userLocation, [lat, lon]);
+		const distance = calculateDistanceOnEarth(userLocation, routePoints[i]);
 		if (distance < minDistanceToNextStep) {
 			minDistanceToNextStep = distance;
 			nextClosestStepIndex = i;
@@ -154,26 +152,20 @@ export function findClosestPoint(
 }
 
 export function distanceToSegment(point: Point, segment: Point[]) {
-	const [lon1, lat1] = segment[0]; // Convert to [lat, lon]
-	const [lon2, lat2] = segment[1];
-
-	const p1: Point = [lat1, lon1];
-	const p2: Point = [lat2, lon2];
-
 	// Continue using the original logic with converted points
-	const x = point[1] - p1[1]; // delta lon
-	const y = point[0] - p1[0]; // delta lat
-	const dx = p2[1] - p1[1]; // delta lon of segment
-	const dy = p2[0] - p1[0]; // delta lat of segment
+	const x = point[0] - segment[0][0]; // delta lon
+	const y = point[1] - segment[0][1]; // delta lat
+	const dx = segment[1][0] - segment[0][0]; // delta lon of segment
+	const dy = segment[1][1] - segment[0][1]; // delta lat of segment
 
 	const segmentLengthSquared = dx * dx + dy * dy;
 	if (segmentLengthSquared === 0) {
-		return calculateDistanceOnEarth(point, p1);
+		return calculateDistanceOnEarth(point, segment[0]);
 	}
 
 	const t = Math.max(0, Math.min(1, (x * dx + y * dy) / segmentLengthSquared));
-	const projectionLat = p1[0] + t * dy;
-	const projectionLon = p1[1] + t * dx;
+	const projectionLon = segment[0][0] + t * dx;
+	const projectionLat = segment[0][1] + t * dy;
 
 	return calculateDistanceOnEarth(point, [projectionLat, projectionLon]);
 }
@@ -188,9 +180,13 @@ function getNextStepIndex({
 	closestPointIndex: number;
 }): number {
 	const closestPoint = routePoints[closestPointIndex];
-	const next =
-		routePoints[Math.min(closestPointIndex + 1, routePoints.length - 1)];
-	const prev = routePoints[Math.max(closestPointIndex - 1, 0)];
+	const nextIndex = Math.min(closestPointIndex + 1, routePoints.length - 1);
+	const prevIndex = Math.max(closestPointIndex - 1, 0);
+
+	console.table({ closestPointIndex, nextIndex, prevIndex });
+
+	const next = routePoints[nextIndex];
+	const prev = routePoints[prevIndex];
 
 	if (!next) return closestPointIndex;
 
@@ -213,28 +209,28 @@ export function isOutOfRouteBetweenSteps({
 	lastStepIndex: number;
 	threshold: number;
 }) {
-	// Find the next segment based on user's progress along the route
 	const closestPointIndex = findClosestPoint(
 		userLocation,
 		routePoints,
 		lastStepIndex
 	);
 
-	const nextStationIndex = getNextStepIndex({
+	const nextPointIndex = getNextStepIndex({
 		userLocation,
 		routePoints,
 		closestPointIndex,
 	});
-	const prevIndex = Math.max(0, nextStationIndex - 1);
-	const segment = [routePoints[prevIndex], routePoints[nextStationIndex]];
+
+	const prevIndex = Math.max(0, nextPointIndex - 1);
+	const segment = [routePoints[prevIndex], routePoints[nextPointIndex]];
 	// Calculate distance to this segment
 	const distanceToSeg = distanceToSegment(userLocation, segment);
 	const distanceToNextPoint = calculateDistanceOnEarth(
 		userLocation,
-		routePoints[nextStationIndex]
+		routePoints[nextPointIndex]
 	);
 	const isOut = Math.min(distanceToSeg, distanceToNextPoint) > threshold;
-	return { isOut, nextStationIndex };
+	return { isOut, nextPointIndex };
 }
 
 export function metersToPixels(
@@ -259,4 +255,43 @@ export function metersToPixels(
 	const distEast = Math.hypot(pointEast.x - origin.x, pointEast.y - origin.y);
 
 	return Math.max(distNorth, distEast);
+}
+
+/**
+ * Returns a new [lon, lat] coordinate offset by a given distance and direction.
+ *
+ * @param lat - Starting latitude
+ * @param lon - Starting longitude
+ * @param distanceMeters - Distance in meters to move
+ * @param directionDegrees - Direction to move, in degrees (0 = north, 90 = east)
+ * @returns [lon, lat] - New coordinate
+ */
+export function offsetLocationByMeters(
+	[lon, lat]: [number, number],
+	distanceMeters: number,
+	directionDegrees: number
+): [number, number] {
+	const R = 6378137; // Earth's radius in meters (WGS-84)
+	const delta = distanceMeters / R; // angular distance in radians
+	const theta = (directionDegrees * Math.PI) / 180; // convert to radians
+
+	const latRad = (lat * Math.PI) / 180;
+	const lonRad = (lon * Math.PI) / 180;
+
+	const newLatRad = Math.asin(
+		Math.sin(latRad) * Math.cos(delta) +
+			Math.cos(latRad) * Math.sin(delta) * Math.cos(theta)
+	);
+
+	const newLonRad =
+		lonRad +
+		Math.atan2(
+			Math.sin(theta) * Math.sin(delta) * Math.cos(latRad),
+			Math.cos(delta) - Math.sin(latRad) * Math.sin(newLatRad)
+		);
+
+	const newLat = (newLatRad * 180) / Math.PI;
+	const newLon = (newLonRad * 180) / Math.PI;
+
+	return [newLon, newLat];
 }

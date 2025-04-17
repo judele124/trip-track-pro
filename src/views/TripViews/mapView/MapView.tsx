@@ -10,6 +10,7 @@ import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
 import useFakeUserLocation from './tests/useFakeUserLocation';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
+import { offsetLocationByMeters } from '@/utils/map.functions';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
@@ -32,22 +33,24 @@ export default function MapView() {
 	});
 
 	const fakePoints = useMemo(() => {
-		return (
-			routeData?.routes[0].geometry.coordinates.map((coord) => ({
-				lat: coord[1],
-				lon: coord[0],
-			})) || []
-		);
-	}, [routeData]);
+		if (!routeData) {
+			return [];
+		}
+		return routeData.routes[0].geometry.coordinates.map(([lon, lat], i) => {
+			if (i == 7) {
+				const [lonRes, latRes] = offsetLocationByMeters([lon, lat], 100, 45);
+				return {
+					lat: latRes,
+					lon: lonRes,
+				};
+			}
 
-	// const userfakePoints = [
-	// 	...fakePoints.slice(0, 3),
-	// 	{
-	// 		lat: 31.747944,
-	// 		lon: 34.98899,
-	// 	},
-	// 	...fakePoints.slice(3),
-	// ];
+			return {
+				lat,
+				lon,
+			};
+		});
+	}, [routeData]);
 
 	const fakeLocation = useFakeUserLocation({
 		points: fakePoints,
@@ -64,16 +67,17 @@ export default function MapView() {
 			<Map>
 				{fakeLocation && <UserMarker location={fakeLocation} />}
 				{tripRoute && <MapRoute route={tripRoute} />}
-				{trip?.stops.map((stop) => {
+				{trip?.stops.map((stop, i) => {
 					return (
 						<GeneralMarker
-							key={`${stop.location.lat}-${stop.location.lon}`}
+							key={`${stop.location.lat}-${stop.location.lon}-${i}`}
 							location={stop.location}
 						>
 							<StopMarker stop={stop} />
 						</GeneralMarker>
 					);
 				})}
+
 				{tripRoute?.routes[0].legs[0].steps && (
 					<DirectionComponent
 						userLocation={fakeLocation}
