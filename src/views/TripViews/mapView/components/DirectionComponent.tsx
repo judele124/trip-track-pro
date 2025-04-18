@@ -6,10 +6,12 @@ import { useMap } from '../Map';
 import useNextStepIndex from '../hooks/useNextStepIndex';
 import useCurrentUserOutOfTripRoute from '../hooks/useCurrentUserOutOfTripRoute';
 import GeneralMarker from './GeneralMarker';
+import useDrawRangeAroundStop from '../hooks/useDrawRangeAroundStop';
 
 interface DirectionComponentProps {
 	steps: DirectionStep[];
 	userLocation: { lat: number; lon: number } | null;
+	geometryPoints: number[][];
 }
 
 const directions: Record<string, IconName> = {
@@ -21,18 +23,30 @@ const directions: Record<string, IconName> = {
 const DirectionComponent = ({
 	steps,
 	userLocation,
+	geometryPoints,
 }: DirectionComponentProps) => {
-	const { mapRef } = useMap();
+	const { mapRef, isMapReady } = useMap();
 	const { nextStepIndex, userToStepNextDistance } = useNextStepIndex({
 		userLocation,
 		steps,
 	});
 
-	const { isOutOfRoute, nextGeometryPoint } = useCurrentUserOutOfTripRoute({
+	const { isOutOfRoute, segmantPointsIndexs } = useCurrentUserOutOfTripRoute({
 		userLocation,
-		geometryPoints: steps.flatMap(
-			({ geometry: { coordinates } }) => coordinates
-		),
+		geometryPoints,
+	});
+
+	useDrawRangeAroundStop({
+		isMapReady,
+		mapRef,
+		circleRadius: 1,
+		location: geometryPoints[segmantPointsIndexs.current[0]],
+	});
+	useDrawRangeAroundStop({
+		isMapReady,
+		mapRef,
+		circleRadius: 1,
+		location: geometryPoints[segmantPointsIndexs.current[1]],
 	});
 
 	useEffect(() => {
@@ -43,26 +57,16 @@ const DirectionComponent = ({
 			!userLocation
 		)
 			return;
-
-		// const {
-		// 	maneuver: { location },
-		// } = steps[nextStepIndex];
 	}, [nextStepIndex]);
 
 	useEffect(() => {
 		if (isOutOfRoute) {
+			if (!userLocation || !mapRef.current) return;
+			mapRef.current.setCenter([userLocation.lon, userLocation.lat]);
+			mapRef.current.setZoom(18);
 			console.log('isOutOfRoute', isOutOfRoute);
-			debugger;
 		}
 	}, [isOutOfRoute]);
-
-	useEffect(() => {
-		if (!userLocation || !mapRef.current) return;
-		mapRef.current.flyTo({
-			center: [userLocation.lon, userLocation.lat],
-			speed: 3,
-		});
-	}, [userLocation]);
 
 	const nextStep = steps[nextStepIndex];
 
@@ -100,17 +104,15 @@ const DirectionComponent = ({
 				)}
 			</div>
 
-			{steps
-				.flatMap(({ geometry: { coordinates } }) => coordinates)
-				.map(([lon, lat], i) => {
-					return (
-						<GeneralMarker key={`${lon}-${lat}-${i}-p`} location={{ lat, lon }}>
-							<div
-								className={`size-3 rounded-full ${nextGeometryPoint.current === i || nextGeometryPoint.current === i + 1 ? 'animate-bounce bg-red-500' : 'bg-green-500'}`}
-							></div>
-						</GeneralMarker>
-					);
-				})}
+			{geometryPoints.map(([lon, lat], i) => {
+				return (
+					<GeneralMarker key={`${lon}-${lat}-${i}-p`} location={{ lat, lon }}>
+						<div
+							className={`size-3 rounded-full ${segmantPointsIndexs.current.includes(i) ? 'animate-bounce bg-red-500' : 'bg-green-500'}`}
+						></div>
+					</GeneralMarker>
+				);
+			})}
 		</>
 	);
 };

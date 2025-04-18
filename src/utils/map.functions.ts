@@ -84,7 +84,7 @@ export function addSourceAndLayerToMap(
 export function addCircleRadiusToLocation<K extends string>(
 	key: K,
 	map: Map,
-	coordinates: [number, number],
+	coordinates: Point,
 	circleData: CircleLayerSpecification
 ) {
 	const sourceData: GeoJSONSourceSpecification = {
@@ -126,36 +126,11 @@ export function calculateDistanceOnEarth(
 	return R * c; // Distance in meters
 }
 
-export function findClosestPoint(
-	userLocation: Point,
-	routePoints: Point[],
-	lastStepIndex: number
-): number {
-	let nextClosestStepIndex = -1;
-	let minDistanceToNextStep = Infinity;
-	for (
-		let i = Math.max(0, lastStepIndex - 3);
-		i < lastStepIndex + 3 && i < routePoints.length;
-		i++
-	) {
-		const distance = calculateDistanceOnEarth(userLocation, routePoints[i]);
-		if (distance < minDistanceToNextStep) {
-			minDistanceToNextStep = distance;
-			nextClosestStepIndex = i;
-		}
-	}
-	// If we couldn't find a next station, use the last point of the route
-	if (nextClosestStepIndex === -1) {
-		nextClosestStepIndex = routePoints.length - 1;
-	}
-	return nextClosestStepIndex;
-}
-
 /**
  * Calculates the shortest distance from a point (lon, lat) to a segment (two lon-lat points),
  * and returns the distance in meters using Haversine formula.
  */
-export function distancePointToSegment(
+export function calculateDistancePointToSegment(
 	point: Point,
 	segment: [Point, Point]
 ): number {
@@ -183,6 +158,38 @@ export function distancePointToSegment(
 	return calculateDistanceOnEarth(point, closest);
 }
 
+export function getClosestPointWithMinDistance(
+	routePoints: Point[],
+	currentIndex: number,
+	minDistance: number,
+	before?: boolean
+) {
+	if (before) {
+		while (
+			currentIndex > 0 &&
+			calculateDistanceOnEarth(
+				routePoints[currentIndex],
+				routePoints[currentIndex - 1]
+			) < minDistance
+		) {
+			currentIndex--;
+		}
+		return currentIndex;
+	}
+
+	while (
+		currentIndex + 1 < routePoints.length &&
+		calculateDistanceOnEarth(
+			routePoints[currentIndex],
+			routePoints[currentIndex + 1]
+		) < minDistance
+	) {
+		currentIndex++;
+	}
+
+	return currentIndex;
+}
+
 type isOutOfRouteBetweenStepsProps = {
 	userLocation: Point;
 	routePoints: Point[];
@@ -196,7 +203,22 @@ export function isOutOfRouteBetweenSteps({
 	threshold = 50, // 50 meters
 	userLocation,
 }: isOutOfRouteBetweenStepsProps) {
-	const prevIndex = Math.max(0, nextPointIndex - 1);
+	let prevIndex = nextPointIndex - 1;
+
+	// if point is too close to eachother
+	if (
+		calculateDistanceOnEarth(
+			routePoints[prevIndex],
+			routePoints[nextPointIndex]
+		) < 5
+	) {
+		prevIndex--;
+	}
+
+	if (prevIndex < 0) {
+		prevIndex = 0;
+		nextPointIndex++;
+	}
 
 	const segment: [Point, Point] = [
 		routePoints[prevIndex],
@@ -204,20 +226,17 @@ export function isOutOfRouteBetweenSteps({
 	];
 
 	// Calculate distance to this segment
-	const distanceToSeg = distancePointToSegment(userLocation, segment);
+	const distanceToSeg = calculateDistancePointToSegment(userLocation, segment);
 
-	const distanceToNextPoint = calculateDistanceOnEarth(
-		userLocation,
-		routePoints[nextPointIndex]
-	);
-	const isOut = Math.min(distanceToSeg, distanceToNextPoint) > threshold;
-	return isOut;
+	const isOut = distanceToSeg > threshold;
+
+	return { prevIndex, nextPointIndex, isOut };
 }
 
 export function metersToPixels(
 	map: mapboxgl.Map,
 	meters: number,
-	[lon, lat]: [number, number]
+	[lon, lat]: Point
 ): number {
 	const metersPerDegreeLat = 111320; // 1 degree ≈ 111.32 km
 	const metersPerDegreeLon = (40075000 * Math.cos((lat * Math.PI) / 180)) / 360;
@@ -248,10 +267,10 @@ export function metersToPixels(
  * @returns [lon, lat] - New coordinate
  */
 export function offsetLocationByMeters(
-	[lon, lat]: [number, number],
+	[lon, lat]: Point,
 	distanceMeters: number,
 	directionDegrees: number
-): [number, number] {
+): Point {
 	const R = 6378137; // Earth's radius in meters (WGS-84)
 	const delta = distanceMeters / R; // angular distance in radians
 	const theta = (directionDegrees * Math.PI) / 180; // convert to radians

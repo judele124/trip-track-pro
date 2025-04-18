@@ -48,7 +48,10 @@ export default function useFakeUserLocation({
 		const interval = setInterval(() => {
 			const from = points[indexRef.current];
 			const to = points[indexRef.current + 1];
-
+			if (!from || !to) {
+				clearInterval(interval);
+				return;
+			}
 			const distance = haversineDistance(from, to);
 			const speedPerMs = (speed * 1000) / 3600000;
 			const step = speedPerMs * updateIntervalMs;

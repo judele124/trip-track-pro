@@ -9,17 +9,16 @@ import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
 import useFakeUserLocation from './tests/useFakeUserLocation';
-import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
 	useTripSocket();
 
-	const userLocation = useCurrentUserLocation({
-		onLocationUpdate: (location) => {
-			console.log('Location from useCurrentUserLocation', location);
-		},
-	});
+	// const userLocation = useCurrentUserLocation({
+	// 	onLocationUpdate: (location) => {
+	// 		console.log('Location from useCurrentUserLocation', location);
+	// 	},
+	// });
 
 	const points = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
@@ -35,19 +34,19 @@ export default function MapView() {
 		if (!routeData) {
 			return [];
 		}
-		return routeData.routes[0].legs[0].steps
-			.flatMap(({ geometry: { coordinates: c } }) => c)
-			.map(([lon, lat], i) => {
-				return {
-					lat,
-					lon,
-				};
-			});
+		return routeData.routes[0].geometry.coordinates.map((coord) => ({
+			lat: coord[1],
+			lon: coord[0],
+		}));
 	}, [routeData]);
 
 	const fakeLocation = useFakeUserLocation({
-		points: fakePoints,
-		speed: 30,
+		points: [
+			...fakePoints.slice(0, fakePoints.length / 2),
+			...fakePoints.slice(0, fakePoints.length / 2).reverse(),
+		],
+		speed: 40,
+		updateIntervalMs: 200,
 	});
 
 	useEffect(() => {
@@ -73,6 +72,7 @@ export default function MapView() {
 
 				{tripRoute?.routes[0].legs[0].steps && (
 					<DirectionComponent
+						geometryPoints={tripRoute.routes[0].geometry.coordinates}
 						userLocation={fakeLocation}
 						steps={tripRoute.routes[0].legs[0].steps}
 					/>

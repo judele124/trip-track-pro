@@ -9,7 +9,7 @@ import { Map } from 'mapbox-gl';
 interface IuseDrawRangeAroundStopProps {
 	isMapReady: boolean;
 	mapRef: MutableRefObject<Map | null>;
-	location: [number, number];
+	location: [number, number] | number[];
 	color?: string;
 	circleRadius?: number;
 }

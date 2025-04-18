@@ -46,7 +46,7 @@ export default function useNextStepIndex({
 
 		const bearingToCompare = currentStep.maneuver.bearing_after;
 
-		if (wasInStepRange.current[nextStepIndex]) {
+		if (wasInStepRange.current[nextStepIndex] && steps[nextStepIndex + 1]) {
 			const userDistanceToNextPoint = calculateDistanceOnEarth(
 				[lon, lat],
 				steps[nextStepIndex + 1].maneuver.location

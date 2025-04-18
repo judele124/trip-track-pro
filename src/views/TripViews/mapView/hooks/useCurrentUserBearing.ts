@@ -1,5 +1,6 @@
 import { getBearing } from '@/utils/map.functions';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import useLastUserLocation from './useLastLocation';
 
 interface IuseCurrentUserBearingProps {
 	userLocation: { lat: number; lon: number } | null;
@@ -8,28 +9,19 @@ interface IuseCurrentUserBearingProps {
 export default function useCurrentUserBearing({
 	userLocation,
 }: IuseCurrentUserBearingProps): number {
-	const lastLocation = useRef<null | { lat: number; lon: number }>(null);
-	const [bearing, setBearing] = useState(0);
+	const lastLocation = useLastUserLocation({ currentLocation: userLocation });
+	const bearingRef = useRef<number>(0);
 
 	useEffect(() => {
-		if (!userLocation) return;
-
-		if (!lastLocation.current) {
-			lastLocation.current = userLocation;
-			return;
-		}
+		if (!userLocation || !lastLocation) return;
 
 		const bearing = getBearing(
-			[lastLocation.current.lon, lastLocation.current.lat],
+			[lastLocation.lon, lastLocation.lat],
 			[userLocation.lon, userLocation.lat]
 		);
 
-		setBearing(bearing);
+		bearingRef.current = bearing;
+	}, [userLocation, lastLocation]);
 
-		return () => {
-			lastLocation.current = userLocation;
-		};
-	}, [userLocation]);
-
-	return bearing;
+	return bearingRef.current;
 }

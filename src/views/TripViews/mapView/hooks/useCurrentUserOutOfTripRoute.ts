@@ -1,8 +1,9 @@
 import {
 	calculateDistanceOnEarth,
+	calculateDistancePointToSegment,
 	getBearing,
 	getBearingDiff,
-	isOutOfRouteBetweenSteps,
+	getClosestPointWithMinDistance,
 } from '@/utils/map.functions';
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import useCurrentUserBearing from './useCurrentUserBearing';
@@ -12,7 +13,9 @@ interface IUseCurrentUserOutOfTripRouteProps {
 	userLocation: { lon: number; lat: number } | null;
 }
 
-export const RANGE_GEOMETRY_POINT_THRESHOLD = 2; // in meters
+export const RANGE_FOR_USER_OUT_OF_RANGE = 20; // in meters
+export const RANGE_FOR_USER_IN_POINT = 10; // in meters
+export const RANGE_BETWEEN_GEOMETRY_POINT_FOR_SKIPPING_CLOSE_POINT = 10; // in meters
 export const ANGLE_GEOMETRY_POINT_THRESHOLD = 10; // degrees
 
 export default function useCurrentUserOutOfTripRoute({
@@ -20,55 +23,90 @@ export default function useCurrentUserOutOfTripRoute({
 	userLocation,
 }: IUseCurrentUserOutOfTripRouteProps): {
 	isOutOfRoute: boolean;
-	nextGeometryPoint: MutableRefObject<number>;
+	segmantPointsIndexs: MutableRefObject<[number, number]>;
 } {
 	const [isOutOfRoute, setIsOutOfRoute] = useState(false);
-	const nextGeometryPoint = useRef<number>(1);
-	const wasInStepRange = useRef<boolean[]>([]);
+	const segmantPointsIndexs = useRef<[number, number]>([0, 1]);
+	const wasInStepRange = useRef<boolean[]>([true]);
 	const userBearing = useCurrentUserBearing({ userLocation });
 
 	useEffect(() => {
 		if (!userLocation) return;
-		const { lon, lat } = userLocation;
 
-		const userDistanceToPoint = calculateDistanceOnEarth(
+		const { lon, lat } = userLocation;
+		let [pointIndexBefore, pointIndexAfter] = segmantPointsIndexs.current;
+
+		// Check if user is out of route
+		const distanceToSegment = calculateDistancePointToSegment(
 			[lon, lat],
-			geometryPoints[nextGeometryPoint.current]
+			[geometryPoints[pointIndexBefore], geometryPoints[pointIndexAfter]]
 		);
 
-		if (userDistanceToPoint < RANGE_GEOMETRY_POINT_THRESHOLD) {
-			wasInStepRange.current[nextGeometryPoint.current] = true;
+		if (distanceToSegment > RANGE_FOR_USER_OUT_OF_RANGE) {
+			setIsOutOfRoute(true);
 		}
 
-		const bearingToCompare = getBearing(
-			geometryPoints[nextGeometryPoint.current],
-			geometryPoints[nextGeometryPoint.current + 1]
+		const forwardBearing = getBearing(
+			geometryPoints[pointIndexBefore],
+			geometryPoints[pointIndexAfter]
 		);
 
-		if (wasInStepRange.current[nextGeometryPoint.current]) {
-			const userDistanceToNextPoint = calculateDistanceOnEarth(
+		const backwardBearing = (forwardBearing + 180) % 360;
+
+		const isMovingForward =
+			getBearingDiff(userBearing, forwardBearing) <
+			ANGLE_GEOMETRY_POINT_THRESHOLD;
+		const isMovingBackward =
+			getBearingDiff(userBearing, backwardBearing) <
+			ANGLE_GEOMETRY_POINT_THRESHOLD;
+
+		if (isMovingForward) {
+			const distanceFromPointAfter = calculateDistanceOnEarth(
 				[lon, lat],
-				geometryPoints[nextGeometryPoint.current + 1]
+				geometryPoints[pointIndexAfter]
 			);
-			if (userDistanceToNextPoint < RANGE_GEOMETRY_POINT_THRESHOLD) {
-				wasInStepRange.current[nextGeometryPoint.current + 1] = true;
-				nextGeometryPoint.current = nextGeometryPoint.current + 1;
-			} else if (
-				getBearingDiff(userBearing, bearingToCompare) <
-				ANGLE_GEOMETRY_POINT_THRESHOLD
-			) {
-				nextGeometryPoint.current = nextGeometryPoint.current + 1;
+			if (distanceFromPointAfter < RANGE_FOR_USER_IN_POINT) {
+				wasInStepRange.current[pointIndexAfter] = true;
+			} else if (wasInStepRange.current[pointIndexAfter]) {
+				const nextPointIndexAfter = getClosestPointWithMinDistance(
+					geometryPoints,
+					pointIndexAfter + 1,
+					RANGE_BETWEEN_GEOMETRY_POINT_FOR_SKIPPING_CLOSE_POINT
+				);
+
+				pointIndexBefore = pointIndexAfter;
+				pointIndexAfter = nextPointIndexAfter;
+				wasInStepRange.current[pointIndexBefore] = false;
+			}
+		} else if (isMovingBackward) {
+			const distanceFromPointBefore = calculateDistanceOnEarth(
+				[lon, lat],
+				geometryPoints[pointIndexBefore]
+			);
+			console.log('pointIndexBefore', pointIndexBefore);
+			console.log('distanceFromPointBefore', distanceFromPointBefore);
+			console.log(
+				'wasInStepRange.current[pointIndexBefore]',
+				wasInStepRange.current[pointIndexBefore]
+			);
+
+			if (distanceFromPointBefore < RANGE_FOR_USER_IN_POINT) {
+				wasInStepRange.current[pointIndexBefore] = true;
+			} else if (wasInStepRange.current[pointIndexBefore]) {
+				const nextPointIndexBefore = getClosestPointWithMinDistance(
+					geometryPoints,
+					pointIndexBefore + 1,
+					RANGE_BETWEEN_GEOMETRY_POINT_FOR_SKIPPING_CLOSE_POINT,
+					true
+				);
+				console.log('nextPointIndexBefore', nextPointIndexBefore);
+
+				pointIndexAfter = pointIndexBefore;
+				pointIndexBefore = nextPointIndexBefore;
+				wasInStepRange.current[pointIndexAfter] = false;
 			}
 		}
-
-		const isOut = isOutOfRouteBetweenSteps({
-			userLocation: [lon, lat],
-			routePoints: geometryPoints,
-			nextPointIndex: nextGeometryPoint.current,
-			threshold: 20,
-		});
-
-		setIsOutOfRoute(isOut);
+		segmantPointsIndexs.current = [pointIndexBefore, pointIndexAfter];
 	}, [userLocation]);
-	return { isOutOfRoute, nextGeometryPoint };
+	return { isOutOfRoute, segmantPointsIndexs };
 }
