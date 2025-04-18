@@ -4,7 +4,7 @@ import {
 	getBearingDiff,
 	isOutOfRouteBetweenSteps,
 } from '@/utils/map.functions';
-import { useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import useCurrentUserBearing from './useCurrentUserBearing';
 
 interface IUseCurrentUserOutOfTripRouteProps {
@@ -18,7 +18,10 @@ export const ANGLE_GEOMETRY_POINT_THRESHOLD = 10; // degrees
 export default function useCurrentUserOutOfTripRoute({
 	geometryPoints,
 	userLocation,
-}: IUseCurrentUserOutOfTripRouteProps): boolean {
+}: IUseCurrentUserOutOfTripRouteProps): {
+	isOutOfRoute: boolean;
+	nextGeometryPoint: MutableRefObject<number>;
+} {
 	const [isOutOfRoute, setIsOutOfRoute] = useState(false);
 	const nextGeometryPoint = useRef<number>(1);
 	const wasInStepRange = useRef<boolean[]>([]);
@@ -65,9 +68,7 @@ export default function useCurrentUserOutOfTripRoute({
 			threshold: 20,
 		});
 
-		// nextGeometryPoint.current = isOut.nextPointIndex;
-
 		setIsOutOfRoute(isOut);
 	}, [userLocation]);
-	return isOutOfRoute;
+	return { isOutOfRoute, nextGeometryPoint };
 }

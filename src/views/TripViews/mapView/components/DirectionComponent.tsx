@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useMap } from '../Map';
 import useNextStepIndex from '../hooks/useNextStepIndex';
 import useCurrentUserOutOfTripRoute from '../hooks/useCurrentUserOutOfTripRoute';
+import GeneralMarker from './GeneralMarker';
 
 interface DirectionComponentProps {
 	steps: DirectionStep[];
@@ -27,7 +28,7 @@ const DirectionComponent = ({
 		steps,
 	});
 
-	const isOutOfRoute = useCurrentUserOutOfTripRoute({
+	const { isOutOfRoute, nextGeometryPoint } = useCurrentUserOutOfTripRoute({
 		userLocation,
 		geometryPoints: steps.flatMap(
 			({ geometry: { coordinates } }) => coordinates
@@ -35,22 +36,33 @@ const DirectionComponent = ({
 	});
 
 	useEffect(() => {
-		console.log('isOutOfRoute', isOutOfRoute);
+		if (
+			!mapRef.current ||
+			steps.length === 0 ||
+			!steps[nextStepIndex] ||
+			!userLocation
+		)
+			return;
+
+		// const {
+		// 	maneuver: { location },
+		// } = steps[nextStepIndex];
+	}, [nextStepIndex]);
+
+	useEffect(() => {
+		if (isOutOfRoute) {
+			console.log('isOutOfRoute', isOutOfRoute);
+			debugger;
+		}
 	}, [isOutOfRoute]);
 
 	useEffect(() => {
-		if (!mapRef.current || steps.length === 0 || !steps[nextStepIndex]) return;
-
-		const {
-			maneuver: { location },
-		} = steps[nextStepIndex];
-
+		if (!userLocation || !mapRef.current) return;
 		mapRef.current.flyTo({
-			center: location,
-			zoom: 22,
+			center: [userLocation.lon, userLocation.lat],
 			speed: 3,
 		});
-	}, [nextStepIndex]);
+	}, [userLocation]);
 
 	const nextStep = steps[nextStepIndex];
 
@@ -87,6 +99,18 @@ const DirectionComponent = ({
 					</div>
 				)}
 			</div>
+
+			{steps
+				.flatMap(({ geometry: { coordinates } }) => coordinates)
+				.map(([lon, lat], i) => {
+					return (
+						<GeneralMarker key={`${lon}-${lat}-${i}-p`} location={{ lat, lon }}>
+							<div
+								className={`size-3 rounded-full ${nextGeometryPoint.current === i || nextGeometryPoint.current === i + 1 ? 'animate-bounce bg-red-500' : 'bg-green-500'}`}
+							></div>
+						</GeneralMarker>
+					);
+				})}
 		</>
 	);
 };
