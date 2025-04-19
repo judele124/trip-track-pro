@@ -5,7 +5,7 @@ import { MapBoxDirectionsResponse } from '@/types/map';
 
 interface IUseMapRoute {
 	points: { lon: number; lat: number }[];
-	runGetDirectionsRoute: boolean;
+	runGetDirectionsRoute?: boolean;
 }
 
 interface IUseMapRouteReturn {
@@ -14,7 +14,7 @@ interface IUseMapRouteReturn {
 
 export const useMapboxDirectionRoute = ({
 	points,
-	runGetDirectionsRoute,
+	runGetDirectionsRoute = true,
 }: IUseMapRoute): IUseMapRouteReturn => {
 	const { data, activate } = useAxios({
 		method: 'GET',

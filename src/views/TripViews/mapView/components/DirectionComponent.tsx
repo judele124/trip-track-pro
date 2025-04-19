@@ -6,7 +6,6 @@ import { useMap } from '../Map';
 import useNextStepIndex from '../hooks/useNextStepIndex';
 import useCurrentUserOutOfTripRoute from '../hooks/useCurrentUserOutOfTripRoute';
 import GeneralMarker from './GeneralMarker';
-import useDrawRangeAroundStop from '../hooks/useDrawRangeAroundStop';
 
 interface DirectionComponentProps {
 	steps: DirectionStep[];
@@ -25,7 +24,7 @@ const DirectionComponent = ({
 	userLocation,
 	geometryPoints,
 }: DirectionComponentProps) => {
-	const { mapRef, isMapReady } = useMap();
+	// const { mapRef, isMapReady } = useMap();
 	const { nextStepIndex, userToStepNextDistance } = useNextStepIndex({
 		userLocation,
 		steps,
@@ -37,20 +36,7 @@ const DirectionComponent = ({
 	});
 
 	useEffect(() => {
-		if (
-			!mapRef.current ||
-			steps.length === 0 ||
-			!steps[nextStepIndex] ||
-			!userLocation
-		)
-			return;
-	}, [nextStepIndex]);
-
-	useEffect(() => {
 		if (isOutOfRoute) {
-			if (!userLocation || !mapRef.current) return;
-			mapRef.current.setCenter([userLocation.lon, userLocation.lat]);
-			mapRef.current.setZoom(18);
 			console.log('isOutOfRoute', isOutOfRoute);
 		}
 	}, [isOutOfRoute]);
