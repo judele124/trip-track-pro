@@ -4,15 +4,23 @@ import {
 	LayerSpecification,
 	CircleLayerSpecification,
 	GeoJSONSourceSpecification,
+	LineLayerSpecification,
 } from 'mapbox-gl';
 
 export type Point = [number, number] | number[];
+
+export interface IRouteLayerSpecification {
+	lineColor: string;
+	lineWidth: number;
+	lineOpacity: number;
+}
 
 // map drawing functions
 export function addRouteToMap(
 	key: string,
 	map: Map,
-	routeData: MapBoxDirectionsResponse
+	routeData: MapBoxDirectionsResponse,
+	{ lineColor, lineWidth, lineOpacity }: IRouteLayerSpecification
 ) {
 	const sourceData: GeoJSONSourceSpecification = {
 		type: 'geojson',
@@ -26,7 +34,7 @@ export function addRouteToMap(
 		},
 	};
 
-	const layerData: LayerSpecification = {
+	const layerData: LineLayerSpecification = {
 		id: key,
 		type: 'line',
 		source: key,
@@ -35,9 +43,9 @@ export function addRouteToMap(
 			'line-cap': 'round',
 		},
 		paint: {
-			'line-color': '#3887be',
-			'line-width': 5,
-			'line-opacity': 0.75,
+			'line-color': lineColor,
+			'line-width': lineWidth,
+			'line-opacity': lineOpacity,
 		},
 	};
 

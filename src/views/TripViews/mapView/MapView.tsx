@@ -58,7 +58,16 @@ export default function MapView() {
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
 			<Map>
 				{fakeLocation && <UserMarker location={fakeLocation} />}
-				{tripRoute && <MapRoute route={tripRoute} />}
+				{tripRoute && (
+					<MapRoute
+						route={tripRoute}
+						options={{
+							lineColor: '#3887be',
+							lineWidth: 5,
+							lineOpacity: 0.7,
+						}}
+					/>
+				)}
 				{trip?.stops.map((stop, i) => {
 					return (
 						<GeneralMarker

@@ -12,7 +12,7 @@ import Icon from '@/components/icons/Icon';
 import Button from '@/components/ui/Button';
 import { navigationRoutes } from '@/Routes/routes';
 import { Link } from 'react-router-dom';
-import { addRouteToMap } from '@/utils/map.functions';
+import { addRouteToMap, IRouteLayerSpecification } from '@/utils/map.functions';
 import { MapBoxDirectionsResponse } from '@/types/map';
 import Modal from '@/components/ui/Modal';
 import { Map as MB_Map } from 'mapbox-gl';
@@ -24,7 +24,10 @@ interface MapProps {
 export interface MapContextValue {
 	isMapReady: boolean;
 	mapRef: MutableRefObject<MB_Map | null>;
-	addRoute: (route: MapBoxDirectionsResponse) => void;
+	addRoute: (data: {
+		route: MapBoxDirectionsResponse;
+		options: IRouteLayerSpecification;
+	}) => void;
 }
 
 const MapContext = createContext<MapContextValue | null>(null);
@@ -33,14 +36,20 @@ export default function Map({ children }: MapProps) {
 	const conatinerRef = useRef<HTMLDivElement>(null);
 	const { isMapReady, mapRef, error } = useMapInit(conatinerRef);
 	const [routeError, setRouteError] = useState<Error | null>(null);
-	const [routes, setRoutes] = useState<MapBoxDirectionsResponse[]>([]);
+	const [routes, setRoutes] = useState<
+		{
+			route: MapBoxDirectionsResponse;
+			options: IRouteLayerSpecification;
+		}[]
+	>([]);
 
 	useEffect(() => {
 		if (!isMapReady || !mapRef.current) return;
 
 		routes.forEach(
-			(r: MapBoxDirectionsResponse, i: number) =>
-				mapRef.current && addRouteToMap(`route-${i}`, mapRef.current, r)
+			({ options, route }, i: number) =>
+				mapRef.current &&
+				addRouteToMap(`route-${i}`, mapRef.current, route, options)
 		);
 	}, [isMapReady, routes]);
 
@@ -49,8 +58,8 @@ export default function Map({ children }: MapProps) {
 			value={{
 				isMapReady,
 				mapRef,
-				addRoute: (route: MapBoxDirectionsResponse) => {
-					setRoutes((prevRoutes) => [...prevRoutes, route]);
+				addRoute: (data) => {
+					setRoutes((prevRoutes) => [...prevRoutes, data]);
 				},
 			}}
 		>

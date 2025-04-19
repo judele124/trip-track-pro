@@ -36,19 +36,6 @@ const DirectionComponent = ({
 		geometryPoints,
 	});
 
-	useDrawRangeAroundStop({
-		isMapReady,
-		mapRef,
-		circleRadius: 1,
-		location: geometryPoints[segmantPointsIndexs.current[0]],
-	});
-	useDrawRangeAroundStop({
-		isMapReady,
-		mapRef,
-		circleRadius: 1,
-		location: geometryPoints[segmantPointsIndexs.current[1]],
-	});
-
 	useEffect(() => {
 		if (
 			!mapRef.current ||

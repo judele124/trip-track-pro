@@ -51,13 +51,8 @@ export default function useCurrentUserOutOfTripRoute({
 			geometryPoints[pointIndexAfter]
 		);
 
-		const backwardBearing = (forwardBearing + 180) % 360;
-
 		const isMovingForward =
 			getBearingDiff(userBearing, forwardBearing) <
-			ANGLE_GEOMETRY_POINT_THRESHOLD;
-		const isMovingBackward =
-			getBearingDiff(userBearing, backwardBearing) <
 			ANGLE_GEOMETRY_POINT_THRESHOLD;
 
 		if (isMovingForward) {
@@ -77,33 +72,6 @@ export default function useCurrentUserOutOfTripRoute({
 				pointIndexBefore = pointIndexAfter;
 				pointIndexAfter = nextPointIndexAfter;
 				wasInStepRange.current[pointIndexBefore] = false;
-			}
-		} else if (isMovingBackward) {
-			const distanceFromPointBefore = calculateDistanceOnEarth(
-				[lon, lat],
-				geometryPoints[pointIndexBefore]
-			);
-			console.log('pointIndexBefore', pointIndexBefore);
-			console.log('distanceFromPointBefore', distanceFromPointBefore);
-			console.log(
-				'wasInStepRange.current[pointIndexBefore]',
-				wasInStepRange.current[pointIndexBefore]
-			);
-
-			if (distanceFromPointBefore < RANGE_FOR_USER_IN_POINT) {
-				wasInStepRange.current[pointIndexBefore] = true;
-			} else if (wasInStepRange.current[pointIndexBefore]) {
-				const nextPointIndexBefore = getClosestPointWithMinDistance(
-					geometryPoints,
-					pointIndexBefore + 1,
-					RANGE_BETWEEN_GEOMETRY_POINT_FOR_SKIPPING_CLOSE_POINT,
-					true
-				);
-				console.log('nextPointIndexBefore', nextPointIndexBefore);
-
-				pointIndexAfter = pointIndexBefore;
-				pointIndexBefore = nextPointIndexBefore;
-				wasInStepRange.current[pointIndexAfter] = false;
 			}
 		}
 		segmantPointsIndexs.current = [pointIndexBefore, pointIndexAfter];
