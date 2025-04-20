@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface IUseCurrentUserLocationProps {
-	onLocationUpdate: (location: { lon: number; lat: number }) => void;
+	onLocationUpdate?: (location: { lon: number; lat: number }) => void;
 }
 interface IUseCurrentUserLocationReturn {
 	userCurrentLocation: null | { lon: number; lat: number };
@@ -9,12 +9,12 @@ interface IUseCurrentUserLocationReturn {
 }
 export default function useCurrentUserLocation({
 	onLocationUpdate,
-}: IUseCurrentUserLocationProps): IUseCurrentUserLocationReturn {
+}: IUseCurrentUserLocationProps = {}): IUseCurrentUserLocationReturn {
 	const [userCurrentLocation, setUserCurrentLocation] = useState<null | {
 		lon: number;
 		lat: number;
 	}>(null);
-	const initialUserLocationRef = useRef<null | {
+	const [initialUserLocation, setInitialUserLocation] = useState<null | {
 		lon: number;
 		lat: number;
 	}>(null);
@@ -25,12 +25,17 @@ export default function useCurrentUserLocation({
 				lon: pos.coords.longitude,
 				lat: pos.coords.latitude,
 			});
-			onLocationUpdate({ lon: pos.coords.longitude, lat: pos.coords.latitude });
-			if (!initialUserLocationRef.current)
-				initialUserLocationRef.current = {
+			onLocationUpdate?.({
+				lon: pos.coords.longitude,
+				lat: pos.coords.latitude,
+			});
+
+			if (!initialUserLocation) {
+				setInitialUserLocation({
 					lon: pos.coords.longitude,
 					lat: pos.coords.latitude,
-				};
+				});
+			}
 		});
 
 		return () => {
@@ -40,6 +45,6 @@ export default function useCurrentUserLocation({
 
 	return {
 		userCurrentLocation,
-		initialUserLocation: initialUserLocationRef.current,
+		initialUserLocation,
 	};
 }

@@ -31,7 +31,7 @@ export default function useCurrentUserOutOfTripRoute({
 	const userBearing = useCurrentUserBearing({ userLocation });
 
 	useEffect(() => {
-		if (!userLocation) return;
+		if (!userLocation || !geometryPoints.length) return;
 
 		const { lon, lat } = userLocation;
 		let [pointIndexBefore, pointIndexAfter] = segmantPointsIndexs.current;

@@ -1,11 +1,10 @@
 import useAxios from '@/hooks/useAxios';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MapBoxDirectionsResponse } from '@/types/map';
 
 interface IUseMapRoute {
 	points: { lon: number; lat: number }[];
-	runGetDirectionsRoute?: boolean;
 }
 
 interface IUseMapRouteReturn {
@@ -14,7 +13,6 @@ interface IUseMapRouteReturn {
 
 export const useMapboxDirectionRoute = ({
 	points,
-	runGetDirectionsRoute = true,
 }: IUseMapRoute): IUseMapRouteReturn => {
 	const { data, activate } = useAxios({
 		method: 'GET',
@@ -22,7 +20,7 @@ export const useMapboxDirectionRoute = ({
 	});
 
 	useEffect(() => {
-		if (!points.length || !runGetDirectionsRoute) return;
+		if (!points.length) return;
 
 		const getDirectionsRoute = (points: IUseMapRoute['points']) => {
 			const coords = points.map((p) => `${p.lon},${p.lat}`).join(';');
@@ -34,7 +32,7 @@ export const useMapboxDirectionRoute = ({
 		};
 
 		getDirectionsRoute(points);
-	}, [points, runGetDirectionsRoute]);
+	}, [points]);
 
 	return {
 		routeData: data,

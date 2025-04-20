@@ -1,5 +1,4 @@
 import useAxios from '@/hooks/useAxios';
-import { MapBoxDirectionsResponse } from '@/types/map';
 import {
 	createContext,
 	useContext,
@@ -15,8 +14,6 @@ import { Trip } from '@/types/trip';
 interface TripContextValue {
 	trip: Trip | null;
 	setTrip: (trip: Trip | null) => void;
-	tripRoute: MapBoxDirectionsResponse | null;
-	setTripRoute: (tripRoute: MapBoxDirectionsResponse) => void;
 	loadingTrip: boolean;
 	errorTrip: Error | null;
 	tripId: string;
@@ -32,9 +29,6 @@ interface TripProviderProps {
 const TripProvider: FC<TripProviderProps> = ({ children }) => {
 	const tripId = useTripId();
 	const [trip, setTrip] = useState<Trip | null>(null);
-	const [tripRoute, setTripRoute] = useState<null | MapBoxDirectionsResponse>(
-		null
-	);
 
 	const {
 		activate,
@@ -55,8 +49,6 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 			value={{
 				trip,
 				setTrip,
-				tripRoute,
-				setTripRoute,
 				loadingTrip,
 				errorTrip,
 				tripId,
