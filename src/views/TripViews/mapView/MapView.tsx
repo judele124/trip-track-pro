@@ -1,5 +1,5 @@
 import Map from './Map';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTripContext } from '@/contexts/TripContext';
 import { useTripSocket } from '@/contexts/SocketContext';
 import StopMarker from './components/StopMarker';
@@ -10,9 +10,11 @@ import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
 import useFakeUserLocation from './tests/useFakeUserLocation';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
+import NotificationComponent from './components/NotificationComponent';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
+	const [isOpen, setIsOpen] = useState(true);
 	useTripSocket();
 
 	const userLocation = useCurrentUserLocation({
@@ -78,6 +80,13 @@ export default function MapView() {
 					/>
 				)}
 			</Map>
+			<NotificationComponent
+				message='This is a notification'
+				status='good'
+				icon='alert'
+				isOpen={isOpen}
+				onClose={() => setIsOpen(false)}
+			/>
 		</div>
 	);
 }

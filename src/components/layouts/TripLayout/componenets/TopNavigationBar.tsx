@@ -14,7 +14,10 @@ export default function TopNavigation({ title }: { title: string }) {
 	const { user } = useAuthContext();
 
 	return (
-		<div className='page-colors page-x-padding flex flex-row justify-between py-4'>
+		<div
+			id='trip-top-navigation'
+			className='page-colors page-x-padding flex flex-row justify-between py-4'
+		>
 			{/* left side */}
 			<div className='flex flex-row items-center gap-4'>
 				<Button
