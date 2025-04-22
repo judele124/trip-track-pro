@@ -7,10 +7,10 @@ import useParamFromURL from '@/hooks/useParamFromURL';
 import useToggle from '@/hooks/useToggle';
 import { navigationRoutes } from '@/Routes/routes';
 import { tripGet } from '@/servises/tripService';
+import { Trip } from '@/types/trip';
 import { QRCodeSVG } from 'qrcode.react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Types } from 'trip-track-package';
 
 export default function ShareTrip() {
 	const nav = useNavigate();
@@ -18,7 +18,7 @@ export default function ShareTrip() {
 		nav(navigationRoutes.notFound)
 	);
 	const { isOpen: isQrModalOpen, toggle: toggleIsQrModalOpen } = useToggle();
-	const { activate, data, error, loading } = useAxios({ manual: true });
+	const { activate, data, error, loading } = useAxios<Trip>({ manual: true });
 	const [browserError, setBrowserError] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -63,7 +63,7 @@ export default function ShareTrip() {
 
 	if (!data) return null;
 
-	const { name, description, _id }: Types['Trip']['Model'] = data;
+	const { name, description, _id } = data;
 
 	const shareTripUrl = `${window.location.origin + navigationRoutes.joinTrip}?tripId=${_id}`;
 

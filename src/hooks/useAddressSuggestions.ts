@@ -25,12 +25,17 @@ export interface PlacePrediction {
 	types: string[];
 }
 
+interface ISuggestionResponse {
+	predictions: PlacePrediction[];
+	status: string;
+}
+
 interface IUseAddressSugestionsProps {
 	query: string;
 }
 
 export const useAddressSugestions = ({ query }: IUseAddressSugestionsProps) => {
-	const { activate, loading, data, error } = useAxios({
+	const { activate, loading, data, error } = useAxios<ISuggestionResponse>({
 		manual: true,
 	});
 
@@ -45,8 +50,8 @@ export const useAddressSugestions = ({ query }: IUseAddressSugestionsProps) => {
 			onError: ({ error }) => {
 				console.error(error.message);
 			},
-			onSuccess: (res) => {
-				if (res.data.status === 'REQUEST_DENIED') {
+			onSuccess: ({ data }) => {
+				if (data?.status === 'REQUEST_DENIED') {
 					throw new Error('Request Denied');
 				}
 			},
@@ -55,7 +60,7 @@ export const useAddressSugestions = ({ query }: IUseAddressSugestionsProps) => {
 
 	return {
 		loading,
-		suggestions: data as { predictions: PlacePrediction[]; status: string },
+		suggestions: data as ISuggestionResponse,
 		error,
 	};
 };

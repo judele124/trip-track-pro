@@ -2,6 +2,10 @@ import Map from './Map';
 import { useEffect, useMemo } from 'react';
 import { useTripContext } from '@/contexts/TripContext';
 import { useTripSocket } from '@/contexts/SocketContext';
+import StopMarker from './components/Markers/StopMarker';
+import GeneralMarker from './components/Markers/GeneralMarker';
+import CurrentUserMarker from './components/Markers/CurrentUserMarker';
+import MapRoute from './components/MapRoute';
 import UserMarker from './components/UserMarker';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -10,13 +14,19 @@ import useToggle from '@/hooks/useToggle';
 import { RANGE_STEP_THRESHOLD } from './hooks/useNextStepIndex';
 import RouteAndNavigation from './components/RouteAndNavigation';
 import useFakeUserLocation from './tests/useFakeUserLocation';
-import GeneralMarker from './components/GeneralMarker';
+import OtherUserMarker from './components/Markers/OtherUserMarker';
 
 export default function MapView() {
 	const { user } = useAuthContext();
 	const { trip } = useTripContext();
-	useTripSocket();
-	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation();
+	const { usersLocations, socket } = useTripSocket();
+
+	const { initialUserLocation, userCurrentLocation } = useCurrentUserLocation({
+		onLocationUpdate: (location) => {
+			if (!trip || !socket) return;
+			socket.emit('updateLocation', trip._id.toString(), location);
+		},
+	});
 
 	const memoizedTripPoints = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
@@ -1056,6 +1066,23 @@ export default function MapView() {
 	return (
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
 			<Map>
+				{userCurrentLocation && (
+					<CurrentUserMarker location={userCurrentLocation} />
+				)}
+				{usersLocations.map(({ id, location }) => (
+					<OtherUserMarker location={location} key={id} />
+				))}
+
+				{trip?.stops.map((stop, i) => {
+					return (
+						<GeneralMarker
+							key={`${stop.location.lat}-${stop.location.lon}-${i}`}
+							location={stop.location}
+						>
+							<StopMarker stop={stop} />
+						</GeneralMarker>
+					);
+				})}
 				{fakeUserLocation && user && (
 					<UserMarker location={fakeUserLocation} user={user} />
 				)}

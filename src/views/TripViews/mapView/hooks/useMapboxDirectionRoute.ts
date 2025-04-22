@@ -8,13 +8,13 @@ interface IUseMapRoute {
 }
 
 interface IUseMapRouteReturn {
-	routeData: MapBoxDirectionsResponse | null;
+	routeData: MapBoxDirectionsResponse | null | undefined;
 }
 
 export const useMapboxDirectionRoute = ({
 	points,
 }: IUseMapRoute): IUseMapRouteReturn => {
-	const { data, activate } = useAxios({
+	const { data, activate } = useAxios<MapBoxDirectionsResponse>({
 		method: 'GET',
 		manual: true,
 	});
