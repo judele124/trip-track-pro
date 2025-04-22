@@ -29,6 +29,7 @@ type CommonProps = {
 	containerClassName?: string;
 	containerStyles?: CSSProperties;
 	backdropBlur?: 'none' | 'sm' | '0' | 'lg';
+	portalElement?: Element | DocumentFragment | null;
 };
 
 type ModalProps = CommonProps &
@@ -56,6 +57,7 @@ const Modal: FC<ModalProps> = ({
 	children,
 	containerStyles,
 	backdropBlur = 'sm',
+	portalElement = document.getElementById('root')!,
 }) => {
 	const [positions, setPositions] = useState([0, 0, 0, 0]);
 	const childrenRef = useRef<HTMLDivElement>(null);
@@ -206,7 +208,7 @@ const Modal: FC<ModalProps> = ({
 				{children}
 			</div>
 		</div>,
-		document.getElementById('root')!
+		portalElement!
 	);
 };
 

@@ -6,7 +6,13 @@ import useToggle from '../../../../hooks/useToggle';
 import { useAuthContext } from '@/contexts/AuthContext';
 import UserProfileModal from './UserProfileModal';
 
-export default function TopNavigation({ title }: { title: string }) {
+export default function TopNavigation({
+	title,
+	setRef,
+}: {
+	title: string;
+	setRef?: (ref: HTMLDivElement) => void;
+}) {
 	const { toggle: toggleUserProfile, isOpen: isUserProfileOpen } =
 		useToggle(false);
 	const { toggle: toggleMenu, isOpen: isMenuOpen } = useToggle(false);
@@ -15,6 +21,11 @@ export default function TopNavigation({ title }: { title: string }) {
 
 	return (
 		<div
+			ref={(node) => {
+				if (node) {
+					setRef?.(node);
+				}
+			}}
 			id='trip-top-navigation'
 			className='page-colors page-x-padding flex flex-row justify-between py-4'
 		>

@@ -11,10 +11,10 @@ import MapRoute from './components/MapRoute';
 import useFakeUserLocation from './tests/useFakeUserLocation';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 import NotificationComponent from './components/NotificationComponent';
+import useToggle from '@/hooks/useToggle';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
-	const [isOpen, setIsOpen] = useState(true);
 	useTripSocket();
 
 	const userLocation = useCurrentUserLocation({
@@ -57,8 +57,17 @@ export default function MapView() {
 		setTripRoute(routeData);
 	}, [routeData]);
 
+	const { isOpen, setIsOpen } = useToggle(true);
+
 	return (
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
+			<NotificationComponent
+				message='This is a notification'
+				status='good'
+				icon='alert'
+				isModalOpen={isOpen}
+				closeModal={() => setIsOpen(false)}
+			/>
 			<Map>
 				{fakeLocation && <UserMarker location={fakeLocation} />}
 				{tripRoute && <MapRoute route={tripRoute} />}
@@ -80,13 +89,6 @@ export default function MapView() {
 					/>
 				)}
 			</Map>
-			<NotificationComponent
-				message='This is a notification'
-				status='good'
-				icon='alert'
-				isOpen={isOpen}
-				onClose={() => setIsOpen(false)}
-			/>
 		</div>
 	);
 }
