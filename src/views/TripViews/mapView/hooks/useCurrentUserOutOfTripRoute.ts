@@ -36,6 +36,10 @@ export default function useCurrentUserOutOfTripRoute({
 		const { lon, lat } = userLocation;
 		let [pointIndexBefore, pointIndexAfter] = segmantPointsIndexs.current;
 
+		if (pointIndexBefore < 0 || pointIndexAfter > geometryPoints.length - 1) {
+			return;
+		}
+
 		// Check if user is out of route
 		const distanceToSegment = calculateDistancePointToSegment(
 			[lon, lat],

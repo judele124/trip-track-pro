@@ -1,12 +1,13 @@
 import Icon from '@/components/icons/Icon';
 import { DirectionStep } from '@/types/map';
 import { IconName } from '@/components/icons/Icon';
-import useNextStepIndex from '../hooks/useNextStepIndex';
 import useToggle from '@/hooks/useToggle';
+import Modal from '@/components/ui/Modal';
 
 interface DirectionComponentProps {
 	steps: DirectionStep[];
-	userLocation: { lat: number; lon: number };
+	nextStepIndex: number;
+	userToStepNextDistance: number;
 }
 
 const directions: Record<string, IconName> = {
@@ -15,12 +16,11 @@ const directions: Record<string, IconName> = {
 	left: 'directionLeftArrow',
 };
 
-function DirectionComponent({ steps, userLocation }: DirectionComponentProps) {
-	const { nextStepIndex, userToStepNextDistance } = useNextStepIndex({
-		userLocation,
-		steps,
-	});
-
+function DirectionComponent({
+	steps,
+	nextStepIndex,
+	userToStepNextDistance,
+}: DirectionComponentProps) {
 	const { toggle: toggleShowRestStops, isOpen: showRestStops } = useToggle();
 
 	return (
@@ -32,7 +32,7 @@ function DirectionComponent({ steps, userLocation }: DirectionComponentProps) {
 					{/* Current Step */}
 					<Step
 						step={steps[nextStepIndex]}
-						userToStepNextDistance={userToStepNextDistance.current}
+						userToStepNextDistance={userToStepNextDistance}
 					/>
 
 					{/* Remaining Steps */}
@@ -43,7 +43,7 @@ function DirectionComponent({ steps, userLocation }: DirectionComponentProps) {
 								<Step
 									key={i}
 									step={step}
-									userToStepNextDistance={userToStepNextDistance.current}
+									userToStepNextDistance={userToStepNextDistance}
 								/>
 							))}
 				</div>

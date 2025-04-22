@@ -8,7 +8,7 @@ import useCurrentUserBearing from './useCurrentUserBearing';
 
 interface IUseNextStepIndexProps {
 	userLocation: { lon: number; lat: number } | null;
-	steps: DirectionStep[];
+	steps: DirectionStep[] | undefined;
 }
 
 interface IUseNextStepIndexReturn {
@@ -30,7 +30,7 @@ export default function useNextStepIndex({
 	const bearing = useCurrentUserBearing({ userLocation });
 
 	useEffect(() => {
-		if (!userLocation || !steps[nextStepIndex]) return;
+		if (!userLocation || !steps?.[nextStepIndex]) return;
 		const { lat, lon } = userLocation;
 
 		const currentStep = steps[nextStepIndex];
