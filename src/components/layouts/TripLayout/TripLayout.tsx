@@ -6,6 +6,15 @@ import { navigationRoutes } from '@/Routes/routes';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/icons/Icon';
 import TripNotActiveMessage from '@/components/TripNotActiveMessage';
+import { createContext, MutableRefObject, useContext, useRef } from 'react';
+
+interface TripLayoutContextValue {
+	topNavigationRef: MutableRefObject<HTMLDivElement | null>;
+	bottomNavigationRef: MutableRefObject<HTMLDivElement | null>;
+	pageContentRef: MutableRefObject<HTMLDivElement | null>;
+}
+
+const TripLayoutContext = createContext<TripLayoutContextValue | null>(null);
 
 const TripLayout = () => {
 	let { pathname } = useLocation();
@@ -13,52 +22,76 @@ const TripLayout = () => {
 	const { trip, tripId, loadingTrip, status } = useTripContext();
 	const nav = useNavigate();
 
+	const topNavigationRef = useRef<HTMLDivElement | null>(null);
+	const bottomNavigationRef = useRef<HTMLDivElement | null>(null);
+	const pageContentRef = useRef<HTMLDivElement | null>(null);
+
 	return (
 		<div className='page-colors relative z-0 mx-auto flex h-dvh max-w-[450px] flex-col'>
 			{/* top navigation */}
-			<TopNavigation title={title} />
+			<TopNavigation
+				setRef={(node) => (topNavigationRef.current = node)}
+				title={title}
+			/>
 
 			{/* main content */}
-			<div className='-z-10 grow overflow-hidden bg-secondary/20'>
-				{loadingTrip && (
-					<div className='flex h-full items-center justify-center'>
-						<Icon size='50' className='fill-primary' name='spinner' />
-					</div>
-				)}
+			<TripLayoutContext.Provider
+				value={{ topNavigationRef, bottomNavigationRef, pageContentRef }}
+			>
+				<div
+					ref={pageContentRef}
+					className='-z-10 grow overflow-hidden bg-secondary/20'
+				>
+					{loadingTrip && (
+						<div className='flex h-full items-center justify-center'>
+							<Icon size='50' className='fill-primary' name='spinner' />
+						</div>
+					)}
 
-				{status && (
-					<>
-						{!trip ? (
-							<div className='page-padding text-center'>
-								<p>
-									{!tripId
-										? '⚠️ Oops! No trip was found.'
-										: '🚨 Error: The trip could not be loaded.'}
-								</p>
-								<Button
-									className='mt-5 w-full'
-									onClick={() => nav(navigationRoutes.app)}
-									primary
-								>
-									Go Home
-								</Button>
-							</div>
-						) : trip.status !== 'started' ? (
-							<TripNotActiveMessage trip={trip} />
-						) : (
-							<Outlet />
-						)}
-					</>
-				)}
-			</div>
+					{status && (
+						<>
+							{!trip ? (
+								<div className='page-padding text-center'>
+									<p>
+										{!tripId
+											? '⚠️ Oops! No trip was found.'
+											: '🚨 Error: The trip could not be loaded.'}
+									</p>
+									<Button
+										className='mt-5 w-full'
+										onClick={() => nav(navigationRoutes.app)}
+										primary
+									>
+										Go Home
+									</Button>
+								</div>
+							) : trip.status !== 'started' ? (
+								<TripNotActiveMessage trip={trip} />
+							) : (
+								<Outlet />
+							)}
+						</>
+					)}
+				</div>
+			</TripLayoutContext.Provider>
 
 			{/* bottom navigation */}
-			<BottomNavigation />
+			<BottomNavigation
+				setRef={(node) => (bottomNavigationRef.current = node)}
+			/>
 		</div>
 	);
 };
 
 export default TripLayout;
+
+export function useTripLayout() {
+	const context = useContext(TripLayoutContext);
+	if (!context) {
+		throw new Error('useTripLayout must be used within a TripLayout');
+	}
+	return context;
+}
 
 const titleFromPath = (path: string) => {
 	const arr = path.split('/');

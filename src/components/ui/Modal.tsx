@@ -1,7 +1,9 @@
+import useScreenWidth from '@/hooks/useScreenWidth';
 import {
 	CSSProperties,
 	FC,
 	MouseEvent,
+	MutableRefObject,
 	ReactNode,
 	RefObject,
 	useEffect,
@@ -29,6 +31,7 @@ type CommonProps = {
 	containerClassName?: string;
 	containerStyles?: CSSProperties;
 	backdropBlur?: 'none' | 'sm' | '0' | 'lg';
+	portalElementsRef?: MutableRefObject<HTMLDivElement | null>;
 };
 
 type ModalProps = CommonProps &
@@ -56,7 +59,9 @@ const Modal: FC<ModalProps> = ({
 	children,
 	containerStyles,
 	backdropBlur = 'sm',
+	portalElementsRef,
 }) => {
+	const width = useScreenWidth();
 	const [positions, setPositions] = useState([0, 0, 0, 0]);
 	const childrenRef = useRef<HTMLDivElement>(null);
 	const backgroundRef = useRef<HTMLDivElement>(null);
@@ -180,7 +185,7 @@ const Modal: FC<ModalProps> = ({
 				break;
 			}
 		}
-	}, [anchorElement, anchorTo, open]);
+	}, [anchorElement, anchorTo, open, width]);
 
 	useEffect(() => {
 		backgroundRef.current?.classList.remove('opacity-0');
@@ -195,7 +200,7 @@ const Modal: FC<ModalProps> = ({
 				e.stopPropagation();
 				onBackdropClick?.(e);
 			}}
-			className={`absolute inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-${backdropBlur} transition-opacity duration-150 ${backgroundClassname}`}
+			className={`fixed inset-0 z-50 bg-gray-950/70 opacity-0 backdrop-blur-${backdropBlur} transition-opacity duration-150 ${backgroundClassname}`}
 		>
 			<div
 				className={`relative w-fit ${containerClassName}`}
@@ -206,7 +211,7 @@ const Modal: FC<ModalProps> = ({
 				{children}
 			</div>
 		</div>,
-		document.getElementById('root')!
+		portalElementsRef?.current || document.getElementById('root')!
 	);
 };
 
