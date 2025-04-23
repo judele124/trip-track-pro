@@ -36,20 +36,15 @@ export default function useTripOption({
 	tripId,
 }: IUseTripOptions): IUseTripOptionsReturn {
 	const nav = useNavigate();
-	const { user } = useAuthContext();
 	const { activate } = useAxios({
 		manual: true,
 	});
+
 	const { getCreatedTripsData } = useTripShowcase();
 
 	const handleActions = async (action: ActionOption) => {
 		switch (action) {
 			case 'join':
-				await joinTrip(activate, tripId, {
-					name: user?.name,
-					imageUrl: user?.imageUrl,
-				});
-
 				nav(`${navigationRoutes.joinTrip}?tripId=${tripId}`);
 				break;
 			case 'start':

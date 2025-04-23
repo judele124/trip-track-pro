@@ -1,25 +1,26 @@
 import Map from './Map';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTripContext } from '@/contexts/TripContext';
 import { useTripSocket } from '@/contexts/SocketContext';
-import StopMarker from './components/StopMarker';
-import GeneralMarker from './components/GeneralMarker';
-import UserMarker from './components/UserMarker';
+import StopMarker from './components/Markers/StopMarker';
+import GeneralMarker from './components/Markers/GeneralMarker';
+import CurrentUserMarker from './components/Markers/CurrentUserMarker';
 import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
-import useFakeUserLocation from './tests/useFakeUserLocation';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 import NotificationComponent from './components/NotificationComponent';
 import useToggle from '@/hooks/useToggle';
+import OtherUserMarker from './components/Markers/OtherUserMarker';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
-	useTripSocket();
+	const { usersLocations, socket } = useTripSocket();
 
 	const userLocation = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
-			console.log('Location from useCurrentUserLocation', location);
+			if (!trip || !socket) return;
+			socket.emit('updateLocation', trip._id.toString(), location);
 		},
 	});
 
@@ -31,25 +32,6 @@ export default function MapView() {
 	const { routeData } = useMapboxDirectionRoute({
 		points,
 		runGetDirectionsRoute: !tripRoute,
-	});
-
-	const fakePoints = useMemo(() => {
-		if (!routeData) {
-			return [];
-		}
-		return routeData.routes[0].legs[0].steps
-			.flatMap(({ geometry: { coordinates: c } }) => c)
-			.map(([lon, lat], i) => {
-				return {
-					lat,
-					lon,
-				};
-			});
-	}, [routeData]);
-
-	const fakeLocation = useFakeUserLocation({
-		points: fakePoints,
-		speed: 30,
 	});
 
 	useEffect(() => {
@@ -69,8 +51,13 @@ export default function MapView() {
 				closeModal={() => setIsOpen(false)}
 			/>
 			<Map>
-				{fakeLocation && <UserMarker location={fakeLocation} />}
 				{tripRoute && <MapRoute route={tripRoute} />}
+
+				{userLocation && <CurrentUserMarker location={userLocation} />}
+				{usersLocations.map(({ id, location }) => (
+					<OtherUserMarker location={location} key={id} />
+				))}
+
 				{trip?.stops.map((stop, i) => {
 					return (
 						<GeneralMarker
@@ -84,7 +71,7 @@ export default function MapView() {
 
 				{tripRoute?.routes[0].legs[0].steps && (
 					<DirectionComponent
-						userLocation={fakeLocation}
+						userLocation={userLocation}
 						steps={tripRoute.routes[0].legs[0].steps}
 					/>
 				)}

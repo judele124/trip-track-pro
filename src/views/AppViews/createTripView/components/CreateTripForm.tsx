@@ -10,6 +10,7 @@ import InputFeildError from '@/components/ui/InputFeildError';
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { navigationRoutes } from '@/Routes/routes';
+import { Trip } from '@/types/trip';
 
 interface ICreateTripFormProps {
 	currentFormStage: number;
@@ -56,7 +57,7 @@ export default function CreateTripForm({
 		error: tripCreateError,
 		loading: tripCreateLoading,
 		status,
-	} = useAxios({ manual: true });
+	} = useAxios<Trip>({ manual: true });
 
 	const handleTripCreate = async () => {
 		const values = reactHookFormsMethods.getValues();
@@ -69,12 +70,11 @@ export default function CreateTripForm({
 	};
 
 	useEffect(() => {
-		if (status && status >= 200 && status <= 300) {
+		if (status && status >= 200 && status <= 300 && data) {
 			setCurrentFormStage((prev) => prev + 1);
-			const tripResponseData = data as Types['Trip']['Model'];
 
 			const queryString = new URLSearchParams({
-				tripId: tripResponseData._id.toString(),
+				tripId: data._id.toString(),
 			}).toString();
 
 			nav(`${navigationRoutes.shareTrip}?${queryString}`);
