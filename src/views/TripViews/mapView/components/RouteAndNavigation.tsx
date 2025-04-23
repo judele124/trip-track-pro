@@ -46,6 +46,7 @@ export default function RouteAndNavigation({
 			<MapRoute route={routeData} options={routeOptions} />
 
 			{/* Direction Info UI */}
+
 			<DirectionComponent
 				nextStepIndex={nextStepIndex}
 				userToStepNextDistance={userToStepNextDistance.current}

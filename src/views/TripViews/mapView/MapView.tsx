@@ -5,7 +5,6 @@ import { useTripSocket } from '@/contexts/SocketContext';
 import StopMarker from './components/Markers/StopMarker';
 import GeneralMarker from './components/Markers/GeneralMarker';
 import CurrentUserMarker from './components/Markers/CurrentUserMarker';
-import MapRoute from './components/MapRoute';
 import UserMarker from './components/UserMarker';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
 import { useAuthContext } from '@/contexts/AuthContext';

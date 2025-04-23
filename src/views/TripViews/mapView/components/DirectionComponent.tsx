@@ -2,7 +2,9 @@ import Icon from '@/components/icons/Icon';
 import { DirectionStep } from '@/types/map';
 import { IconName } from '@/components/icons/Icon';
 import useToggle from '@/hooks/useToggle';
-import Modal from '@/components/ui/Modal';
+import { useTripLayout } from '@/components/layouts/TripLayout/TripLayout';
+import { createPortal } from 'react-dom';
+import { useEffect, useRef } from 'react';
 
 interface DirectionComponentProps {
 	steps: DirectionStep[];
@@ -21,14 +23,36 @@ function DirectionComponent({
 	nextStepIndex,
 	userToStepNextDistance,
 }: DirectionComponentProps) {
-	const { toggle: toggleShowRestStops, isOpen: showRestStops } = useToggle();
+	const { pageContentRef } = useTripLayout();
+	const { isOpen: showRestStops, setIsOpen: setShowRestStops } = useToggle();
+	const ref = useRef<HTMLDivElement>(null);
 
-	return (
-		<div className='page-colors absolute bottom-24 left-1/2 z-50 max-h-[50vh] w-[90vw] max-w-[380px] -translate-x-1/2 overflow-y-auto rounded-2xl border-2 border-primary text-sm'>
+	useEffect(() => {
+		if (!showRestStops) return;
+
+		const handleClickOutside = (event: MouseEvent) => {
+			if (ref.current && !ref.current.contains(event.target as Node)) {
+				setShowRestStops(false);
+			}
+		};
+		document.addEventListener('click', handleClickOutside);
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
+		};
+	}, [showRestStops]);
+
+	if (!pageContentRef.current) return null;
+
+	return createPortal(
+		<div className='page-colors absolute bottom-16 left-1/2 z-50 max-h-[40vh] w-[90vw] max-w-[380px] -translate-x-1/2 -translate-y-2 overflow-y-auto rounded-2xl border-2 border-primary text-sm'>
 			{(!steps || steps.length === 0) && <div>no route found</div>}
 
 			{steps[nextStepIndex] && (
-				<div onClick={toggleShowRestStops} className='cursor-pointer'>
+				<div
+					ref={ref}
+					onClick={() => !showRestStops && setShowRestStops(true)}
+					className='cursor-pointer'
+				>
 					{/* Current Step */}
 					<Step
 						step={steps[nextStepIndex]}
@@ -48,7 +72,8 @@ function DirectionComponent({
 							))}
 				</div>
 			)}
-		</div>
+		</div>,
+		pageContentRef.current
 	);
 }
 
