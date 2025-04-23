@@ -31,9 +31,11 @@ const NotificationComponent: React.FC<NotificationProps> = ({
 
 	useEffect(() => {
 		if (isModalOpen) {
-			setIsOpen(true);
-			setTimeout(() => setIsOpen(false), 2500);
-			setTimeout(() => closeModal(), 3200);
+			setTimeout(() => {
+				setIsOpen(true);
+				setTimeout(() => setIsOpen(false), 2500);
+				setTimeout(() => closeModal(), 3200);
+			}, 1000);
 		}
 	}, [isModalOpen]);
 
@@ -42,15 +44,15 @@ const NotificationComponent: React.FC<NotificationProps> = ({
 			backgroundClassname='bg-transparent'
 			backdropBlur='none'
 			open={isModalOpen}
-			portalElement={pageContentRef.current}
+			portalElementsRef={pageContentRef}
 			anchorTo='top'
 			anchorElement={topNavigationRef}
 		>
 			<div
-				className={`absolute left-1/2 w-full -translate-y-1/2 opacity-100 transition-all duration-700 ${statusColors[status]} flex items-center gap-2 rounded-md border-2 p-4 shadow-lg ${isOpen ? 'translate-y-3 opacity-100' : 'translate-y-[-120%] opacity-0'}`}
+				className={`opacity-100 transition-all duration-700 ${statusColors[status]} flex items-center gap-2 rounded-md border-2 p-4 shadow-lg ${isOpen ? 'translate-y-3 opacity-100' : 'translate-y-[-130%] opacity-0'}`}
 			>
 				<div className='flex items-center gap-2'>
-					{icon && <Icon className='' name={icon} size='20' />}
+					{icon && <Icon name={icon} size='20' />}
 					<span>{message}</span>
 				</div>
 			</div>
