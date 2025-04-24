@@ -49,6 +49,9 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	const [messages, setMessages] = useState<IMessage[]>([]);
 	const { tripId, trip } = useTripContext();
 	const [usersLocations, setUsersLocations] = useState<IUserLocation[]>([]);
+	const [usersInLiveTripExpData, setUsersInLiveTripExpData] = useState<
+		IRedisUserTripData[]
+	>([]);
 
 	const { activate, data: usersInLiveTripData } = useAxios<
 		IRedisUserTripData[]
@@ -68,9 +71,19 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		});
 
 		setSocket(socketClient);
-
-		activate({ url: `${API_BASE_URL}/trip/${tripId}/users` });
+		const initUsersLiveData = async () => {
+			const { data: usersLiveData } = await activate({
+				url: `${API_BASE_URL}/trip/${tripId}/users`,
+			});
+			if (usersLiveData) setUsersInLiveTripExpData(usersLiveData);
+		};
+		initUsersLiveData();
 	}, [tripId, trip]);
+
+	useEffect(() => {
+		if (!usersInLiveTripExpData) return;
+		console.log(usersInLiveTripExpData);
+	}, [usersInLiveTripExpData]);
 
 	useEffect(() => {
 		if (!socket || !tripId) return;
@@ -82,7 +95,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		});
 
 		socket.on('locationUpdated', (userId, location) => {
-			console.log('Location updated:', userId, location);
 			setUsersLocations((prev) => {
 				const index = prev.findIndex((user) => user.id === userId);
 				if (index === -1) {
@@ -96,8 +108,18 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			});
 		});
 
-		socket.on('experienceFinished', (userId) => {
-			console.log('Experience finished:', userId);
+		socket.on('experienceFinished', (data, userId, index) => {
+			setUsersInLiveTripExpData((prev) => {
+				const userIndex = prev.findIndex((user) => user.userId === userId);
+				if (userIndex === -1) {
+					return [...prev, data];
+				}
+				return [
+					...prev.slice(0, userIndex),
+					data,
+					...prev.slice(userIndex + 1),
+				];
+			});
 		});
 
 		socket.on('messageSent', (message, userId) => {

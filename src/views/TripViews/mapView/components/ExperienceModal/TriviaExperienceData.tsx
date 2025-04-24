@@ -5,13 +5,15 @@ import useToggle from '@/hooks/useToggle';
 import Modal from '@/components/ui/Modal';
 
 interface TriviaExperienceDataProps {
-	data: Types['Trip']['Stop']['Experience']['Details']['Trivia']['Model']['data'];
+	data: Types['Trip']['Stop']['Experience']['Details']['Trivia']['Model'];
 	onClose: () => void;
+	finishExperience: (score: number) => void;
 }
 
 export default function TriviaExperienceData({
-	data,
+	data: { data, score = 0 },
 	onClose,
+	finishExperience,
 }: TriviaExperienceDataProps) {
 	const [selectedOption, setSelectedOption] = useState<string | null>(null);
 	const [options] = useState(() =>
@@ -22,9 +24,13 @@ export default function TriviaExperienceData({
 		toggle: toggleCorrectAnswerModalOpen,
 	} = useToggle();
 	useEffect(() => {
+		if (!selectedOption) return;
+		let updatedScore = 0;
 		if (selectedOption === data.answer) {
 			toggleCorrectAnswerModalOpen();
+			updatedScore = score;
 		}
+		finishExperience(updatedScore);
 	}, [selectedOption]);
 
 	const getButtonStyle = (option: string) => {
