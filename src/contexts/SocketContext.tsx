@@ -36,6 +36,7 @@ interface ISocketContextValue {
 	addMsgToMsgs: (message: IMessage) => void;
 	usersInLiveTripData: IRedisUserTripData[] | undefined;
 	usersLocations: IUserLocation[];
+	usersInLiveTripExpData: IRedisUserTripData[];
 }
 
 interface ITripSocketProviderProps {
@@ -159,6 +160,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				addMsgToMsgs,
 				usersInLiveTripData,
 				usersLocations,
+				usersInLiveTripExpData,
 			}}
 		>
 			{children}
