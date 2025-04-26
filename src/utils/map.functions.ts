@@ -5,6 +5,7 @@ import {
 	CircleLayerSpecification,
 	GeoJSONSourceSpecification,
 	LineLayerSpecification,
+	SourceSpecification,
 } from 'mapbox-gl';
 
 export type Point = [number, number] | number[];
@@ -115,6 +116,45 @@ export function addCircleRadiusToLocation<K extends string>(
 	addSourceAndLayerToMap(key, map, sourceData, circleData);
 }
 
+export function createArrowPolygon(
+	center: Point,
+	bearing: number
+): GeoJSONSourceSpecification {
+	const arrowLength = 20; // meters
+	const arrowWidth = 6; // meters
+
+	const tip = offsetLocationByMeters(center, arrowLength / 2, bearing);
+	const tail = offsetLocationByMeters(center, arrowLength / 2, bearing + 180);
+
+	// Left and right of the tail
+	const leftTail = offsetLocationByMeters(tail, arrowWidth / 2, bearing - 90);
+	const rightTail = offsetLocationByMeters(tail, arrowWidth / 2, bearing + 90);
+
+	// Slightly left and right of the tip (to make it sharp)
+	const leftTip = offsetLocationByMeters(tip, arrowWidth / 4, bearing - 90);
+	const rightTip = offsetLocationByMeters(tip, arrowWidth / 4, bearing + 90);
+
+	const arrowCoordinates = [
+		leftTail,
+		leftTip,
+		tip,
+		rightTip,
+		rightTail,
+		leftTail, // close polygon
+	];
+
+	return {
+		type: 'geojson',
+		data: {
+			type: 'Feature',
+			properties: {},
+			geometry: {
+				type: 'Polygon',
+				coordinates: [arrowCoordinates],
+			},
+		},
+	};
+}
 // map navigation helper functions
 
 export function calculateDistanceOnEarth(

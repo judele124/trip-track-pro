@@ -38,7 +38,7 @@ export default function useFakeUserLocation({
 	onLocationUpdate,
 	updateIntervalMs = 1000,
 }: Props) {
-	const [location, setLocation] = useState<Point>(points[0]);
+	const [location, setLocation] = useState<Point | null>(null);
 	const indexRef = useRef(0);
 	const progressRef = useRef(0);
 

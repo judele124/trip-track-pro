@@ -4,12 +4,13 @@ import {
 	getBearing,
 	getBearingDiff,
 	getClosestPointWithMinDistance,
+	Point,
 } from '@/utils/map.functions';
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import useCurrentUserBearing from './useCurrentUserBearing';
 
 interface IUseCurrentUserOutOfTripRouteProps {
-	geometryPoints: number[][];
+	geometryPoints: Point[];
 	userLocation: { lon: number; lat: number } | null;
 }
 
@@ -40,11 +41,17 @@ export default function useCurrentUserOutOfTripRoute({
 			return;
 		}
 
+		const segmant = [
+			geometryPoints[pointIndexBefore],
+			geometryPoints[pointIndexAfter],
+		] as [Point, Point];
+
 		// Check if user is out of route
 		const distanceToSegment = calculateDistancePointToSegment(
 			[lon, lat],
-			[geometryPoints[pointIndexBefore], geometryPoints[pointIndexAfter]]
+			segmant
 		);
+		console.log('distanceToSegment', distanceToSegment);
 
 		if (distanceToSegment > RANGE_FOR_USER_OUT_OF_RANGE) {
 			setIsOutOfRoute(true);

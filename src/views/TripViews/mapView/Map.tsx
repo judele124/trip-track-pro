@@ -25,6 +25,7 @@ export interface MapContextValue {
 	isMapReady: boolean;
 	mapRef: MutableRefObject<MB_Map | null>;
 	addRoute: (data: {
+		id: string;
 		route: MapBoxDirectionsResponse;
 		options: IRouteLayerSpecification;
 	}) => void;
@@ -38,6 +39,7 @@ export default function Map({ children }: MapProps) {
 	const [routeError, setRouteError] = useState<Error | null>(null);
 	const [routes, setRoutes] = useState<
 		{
+			id: string;
 			route: MapBoxDirectionsResponse;
 			options: IRouteLayerSpecification;
 		}[]
@@ -47,9 +49,8 @@ export default function Map({ children }: MapProps) {
 		if (!isMapReady || !mapRef.current) return;
 
 		routes.forEach(
-			({ options, route }, i: number) =>
-				mapRef.current &&
-				addRouteToMap(`route-${i}`, mapRef.current, route, options)
+			({ options, route, id }) =>
+				mapRef.current && addRouteToMap(id, mapRef.current, route, options)
 		);
 	}, [isMapReady, routes]);
 

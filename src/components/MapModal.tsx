@@ -4,7 +4,7 @@ import Map from '@/views/TripViews/mapView/Map';
 import StopMarker from '@/views/TripViews/mapView/components/Markers/StopMarker';
 import { MapBoxDirectionsResponse } from '@/types/map';
 import { Types } from 'trip-track-package';
-import MapRoute from '@/views/TripViews/mapView/components/MapRoute';
+import MapRoute from '@/views/TripViews/mapView/components/RoutesAndNavigation/MapRoute';
 
 interface IMapModalProps {
 	mapOpen: boolean;

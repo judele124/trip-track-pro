@@ -1,14 +1,16 @@
-import { useMap } from '../Map';
+import { useMap } from '../../Map';
 import { MapBoxDirectionsResponse } from '@/types/map';
 import { IRouteLayerSpecification } from '@/utils/map.functions';
 import { useEffect } from 'react';
 
 interface IMapRouteProps {
+	id: string;
 	route: MapBoxDirectionsResponse;
 	options?: IRouteLayerSpecification;
 }
 
 export default function MapRoute({
+	id,
 	route,
 	options = {
 		lineColor: '#ff0000',
@@ -18,7 +20,7 @@ export default function MapRoute({
 }: IMapRouteProps) {
 	const { addRoute } = useMap();
 	useEffect(() => {
-		addRoute({ route, options });
-	}, []);
+		addRoute({ id, route, options });
+	}, [route, options]);
 	return null;
 }
