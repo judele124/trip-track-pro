@@ -1,15 +1,18 @@
 import { useEffect } from 'react';
 import { useMap } from '../../Map';
 import {
-	addPolygonFillAndLineToMap,
+	addPolygonFillAndOuterFillToMap,
+	getBearing,
+	normalizeVector,
 	offsetLocationByMeters,
+	perpendicularVector,
 	Point,
 } from '@/utils/map.functions';
 import { Maneuver } from '@/types/map';
+import * as turf from '@turf/turf';
 
 interface IMapArrowProps {
-	fillLayerId: string;
-	lineLayerId: string;
+	outerId: string;
 	maneuver: Maneuver;
 	fillColor?: string;
 	outlineColor?: string;
@@ -17,12 +20,10 @@ interface IMapArrowProps {
 }
 
 function MapArrow({
-	fillLayerId,
-	lineLayerId,
+	outerId,
 	maneuver: { location, bearing_after, bearing_before },
 	fillColor = '#32adff',
 	outlineColor = 'white',
-	outlineWidth = 3,
 }: IMapArrowProps) {
 	const { mapRef, isMapReady } = useMap();
 
@@ -30,9 +31,9 @@ function MapArrow({
 		if (!mapRef.current || !isMapReady) return;
 
 		const length = 15;
-		const width = 5;
+		const width = 3;
 
-		// arrow body
+		// arrow body points
 		const {
 			backCenter,
 			backLeft,
@@ -50,12 +51,12 @@ function MapArrow({
 			bearing_after,
 		});
 
-		// arrow head
+		// arrow head points
 		const { arrowHeadBackLeft, arrowHeadBackRight, arrowHeadTop } =
 			getArrowHeadPoints({
 				baseCenterLocation: frontCenter,
 				bearingTop: bearing_after,
-				length: width * 1.2,
+				length: width * 1.5,
 				width: width * 1.2,
 			});
 
@@ -73,20 +74,18 @@ function MapArrow({
 			backCenter,
 		];
 
-		addPolygonFillAndLineToMap({
-			fillLayerId,
-			lineLayerId,
+		addPolygonFillAndOuterFillToMap({
+			outerId,
 			map: mapRef.current,
-			pointsInOrder,
+			fillPointsInOrder: pointsInOrder,
+			strokePointsInOrder: getArrowOutlineWithTurf(pointsInOrder, 0.7),
 			fillOptions: {
 				'fill-color': fillColor,
 			},
-			lineOptions: {
-				'line-color': outlineColor,
-				'line-width': outlineWidth,
+			strokeOptions: {
+				'fill-color': outlineColor,
 			},
 		});
-		console.log('drawing');
 
 		mapRef.current.setCenter(location);
 		mapRef.current.setZoom(20);
@@ -98,7 +97,6 @@ function MapArrow({
 		bearing_before,
 		fillColor,
 		outlineColor,
-		outlineWidth,
 	]);
 
 	return null;
@@ -211,4 +209,38 @@ function getArrowHeadPoints({
 		arrowHeadBackRight,
 		arrowHeadTop,
 	};
+}
+
+function createPolygonFromPoints(points: Point[]) {
+	const coordinates = points.map((point) => [point[0], point[1]]);
+	coordinates.push(coordinates[0]);
+	return turf.polygon([coordinates]);
+}
+
+function getArrowOutlineWithTurf(
+	pointsInOrder: Point[],
+	offset: number
+): Point[] {
+	// Convert points to the format Turf expects
+	const coordinates = pointsInOrder.map((point) => [point[0], point[1]]);
+	coordinates.push(coordinates[0]); // To close the polygon
+	const polygon = turf.polygon([coordinates]);
+
+	// Apply offset using Turf's buffer function
+	const offsetPolygon = turf.buffer(polygon, offset, { units: 'meters' });
+
+	// Ensure the result is valid and not undefined
+	if (
+		!offsetPolygon ||
+		!offsetPolygon.geometry ||
+		!offsetPolygon.geometry.coordinates
+	) {
+		throw new Error('Failed to calculate the offset polygon');
+	}
+
+	// Use a different name for the coordinates from the offset polygon
+	const offsetCoordinates = offsetPolygon.geometry.coordinates[0];
+
+	// Return the coordinates as an array of Points
+	return offsetCoordinates.map(([lon, lat]) => [lon, lat] as [number, number]);
 }

@@ -55,59 +55,56 @@ export function addSourceAndLayerToMap(
 	}
 }
 
-export function addPolygonFillAndLineToMap({
-	fillLayerId,
-	lineLayerId,
+export function addPolygonFillAndOuterFillToMap({
+	outerId,
 	map,
-	pointsInOrder,
+	fillPointsInOrder,
+	strokePointsInOrder,
 	fillOptions,
-	lineOptions,
-	beforeLayerId,
+	strokeOptions,
 }: {
-	fillLayerId: string;
-	lineLayerId: string;
+	outerId: string;
 	map: Map;
-	pointsInOrder: Point[];
+	fillPointsInOrder: Point[];
+	strokePointsInOrder: Point[];
 	fillOptions?: FillLayerSpecification['paint'];
-	lineOptions?: LineLayerSpecification['paint'];
-	beforeLayerId?: string;
+	strokeOptions?: FillLayerSpecification['paint'];
 }) {
 	addSourceAndLayerToMap(
-		fillLayerId,
+		`${outerId}-fill`,
 		map,
 		{
 			type: 'geojson',
 			data: {
 				type: 'Polygon',
-				coordinates: [pointsInOrder],
+				coordinates: [fillPointsInOrder],
 			},
 		},
 		{
-			id: fillLayerId,
+			id: `${outerId}-fill`,
 			type: 'fill',
-			source: fillLayerId,
+			source: `${outerId}-fill`,
 			paint: fillOptions,
-		},
-		beforeLayerId
+		}
 	);
 
 	addSourceAndLayerToMap(
-		lineLayerId,
+		outerId,
 		map,
 		{
 			type: 'geojson',
 			data: {
-				type: 'LineString',
-				coordinates: pointsInOrder,
+				type: 'Polygon',
+				coordinates: [strokePointsInOrder],
 			},
 		},
 		{
-			id: lineLayerId,
-			type: 'line',
-			source: lineLayerId,
-			paint: lineOptions,
+			id: outerId,
+			type: 'fill',
+			source: outerId,
+			paint: strokeOptions,
 		},
-		beforeLayerId
+		`${outerId}-fill`
 	);
 }
 
@@ -355,10 +352,9 @@ export function getBearing([lon1, lat1]: Point, [lon2, lat2]: Point): number {
 	const y = Math.sin(Δλ) * Math.cos(φ2);
 	const x =
 		Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
-
 	const θ = Math.atan2(y, x);
-	const bearing = (toDegrees(θ) + 360) % 360;
 
+	const bearing = (toDegrees(θ) + 360) % 360;
 	return bearing;
 }
 
@@ -382,4 +378,14 @@ export function calculateDistanceOnEarth(
 			Math.sin(dLon / 2);
 	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 	return R * c; // Distance in meters
+}
+
+export function normalizeVector(vector: number[]): number[] {
+	const magnitude = Math.sqrt(vector[0] ** 2 + vector[1] ** 2);
+	if (magnitude === 0) return [0, 0];
+	return [vector[0] / magnitude, vector[1] / magnitude];
+}
+
+export function perpendicularVector(vector: number[]): number[] {
+	return [vector[1], -vector[0]];
 }

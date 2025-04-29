@@ -7,7 +7,7 @@ interface IMapRouteProps {
 	id: string;
 	route: MapBoxDirectionsResponse;
 	options?: IRouteLayerSpecification;
-	beforeLayerIds: string[];
+	beforeLayerIds?: string;
 }
 
 export default function MapRoute({
@@ -18,19 +18,12 @@ export default function MapRoute({
 		lineOpacity: 1,
 		lineWidth: 3,
 	},
-	beforeLayerIds = [],
+	beforeLayerIds,
 }: IMapRouteProps) {
 	const { mapRef } = useMap();
 	useEffect(() => {
 		if (!mapRef.current) return;
-		addRouteToMap(id, mapRef.current, route, options);
-		beforeLayerIds.forEach((l) => {
-			if (mapRef.current?.getLayer(l)) {
-				console.log(l);
-
-				mapRef.current.moveLayer(l, id);
-			}
-		});
+		addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
 	}, [route, options]);
 	return null;
 }

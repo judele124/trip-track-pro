@@ -7982,8 +7982,7 @@ export function TestUI() {
 		<div className='h-screen'>
 			<Map>
 				<MapArrow
-					fillLayerId='arrow-fill'
-					lineLayerId='arrow-outline'
+					outerId='arrow'
 					maneuver={route.routes[0].legs[0].steps[1].maneuver}
 				/>
 
@@ -7995,7 +7994,7 @@ export function TestUI() {
 						lineOpacity: 1,
 						lineWidth: 3,
 					}}
-					beforeLayerIds={['arrow-fill', 'arrow-outline']}
+					beforeLayerIds='arrow'
 				/>
 
 				<CurrentUserMarker
