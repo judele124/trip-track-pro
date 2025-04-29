@@ -5,7 +5,7 @@ import {
 	CircleLayerSpecification,
 	GeoJSONSourceSpecification,
 	LineLayerSpecification,
-	SourceSpecification,
+	FillLayerSpecification,
 } from 'mapbox-gl';
 
 export type Point = [number, number] | number[];
@@ -17,47 +17,12 @@ export interface IRouteLayerSpecification {
 }
 
 // map drawing functions
-export function addRouteToMap(
-	key: string,
-	map: Map,
-	routeData: MapBoxDirectionsResponse,
-	{ lineColor, lineWidth, lineOpacity }: IRouteLayerSpecification
-) {
-	const sourceData: GeoJSONSourceSpecification = {
-		type: 'geojson',
-		data: {
-			type: 'Feature',
-			properties: {},
-			geometry: {
-				type: 'LineString',
-				coordinates: routeData.routes[0].geometry.coordinates,
-			},
-		},
-	};
-
-	const layerData: LineLayerSpecification = {
-		id: key,
-		type: 'line',
-		source: key,
-		layout: {
-			'line-join': 'round',
-			'line-cap': 'round',
-		},
-		paint: {
-			'line-color': lineColor,
-			'line-width': lineWidth,
-			'line-opacity': lineOpacity,
-		},
-	};
-
-	addSourceAndLayerToMap(key, map, sourceData, layerData);
-}
-
 export function addSourceAndLayerToMap(
 	key: string,
 	map: Map,
 	sourceData: GeoJSONSourceSpecification,
-	layerData: LayerSpecification
+	layerData: LayerSpecification,
+	beforeLayerId?: string
 ) {
 	if (!sourceData.data) {
 		throw new Error("sourceData.data doesn't exist");
@@ -86,8 +51,101 @@ export function addSourceAndLayerToMap(
 	map.addSource(key, sourceData);
 
 	if (!map.getLayer(key)) {
-		map.addLayer(layerData);
+		map.addLayer(layerData, beforeLayerId);
 	}
+}
+
+export function addPolygonFillAndLineToMap({
+	fillLayerId,
+	lineLayerId,
+	map,
+	pointsInOrder,
+	fillOptions,
+	lineOptions,
+	beforeLayerId,
+}: {
+	fillLayerId: string;
+	lineLayerId: string;
+	map: Map;
+	pointsInOrder: Point[];
+	fillOptions?: FillLayerSpecification['paint'];
+	lineOptions?: LineLayerSpecification['paint'];
+	beforeLayerId?: string;
+}) {
+	addSourceAndLayerToMap(
+		fillLayerId,
+		map,
+		{
+			type: 'geojson',
+			data: {
+				type: 'Polygon',
+				coordinates: [pointsInOrder],
+			},
+		},
+		{
+			id: fillLayerId,
+			type: 'fill',
+			source: fillLayerId,
+			paint: fillOptions,
+		},
+		beforeLayerId
+	);
+
+	addSourceAndLayerToMap(
+		lineLayerId,
+		map,
+		{
+			type: 'geojson',
+			data: {
+				type: 'LineString',
+				coordinates: pointsInOrder,
+			},
+		},
+		{
+			id: lineLayerId,
+			type: 'line',
+			source: lineLayerId,
+			paint: lineOptions,
+		},
+		beforeLayerId
+	);
+}
+
+export function addRouteToMap(
+	key: string,
+	map: Map,
+	routeData: MapBoxDirectionsResponse,
+	{ lineColor, lineWidth, lineOpacity }: IRouteLayerSpecification,
+	beforeLayerId?: string
+) {
+	const sourceData: GeoJSONSourceSpecification = {
+		type: 'geojson',
+		data: {
+			type: 'Feature',
+			properties: {},
+			geometry: {
+				type: 'LineString',
+				coordinates: routeData.routes[0].geometry.coordinates,
+			},
+		},
+	};
+
+	const layerData: LineLayerSpecification = {
+		id: key,
+		type: 'line',
+		source: key,
+		layout: {
+			'line-join': 'round',
+			'line-cap': 'round',
+		},
+		paint: {
+			'line-color': lineColor,
+			'line-width': lineWidth,
+			'line-opacity': lineOpacity,
+		},
+	};
+
+	addSourceAndLayerToMap(key, map, sourceData, layerData, beforeLayerId);
 }
 
 export function addCircleRadiusToLocation<K extends string>(
@@ -114,64 +172,6 @@ export function addCircleRadiusToLocation<K extends string>(
 	};
 
 	addSourceAndLayerToMap(key, map, sourceData, circleData);
-}
-
-export function createArrowPolygon(
-	center: Point,
-	bearing: number
-): GeoJSONSourceSpecification {
-	const arrowLength = 20; // meters
-	const arrowWidth = 6; // meters
-
-	const tip = offsetLocationByMeters(center, arrowLength / 2, bearing);
-	const tail = offsetLocationByMeters(center, arrowLength / 2, bearing + 180);
-
-	// Left and right of the tail
-	const leftTail = offsetLocationByMeters(tail, arrowWidth / 2, bearing - 90);
-	const rightTail = offsetLocationByMeters(tail, arrowWidth / 2, bearing + 90);
-
-	// Slightly left and right of the tip (to make it sharp)
-	const leftTip = offsetLocationByMeters(tip, arrowWidth / 4, bearing - 90);
-	const rightTip = offsetLocationByMeters(tip, arrowWidth / 4, bearing + 90);
-
-	const arrowCoordinates = [
-		leftTail,
-		leftTip,
-		tip,
-		rightTip,
-		rightTail,
-		leftTail, // close polygon
-	];
-
-	return {
-		type: 'geojson',
-		data: {
-			type: 'Feature',
-			properties: {},
-			geometry: {
-				type: 'Polygon',
-				coordinates: [arrowCoordinates],
-			},
-		},
-	};
-}
-// map navigation helper functions
-
-export function calculateDistanceOnEarth(
-	[lon1, lat1]: Point,
-	[lon2, lat2]: Point
-) {
-	const R = 6378137; // Radius of Earth in meters
-	const dLat = (lat2 - lat1) * (Math.PI / 180);
-	const dLon = (lon2 - lon1) * (Math.PI / 180);
-	const a =
-		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-		Math.cos(lat1 * (Math.PI / 180)) *
-			Math.cos(lat2 * (Math.PI / 180)) *
-			Math.sin(dLon / 2) *
-			Math.sin(dLon / 2);
-	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	return R * c; // Distance in meters
 }
 
 /**
@@ -365,4 +365,21 @@ export function getBearing([lon1, lat1]: Point, [lon2, lat2]: Point): number {
 export function getBearingDiff(b1: number, b2: number) {
 	const diff = Math.abs(b1 - b2);
 	return diff > 180 ? 360 - diff : diff;
+}
+
+export function calculateDistanceOnEarth(
+	[lon1, lat1]: Point,
+	[lon2, lat2]: Point
+) {
+	const R = 6378137; // Radius of Earth in meters
+	const dLat = (lat2 - lat1) * (Math.PI / 180);
+	const dLon = (lon2 - lon1) * (Math.PI / 180);
+	const a =
+		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+		Math.cos(lat1 * (Math.PI / 180)) *
+			Math.cos(lat2 * (Math.PI / 180)) *
+			Math.sin(dLon / 2) *
+			Math.sin(dLon / 2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	return R * c; // Distance in meters
 }

@@ -1,12 +1,13 @@
 import { useMap } from '../../Map';
 import { MapBoxDirectionsResponse } from '@/types/map';
-import { IRouteLayerSpecification } from '@/utils/map.functions';
+import { addRouteToMap, IRouteLayerSpecification } from '@/utils/map.functions';
 import { useEffect } from 'react';
 
 interface IMapRouteProps {
 	id: string;
 	route: MapBoxDirectionsResponse;
 	options?: IRouteLayerSpecification;
+	beforeLayerIds: string[];
 }
 
 export default function MapRoute({
@@ -17,10 +18,19 @@ export default function MapRoute({
 		lineOpacity: 1,
 		lineWidth: 3,
 	},
+	beforeLayerIds = [],
 }: IMapRouteProps) {
-	const { addRoute } = useMap();
+	const { mapRef } = useMap();
 	useEffect(() => {
-		addRoute({ id, route, options });
+		if (!mapRef.current) return;
+		addRouteToMap(id, mapRef.current, route, options);
+		beforeLayerIds.forEach((l) => {
+			if (mapRef.current?.getLayer(l)) {
+				console.log(l);
+
+				mapRef.current.moveLayer(l, id);
+			}
+		});
 	}, [route, options]);
 	return null;
 }

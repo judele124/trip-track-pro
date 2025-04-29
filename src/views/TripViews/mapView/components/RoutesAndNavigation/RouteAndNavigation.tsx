@@ -9,8 +9,7 @@ import { useRouteProgress } from '../../hooks/useRouteProgress';
 import useCurrentUserOutOfTripRoute from '../../hooks/useCurrentUserOutOfTripRoute';
 import CurrentUserMarker from '../Markers/CurrentUserMarker';
 import { useAuthContext } from '@/contexts/AuthContext';
-import StepMarker from '../Markers/StepMarker';
-import MapArrow from './MapArraw';
+import MapArrow from './MapArrow';
 
 interface IRouteAndNavigationProps {
 	originalPoints: { lon: number; lat: number }[];
@@ -84,6 +83,10 @@ export default function RouteAndNavigation({
 				<CurrentUserMarker location={fakeLocation} user={user} />
 			)}
 
+			<MapArrow
+				maneuver={routeData.routes[0].legs[0].steps[nextStepIndex].maneuver}
+			/>
+
 			<MapRoute route={routeData} options={routeOptions} id='route' />
 
 			<MapRoute
@@ -103,12 +106,6 @@ export default function RouteAndNavigation({
 					],
 				}}
 				options={fillRouteOption}
-			/>
-
-			{/* <StepMarker step={routeData.routes[0].legs[0].steps[nextStepIndex]} /> */}
-
-			<MapArrow
-				maneuver={routeData.routes[0].legs[0].steps[nextStepIndex].maneuver}
 			/>
 
 			{/* Direction Info UI */}

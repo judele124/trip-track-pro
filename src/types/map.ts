@@ -9,6 +9,7 @@ export interface Maneuver {
 	bearing_after: number;
 }
 export interface MapboxWaypoint {
+	distance: number;
 	location: [number, number];
 	name: string;
 }

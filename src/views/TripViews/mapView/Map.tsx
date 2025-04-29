@@ -4,17 +4,12 @@ import {
 	MutableRefObject,
 	ReactNode,
 	useContext,
-	useEffect,
 	useRef,
-	useState,
 } from 'react';
 import Icon from '@/components/icons/Icon';
 import Button from '@/components/ui/Button';
 import { navigationRoutes } from '@/Routes/routes';
 import { Link } from 'react-router-dom';
-import { addRouteToMap, IRouteLayerSpecification } from '@/utils/map.functions';
-import { MapBoxDirectionsResponse } from '@/types/map';
-import Modal from '@/components/ui/Modal';
 import { Map as MB_Map } from 'mapbox-gl';
 
 interface MapProps {
@@ -24,11 +19,6 @@ interface MapProps {
 export interface MapContextValue {
 	isMapReady: boolean;
 	mapRef: MutableRefObject<MB_Map | null>;
-	addRoute: (data: {
-		id: string;
-		route: MapBoxDirectionsResponse;
-		options: IRouteLayerSpecification;
-	}) => void;
 }
 
 const MapContext = createContext<MapContextValue | null>(null);
@@ -36,46 +26,14 @@ const MapContext = createContext<MapContextValue | null>(null);
 export default function Map({ children }: MapProps) {
 	const conatinerRef = useRef<HTMLDivElement>(null);
 	const { isMapReady, mapRef, error } = useMapInit(conatinerRef);
-	const [routeError, setRouteError] = useState<Error | null>(null);
-	const [routes, setRoutes] = useState<
-		{
-			id: string;
-			route: MapBoxDirectionsResponse;
-			options: IRouteLayerSpecification;
-		}[]
-	>([]);
-
-	useEffect(() => {
-		if (!isMapReady || !mapRef.current) return;
-
-		routes.forEach(
-			({ options, route, id }) =>
-				mapRef.current && addRouteToMap(id, mapRef.current, route, options)
-		);
-	}, [isMapReady, routes]);
 
 	return (
 		<MapContext.Provider
 			value={{
 				isMapReady,
 				mapRef,
-				addRoute: (data) => {
-					setRoutes((prevRoutes) => [...prevRoutes, data]);
-				},
 			}}
 		>
-			{routeError && (
-				<Modal
-					open={routeError !== null}
-					center
-					onBackdropClick={() => setRouteError(null)}
-				>
-					<div className='page-colors max-w-[400px] rounded-2xl p-5 text-center'>
-						<h2>We're sorry no route found</h2>
-					</div>
-				</Modal>
-			)}
-
 			{isMapReady && children}
 
 			{!isMapReady && (
