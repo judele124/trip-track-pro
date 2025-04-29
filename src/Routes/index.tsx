@@ -48,8 +48,7 @@ export default function AllRoutes() {
 
 	return (
 		<TripProvider>
-			{/* <Routes>{renderRoutes(routes)}</Routes> */}
-			<TestUI />
+			<Routes>{renderRoutes(routes)}</Routes>
 		</TripProvider>
 	);
 }

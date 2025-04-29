@@ -84,10 +84,9 @@ export default function RouteAndNavigation({
 			)}
 
 			<MapArrow
+				outerId='arrow'
 				maneuver={routeData.routes[0].legs[0].steps[nextStepIndex].maneuver}
 			/>
-
-			<MapRoute route={routeData} options={routeOptions} id='route' />
 
 			<MapRoute
 				id='walkedPath'
@@ -106,6 +105,14 @@ export default function RouteAndNavigation({
 					],
 				}}
 				options={fillRouteOption}
+				beforeLayerIds='arrow'
+			/>
+
+			<MapRoute
+				route={routeData}
+				options={routeOptions}
+				id='route'
+				beforeLayerIds='walkedPath'
 			/>
 
 			{/* Direction Info UI */}

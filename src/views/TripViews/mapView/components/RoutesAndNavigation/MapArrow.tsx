@@ -2,10 +2,7 @@ import { useEffect } from 'react';
 import { useMap } from '../../Map';
 import {
 	addPolygonFillAndOuterFillToMap,
-	getBearing,
-	normalizeVector,
 	offsetLocationByMeters,
-	perpendicularVector,
 	Point,
 } from '@/utils/map.functions';
 import { Maneuver } from '@/types/map';
@@ -86,9 +83,6 @@ function MapArrow({
 				'fill-color': outlineColor,
 			},
 		});
-
-		mapRef.current.setCenter(location);
-		mapRef.current.setZoom(20);
 	}, [
 		mapRef,
 		isMapReady,
@@ -209,12 +203,6 @@ function getArrowHeadPoints({
 		arrowHeadBackRight,
 		arrowHeadTop,
 	};
-}
-
-function createPolygonFromPoints(points: Point[]) {
-	const coordinates = points.map((point) => [point[0], point[1]]);
-	coordinates.push(coordinates[0]);
-	return turf.polygon([coordinates]);
 }
 
 function getArrowOutlineWithTurf(
