@@ -53,7 +53,7 @@ export default function MapView() {
 							key={`${stop.location.lat}-${stop.location.lon}-${i}`}
 							location={stop.location}
 						>
-							<StopMarker stop={stop} />
+							<StopMarker stop={stop} index={i} />
 						</GeneralMarker>
 					);
 				})}

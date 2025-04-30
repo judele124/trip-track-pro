@@ -349,11 +349,10 @@ export default function Icon({
 				width={size}
 				height={size}
 				className={`${className}`}
-				fill={fill}
 				viewBox='0 0 24 24'
 			>
 				<path
-					stroke='currentColor'
+					stroke={fill}
 					strokeLinecap='round'
 					strokeWidth='3'
 					d='M12 6h.01M12 12h.01M12 18h.01'

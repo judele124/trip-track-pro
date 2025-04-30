@@ -1,3 +1,4 @@
+import { IRedisUserTripData } from '@/contexts/SocketContext';
 import { Socket } from 'socket.io-client';
 
 type LocationPayload = {
@@ -8,7 +9,12 @@ type LocationPayload = {
 type ClientEventPayloads = {
 	joinTrip: [tripId: string];
 	updateLocation: [tripId: string, location: LocationPayload];
-	finishExperience: [tripId: string];
+	finishExperience: [
+		tripId: string,
+		userId: string,
+		index: number,
+		score: number,
+	];
 	sendMessage: [tripId: string, message: string, userId: string];
 	'connect-error': [error: Error];
 };
@@ -16,7 +22,7 @@ type ClientEventPayloads = {
 type ServerEventPayloads = {
 	tripJoined: [userSocketId: string];
 	locationUpdated: [userSocketId: string, location: LocationPayload];
-	experienceFinished: [userSocketId: string];
+	experienceFinished: [data: IRedisUserTripData, userId: string, index: number];
 	messageSent: [message: string, userId: string];
 	tripStatusChanged: [tripId: string, status: string];
 	error: [
