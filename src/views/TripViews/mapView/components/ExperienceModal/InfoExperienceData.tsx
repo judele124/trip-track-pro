@@ -3,13 +3,13 @@ import { useEffect } from 'react';
 import { Types } from 'trip-track-package';
 
 interface InfoExperienceDataProps {
-	data: Types['Trip']['Stop']['Experience']['Details']['Info']['Model'];
+	infoExpData: Types['Trip']['Stop']['Experience']['Details']['Info']['Model'];
 	onClose: () => void;
 	finishExperience: (score: number) => void;
 }
 
 export default function InfoExperienceData({
-	data: { data, score = 0 },
+	infoExpData: { data, score = 0 },
 	onClose,
 	finishExperience,
 }: InfoExperienceDataProps) {

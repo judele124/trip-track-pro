@@ -41,14 +41,14 @@ export default function ExirienceModal({
 				</div>
 				{experience.type === ExperienceType.INFO && (
 					<InfoExperienceData
-						data={experience}
+						infoExpData={experience}
 						onClose={onBackdropClick}
 						finishExperience={finishExperience}
 					/>
 				)}
 				{experience.type === ExperienceType.TRIVIA && (
 					<TriviaExperienceData
-						data={experience}
+						triviaExpData={experience}
 						onClose={onBackdropClick}
 						finishExperience={finishExperience}
 					/>

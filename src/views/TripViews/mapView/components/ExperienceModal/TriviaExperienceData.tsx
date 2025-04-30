@@ -5,13 +5,13 @@ import useToggle from '@/hooks/useToggle';
 import Modal from '@/components/ui/Modal';
 
 interface TriviaExperienceDataProps {
-	data: Types['Trip']['Stop']['Experience']['Details']['Trivia']['Model'];
+	triviaExpData: Types['Trip']['Stop']['Experience']['Details']['Trivia']['Model'];
 	onClose: () => void;
 	finishExperience: (score: number) => void;
 }
 
 export default function TriviaExperienceData({
-	data: { data, score = 0 },
+	triviaExpData: { data, score = 0 },
 	onClose,
 	finishExperience,
 }: TriviaExperienceDataProps) {
