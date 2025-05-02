@@ -1,5 +1,5 @@
 import useAxios from '@/hooks/useAxios';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MapBoxDirectionsResponse } from '@/types/map';
 

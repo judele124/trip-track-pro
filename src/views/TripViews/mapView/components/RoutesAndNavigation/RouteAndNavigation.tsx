@@ -27,55 +27,21 @@ export default function RouteAndNavigation({
 	const { user } = useAuthContext();
 	const [points, setPoints] = useState<{ lon: number; lat: number }[]>([]);
 
-	const { routeData } = useRouteAndNavigation({
+	const {
+		routeData,
+		nextStepIndex,
+		fakeLocation,
+		walkedPath,
+		userToStepNextDistance,
+	} = useRouteAndNavigation({
 		points,
 	});
-
-	const fakeLocation = useFakeUserLocation({
-		points:
-			routeData?.routes[0].geometry.coordinates.map((point) => ({
-				lat: point[1],
-				lon: point[0],
-			})) || [],
-		updateIntervalMs: 100,
-		speed: 100,
-	});
-
-	const { isOutOfRoute, segmantPointsIndexs } = useCurrentUserOutOfTripRoute({
-		userLocation: fakeLocation,
-		geometryPoints: routeData?.routes[0]?.geometry.coordinates || [],
-	});
-
-	const { nextStepIndex, userToStepNextDistance } = useNextStepIndex({
-		userLocation: fakeLocation,
-		steps: routeData?.routes[0].legs[0].steps,
-	});
-
-	const { walkedPath } = useRouteProgress(
-		routeData?.routes[0].geometry.coordinates || [],
-		fakeLocation ? [fakeLocation.lon, fakeLocation.lat] : null
-	);
 
 	useEffect(() => {
 		if (originalPoints.length > 0 && userLocation) {
 			setPoints(originalPoints);
 		}
 	}, [originalPoints]);
-
-	useEffect(() => {
-		console.log('isOutOfRoute', isOutOfRoute);
-
-		if (isOutOfRoute && userLocation) {
-			setPoints((prev) => [userLocation, ...prev.slice(nextStepIndex)]);
-		}
-	}, [isOutOfRoute]);
-
-	const memoizedStepLocationIndexInGeometry = useMemo(() => {
-		return findIndexPointOnGeometry(
-			routeData?.routes[0].geometry.coordinates,
-			routeData?.routes[0].legs[0].steps[nextStepIndex].maneuver.location
-		);
-	}, [routeData, nextStepIndex]);
 
 	if (!routeData || !userLocation || !points.length || !user) return null;
 
@@ -122,7 +88,7 @@ export default function RouteAndNavigation({
 			{/* Direction Info UI */}
 			<DirectionComponent
 				nextStepIndex={nextStepIndex}
-				userToStepNextDistance={userToStepNextDistance.current}
+				userToStepNextDistance={userToStepNextDistance}
 				steps={routeData.routes[0].legs[0].steps}
 			/>
 		</>

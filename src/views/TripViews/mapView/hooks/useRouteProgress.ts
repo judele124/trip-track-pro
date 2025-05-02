@@ -1,35 +1,35 @@
 import {
-	Point,
 	calculateDistancePointToSegment,
 	calculateDistanceOnEarth,
 	offsetLocationByMeters,
 	getBearing,
+	Point,
 } from '@/utils/map.functions';
 
 import { useEffect, useRef, useState } from 'react';
 
+export interface IUseRouteProgressProps {
+	routeCoordinates: Point[];
+	userLocation: Point | null;
+}
+
+export interface IUseRouteProgressReturn {
+	walkedPath: Point[];
+}
+
 const DISTANCE_THRESHOLD = 10; // meters
 const MIN_MOVEMENT = 2; // meters - minimum movement to record
 
-export function useRouteProgress(
-	routeCoordinates: Point[],
-	userLocation: Point | null,
-	isOutOfRoute: boolean = false
-) {
+export function useRouteProgress({
+	routeCoordinates,
+	userLocation,
+}: IUseRouteProgressProps): IUseRouteProgressReturn {
 	const [walkedPath, setWalkedPath] = useState<Point[]>([]);
 	const [lastPoint, setLastPoint] = useState<Point | null>(null);
 	const lastUserLocation = useRef<Point | null>(null);
 
 	useEffect(() => {
 		if (!userLocation || routeCoordinates.length < 2) return;
-
-		if (isOutOfRoute) {
-			console.log('User went out of route, resetting path');
-			setWalkedPath([]);
-			setLastPoint(null);
-			lastUserLocation.current = null;
-			return;
-		}
 
 		// Skip if we haven't moved enough
 		if (
@@ -76,11 +76,10 @@ export function useRouteProgress(
 			setLastPoint(newPoints[newPoints.length - 1]);
 			lastUserLocation.current = userLocation;
 		}
-	}, [userLocation, routeCoordinates, isOutOfRoute]);
+	}, [userLocation, routeCoordinates]);
 
 	return {
 		walkedPath,
-		snappedLocation: lastPoint,
 	};
 }
 
