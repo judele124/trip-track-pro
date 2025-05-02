@@ -7,13 +7,13 @@ import {
 } from '@/utils/map.functions';
 import { Maneuver } from '@/types/map';
 import * as turf from '@turf/turf';
+import { Map } from 'mapbox-gl';
 
 interface IMapArrowProps {
 	outerId: string;
 	maneuver: Maneuver;
 	fillColor?: string;
 	outlineColor?: string;
-	outlineWidth?: number;
 }
 
 function MapArrow({
@@ -30,58 +30,16 @@ function MapArrow({
 		const length = 15;
 		const width = 3;
 
-		// arrow body points
-		const {
-			backCenter,
-			backLeft,
-			backRight,
-			centerLeft,
-			centerRight,
-			frontLeft,
-			frontRight,
-			frontCenter,
-		} = getArrowBasePoints({
-			location,
-			length,
-			width,
-			bearing_before,
-			bearing_after,
-		});
-
-		// arrow head points
-		const { arrowHeadBackLeft, arrowHeadBackRight, arrowHeadTop } =
-			getArrowHeadPoints({
-				baseCenterLocation: frontCenter,
-				bearingTop: bearing_after,
-				length: width * 1.5,
-				width: width * 1.2,
-			});
-
-		const pointsInOrder = [
-			backCenter,
-			backLeft,
-			centerLeft,
-			frontLeft,
-			arrowHeadBackLeft,
-			arrowHeadTop,
-			arrowHeadBackRight,
-			frontRight,
-			centerRight,
-			backRight,
-			backCenter,
-		];
-
-		addPolygonFillAndOuterFillToMap({
+		addArrowToMap({
 			outerId,
 			map: mapRef.current,
-			fillPointsInOrder: pointsInOrder,
-			strokePointsInOrder: getArrowOutlineWithTurf(pointsInOrder, 0.7),
-			fillOptions: {
-				'fill-color': fillColor,
-			},
-			strokeOptions: {
-				'fill-color': outlineColor,
-			},
+			fillColor,
+			outlineColor,
+			location,
+			bearing_after,
+			bearing_before,
+			length,
+			width,
 		});
 	}, [
 		mapRef,
@@ -97,6 +55,84 @@ function MapArrow({
 }
 
 export default MapArrow;
+
+interface IAddArrowToMap {
+	outerId: string;
+	map: Map;
+	fillColor?: string;
+	outlineColor?: string;
+	location: Point;
+	bearing_after: number;
+	bearing_before: number;
+	length: number;
+	width: number;
+}
+
+function addArrowToMap({
+	outerId,
+	map,
+	fillColor,
+	outlineColor,
+	location,
+	bearing_after,
+	bearing_before,
+	length,
+	width,
+}: IAddArrowToMap) {
+	// arrow body points
+	const {
+		backCenter,
+		backLeft,
+		backRight,
+		centerLeft,
+		centerRight,
+		frontLeft,
+		frontRight,
+		frontCenter,
+	} = getArrowBasePoints({
+		location,
+		length,
+		width,
+		bearing_before,
+		bearing_after,
+	});
+
+	// arrow head points
+	const { arrowHeadBackLeft, arrowHeadBackRight, arrowHeadTop } =
+		getArrowHeadPoints({
+			baseCenterLocation: frontCenter,
+			bearingTop: bearing_after,
+			length: width * 1.5,
+			width: width * 1.2,
+		});
+
+	const pointsInOrder = [
+		backCenter,
+		backLeft,
+		centerLeft,
+		frontLeft,
+		arrowHeadBackLeft,
+		arrowHeadTop,
+		arrowHeadBackRight,
+		frontRight,
+		centerRight,
+		backRight,
+		backCenter,
+	];
+
+	addPolygonFillAndOuterFillToMap({
+		outerId,
+		map,
+		fillPointsInOrder: pointsInOrder,
+		strokePointsInOrder: getArrowOutlineWithTurf(pointsInOrder, 0.7),
+		fillOptions: {
+			'fill-color': fillColor,
+		},
+		strokeOptions: {
+			'fill-color': outlineColor,
+		},
+	});
+}
 
 function getArrowBasePoints({
 	bearing_after,
@@ -145,19 +181,12 @@ function getArrowBasePoints({
 		bearing_after - 90
 	);
 
-	const diagonalOffset = (width / 2) * Math.SQRT2;
+	const { left, right } = getLeftAndRightAngles(bearing_before, bearing_after);
 
-	const centerRight = offsetLocationByMeters(
-		location,
-		diagonalOffset,
-		bearing_after + 135
-	);
+	const centerRight = offsetLocationByMeters(location, width / 2, right);
 
-	const centerLeft = offsetLocationByMeters(
-		location,
-		diagonalOffset,
-		bearing_after - 45
-	);
+	const centerLeft = offsetLocationByMeters(location, width / 2, left);
+
 	return {
 		backCenter,
 		backRight,
@@ -209,15 +238,12 @@ function getArrowOutlineWithTurf(
 	pointsInOrder: Point[],
 	offset: number
 ): Point[] {
-	// Convert points to the format Turf expects
 	const coordinates = pointsInOrder.map((point) => [point[0], point[1]]);
 	coordinates.push(coordinates[0]); // To close the polygon
 	const polygon = turf.polygon([coordinates]);
 
-	// Apply offset using Turf's buffer function
 	const offsetPolygon = turf.buffer(polygon, offset, { units: 'meters' });
 
-	// Ensure the result is valid and not undefined
 	if (
 		!offsetPolygon ||
 		!offsetPolygon.geometry ||
@@ -226,9 +252,47 @@ function getArrowOutlineWithTurf(
 		throw new Error('Failed to calculate the offset polygon');
 	}
 
-	// Use a different name for the coordinates from the offset polygon
 	const offsetCoordinates = offsetPolygon.geometry.coordinates[0];
 
-	// Return the coordinates as an array of Points
 	return offsetCoordinates.map(([lon, lat]) => [lon, lat] as [number, number]);
+}
+
+function getLeftAndRightAngles(bearingBefore: number, bearingAfter: number) {
+	const delta = (bearingAfter - bearingBefore + 360) % 360;
+	let direction: 'left' | 'right' | 'none' = 'none';
+
+	if (delta === 0) {
+		direction = 'none';
+	} else if (delta <= 180) {
+		direction = 'right';
+	} else {
+		direction = 'left';
+	}
+
+	const bearingBeforeReversed = (bearingBefore + 180) % 360;
+
+	const middle = getAverageAngle(bearingBeforeReversed, bearingAfter);
+
+	if (direction === 'left') {
+		return { left: middle, right: (middle + 180) % 360 };
+	} else {
+		return { left: (middle + 180) % 360, right: middle % 360 };
+	}
+}
+
+function getAverageAngle(bearingBefore: number, bearingAfter: number): number {
+	const toRad = (deg: number): number => (deg * Math.PI) / 180;
+	const toDeg = (rad: number): number => ((rad * 180) / Math.PI + 360) % 360;
+
+	const x1 = Math.cos(toRad(bearingBefore));
+	const y1 = Math.sin(toRad(bearingBefore));
+	const x2 = Math.cos(toRad(bearingAfter));
+	const y2 = Math.sin(toRad(bearingAfter));
+
+	const xAvg = (x1 + x2) / 2;
+	const yAvg = (y1 + y2) / 2;
+
+	const average = toDeg(Math.atan2(yAvg, xAvg));
+
+	return Number(average.toFixed(2));
 }

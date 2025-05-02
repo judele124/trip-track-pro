@@ -51,7 +51,6 @@ export default function useCurrentUserOutOfTripRoute({
 			[lon, lat],
 			segmant
 		);
-		console.log('distanceToSegment', distanceToSegment);
 
 		if (distanceToSegment > RANGE_FOR_USER_OUT_OF_RANGE) {
 			setIsOutOfRoute(true);

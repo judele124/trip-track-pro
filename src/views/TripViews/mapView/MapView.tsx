@@ -69,10 +69,10 @@ export default function MapView() {
 						</span>
 					</div>
 				)}
-				{/* 
+
 				{userCurrentLocation && user && (
 					<CurrentUserMarker location={userCurrentLocation} user={user} />
-				)} */}
+				)}
 
 				{usersLocations.map(({ id, location }) => (
 					<OtherUserMarker location={location} key={id} />

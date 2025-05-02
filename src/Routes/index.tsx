@@ -8,7 +8,6 @@ import {
 import routes, { navigationRoutes } from './routes';
 import { ReactNode, useEffect } from 'react';
 import TripProvider from '@/contexts/TripContext';
-import { TestUI } from '@/components/test/TestUI';
 
 function renderRoutes(ch: RouteObject[]): ReactNode[] {
 	return ch.map(({ index, path, children: childrenRouteObjects, element }) => {

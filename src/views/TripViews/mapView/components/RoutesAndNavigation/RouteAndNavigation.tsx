@@ -37,6 +37,8 @@ export default function RouteAndNavigation({
 				lat: point[1],
 				lon: point[0],
 			})) || [],
+		updateIntervalMs: 100,
+		speed: 100,
 	});
 
 	const { isOutOfRoute, segmantPointsIndexs } = useCurrentUserOutOfTripRoute({
@@ -86,6 +88,8 @@ export default function RouteAndNavigation({
 			<MapArrow
 				outerId='arrow'
 				maneuver={routeData.routes[0].legs[0].steps[nextStepIndex].maneuver}
+				fillColor='#32adff'
+				outlineColor='#264fa8'
 			/>
 
 			<MapRoute
