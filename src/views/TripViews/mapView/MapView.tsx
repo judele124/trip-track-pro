@@ -9,6 +9,8 @@ import { useMapboxDirectionRoute } from './hooks/useMapboxDirectionRoute';
 import DirectionComponent from './components/DirectionComponent';
 import MapRoute from './components/MapRoute';
 import useCurrentUserLocation from './hooks/useCurrentUserLocation';
+import NotificationComponent from './components/NotificationComponent';
+import useToggle from '@/hooks/useToggle';
 import OtherUserMarker from './components/Markers/OtherUserMarker';
 
 export default function MapView() {
@@ -37,8 +39,17 @@ export default function MapView() {
 		setTripRoute(routeData);
 	}, [routeData]);
 
+	const { isOpen, setIsOpen } = useToggle(true);
+
 	return (
 		<div className='page-colors mx-auto h-full max-w-[400px]'>
+			<NotificationComponent
+				message='This is a notification'
+				status='good'
+				icon='alert'
+				isModalOpen={isOpen}
+				closeModal={() => setIsOpen(false)}
+			/>
 			<Map>
 				{tripRoute && <MapRoute route={tripRoute} />}
 
@@ -57,11 +68,14 @@ export default function MapView() {
 						</GeneralMarker>
 					);
 				})}
+
+				{tripRoute?.routes[0].legs[0].steps && (
+					<DirectionComponent
+						userLocation={userLocation}
+						steps={tripRoute.routes[0].legs[0].steps}
+					/>
+				)}
 			</Map>
-			<DirectionComponent
-				steps={tripRoute?.routes[0].legs[0].steps || []}
-				nextStepIndex={0}
-			/>
 		</div>
 	);
 }

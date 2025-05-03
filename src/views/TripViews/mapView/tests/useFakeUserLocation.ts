@@ -38,7 +38,7 @@ export default function useFakeUserLocation({
 	onLocationUpdate,
 	updateIntervalMs = 1000,
 }: Props) {
-	const [location, setLocation] = useState<Point | null>(points[0] || null);
+	const [location, setLocation] = useState<Point>(points[0]);
 	const indexRef = useRef(0);
 	const progressRef = useRef(0);
 
@@ -74,7 +74,7 @@ export default function useFakeUserLocation({
 		}, updateIntervalMs);
 
 		return () => clearInterval(interval);
-	}, [points, speed, updateIntervalMs]);
+	}, [points, speed, updateIntervalMs, onLocationUpdate]);
 
 	return location;
 }
