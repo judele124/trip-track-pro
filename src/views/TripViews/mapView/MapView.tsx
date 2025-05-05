@@ -13,7 +13,7 @@ import OtherUserMarker from './components/Markers/OtherUserMarker';
 
 export default function MapView() {
 	const { trip, setTripRoute, tripRoute } = useTripContext();
-	const { usersLocations, socket } = useTripSocket();
+	const { usersLocations, socket, currentExpIndex } = useTripSocket();
 
 	const userLocation = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
@@ -53,7 +53,11 @@ export default function MapView() {
 							key={`${stop.location.lat}-${stop.location.lon}-${i}`}
 							location={stop.location}
 						>
-							<StopMarker disableExperience={i == 1} stop={stop} index={i} />
+							<StopMarker
+								disableExperience={i > currentExpIndex}
+								stop={stop}
+								index={i}
+							/>
 						</GeneralMarker>
 					);
 				})}
