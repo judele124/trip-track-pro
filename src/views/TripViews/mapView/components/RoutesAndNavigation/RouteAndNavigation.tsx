@@ -8,6 +8,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import MapArrow from './MapArrow';
 
 interface IRouteAndNavigationProps {
+	routeId: string;
 	originalPoints: { lon: number; lat: number }[];
 	routeOptions?: IRouteLayerSpecification;
 	fillRouteOption?: IRouteLayerSpecification;
@@ -15,6 +16,7 @@ interface IRouteAndNavigationProps {
 }
 
 export default function RouteAndNavigation({
+	routeId,
 	originalPoints,
 	routeOptions,
 	fillRouteOption,
@@ -33,7 +35,7 @@ export default function RouteAndNavigation({
 		if (originalPoints.length > 0 && userLocation) {
 			setPoints(originalPoints);
 		}
-	}, [originalPoints]);
+	}, [originalPoints, userLocation]);
 
 	if (!routeData || !userLocation || !points.length || !user) return null;
 
@@ -43,15 +45,17 @@ export default function RouteAndNavigation({
 				<CurrentUserMarker location={userLocation} user={user} />
 			)}
 
-			<MapArrow
-				outerId='arrow'
-				maneuver={routeData.routes[0].legs[0].steps[nextStepIndex].maneuver}
-				fillColor='#32adff'
-				outlineColor='#264fa8'
-			/>
+			{nextStepIndex != routeData.routes[0].legs[0].steps.length - 1 && (
+				<MapArrow
+					outerId={`arrow-${routeId}`}
+					maneuver={routeData.routes[0].legs[0].steps[nextStepIndex].maneuver}
+					fillColor='#32adff'
+					outlineColor='#264fa8'
+				/>
+			)}
 
 			<MapRoute
-				id='walkedPath'
+				id={`walkedPath-${routeId}`}
 				route={{
 					code: '123',
 					uuid: '123',
@@ -67,14 +71,18 @@ export default function RouteAndNavigation({
 					],
 				}}
 				options={fillRouteOption}
-				beforeLayerIds='arrow'
+				beforeLayerIds={
+					nextStepIndex != routeData.routes[0].legs[0].steps.length - 1
+						? `arrow-${routeId}`
+						: undefined
+				}
 			/>
 
 			<MapRoute
 				route={routeData}
 				options={routeOptions}
-				id='route'
-				beforeLayerIds='walkedPath'
+				id={`route-${routeId}`}
+				beforeLayerIds={`walkedPath-${routeId}`}
 			/>
 
 			{/* Direction Info UI */}

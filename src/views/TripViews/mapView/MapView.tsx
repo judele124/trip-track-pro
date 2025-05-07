@@ -13,6 +13,15 @@ import { RANGE_STEP_THRESHOLD } from './hooks/useNextStepIndex';
 import RouteAndNavigation from './components/RoutesAndNavigation/RouteAndNavigation';
 import OtherUserMarker from './components/Markers/OtherUserMarker';
 import Icon from '@/components/icons/Icon';
+import { Types } from 'trip-track-package';
+
+const ROUTE_OPACITY = 1;
+
+const ROUTE_COLOR = '#7dafc6';
+const ROUTE_FILL_COLOR = '#02a9fc';
+
+const ROUTE_WIDTH = 6;
+const ROUTE_FILL_WIDTH = 2;
 
 export default function MapView() {
 	const { user } = useAuthContext();
@@ -22,7 +31,7 @@ export default function MapView() {
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			if (!trip || !socket) return;
-			socket.emit('updateLocation', trip._id.toString(), location);
+			socket.emit('updateLocation', trip._id, location);
 		},
 	});
 
@@ -57,18 +66,7 @@ export default function MapView() {
 		<div className='page-colors mx-auto h-full'>
 			<Map>
 				{/* loading location */}
-				{!userCurrentLocation && (
-					<div
-						className={`flex items-center justify-center gap-2 bg-white p-2 shadow-lg dark:bg-secondary`}
-					>
-						<i>
-							<Icon className='fill-primary dark:fill-white' name='spinner' />
-						</i>
-						<span className='text-primary dark:text-white'>
-							Getting your location
-						</span>
-					</div>
-				)}
+				{!userCurrentLocation && <LoadingLocation />}
 
 				{userCurrentLocation && user && (
 					<CurrentUserMarker location={userCurrentLocation} user={user} />
@@ -78,56 +76,105 @@ export default function MapView() {
 					<OtherUserMarker location={location} key={id} />
 				))}
 
-				{/* display stops only when at trip route */}
-				{isAtTripRoute &&
-					trip?.stops.map((stop, i) => {
-						return (
-							<GeneralMarker
-								key={`${stop.location.lat}-${stop.location.lon}-${i}`}
-								location={stop.location}
-							>
-								<StopMarker stop={stop} />
-							</GeneralMarker>
-						);
-					})}
-
-				<RouteAndNavigation
-					originalPoints={
-						!isAtTripRoute ? memoizedUserToTripPoints : memoizedTripPoints
-					}
-					routeOptions={{
-						lineColor: '#7dafc6',
-						lineWidth: 6,
-						lineOpacity: 0.7,
-					}}
-					fillRouteOption={{
-						lineColor: '#02a9fc',
-						lineWidth: 5,
-						lineOpacity: 0.7,
-					}}
-					userLocation={userCurrentLocation}
-				/>
-
-				{/* trip start point */}
-				{!isAtTripRoute && trip && (
-					<GeneralMarker location={trip.stops[0].location}>
-						<div
-							className={`relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 rounded-2xl bg-light p-3 text-dark dark:bg-dark dark:text-light`}
-						>
-							<p className='text-sm font-semibold'>Trip start point</p>
-
-							<svg
-								className='absolute left-1/2 top-full size-5 -translate-x-1/2 fill-light dark:fill-dark'
-								width='51'
-								height='60'
-								viewBox='0 0 51 60'
-							>
-								<path d='M50.75 0H0.75L27.2806 62L50.75 0Z' />
-							</svg>
-						</div>
-					</GeneralMarker>
+				{trip && userCurrentLocation && (
+					<>
+						{isAtTripRoute ? (
+							<TripStopsMarkers stops={trip.stops} />
+						) : (
+							<TripStartLocationMarker location={trip.stops[0].location} />
+						)}
+						<RouteAndNavigation
+							routeId='trip-route'
+							originalPoints={memoizedTripPoints}
+							routeOptions={{
+								lineColor: ROUTE_COLOR,
+								lineWidth: ROUTE_WIDTH,
+								lineOpacity: !isAtTripRoute ? 0.5 : ROUTE_OPACITY,
+							}}
+							fillRouteOption={{
+								lineColor: ROUTE_FILL_COLOR,
+								lineWidth: ROUTE_FILL_WIDTH,
+								lineOpacity: !isAtTripRoute ? 0.5 : ROUTE_OPACITY,
+							}}
+							userLocation={userCurrentLocation}
+						/>
+						{!isAtTripRoute && (
+							<RouteAndNavigation
+								routeId='user-to-trip-route'
+								originalPoints={memoizedUserToTripPoints}
+								routeOptions={{
+									lineColor: ROUTE_COLOR,
+									lineWidth: ROUTE_WIDTH,
+									lineOpacity: ROUTE_OPACITY,
+								}}
+								fillRouteOption={{
+									lineColor: ROUTE_FILL_COLOR,
+									lineWidth: ROUTE_FILL_WIDTH,
+									lineOpacity: ROUTE_OPACITY,
+								}}
+								userLocation={userCurrentLocation}
+							/>
+						)}
+					</>
 				)}
 			</Map>
 		</div>
+	);
+}
+
+function LoadingLocation() {
+	return (
+		<div
+			className={`flex items-center justify-center gap-2 bg-white p-2 shadow-lg dark:bg-secondary`}
+		>
+			<i>
+				<Icon className='fill-primary dark:fill-white' name='spinner' />
+			</i>
+			<span className='text-primary dark:text-white'>
+				Getting your location
+			</span>
+		</div>
+	);
+}
+
+function TripStopsMarkers({
+	stops,
+}: {
+	stops: Types['Trip']['Stop']['Model'][];
+}) {
+	return stops.map((stop, i) => (
+		<GeneralMarker
+			key={`${stop.location.lat}-${stop.location.lon}-${i}`}
+			location={stop.location}
+		>
+			<StopMarker stop={stop} />
+		</GeneralMarker>
+	));
+}
+
+function TripStartLocationMarker({
+	location,
+}: {
+	location: {
+		lat: number;
+		lon: number;
+	};
+}) {
+	return (
+		<GeneralMarker location={location}>
+			<div
+				className={`relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 rounded-2xl bg-light p-3 text-dark dark:bg-dark dark:text-light`}
+			>
+				<p className='text-sm font-semibold'>Trip start point</p>
+				<svg
+					className='absolute left-1/2 top-full size-5 -translate-x-1/2 fill-light dark:fill-dark'
+					width='51'
+					height='60'
+					viewBox='0 0 51 60'
+				>
+					<path d='M50.75 0H0.75L27.2806 62L50.75 0Z' />
+				</svg>
+			</div>
+		</GeneralMarker>
 	);
 }

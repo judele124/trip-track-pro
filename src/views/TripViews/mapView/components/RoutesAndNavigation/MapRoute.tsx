@@ -21,6 +21,7 @@ export default function MapRoute({
 	beforeLayerIds,
 }: IMapRouteProps) {
 	const { mapRef } = useMap();
+
 	useEffect(() => {
 		if (!mapRef.current) return;
 		addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
