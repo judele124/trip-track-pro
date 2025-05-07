@@ -171,14 +171,10 @@ export function addCircleRadiusToLocation<K extends string>(
 	addSourceAndLayerToMap(key, map, sourceData, circleData);
 }
 
-/**
- * Calculates the shortest distance from a point (lon, lat) to a segment (two lon-lat points),
- * and returns the distance in meters using Haversine formula.
- */
-export function calculateDistancePointToSegment(
+export function closestPointOnSegment(
 	point: Point,
 	segment: [Point, Point]
-): number {
+): Point {
 	const [px, py] = point;
 	const [[x1, y1], [x2, y2]] = segment;
 
@@ -187,17 +183,28 @@ export function calculateDistancePointToSegment(
 
 	const lengthSquared = dx * dx + dy * dy;
 
-	// Segment is just a single point
 	if (lengthSquared === 0) {
-		return calculateDistanceOnEarth(point, segment[0]);
+		return segment[0];
 	}
 
-	// Project point onto the segment (in lon-lat coordinate space)
 	let t = ((px - x1) * dx + (py - y1) * dy) / lengthSquared;
 	t = Math.max(0, Math.min(1, t));
 
-	// Find the closest point on the segment
 	const closest: Point = [x1 + t * dx, y1 + t * dy];
+
+	return closest;
+}
+
+/**
+ * Calculates the shortest distance from a point (lon, lat) to a segment (two lon-lat points),
+ * and returns the distance in meters using Haversine formula.
+ */
+export function calculateShortestDistancePointToSegment(
+	point: Point,
+	segment: [Point, Point]
+): number {
+	// Find the closest point on the segment
+	const closest = closestPointOnSegment(point, segment);
 
 	// Use your haversine-based function to get distance in meters
 	return calculateDistanceOnEarth(point, closest);
@@ -271,7 +278,10 @@ export function isOutOfRouteBetweenSteps({
 	];
 
 	// Calculate distance to this segment
-	const distanceToSeg = calculateDistancePointToSegment(userLocation, segment);
+	const distanceToSeg = calculateShortestDistancePointToSegment(
+		userLocation,
+		segment
+	);
 
 	const isOut = distanceToSeg > threshold;
 
@@ -378,14 +388,4 @@ export function calculateDistanceOnEarth(
 			Math.sin(dLon / 2);
 	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 	return R * c; // Distance in meters
-}
-
-export function normalizeVector(vector: number[]): number[] {
-	const magnitude = Math.sqrt(vector[0] ** 2 + vector[1] ** 2);
-	if (magnitude === 0) return [0, 0];
-	return [vector[0] / magnitude, vector[1] / magnitude];
-}
-
-export function perpendicularVector(vector: number[]): number[] {
-	return [vector[1], -vector[0]];
 }

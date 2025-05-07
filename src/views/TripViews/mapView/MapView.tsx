@@ -90,6 +90,7 @@ export default function MapView() {
 							</GeneralMarker>
 						);
 					})}
+
 				<RouteAndNavigation
 					originalPoints={
 						!isAtTripRoute ? memoizedUserToTripPoints : memoizedTripPoints

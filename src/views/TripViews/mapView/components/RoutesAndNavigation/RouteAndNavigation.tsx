@@ -1,12 +1,8 @@
 import MapRoute from './MapRoute';
 import { IRouteLayerSpecification } from '@/utils/map.functions';
 import DirectionComponent from './DirectionComponent';
-import useRouteAndNavigation from '../../hooks/useRouteAndNavigationForPoints';
-import { useEffect, useMemo, useState } from 'react';
-import useNextStepIndex from '../../hooks/useNextStepIndex';
-import useFakeUserLocation from '../../tests/useFakeUserLocation';
-import { useRouteProgress } from '../../hooks/useRouteProgress';
-import useCurrentUserOutOfTripRoute from '../../hooks/useCurrentUserOutOfTripRoute';
+import useRouteAndNavigation from '../../hooks/useRouteAndNavigation';
+import { useEffect, useState } from 'react';
 import CurrentUserMarker from '../Markers/CurrentUserMarker';
 import { useAuthContext } from '@/contexts/AuthContext';
 import MapArrow from './MapArrow';
@@ -27,15 +23,11 @@ export default function RouteAndNavigation({
 	const { user } = useAuthContext();
 	const [points, setPoints] = useState<{ lon: number; lat: number }[]>([]);
 
-	const {
-		routeData,
-		nextStepIndex,
-		fakeLocation,
-		walkedPath,
-		userToStepNextDistance,
-	} = useRouteAndNavigation({
-		points,
-	});
+	const { routeData, nextStepIndex, walkedPath, userToStepNextDistance } =
+		useRouteAndNavigation({
+			points,
+			userLocation,
+		});
 
 	useEffect(() => {
 		if (originalPoints.length > 0 && userLocation) {
@@ -47,8 +39,8 @@ export default function RouteAndNavigation({
 
 	return (
 		<>
-			{fakeLocation && user && (
-				<CurrentUserMarker location={fakeLocation} user={user} />
+			{userLocation && user && (
+				<CurrentUserMarker location={userLocation} user={user} />
 			)}
 
 			<MapArrow
@@ -94,11 +86,3 @@ export default function RouteAndNavigation({
 		</>
 	);
 }
-
-const findIndexPointOnGeometry = (
-	geometry: number[][] | undefined,
-	point: number[] | undefined
-) => {
-	if (!geometry || !point) return -1;
-	return geometry.findIndex((p) => p[0] === point[0] && p[1] === point[1]);
-};

@@ -25,7 +25,7 @@ export default function MapModal({
 		<Modal open={mapOpen} center onBackdropClick={() => toggleMap()}>
 			<div className='h-[80vh] w-[90vw] overflow-hidden rounded-2xl'>
 				<Map>
-					{routeData && <MapRoute route={routeData} />}
+					{routeData && <MapRoute id='modal-route' route={routeData} />}
 					{stops.map((stop: Types['Trip']['Stop']['Model']) => (
 						<GeneralMarker
 							key={`${stop.location.lon}-${stop.location.lat}`}

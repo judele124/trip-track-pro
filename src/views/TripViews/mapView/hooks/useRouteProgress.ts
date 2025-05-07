@@ -1,11 +1,11 @@
 import {
-	calculateDistancePointToSegment,
+	calculateShortestDistancePointToSegment,
 	calculateDistanceOnEarth,
 	offsetLocationByMeters,
 	getBearing,
 	Point,
+	closestPointOnSegment,
 } from '@/utils/map.functions';
-
 import { useEffect, useRef, useState } from 'react';
 
 export interface IUseRouteProgressProps {
@@ -25,7 +25,8 @@ export function useRouteProgress({
 	userLocation,
 }: IUseRouteProgressProps): IUseRouteProgressReturn {
 	const [walkedPath, setWalkedPath] = useState<Point[]>([]);
-	const [lastPoint, setLastPoint] = useState<Point | null>(null);
+	const lastPoint = useRef<Point | null>(null);
+	const lastSegmentIndex = useRef<number | null>(null);
 	const lastUserLocation = useRef<Point | null>(null);
 
 	useEffect(() => {
@@ -40,42 +41,45 @@ export function useRouteProgress({
 			return;
 		}
 
-		let minDistance = Infinity;
-		let closestPoint: Point | null = null;
+		const { closestSegment, segmentIndex } = findClosestSegment(
+			routeCoordinates,
+			userLocation
+		);
 
-		for (let i = 0; i < routeCoordinates.length - 1; i++) {
-			const segment: [Point, Point] = [
-				routeCoordinates[i],
-				routeCoordinates[i + 1],
-			];
-			const distance = calculateDistancePointToSegment(userLocation, segment);
+		if (!closestSegment) return;
 
-			if (distance < minDistance) {
-				minDistance = distance;
-				closestPoint = routeCoordinates[i];
-			}
-		}
+		const closedPoint = closestPointOnSegment(userLocation, closestSegment);
 
-		if (!closestPoint) return;
-
-		if (!lastPoint) {
-			setLastPoint(closestPoint);
-			setWalkedPath([closestPoint]);
+		if (!lastPoint.current) {
+			lastPoint.current = closedPoint;
+			setWalkedPath([closedPoint]);
 			lastUserLocation.current = userLocation;
 			return;
 		}
 
 		const distanceFromClosest = calculateDistanceOnEarth(
 			userLocation,
-			closestPoint
+			closedPoint
 		);
 
-		if (distanceFromClosest >= DISTANCE_THRESHOLD) {
-			const newPoints = interpolatePoints(lastPoint, userLocation);
-			setWalkedPath((prev) => [...prev, ...newPoints.slice(1)]);
-			setLastPoint(newPoints[newPoints.length - 1]);
-			lastUserLocation.current = userLocation;
+		if (distanceFromClosest < DISTANCE_THRESHOLD && segmentIndex <= 0) {
+			return;
 		}
+
+		const newPoints: Point[] = [];
+		if (lastSegmentIndex.current && lastSegmentIndex.current !== segmentIndex) {
+			for (let i = lastSegmentIndex.current; i < segmentIndex - 1; i++) {
+				newPoints.push(
+					...interpolatePoints(routeCoordinates[i], routeCoordinates[i + 1])
+				);
+				lastPoint.current = routeCoordinates[i + 1];
+			}
+		}
+		newPoints.push(...interpolatePoints(lastPoint.current, closedPoint));
+		setWalkedPath((prev) => [...prev, ...newPoints.slice(1)]);
+		lastUserLocation.current = userLocation;
+		lastPoint.current = closedPoint;
+		lastSegmentIndex.current = segmentIndex;
 	}, [userLocation, routeCoordinates]);
 
 	return {
@@ -105,3 +109,22 @@ function interpolatePoints(start: Point, end: Point): Point[] {
 
 	return points;
 }
+
+const findClosestSegment = (points: Point[], location: Point) => {
+	let minDistance = Infinity;
+	let closestSegment: [Point, Point] | null = null;
+	let segmentIndex = -1;
+
+	for (let i = 0; i < points.length - 1; i++) {
+		const segment: [Point, Point] = [points[i], points[i + 1]];
+		const distance = calculateShortestDistancePointToSegment(location, segment);
+
+		if (distance < minDistance) {
+			minDistance = distance;
+			closestSegment = segment;
+			segmentIndex = i;
+		}
+	}
+
+	return { closestSegment, segmentIndex };
+};
