@@ -13,6 +13,7 @@ import { Types } from 'trip-track-package';
 import TripStatusButton from '../profileView/components/TripStatusButton';
 import RewardDetails from './components/RewardDetails';
 import { tripGet } from '@/servises/tripService';
+import UpdateGuidesBtn from '@/components/updateGuidesBtn/UpdateGuidesBtn';
 
 export default function TripDetailsView() {
 	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
@@ -65,6 +66,7 @@ export default function TripDetailsView() {
 									}}
 									tripId={tripData._id}
 								/>
+								<UpdateGuidesBtn trip={tripData} onClose={() => {}} />
 							</div>
 						</div>
 
