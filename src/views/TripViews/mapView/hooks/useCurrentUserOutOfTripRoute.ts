@@ -3,7 +3,7 @@ import {
 	findClosestSegment,
 	Point,
 } from '@/utils/map.functions';
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface IUseCurrentUserOutOfTripRouteProps {
 	geometryPoints: Point[];
@@ -11,9 +11,10 @@ interface IUseCurrentUserOutOfTripRouteProps {
 }
 interface IUseCurrentUserOutOfTripRouteReturn {
 	isOutOfRoute: boolean;
+	resetOutOfRoute: () => void;
 }
 
-const RANGE_FOR_USER_OUT_OF_RANGE = 20; // in meters
+const RANGE_FOR_USER_OUT_OF_RANGE = 30; // in meters
 const SEGMENTS_TO_CHECK = 5; // Number of segments to check in each direction
 
 export default function useCurrentUserOutOfTripRoute({
@@ -24,9 +25,7 @@ export default function useCurrentUserOutOfTripRoute({
 	const segmantPointsIndexs = useRef<[number, number]>([0, 1]);
 
 	useEffect(() => {
-		if (!userLocation || geometryPoints.length < 2) {
-			return;
-		}
+		if (!userLocation || geometryPoints.length < 2) return;
 
 		const { lon, lat } = userLocation;
 		let [pointIndexBefore, pointIndexAfter] = segmantPointsIndexs.current;
@@ -52,8 +51,6 @@ export default function useCurrentUserOutOfTripRoute({
 
 		segmantPointsIndexs.current = [closestBeforeIndex, closestAfterIndex];
 
-		console.log('segmantPointsIndexs', segmantPointsIndexs.current);
-
 		const distance = calculateShortestDistancePointToSegment(
 			[lon, lat],
 			[geometryPoints[closestBeforeIndex], geometryPoints[closestAfterIndex]]
@@ -62,7 +59,13 @@ export default function useCurrentUserOutOfTripRoute({
 		setIsOutOfRoute(distance > RANGE_FOR_USER_OUT_OF_RANGE);
 	}, [geometryPoints, userLocation]);
 
-	return { isOutOfRoute };
+	return {
+		isOutOfRoute,
+		resetOutOfRoute: () => {
+			setIsOutOfRoute(false);
+			segmantPointsIndexs.current = [0, 1];
+		},
+	};
 }
 
 const checkBoundary = (index: number, max: number, min: number): number => {

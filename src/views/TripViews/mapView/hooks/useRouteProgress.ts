@@ -15,6 +15,7 @@ export interface IUseRouteProgressProps {
 
 export interface IUseRouteProgressReturn {
 	walkedPath: Point[];
+	resetWalkedPath: () => void;
 }
 
 const DISTANCE_THRESHOLD = 10; // meters
@@ -84,6 +85,12 @@ export function useRouteProgress({
 
 	return {
 		walkedPath,
+		resetWalkedPath: () => {
+			setWalkedPath([]);
+			lastPoint.current = null;
+			lastSegmentIndex.current = null;
+			lastUserLocation.current = null;
+		},
 	};
 }
 

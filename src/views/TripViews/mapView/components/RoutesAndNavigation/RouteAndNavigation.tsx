@@ -30,8 +30,8 @@ export default function RouteAndNavigation({
 		nextStepIndex,
 		walkedPath,
 		userToStepNextDistance,
-		fakeUserLocation,
 		isOutOfRoute,
+		resetNavigation,
 	} = useRouteAndNavigation({
 		points,
 		userLocation,
@@ -42,9 +42,15 @@ export default function RouteAndNavigation({
 			setPoints(originalPoints);
 		}
 	}, [originalPoints, userLocation]);
+
 	useEffect(() => {
-		if (isOutOfRoute) {
-			console.log('isOutOfRoute', isOutOfRoute);
+		if (isOutOfRoute && userLocation) {
+			const newPoints = [
+				userLocation,
+				...points.slice(nextStepIndex, points.length),
+			];
+			setPoints(newPoints);
+			resetNavigation();
 		}
 	}, [isOutOfRoute]);
 
@@ -52,8 +58,8 @@ export default function RouteAndNavigation({
 
 	return (
 		<>
-			{fakeUserLocation && user && (
-				<CurrentUserMarker location={fakeUserLocation} user={user} />
+			{userLocation && user && (
+				<CurrentUserMarker location={userLocation} user={user} />
 			)}
 
 			{nextStepIndex != routeData.routes[0].legs[0].steps.length - 1 && (
