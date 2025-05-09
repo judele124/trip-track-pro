@@ -25,24 +25,35 @@ export default function RouteAndNavigation({
 	const { user } = useAuthContext();
 	const [points, setPoints] = useState<{ lon: number; lat: number }[]>([]);
 
-	const { routeData, nextStepIndex, walkedPath, userToStepNextDistance } =
-		useRouteAndNavigation({
-			points,
-			userLocation,
-		});
+	const {
+		routeData,
+		nextStepIndex,
+		walkedPath,
+		userToStepNextDistance,
+		fakeUserLocation,
+		isOutOfRoute,
+	} = useRouteAndNavigation({
+		points,
+		userLocation,
+	});
 
 	useEffect(() => {
-		if (originalPoints.length > 0 && userLocation) {
+		if (originalPoints.length > 0 && userLocation && points.length === 0) {
 			setPoints(originalPoints);
 		}
 	}, [originalPoints, userLocation]);
+	useEffect(() => {
+		if (isOutOfRoute) {
+			console.log('isOutOfRoute', isOutOfRoute);
+		}
+	}, [isOutOfRoute]);
 
 	if (!routeData || !userLocation || !points.length || !user) return null;
 
 	return (
 		<>
-			{userLocation && user && (
-				<CurrentUserMarker location={userLocation} user={user} />
+			{fakeUserLocation && user && (
+				<CurrentUserMarker location={fakeUserLocation} user={user} />
 			)}
 
 			{nextStepIndex != routeData.routes[0].legs[0].steps.length - 1 && (

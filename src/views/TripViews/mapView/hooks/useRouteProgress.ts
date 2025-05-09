@@ -52,7 +52,7 @@ export function useRouteProgress({
 
 		if (!lastPoint.current) {
 			lastPoint.current = closedPoint;
-			setWalkedPath([closedPoint]);
+			setWalkedPath(interpolatePoints(routeCoordinates[0], closedPoint));
 			lastUserLocation.current = userLocation;
 			return;
 		}

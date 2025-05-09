@@ -1,90 +1,76 @@
 import {
-	calculateDistanceOnEarth,
-	calculateDistancePointToSegment,
-	getBearing,
-	getBearingDiff,
-	getClosestPointWithMinDistance,
+	calculateShortestDistancePointToSegment,
+	findClosestSegment,
 	Point,
 } from '@/utils/map.functions';
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
-import useCurrentUserBearing from './useCurrentUserBearing';
 
 interface IUseCurrentUserOutOfTripRouteProps {
 	geometryPoints: Point[];
 	userLocation: { lon: number; lat: number } | null;
 }
+interface IUseCurrentUserOutOfTripRouteReturn {
+	isOutOfRoute: boolean;
+}
 
-export const RANGE_FOR_USER_OUT_OF_RANGE = 20; // in meters
-export const RANGE_FOR_USER_IN_POINT = 10; // in meters
-export const RANGE_BETWEEN_GEOMETRY_POINT_FOR_SKIPPING_CLOSE_POINT = 10; // in meters
-export const ANGLE_GEOMETRY_POINT_THRESHOLD = 10; // degrees
+const RANGE_FOR_USER_OUT_OF_RANGE = 20; // in meters
+const SEGMENTS_TO_CHECK = 5; // Number of segments to check in each direction
 
 export default function useCurrentUserOutOfTripRoute({
 	geometryPoints,
 	userLocation,
-}: IUseCurrentUserOutOfTripRouteProps): {
-	isOutOfRoute: boolean;
-	segmantPointsIndexs: MutableRefObject<[number, number]>;
-} {
+}: IUseCurrentUserOutOfTripRouteProps): IUseCurrentUserOutOfTripRouteReturn {
 	const [isOutOfRoute, setIsOutOfRoute] = useState(false);
 	const segmantPointsIndexs = useRef<[number, number]>([0, 1]);
-	const wasInStepRange = useRef<boolean[]>([true]);
-	const userBearing = useCurrentUserBearing({ userLocation });
 
 	useEffect(() => {
-		if (!userLocation || !geometryPoints.length) return;
+		if (!userLocation || geometryPoints.length < 2) {
+			return;
+		}
 
 		const { lon, lat } = userLocation;
 		let [pointIndexBefore, pointIndexAfter] = segmantPointsIndexs.current;
 
-		if (pointIndexBefore < 0 || pointIndexAfter > geometryPoints.length - 1) {
-			return;
-		}
+		pointIndexBefore = checkBoundary(
+			pointIndexBefore,
+			geometryPoints.length - 2,
+			0
+		);
+		pointIndexAfter = checkBoundary(
+			pointIndexAfter,
+			geometryPoints.length - 1,
+			1
+		);
 
-		const segmant = [
-			geometryPoints[pointIndexBefore],
-			geometryPoints[pointIndexAfter],
-		] as [Point, Point];
+		const [closestBeforeIndex, closestAfterIndex] = findClosestSegment(
+			geometryPoints,
+			userLocation,
+			pointIndexBefore,
+			pointIndexAfter,
+			SEGMENTS_TO_CHECK
+		);
 
-		// Check if user is out of route
-		const distanceToSegment = calculateDistancePointToSegment(
+		segmantPointsIndexs.current = [closestBeforeIndex, closestAfterIndex];
+
+		console.log('segmantPointsIndexs', segmantPointsIndexs.current);
+
+		const distance = calculateShortestDistancePointToSegment(
 			[lon, lat],
-			segmant
+			[geometryPoints[closestBeforeIndex], geometryPoints[closestAfterIndex]]
 		);
 
-		if (distanceToSegment > RANGE_FOR_USER_OUT_OF_RANGE) {
-			setIsOutOfRoute(true);
-		}
+		setIsOutOfRoute(distance > RANGE_FOR_USER_OUT_OF_RANGE);
+	}, [geometryPoints, userLocation]);
 
-		const forwardBearing = getBearing(
-			geometryPoints[pointIndexBefore],
-			geometryPoints[pointIndexAfter]
-		);
-
-		const isMovingForward =
-			getBearingDiff(userBearing, forwardBearing) <
-			ANGLE_GEOMETRY_POINT_THRESHOLD;
-
-		if (isMovingForward) {
-			const distanceFromPointAfter = calculateDistanceOnEarth(
-				[lon, lat],
-				geometryPoints[pointIndexAfter]
-			);
-			if (distanceFromPointAfter < RANGE_FOR_USER_IN_POINT) {
-				wasInStepRange.current[pointIndexAfter] = true;
-			} else if (wasInStepRange.current[pointIndexAfter]) {
-				const nextPointIndexAfter = getClosestPointWithMinDistance(
-					geometryPoints,
-					pointIndexAfter + 1,
-					RANGE_BETWEEN_GEOMETRY_POINT_FOR_SKIPPING_CLOSE_POINT
-				);
-
-				pointIndexBefore = pointIndexAfter;
-				pointIndexAfter = nextPointIndexAfter;
-				wasInStepRange.current[pointIndexBefore] = false;
-			}
-		}
-		segmantPointsIndexs.current = [pointIndexBefore, pointIndexAfter];
-	}, [userLocation]);
-	return { isOutOfRoute, segmantPointsIndexs };
+	return { isOutOfRoute };
 }
+
+const checkBoundary = (index: number, max: number, min: number): number => {
+	if (index < min) {
+		return min;
+	}
+	if (index > max) {
+		return max;
+	}
+	return index;
+};

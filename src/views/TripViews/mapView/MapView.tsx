@@ -17,8 +17,9 @@ import { Types } from 'trip-track-package';
 
 const ROUTE_OPACITY = 1;
 
-const ROUTE_COLOR = '#7dafc6';
-const ROUTE_FILL_COLOR = '#02a9fc';
+const INACTIVE_ROUTE_COLOR = '#3e5c76';
+const ACTIVE_ROUTE_COLOR = '#1b4965';
+const ROUTE_FILL_COLOR = '#5fa8d3';
 
 const ROUTE_WIDTH = 6;
 const ROUTE_FILL_WIDTH = 2;
@@ -68,9 +69,9 @@ export default function MapView() {
 				{/* loading location */}
 				{!userCurrentLocation && <LoadingLocation />}
 
-				{userCurrentLocation && user && (
+				{/* {userCurrentLocation && user && (
 					<CurrentUserMarker location={userCurrentLocation} user={user} />
-				)}
+				)} */}
 
 				{usersLocations.map(({ id, location }) => (
 					<OtherUserMarker location={location} key={id} />
@@ -83,27 +84,29 @@ export default function MapView() {
 						) : (
 							<TripStartLocationMarker location={trip.stops[0].location} />
 						)}
-						<RouteAndNavigation
+						{/* <RouteAndNavigation
 							routeId='trip-route'
 							originalPoints={memoizedTripPoints}
 							routeOptions={{
-								lineColor: ROUTE_COLOR,
+								lineColor: isAtTripRoute
+									? ACTIVE_ROUTE_COLOR
+									: INACTIVE_ROUTE_COLOR,
 								lineWidth: ROUTE_WIDTH,
-								lineOpacity: !isAtTripRoute ? 0.5 : ROUTE_OPACITY,
+								lineOpacity: ROUTE_OPACITY,
 							}}
 							fillRouteOption={{
 								lineColor: ROUTE_FILL_COLOR,
 								lineWidth: ROUTE_FILL_WIDTH,
-								lineOpacity: !isAtTripRoute ? 0.5 : ROUTE_OPACITY,
+								lineOpacity: ROUTE_OPACITY,
 							}}
 							userLocation={userCurrentLocation}
-						/>
+						/> */}
 						{!isAtTripRoute && (
 							<RouteAndNavigation
 								routeId='user-to-trip-route'
 								originalPoints={memoizedUserToTripPoints}
 								routeOptions={{
-									lineColor: ROUTE_COLOR,
+									lineColor: ACTIVE_ROUTE_COLOR,
 									lineWidth: ROUTE_WIDTH,
 									lineOpacity: ROUTE_OPACITY,
 								}}

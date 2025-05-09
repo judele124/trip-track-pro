@@ -195,6 +195,46 @@ export function closestPointOnSegment(
 	return closest;
 }
 
+// map calculation functions
+
+export function findClosestSegment(
+	geometryPoints: Point[],
+	userLocation: { lon: number; lat: number },
+	pointIndexBefore: number,
+	pointIndexAfter: number,
+	segmentsToCheck: number
+): [number, number] {
+	const { lon, lat } = userLocation;
+	let closestDistance = Infinity;
+	let closestBeforeIndex = pointIndexBefore;
+	let closestAfterIndex = pointIndexAfter;
+
+	const startCheckIndex = Math.max(0, pointIndexBefore - segmentsToCheck);
+	const endCheckIndex = Math.min(
+		geometryPoints.length - 2,
+		pointIndexAfter + segmentsToCheck
+	);
+
+	for (let i = startCheckIndex; i <= endCheckIndex; i++) {
+		const segment = [geometryPoints[i], geometryPoints[i + 1]] as [
+			Point,
+			Point,
+		];
+		const distanceToSegment = calculateShortestDistancePointToSegment(
+			[lon, lat],
+			segment
+		);
+
+		if (distanceToSegment < closestDistance) {
+			closestDistance = distanceToSegment;
+			closestBeforeIndex = i;
+			closestAfterIndex = i + 1;
+		}
+	}
+
+	return [closestBeforeIndex, closestAfterIndex];
+}
+
 /**
  * Calculates the shortest distance from a point (lon, lat) to a segment (two lon-lat points),
  * and returns the distance in meters using Haversine formula.
@@ -208,84 +248,6 @@ export function calculateShortestDistancePointToSegment(
 
 	// Use your haversine-based function to get distance in meters
 	return calculateDistanceOnEarth(point, closest);
-}
-
-export function getClosestPointWithMinDistance(
-	routePoints: Point[],
-	currentIndex: number,
-	minDistance: number,
-	before?: boolean
-) {
-	if (before) {
-		while (
-			currentIndex > 0 &&
-			calculateDistanceOnEarth(
-				routePoints[currentIndex],
-				routePoints[currentIndex - 1]
-			) < minDistance
-		) {
-			currentIndex--;
-		}
-		return currentIndex;
-	}
-
-	while (
-		currentIndex + 1 < routePoints.length &&
-		calculateDistanceOnEarth(
-			routePoints[currentIndex],
-			routePoints[currentIndex + 1]
-		) < minDistance
-	) {
-		currentIndex++;
-	}
-
-	return currentIndex;
-}
-
-type isOutOfRouteBetweenStepsProps = {
-	userLocation: Point;
-	routePoints: Point[];
-	nextPointIndex: number;
-	threshold: number;
-};
-
-export function isOutOfRouteBetweenSteps({
-	nextPointIndex,
-	routePoints,
-	threshold = 50, // 50 meters
-	userLocation,
-}: isOutOfRouteBetweenStepsProps) {
-	let prevIndex = nextPointIndex - 1;
-
-	// if point is too close to eachother
-	if (
-		calculateDistanceOnEarth(
-			routePoints[prevIndex],
-			routePoints[nextPointIndex]
-		) < 5
-	) {
-		prevIndex--;
-	}
-
-	if (prevIndex < 0) {
-		prevIndex = 0;
-		nextPointIndex++;
-	}
-
-	const segment: [Point, Point] = [
-		routePoints[prevIndex],
-		routePoints[nextPointIndex],
-	];
-
-	// Calculate distance to this segment
-	const distanceToSeg = calculateShortestDistancePointToSegment(
-		userLocation,
-		segment
-	);
-
-	const isOut = distanceToSeg > threshold;
-
-	return { prevIndex, nextPointIndex, isOut };
 }
 
 export function metersToPixels(
