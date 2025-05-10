@@ -42,7 +42,7 @@ export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
 								<Icon className='fill-primary' name='lock' />
 							</div>
 							<svg
-								className='absolute left-1/2 top-full size-5 -translate-x-1/2 fill-light dark:fill-black/80'
+								className='absolute left-1/2 top-full size-5 -translate-x-1/2 fill-black/80'
 								width='51'
 								height='60'
 								viewBox='0 0 51 60'

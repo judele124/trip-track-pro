@@ -31,7 +31,7 @@ type ServerEventPayloads = {
 	messageSent: [message: string, userId: string];
 	tripStatusChanged: [tripId: string, status: string];
 	allUsersInExperience: [isAllUSersInExperience: boolean];
-	allUsersFinishedCorrentExp: [nextExpIndex: number];
+	allUsersFinishedCurrentExp: [nextExpIndex: number];
 	error: [
 		data: string | { message: string; errorDetails: Record<string, any> },
 	];
@@ -44,7 +44,7 @@ export const ServerEvents = {
 	messageSent: 'messageSent',
 	tripStatusChanged: 'tripStatusChanged',
 	allUsersInExperience: 'allUsersInExperience',
-	allUsersFinishedCorrentExp: 'allUsersFinishedCorrentExp',
+	allUsersFinishedCurrentExp: 'allUsersFinishedCurrentExp',
 	error: 'error',
 };
 

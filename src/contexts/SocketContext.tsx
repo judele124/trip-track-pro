@@ -82,7 +82,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 
 	const initExpirenceIndex = async () => {
 		const { data } = await activateGetExpIndex({
-			url: `${API_BASE_URL}/trip/${tripId}/current-exp-index`,
+			url: `${API_BASE_URL}/trip/current-exp-index/${tripId}`,
 		});
 		if (data) {
 			setCurrentExpIndex(data.data || 0);
@@ -101,14 +101,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		initUsersLiveData();
 		initExpirenceIndex();
 	}, [tripId, trip]);
-
-	useEffect(() => {
-		if (!usersInLiveTripExpData) return;
-		console.log(usersInLiveTripExpData);
-	}, [usersInLiveTripExpData]);
-	useEffect(() => {
-		console.log('currentExpIndex', currentExpIndex);
-	}, [currentExpIndex]);
 
 	useEffect(() => {
 		if (!socket || !tripId) return;
@@ -147,7 +139,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			});
 		});
 
-		socket.on('allUsersFinishedCorrentExp', (nextStepIndex) => {
+		socket.on('allUsersFinishedCurrentExp', (nextStepIndex) => {
 			setCurrentExpIndex(nextStepIndex);
 		});
 

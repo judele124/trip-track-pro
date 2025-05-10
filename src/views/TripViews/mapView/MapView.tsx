@@ -54,7 +54,7 @@ export default function MapView() {
 							location={stop.location}
 						>
 							<StopMarker
-								disableExperience={i > currentExpIndex}
+								disableExperience={i !== currentExpIndex}
 								stop={stop}
 								index={i}
 							/>
