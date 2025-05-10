@@ -2,7 +2,6 @@ import MapRoute from './MapRoute';
 import { IRouteLayerSpecification } from '@/utils/map.functions';
 import DirectionComponent from './DirectionComponent';
 import useRouteAndNavigation from '../../hooks/useRouteAndNavigation';
-import { useEffect, useState } from 'react';
 import CurrentUserMarker from '../Markers/CurrentUserMarker';
 import { useAuthContext } from '@/contexts/AuthContext';
 import MapArrow from './MapArrow';
@@ -23,38 +22,14 @@ export default function RouteAndNavigation({
 	userLocation,
 }: IRouteAndNavigationProps) {
 	const { user } = useAuthContext();
-	const [points, setPoints] = useState<{ lon: number; lat: number }[]>([]);
 
-	const {
-		routeData,
-		nextStepIndex,
-		walkedPath,
-		userToStepNextDistance,
-		isOutOfRoute,
-		resetNavigation,
-	} = useRouteAndNavigation({
-		points,
-		userLocation,
-	});
+	const { routeData, nextStepIndex, walkedPath, userToStepNextDistance } =
+		useRouteAndNavigation({
+			userLocation,
+			points: originalPoints,
+		});
 
-	useEffect(() => {
-		if (originalPoints.length > 0 && userLocation && points.length === 0) {
-			setPoints(originalPoints);
-		}
-	}, [originalPoints, userLocation]);
-
-	useEffect(() => {
-		if (isOutOfRoute && userLocation) {
-			const newPoints = [
-				userLocation,
-				...points.slice(nextStepIndex, points.length),
-			];
-			setPoints(newPoints);
-			resetNavigation();
-		}
-	}, [isOutOfRoute]);
-
-	if (!routeData || !userLocation || !points.length || !user) return null;
+	if (!routeData || !userLocation || !user) return null;
 
 	return (
 		<>

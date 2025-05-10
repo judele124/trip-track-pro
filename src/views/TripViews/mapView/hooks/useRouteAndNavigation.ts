@@ -4,6 +4,7 @@ import useNextStepIndex from './useNextStepIndex';
 import { useRouteProgress } from './useRouteProgress';
 import { Point } from '@/utils/map.functions';
 import useCurrentUserOutOfTripRoute from './useCurrentUserOutOfTripRoute';
+import { useEffect, useState } from 'react';
 
 interface IUseRouteAndNavigationProps {
 	userLocation: { lon: number; lat: number } | null;
@@ -16,15 +17,21 @@ interface IUseRouteAndNavigationReturn {
 	nextStepIndex: number;
 	userToStepNextDistance: number;
 	isOutOfRoute: boolean;
-	resetNavigation: () => void;
 }
 
 export default function useRouteAndNavigation({
-	points,
 	userLocation,
+	points,
 }: IUseRouteAndNavigationProps): IUseRouteAndNavigationReturn {
+	const [currentRoutePoints, setCurrentRoutePoints] =
+		useState<{ lon: number; lat: number }[]>(points);
+
+	const [currentOutOfRoutePoints, setCurrentOutOfRoutePoints] = useState<
+		Point[]
+	>([]);
+
 	const { routeData } = useMapboxDirectionRoute({
-		points,
+		points: currentRoutePoints,
 	});
 
 	const { nextStepIndex, userToStepNextDistance } = useNextStepIndex({
@@ -38,9 +45,37 @@ export default function useRouteAndNavigation({
 	});
 
 	const { isOutOfRoute, resetOutOfRoute } = useCurrentUserOutOfTripRoute({
-		geometryPoints: routeData?.routes[0].geometry.coordinates || [],
+		geometryPoints: currentOutOfRoutePoints,
 		userLocation,
 	});
+
+	// when user is out of route, update points state to restart the route data logic
+	useEffect(() => {
+		if (isOutOfRoute && userLocation) {
+			const newPoints = [
+				userLocation,
+				...points.slice(nextStepIndex, points.length),
+			];
+			setCurrentRoutePoints(newPoints);
+		}
+	}, [isOutOfRoute]);
+
+	// add a point at the user location when route data is loaded for out of route logic
+	// and reset walked path and out of route
+	useEffect(() => {
+		if (!routeData) return;
+
+		const routePoints = userLocation
+			? [
+					[userLocation.lon, userLocation.lat],
+					...routeData.routes[0].geometry.coordinates,
+				]
+			: routeData.routes[0].geometry.coordinates;
+
+		setCurrentOutOfRoutePoints(routePoints);
+		resetWalkedPath();
+		resetOutOfRoute();
+	}, [routeData]);
 
 	return {
 		routeData,
@@ -48,10 +83,5 @@ export default function useRouteAndNavigation({
 		nextStepIndex,
 		userToStepNextDistance: userToStepNextDistance.current,
 		isOutOfRoute,
-
-		resetNavigation: () => {
-			resetWalkedPath();
-			resetOutOfRoute();
-		},
 	};
 }

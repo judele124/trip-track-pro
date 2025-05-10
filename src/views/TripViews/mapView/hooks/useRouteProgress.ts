@@ -42,7 +42,7 @@ export function useRouteProgress({
 			return;
 		}
 
-		const { closestSegment, segmentIndex } = findClosestSegment(
+		const { closestSegment, segmentStartIndex } = findClosestSegment(
 			routeCoordinates,
 			userLocation
 		);
@@ -50,6 +50,16 @@ export function useRouteProgress({
 		if (!closestSegment) return;
 
 		const closedPoint = closestPointOnSegment(userLocation, closestSegment);
+
+		const isOnExistingPath = walkedPath.some((point, index) => {
+			if (index === walkedPath.length - 1) return false;
+			return isPointOnSegment(closedPoint, point, walkedPath[index + 1]);
+		});
+
+		if (isOnExistingPath) {
+			lastUserLocation.current = userLocation;
+			return;
+		}
 
 		if (!lastPoint.current) {
 			lastPoint.current = closedPoint;
@@ -63,24 +73,30 @@ export function useRouteProgress({
 			closedPoint
 		);
 
-		if (distanceFromClosest < DISTANCE_THRESHOLD && segmentIndex <= 0) {
+		if (distanceFromClosest < DISTANCE_THRESHOLD && segmentStartIndex < 0) {
 			return;
 		}
 
 		const newPoints: Point[] = [];
-		if (lastSegmentIndex.current && lastSegmentIndex.current !== segmentIndex) {
-			for (let i = lastSegmentIndex.current; i < segmentIndex - 1; i++) {
-				newPoints.push(
-					...interpolatePoints(routeCoordinates[i], routeCoordinates[i + 1])
-				);
-				lastPoint.current = routeCoordinates[i + 1];
-			}
+
+		const { segmentStartIndex: lastSegmentStartIndex } = findClosestSegment(
+			routeCoordinates,
+			lastPoint.current
+		);
+
+		for (let i = lastSegmentStartIndex; i < segmentStartIndex; i++) {
+			newPoints.push(
+				...interpolatePoints(routeCoordinates[i], routeCoordinates[i + 1])
+			);
+			lastPoint.current = routeCoordinates[i + 1];
 		}
+
 		newPoints.push(...interpolatePoints(lastPoint.current, closedPoint));
+
 		setWalkedPath((prev) => [...prev, ...newPoints.slice(1)]);
 		lastUserLocation.current = userLocation;
 		lastPoint.current = closedPoint;
-		lastSegmentIndex.current = segmentIndex;
+		lastSegmentIndex.current = segmentStartIndex;
 	}, [userLocation, routeCoordinates]);
 
 	return {
@@ -120,7 +136,7 @@ function interpolatePoints(start: Point, end: Point): Point[] {
 const findClosestSegment = (points: Point[], location: Point) => {
 	let minDistance = Infinity;
 	let closestSegment: [Point, Point] | null = null;
-	let segmentIndex = -1;
+	let segmentStartIndex = -1;
 
 	for (let i = 0; i < points.length - 1; i++) {
 		const segment: [Point, Point] = [points[i], points[i + 1]];
@@ -129,9 +145,27 @@ const findClosestSegment = (points: Point[], location: Point) => {
 		if (distance < minDistance) {
 			minDistance = distance;
 			closestSegment = segment;
-			segmentIndex = i;
+			segmentStartIndex = i;
 		}
 	}
 
-	return { closestSegment, segmentIndex };
+	return { closestSegment, segmentStartIndex };
 };
+
+function isPointOnSegment(p: Point, a: Point, b: Point): boolean {
+	const epsilon = 1e-6;
+
+	// cross product to check colinearity
+	const cross = (p[1] - a[1]) * (b[0] - a[0]) - (p[0] - a[0]) * (b[1] - a[1]);
+	if (Math.abs(cross) > epsilon) return false;
+
+	// check if p is between a and b
+	const withinLat =
+		p[1] >= Math.min(a[1], b[1]) - epsilon &&
+		p[1] <= Math.max(a[1], b[1]) + epsilon;
+	const withinLng =
+		p[0] >= Math.min(a[0], b[0]) - epsilon &&
+		p[0] <= Math.max(a[0], b[0]) + epsilon;
+
+	return withinLat && withinLng;
+}
