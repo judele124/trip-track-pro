@@ -45,7 +45,7 @@ export default function TripRowOptions({ trip, isCreator }: ITripRowOptions) {
 	});
 
 	const isAlreadyParticipant = trip.participants.some(
-		(i) => i.userId.toString() === user?._id
+		(i) => i.userId._id.toString() === user?._id
 	);
 
 	return (
