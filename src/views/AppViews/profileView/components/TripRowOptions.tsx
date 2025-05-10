@@ -21,11 +21,11 @@ const tripStatusToOptionMap: Record<
 > = {
 	created: {
 		creator: ['start', 'cancel'],
-		participant: ['join', 'leave'],
+		participant: ['join', 'Enter trip', 'leave'],
 	},
 	started: {
 		creator: ['complete'],
-		participant: ['join', 'leave'],
+		participant: ['join', 'Enter trip', 'leave'],
 	},
 	completed: { creator: ['delete'], participant: [] },
 	cancelled: { creator: ['delete'], participant: [] },
@@ -75,7 +75,8 @@ export default function TripRowOptions({ trip, isCreator }: ITripRowOptions) {
 					].map((o) => {
 						if (
 							(o === 'join' && isAlreadyParticipant) ||
-							(o === 'leave' && !isAlreadyParticipant)
+							(o === 'leave' && !isAlreadyParticipant) ||
+							(o === 'Enter trip' && !isAlreadyParticipant)
 						) {
 							return null;
 						}
@@ -83,9 +84,10 @@ export default function TripRowOptions({ trip, isCreator }: ITripRowOptions) {
 						return (
 							<Button
 								key={o}
-								primary={o === 'start'}
+								primary={o === 'start' || o === 'Enter trip'}
 								className={`w-full ${
-									(o === 'cancel' && 'bg-red-500') ||
+									((o === 'cancel' || o === 'delete' || o === 'leave') &&
+										'bg-red-500') ||
 									(o === 'complete' && 'bg-green-500') ||
 									''
 								}`}

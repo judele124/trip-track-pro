@@ -4,6 +4,7 @@ import { API_BASE_URL } from '@/env.config';
 import TripsList from './TripsList';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Trip } from '@/types/trip';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 const filterList = ['createdTrips', 'joinedTrips'] as const;
 
@@ -31,6 +32,8 @@ export default function TripsShowcase() {
 	} = useAxios<Trip[]>({
 		url: `${API_BASE_URL}/trip/user-in-participants`,
 	});
+
+	const { user } = useAuthContext();
 
 	const [filter, setFilter] = useState<(typeof filterList)[number]>(
 		filterList[0]
@@ -74,7 +77,11 @@ export default function TripsShowcase() {
 					<TripsList
 						isCreatedTrips={filter === 'createdTrips'}
 						data={
-							filter === 'createdTrips' ? createdTripsData : joinedTripsData
+							filter === 'createdTrips'
+								? createdTripsData
+								: joinedTripsData.filter(
+										(trip) => trip.creator._id !== user?._id
+									)
 						}
 						loading={
 							filter === 'createdTrips'

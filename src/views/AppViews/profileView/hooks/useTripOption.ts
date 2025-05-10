@@ -6,11 +6,9 @@ import {
 	cancelTrip,
 	deleteTrip,
 	endTrip,
-	joinTrip,
 	leaveTrip,
 	startTrip,
 } from '@/servises/tripService';
-import { useAuthContext } from '@/contexts/AuthContext';
 
 export const creatorTripsOptionsActions = [
 	'start',
@@ -18,7 +16,11 @@ export const creatorTripsOptionsActions = [
 	'delete',
 	'cancel',
 ] as const;
-export const joinedTripsOptionsActions = ['join', 'leave'] as const;
+export const joinedTripsOptionsActions = [
+	'join',
+	'leave',
+	'Enter trip',
+] as const;
 
 export type ActionOption =
 	| (typeof creatorTripsOptionsActions)[number]
@@ -61,6 +63,9 @@ export default function useTripOption({
 				break;
 			case 'delete':
 				await deleteTrip(activate, tripId);
+				break;
+			case 'Enter trip':
+				nav(`${navigationRoutes.map}?tripId=${tripId}`);
 				break;
 			default:
 				throw new Error(`Action ${action} doesn't exist`);
