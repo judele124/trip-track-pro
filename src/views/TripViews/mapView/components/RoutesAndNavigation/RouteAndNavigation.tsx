@@ -2,7 +2,6 @@ import MapRoute from './MapRoute';
 import { IRouteLayerSpecification } from '@/utils/map.functions';
 import DirectionComponent from './DirectionComponent';
 import useRouteAndNavigation from '../../hooks/useRouteAndNavigation';
-import CurrentUserMarker from '../Markers/CurrentUserMarker';
 import { useAuthContext } from '@/contexts/AuthContext';
 import MapArrow from './MapArrow';
 
@@ -12,6 +11,7 @@ interface IRouteAndNavigationProps {
 	routeOptions?: IRouteLayerSpecification;
 	fillRouteOption?: IRouteLayerSpecification;
 	userLocation: { lat: number; lon: number } | null;
+	active?: boolean;
 }
 
 export default function RouteAndNavigation({
@@ -20,6 +20,7 @@ export default function RouteAndNavigation({
 	routeOptions,
 	fillRouteOption,
 	userLocation,
+	active,
 }: IRouteAndNavigationProps) {
 	const { user } = useAuthContext();
 
@@ -27,61 +28,64 @@ export default function RouteAndNavigation({
 		useRouteAndNavigation({
 			userLocation,
 			points: originalPoints,
+			active,
 		});
 
 	if (!routeData || !userLocation || !user) return null;
 
 	return (
 		<>
-			{userLocation && user && (
-				<CurrentUserMarker location={userLocation} user={user} />
-			)}
+			{active && (
+				<>
+					{nextStepIndex != routeData.routes[0].legs[0].steps.length - 1 && (
+						<MapArrow
+							outerId={`arrow-${routeId}`}
+							maneuver={
+								routeData.routes[0].legs[0].steps[nextStepIndex].maneuver
+							}
+							fillColor='#32adff'
+							outlineColor='#264fa8'
+						/>
+					)}
 
-			{nextStepIndex != routeData.routes[0].legs[0].steps.length - 1 && (
-				<MapArrow
-					outerId={`arrow-${routeId}`}
-					maneuver={routeData.routes[0].legs[0].steps[nextStepIndex].maneuver}
-					fillColor='#32adff'
-					outlineColor='#264fa8'
-				/>
-			)}
+					<MapRoute
+						id={`walkedPath-${routeId}`}
+						route={{
+							code: '123',
+							uuid: '123',
+							waypoints: [],
+							routes: [
+								{
+									distance: 0,
+									duration: 0,
+									geometry: { coordinates: walkedPath, type: 'LineString' },
+									legs: [],
+									weight: 0,
+								},
+							],
+						}}
+						options={fillRouteOption}
+						beforeLayerIds={
+							nextStepIndex != routeData.routes[0].legs[0].steps.length - 1
+								? `arrow-${routeId}`
+								: undefined
+						}
+					/>
 
-			<MapRoute
-				id={`walkedPath-${routeId}`}
-				route={{
-					code: '123',
-					uuid: '123',
-					waypoints: [],
-					routes: [
-						{
-							distance: 0,
-							duration: 0,
-							geometry: { coordinates: walkedPath, type: 'LineString' },
-							legs: [],
-							weight: 0,
-						},
-					],
-				}}
-				options={fillRouteOption}
-				beforeLayerIds={
-					nextStepIndex != routeData.routes[0].legs[0].steps.length - 1
-						? `arrow-${routeId}`
-						: undefined
-				}
-			/>
+					{/* Direction Info UI */}
+					<DirectionComponent
+						nextStepIndex={nextStepIndex}
+						userToStepNextDistance={userToStepNextDistance}
+						steps={routeData.routes[0].legs[0].steps}
+					/>
+				</>
+			)}
 
 			<MapRoute
 				route={routeData}
 				options={routeOptions}
 				id={`route-${routeId}`}
-				beforeLayerIds={`walkedPath-${routeId}`}
-			/>
-
-			{/* Direction Info UI */}
-			<DirectionComponent
-				nextStepIndex={nextStepIndex}
-				userToStepNextDistance={userToStepNextDistance}
-				steps={routeData.routes[0].legs[0].steps}
+				beforeLayerIds={active ? `walkedPath-${routeId}` : undefined}
 			/>
 		</>
 	);

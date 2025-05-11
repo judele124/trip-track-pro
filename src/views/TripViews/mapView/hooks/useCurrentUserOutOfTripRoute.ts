@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 interface IUseCurrentUserOutOfTripRouteProps {
 	geometryPoints: Point[];
 	userLocation: { lon: number; lat: number } | null;
+	active?: boolean;
 }
 interface IUseCurrentUserOutOfTripRouteReturn {
 	isOutOfRoute: boolean;
@@ -20,12 +21,13 @@ const SEGMENTS_TO_CHECK = 5; // Number of segments to check in each direction
 export default function useCurrentUserOutOfTripRoute({
 	geometryPoints,
 	userLocation,
+	active,
 }: IUseCurrentUserOutOfTripRouteProps): IUseCurrentUserOutOfTripRouteReturn {
 	const [isOutOfRoute, setIsOutOfRoute] = useState(false);
 	const segmantPointsIndexs = useRef<[number, number]>([0, 1]);
 
 	useEffect(() => {
-		if (!userLocation || geometryPoints.length < 2) return;
+		if (!active || !userLocation || geometryPoints.length < 2) return;
 
 		const { lon, lat } = userLocation;
 		let [pointIndexBefore, pointIndexAfter] = segmantPointsIndexs.current;
@@ -57,7 +59,7 @@ export default function useCurrentUserOutOfTripRoute({
 		);
 
 		setIsOutOfRoute(distance > RANGE_FOR_USER_OUT_OF_RANGE);
-	}, [geometryPoints, userLocation]);
+	}, [geometryPoints, userLocation, active]);
 
 	return {
 		isOutOfRoute,

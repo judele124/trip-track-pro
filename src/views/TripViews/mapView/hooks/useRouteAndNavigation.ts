@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 interface IUseRouteAndNavigationProps {
 	userLocation: { lon: number; lat: number } | null;
 	points: { lon: number; lat: number }[];
+	active?: boolean;
 }
 
 interface IUseRouteAndNavigationReturn {
@@ -22,6 +23,7 @@ interface IUseRouteAndNavigationReturn {
 export default function useRouteAndNavigation({
 	userLocation,
 	points,
+	active,
 }: IUseRouteAndNavigationProps): IUseRouteAndNavigationReturn {
 	const [currentRoutePoints, setCurrentRoutePoints] =
 		useState<{ lon: number; lat: number }[]>(points);
@@ -37,16 +39,19 @@ export default function useRouteAndNavigation({
 	const { nextStepIndex, userToStepNextDistance } = useNextStepIndex({
 		userLocation,
 		steps: routeData?.routes[0].legs[0].steps,
+		active,
 	});
 
 	const { walkedPath, resetWalkedPath } = useRouteProgress({
 		userLocation: userLocation ? [userLocation.lon, userLocation.lat] : null,
 		routeCoordinates: routeData?.routes[0].geometry.coordinates || [],
+		active,
 	});
 
 	const { isOutOfRoute, resetOutOfRoute } = useCurrentUserOutOfTripRoute({
 		geometryPoints: currentOutOfRoutePoints,
 		userLocation,
+		active,
 	});
 
 	// when user is out of route, update points state to restart the route data logic
@@ -76,6 +81,7 @@ export default function useRouteAndNavigation({
 		resetWalkedPath();
 		resetOutOfRoute();
 	}, [routeData]);
+	console.log('rerender useRouteAndNavigation');
 
 	return {
 		routeData,

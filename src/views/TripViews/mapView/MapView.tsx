@@ -15,6 +15,7 @@ import OtherUserMarker from './components/Markers/OtherUserMarker';
 import Icon from '@/components/icons/Icon';
 import { Types } from 'trip-track-package';
 
+const INACTIVE_ROUTE_OPACITY = 0.5;
 const ROUTE_OPACITY = 1;
 
 const INACTIVE_ROUTE_COLOR = '#3e5c76';
@@ -69,9 +70,9 @@ export default function MapView() {
 				{/* loading location */}
 				{!userCurrentLocation && <LoadingLocation />}
 
-				{/* {userCurrentLocation && user && (
+				{userCurrentLocation && user && (
 					<CurrentUserMarker location={userCurrentLocation} user={user} />
-				)} */}
+				)}
 
 				{usersLocations.map(({ id, location }) => (
 					<OtherUserMarker location={location} key={id} />
@@ -84,7 +85,8 @@ export default function MapView() {
 						) : (
 							<TripStartLocationMarker location={trip.stops[0].location} />
 						)}
-						{/* <RouteAndNavigation
+
+						<RouteAndNavigation
 							routeId='trip-route'
 							originalPoints={memoizedTripPoints}
 							routeOptions={{
@@ -92,7 +94,9 @@ export default function MapView() {
 									? ACTIVE_ROUTE_COLOR
 									: INACTIVE_ROUTE_COLOR,
 								lineWidth: ROUTE_WIDTH,
-								lineOpacity: ROUTE_OPACITY,
+								lineOpacity: isAtTripRoute
+									? ROUTE_OPACITY
+									: INACTIVE_ROUTE_OPACITY,
 							}}
 							fillRouteOption={{
 								lineColor: ROUTE_FILL_COLOR,
@@ -100,9 +104,12 @@ export default function MapView() {
 								lineOpacity: ROUTE_OPACITY,
 							}}
 							userLocation={userCurrentLocation}
-						/> */}
+							active={isAtTripRoute}
+						/>
+
 						{!isAtTripRoute && (
 							<RouteAndNavigation
+								active={true}
 								routeId='user-to-trip-route'
 								originalPoints={memoizedUserToTripPoints}
 								routeOptions={{

@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 export interface IUseRouteProgressProps {
 	routeCoordinates: Point[];
 	userLocation: Point | null;
+	active?: boolean;
 }
 
 export interface IUseRouteProgressReturn {
@@ -24,6 +25,7 @@ const MIN_MOVEMENT = 2; // meters - minimum movement to record
 export function useRouteProgress({
 	routeCoordinates,
 	userLocation,
+	active,
 }: IUseRouteProgressProps): IUseRouteProgressReturn {
 	const [walkedPath, setWalkedPath] = useState<Point[]>([]);
 	const lastPoint = useRef<Point | null>(null);
@@ -31,7 +33,7 @@ export function useRouteProgress({
 	const lastUserLocation = useRef<Point | null>(null);
 
 	useEffect(() => {
-		if (!userLocation || routeCoordinates.length < 2) return;
+		if (!active || !userLocation || routeCoordinates.length < 2) return;
 
 		// Skip if we haven't moved enough
 		if (
@@ -97,7 +99,7 @@ export function useRouteProgress({
 		lastUserLocation.current = userLocation;
 		lastPoint.current = closedPoint;
 		lastSegmentIndex.current = segmentStartIndex;
-	}, [userLocation, routeCoordinates]);
+	}, [userLocation, routeCoordinates, active]);
 
 	return {
 		walkedPath,

@@ -9,6 +9,7 @@ import useCurrentUserBearing from './useCurrentUserBearing';
 interface IUseNextStepIndexProps {
 	userLocation: { lon: number; lat: number } | null;
 	steps: DirectionStep[] | undefined;
+	active?: boolean;
 }
 
 interface IUseNextStepIndexReturn {
@@ -22,6 +23,7 @@ export const ANGLE_STEP_THRESHOLD = 20; // degrees
 export default function useNextStepIndex({
 	userLocation,
 	steps,
+	active,
 }: IUseNextStepIndexProps): IUseNextStepIndexReturn {
 	const [nextStepIndex, setNextStepIndex] = useState<number>(1);
 	const wasInStepRange = useRef<boolean[]>([]);
@@ -30,7 +32,7 @@ export default function useNextStepIndex({
 	const bearing = useCurrentUserBearing({ userLocation });
 
 	useEffect(() => {
-		if (!userLocation || !steps?.[nextStepIndex]) return;
+		if (!active || !userLocation || !steps?.[nextStepIndex]) return;
 		const { lat, lon } = userLocation;
 
 		const currentStep = steps[nextStepIndex];
@@ -60,7 +62,7 @@ export default function useNextStepIndex({
 				setNextStepIndex((prev) => prev + 1);
 			}
 		}
-	}, [userLocation]);
+	}, [userLocation, active]);
 
 	return { nextStepIndex, userToStepNextDistance };
 }
