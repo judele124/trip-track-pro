@@ -60,16 +60,17 @@ function DirectionComponent({
 					/>
 
 					{/* Remaining Steps */}
-					{showRestStops &&
-						steps
-							.slice(nextStepIndex + 1)
-							.map((step, i) => (
+					{showRestStops && (
+						<div>
+							{steps.slice(nextStepIndex + 1).map((step, index) => (
 								<Step
-									key={i}
+									key={nextStepIndex + 1 + index}
 									step={step}
-									userToStepNextDistance={userToStepNextDistance}
+									userToStepNextDistance={steps[nextStepIndex + index].distance}
 								/>
 							))}
+						</div>
+					)}
 				</div>
 			)}
 		</div>,

@@ -62,7 +62,7 @@ export default function useNextStepIndex({
 				setNextStepIndex((prev) => prev + 1);
 			}
 		}
-	}, [userLocation, active]);
+	}, [userLocation, active, steps]);
 
 	return { nextStepIndex, userToStepNextDistance };
 }

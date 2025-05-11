@@ -81,7 +81,6 @@ export default function useRouteAndNavigation({
 		resetWalkedPath();
 		resetOutOfRoute();
 	}, [routeData]);
-	console.log('rerender useRouteAndNavigation');
 
 	return {
 		routeData,
