@@ -1,80 +1,37 @@
+import { useTripSocket } from '@/contexts/SocketContext';
+
 const ParticipantsView = () => {
-	const details = [
-		{ name: 'Netanel Segal', distance: '2.5 km', score: 2900 },
-		{ name: 'Juda Gotliv', distance: '2.5 km', score: 2300 },
-		{ name: 'Fake Name', distance: '2.5 km', score: 2900 },
-		{ name: 'Netanel Segal', distance: '2.5 km', score: 2900 },
-		{ name: 'Juda Gotliv', distance: '2.5 km', score: 2300 },
-		{ name: 'Fake Name', distance: '2.5 km', score: 2900 },
-		{ name: 'Netanel Segal', distance: '2.5 km', score: 2900 },
-		{ name: 'Juda Gotliv', distance: '2.5 km', score: 2300 },
-		{ name: 'Fake Name', distance: '2.5 km', score: 2900 },
-		{ name: 'Netanel Segal', distance: '2.5 km', score: 2900 },
-		{ name: 'Juda Gotliv', distance: '2.5 km', score: 2300 },
-		{ name: 'Fake Name', distance: '2.5 km', score: 2900 },
-		{ name: 'Netanel Segal', distance: '2.5 km', score: 2900 },
-		{ name: 'Juda Gotliv', distance: '2.5 km', score: 2300 },
-		{ name: 'Fake Name', distance: '2.5 km', score: 2900 },
-	];
+	const { usersInLiveTripExpData } = useTripSocket();
+
 	return (
-		<div
-			style={{ scrollbarWidth: 'thin' }}
-			className='flex h-full justify-center overflow-y-auto px-4'
-		>
-			<table className='shadow-md'>
-				<thead>
-					<tr className='sticky top-0 rounded-xl border-0 bg-orange-600 text-left text-white'>
-						<th className='px-4 py-2'>Name</th>
-						<th className='px-4 py-2'>Distance</th>
-						<th className='px-4 py-2'>Score</th>
-						<th className=''></th>
-					</tr>
-				</thead>
-				<tbody className=''>
-					{details.map((row, index) => (
-						<tr
-							key={index}
-							className='border-t border-primary hover:bg-amber-200'
-						>
-							<td className='px-4 py-3'>{row.name}</td>
-							<td className='px-4 py-3'>{row.distance}</td>
-							<td className='px-4 py-3'>{row.score}</td>
-							<td className=''>
-								<button className='text-gray-500 hover:text-gray-700'>
-									<svg
-										width='4'
-										height='19'
-										viewBox='0 0 4 19'
-										fill='none'
-										xmlns='http://www.w3.org/2000/svg'
-									>
-										<rect
-											width='3.89808'
-											height='4.0162'
-											rx='1.94904'
-											fill='#EBE2D4'
-										/>
-										<rect
-											y='7.26465'
-											width='3.89808'
-											height='4.0162'
-											rx='1.94904'
-											fill='#EBE2D4'
-										/>
-										<rect
-											y='14.5291'
-											width='3.89808'
-											height='4.0162'
-											rx='1.94904'
-											fill='#EBE2D4'
-										/>
-									</svg>
-								</button>
-							</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
+		<div className='flex h-full flex-col items-center text-gray-800 dark:text-light'>
+			<div className='mt-3 flex h-[60px] w-[90vw] max-w-[380px] flex-row items-center gap-3 rounded-2xl border-2 border-dark bg-primary p-2 font-semibold shadow-md shadow-black/55 dark:border-light'>
+				<span className='w-[48%] pl-1'>name</span>
+				<div className='flex w-1/2 items-center justify-between gap-4'>
+					<div className='w-2/5 text-center'>distance</div>
+					<div className='w-2/5 text-center'>score</div>
+				</div>
+			</div>
+			<div
+				style={{ scrollbarWidth: 'none' }}
+				className='flex w-full flex-col items-center overflow-y-auto text-sm'
+			>
+				{usersInLiveTripExpData.map((row, index) => (
+					<div
+						key={`${index}-ledrboard-row`}
+						className={`flex w-[88vw] max-w-[376px] flex-row items-center gap-3 ${index < usersInLiveTripExpData.length - 1 ? 'border-b-2 border-primary' : ''} p-2`}
+					>
+						<span className='w-1/2 pl-1 text-sm font-semibold'>{row.name}</span>
+
+						<div className='flex h-[35px] w-1/2 items-center justify-between gap-4 text-sm'>
+							<div className='w-2/5 text-center'>{45 + 'km'}</div>
+							<div className='w-2/5 text-center'>
+								{row.score.reduce((a, b) => a + b, 0)}
+							</div>
+						</div>
+					</div>
+				))}
+			</div>
 		</div>
 	);
 };

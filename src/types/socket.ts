@@ -1,3 +1,4 @@
+import { IRedisUserTripData } from '@/contexts/SocketContext';
 import { Socket } from 'socket.io-client';
 
 type LocationPayload = {
@@ -8,17 +9,28 @@ type LocationPayload = {
 type ClientEventPayloads = {
 	joinTrip: [tripId: string];
 	updateLocation: [tripId: string, location: LocationPayload];
-	finishExperience: [tripId: string];
+	finishExperience: [
+		tripId: string,
+		userId: string,
+		index: number,
+		score: number,
+	];
 	sendMessage: [tripId: string, message: string, userId: string];
+	userInExperience: [tripId: string, userId: string, index: number];
 	'connect-error': [error: Error];
 };
 
 type ServerEventPayloads = {
 	tripJoined: [userSocketId: string];
 	locationUpdated: [userSocketId: string, location: LocationPayload];
-	experienceFinished: [userSocketId: string];
+	experienceFinished: [
+		updateData: IRedisUserTripData,
+		userId: string,
+		index: number,
+	];
 	messageSent: [message: string, userId: string];
 	tripStatusChanged: [tripId: string, status: string];
+	allUsersInExperience: [isAllUSersInExperience: boolean];
 	error: [
 		data: string | { message: string; errorDetails: Record<string, any> },
 	];
@@ -30,6 +42,7 @@ export const ServerEvents = {
 	experienceFinished: 'experienceFinished',
 	messageSent: 'messageSent',
 	tripStatusChanged: 'tripStatusChanged',
+	allUsersInExperience: 'allUsersInExperience',
 	error: 'error',
 };
 
@@ -38,6 +51,7 @@ export const ClientEvents = {
 	updateLocation: 'updateLocation',
 	finishExperience: 'finishExperience',
 	sendMessage: 'sendMessage',
+	userInExperience: 'userInExperience',
 	connectError: 'connect-error',
 } as const;
 

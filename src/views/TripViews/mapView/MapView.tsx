@@ -157,7 +157,7 @@ function TripStopsMarkers({
 			key={`${stop.location.lat}-${stop.location.lon}-${i}`}
 			location={stop.location}
 		>
-			<StopMarker stop={stop} />
+			<StopMarker index={i} stop={stop} />
 		</GeneralMarker>
 	));
 }

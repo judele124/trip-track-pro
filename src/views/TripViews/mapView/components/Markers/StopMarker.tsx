@@ -9,10 +9,11 @@ import { forwardRef } from 'react';
 interface IStopMarkerProps {
 	stop: Types['Trip']['Stop']['Model'];
 	disableExperience?: true;
+	index: number;
 }
 
 export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
-	function StopMarker({ stop, disableExperience }, ref) {
+	function StopMarker({ stop, disableExperience, index }, ref) {
 		const { isOpen, toggle } = useToggle();
 
 		return (
@@ -52,6 +53,7 @@ export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
 								onBackdropClick={toggle}
 								experience={stop.experience}
 								type={stop.experience.type}
+								index={index}
 							/>
 						)}
 					</>
