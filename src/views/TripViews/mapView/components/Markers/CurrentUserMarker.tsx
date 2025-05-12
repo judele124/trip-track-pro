@@ -1,19 +1,24 @@
 import GeneralMarker from './GeneralMarker';
+import { IUserResponseData } from '@/types/user';
 
 interface IUserMarkerProps {
 	location: { lon: number; lat: number };
+	user: IUserResponseData;
 }
 
-export default function CurrentUserMarker({ location }: IUserMarkerProps) {
+export default function CurrentUserMarker({
+	location,
+	user,
+}: IUserMarkerProps) {
 	return (
 		<GeneralMarker
 			location={location}
-			childrenAsInnerHtmlString='
-				  <svg width="30" height="30" fill="#000" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
-					<path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm89.6 32h-11.8c-22.2 10.3-46.9 16-73.8 16s-51.6-5.7-73.8-16h-11.8C64.5 288 0 352.5 0 432c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48 0-79.5-64.5-144-134.4-144z"/>
-				  </svg>
-				'
-			childrenAsInnerHtmlStringClassName='flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-md'
+			childrenAsInnerHtmlString={`
+				<div class="relative flex flex-col items-center justify-center">
+					<span class="text-xs absolute bottom-[110%] left-1/2 -translate-x-1/2 text-dark font-semibold">${user.name || 'Default'}</span>
+					<img class="w-10 h-10 object-cover bg-secondary rounded-full shadow-md" src="${user.imageUrl || `https://robohash.org/${user.name}.png`}" />
+				</div>
+			`}
 		/>
 	);
 }

@@ -47,7 +47,7 @@ const FirstEntryContent = () => {
 		() => {
 			localStorage.setItem('notFirstEntry', 'true');
 
-			if (!state || !state.redirectRoute) {
+			if (!state || !state.redirectRoute || state.redirectRoute === '/') {
 				nav(navigationRoutes.app);
 				return;
 			}

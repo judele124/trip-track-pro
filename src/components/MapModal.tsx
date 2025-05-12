@@ -4,7 +4,7 @@ import Map from '@/views/TripViews/mapView/Map';
 import StopMarker from '@/views/TripViews/mapView/components/Markers/StopMarker';
 import { MapBoxDirectionsResponse } from '@/types/map';
 import { Types } from 'trip-track-package';
-import MapRoute from '@/views/TripViews/mapView/components/MapRoute';
+import MapRoute from '@/views/TripViews/mapView/components/RoutesAndNavigation/MapRoute';
 
 interface IMapModalProps {
 	mapOpen: boolean;
@@ -25,7 +25,7 @@ export default function MapModal({
 		<Modal open={mapOpen} center onBackdropClick={() => toggleMap()}>
 			<div className='h-[80vh] w-[90vw] overflow-hidden rounded-2xl'>
 				<Map>
-					{routeData && <MapRoute route={routeData} />}
+					{routeData && <MapRoute id='modal-route' route={routeData} />}
 					{stops.map((stop: Types['Trip']['Stop']['Model']) => (
 						<GeneralMarker
 							key={`${stop.location.lon}-${stop.location.lat}`}
