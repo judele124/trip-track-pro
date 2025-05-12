@@ -28,7 +28,7 @@ const ROUTE_FILL_WIDTH = 2;
 export default function MapView() {
 	const { user } = useAuthContext();
 	const { trip } = useTripContext();
-	const { usersLocations, socket } = useTripSocket();
+	const { usersLocations, socket, currentExpIndex } = useTripSocket();
 
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
@@ -81,7 +81,10 @@ export default function MapView() {
 				{trip && userCurrentLocation && (
 					<>
 						{isAtTripRoute ? (
-							<TripStopsMarkers stops={trip.stops} />
+							<TripStopsMarkers
+								currentExpIndex={currentExpIndex}
+								stops={trip.stops}
+							/>
 						) : (
 							<TripStartLocationMarker location={trip.stops[0].location} />
 						)}
@@ -149,15 +152,21 @@ function LoadingLocation() {
 
 function TripStopsMarkers({
 	stops,
+	currentExpIndex,
 }: {
 	stops: Types['Trip']['Stop']['Model'][];
+	currentExpIndex: number;
 }) {
 	return stops.map((stop, i) => (
 		<GeneralMarker
 			key={`${stop.location.lat}-${stop.location.lon}-${i}`}
 			location={stop.location}
 		>
-			<StopMarker index={i} stop={stop} />
+			<StopMarker
+				disableExperience={i !== currentExpIndex}
+				stop={stop}
+				index={i}
+			/>
 		</GeneralMarker>
 	));
 }
