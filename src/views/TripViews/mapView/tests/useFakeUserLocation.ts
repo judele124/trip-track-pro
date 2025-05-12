@@ -38,7 +38,7 @@ export default function useFakeUserLocation({
 	onLocationUpdate,
 	updateIntervalMs = 1000,
 }: Props) {
-	const [location, setLocation] = useState<Point | null>(points[0] || null);
+	const [location, setLocation] = useState<Point | null>(null);
 	const indexRef = useRef(0);
 	const progressRef = useRef(0);
 
@@ -48,7 +48,10 @@ export default function useFakeUserLocation({
 		const interval = setInterval(() => {
 			const from = points[indexRef.current];
 			const to = points[indexRef.current + 1];
-
+			if (!from || !to) {
+				clearInterval(interval);
+				return;
+			}
 			const distance = haversineDistance(from, to);
 			const speedPerMs = (speed * 1000) / 3600000;
 			const step = speedPerMs * updateIntervalMs;
@@ -74,7 +77,7 @@ export default function useFakeUserLocation({
 		}, updateIntervalMs);
 
 		return () => clearInterval(interval);
-	}, [points, speed, updateIntervalMs]);
+	}, [points, speed, updateIntervalMs, onLocationUpdate]);
 
 	return location;
 }

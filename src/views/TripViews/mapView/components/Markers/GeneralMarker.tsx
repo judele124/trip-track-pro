@@ -2,6 +2,18 @@ import { ReactElement, useEffect, useRef } from 'react';
 import useMarker from '../../hooks/useMarker';
 import { useMap } from '../../Map';
 
+interface IGeneralMarkerWithChildrenProps {
+	children: ReactElement;
+	childrenAsInnerHtmlString?: never;
+	childrenAsInnerHtmlStringClassName?: never;
+}
+
+interface IGeneralMarkerWithChildrenAsInnerHtmlStringProps {
+	children?: never;
+	childrenAsInnerHtmlString: string;
+	childrenAsInnerHtmlStringClassName?: string;
+}
+
 interface ICommonGeneralMarkerProps {
 	location: { lat: number; lon: number };
 	toCenter?: boolean;
@@ -9,16 +21,8 @@ interface ICommonGeneralMarkerProps {
 
 type IGeneralMarkerProps = ICommonGeneralMarkerProps &
 	(
-		| {
-				children: ReactElement;
-				childrenAsInnerHtmlString?: never;
-				childrenAsInnerHtmlStringClassName?: never;
-		  }
-		| {
-				children?: never;
-				childrenAsInnerHtmlString: string;
-				childrenAsInnerHtmlStringClassName?: string;
-		  }
+		| IGeneralMarkerWithChildrenProps
+		| IGeneralMarkerWithChildrenAsInnerHtmlStringProps
 	);
 
 export default function GeneralMarker({

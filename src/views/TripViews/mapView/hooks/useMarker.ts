@@ -16,7 +16,6 @@ export default function useMarker({
 	isMapReady,
 	mapRef,
 	location: { lat, lon },
-	toCenter,
 }: IUseMarketProps): IUseMarketReturn {
 	const markerRef = useRef<Marker | null>(null);
 	useEffect(() => {
@@ -28,9 +27,6 @@ export default function useMarker({
 			.setLngLat([lon, lat])
 			.addTo(mapRef.current);
 
-		if (toCenter) {
-			mapRef.current.setCenter([lon, lat]);
-		}
 		return () => {
 			markerRef.current?.remove();
 		};
