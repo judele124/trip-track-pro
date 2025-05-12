@@ -20,43 +20,47 @@ export interface INewParticipantsData {
 	isGuide: boolean;
 }
 const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
-	const { activate, error } = useAxios({ manual: true });
+	const { activate, error, loading } = useAxios({ manual: true });
 	const { isOpen, toggle } = useToggle();
-	const [newParticipants, setNewParticipants] =
-		useState<INewParticipantsData[]>();
+	const [newParticipants, setNewParticipants] = useState<
+		INewParticipantsData[]
+	>([]);
 
 	useEffect(() => {
-		if (!isOpen || !trip || !trip.participants) return;
-
+		if (!trip) return;
 		setNewParticipants(() =>
 			trip.participants.map((participant) => ({
 				userModel: participant.userId,
 				isGuide: trip.guides.some((g) => g._id === participant.userId._id),
 			}))
 		);
-	}, [trip, isOpen]);
+	}, [trip]);
 
-	const handleAddGuide = (i: number) => {
-		if (!trip || !trip.participants) return;
+	const handleAddGuide = (userId: string) => {
+		if (!trip) return;
 		setNewParticipants((prev) => {
-			if (!prev) return;
-			prev[i].isGuide = true;
-			return [...prev];
+			return prev.map((p) => {
+				if (p.userModel._id === userId) {
+					return { ...p, isGuide: true };
+				}
+				return p;
+			});
 		});
 	};
 
 	const handleRemoveGuide = (userId: string) => {
 		setNewParticipants((prev) => {
-			if (!prev) return;
-			const index = prev.findIndex((p) => p.userModel._id === userId);
-			if (index === -1) return [...prev];
-			prev[index].isGuide = false;
-			return [...prev];
+			return prev.map((p) => {
+				if (p.userModel._id === userId) {
+					return { ...p, isGuide: false };
+				}
+				return p;
+			});
 		});
 	};
 
 	const handleClose = () => {
-		setNewParticipants(undefined);
+		setNewParticipants([]);
 		onClose();
 		toggle();
 	};
@@ -72,6 +76,10 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 					.map((p) => p.userModel._id),
 			},
 		});
+		if (!error) {
+			onClose();
+			toggle();
+		}
 	};
 
 	return (
@@ -90,7 +98,7 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 							<Icon name='xIcon' className='fill-white' />
 						</Button>
 					</div>
-					{newParticipants && newParticipants?.length > 0 ? (
+					{newParticipants?.length > 0 ? (
 						<>
 							<div className='flex justify-between gap-4'>
 								{/* LEFT COLUMN */}
@@ -106,7 +114,7 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 							</div>
 
 							<Button onClick={handleSubmit} primary className='mt-4 w-full'>
-								{error ? 'bed req' : 'submit'}
+								{error ? 'bed req' : loading ? 'loading' : 'submit'}
 							</Button>
 						</>
 					) : (

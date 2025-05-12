@@ -3,7 +3,7 @@ import { INewParticipantsData } from '../UpdateGuidesBtn';
 
 interface IParticipantsComponentProps {
 	newParticipants: INewParticipantsData[];
-	handleAddGuide: (i: number) => void;
+	handleAddGuide: (i: string) => void;
 }
 export const ParticipantsComponent = ({
 	newParticipants,
@@ -14,7 +14,7 @@ export const ParticipantsComponent = ({
 			{newParticipants?.map((participant, i) => (
 				<div
 					key={i}
-					onClick={() => handleAddGuide(i)}
+					onClick={() => handleAddGuide(participant.userModel._id)}
 					className='flex min-h-12 cursor-pointer items-center justify-between border-b border-dark last:border-none dark:border-light'
 				>
 					<div className='flex items-center gap-2'>
