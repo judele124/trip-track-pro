@@ -33,7 +33,6 @@ export default function TripDetailsView() {
 
 	const { routeData } = useMapboxDirectionRoute({
 		points,
-		runGetDirectionsRoute: mapOpen,
 	});
 
 	useEffect(() => {
