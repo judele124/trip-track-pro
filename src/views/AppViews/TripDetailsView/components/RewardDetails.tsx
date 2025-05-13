@@ -169,7 +169,6 @@ function RewardDetailsModalForm({
 				<InputWLabel
 					className='border-dark dark:border-light'
 					{...register('title')}
-					value={watch('title')}
 				/>
 				{errors.image?.message && (
 					<InputFeildError message={errors.image?.message} />
