@@ -1,20 +1,16 @@
 import Icon from '@/components/icons/Icon';
-import { INewParticipantsData } from '../UpdateGuidesBtn';
+import { IGuidesComponentProps } from '../UpdateGuidesBtn';
 
-interface IParticipantsComponentProps {
-	newParticipants: INewParticipantsData[];
-	handleAddGuide: (i: string) => void;
-}
 export const ParticipantsComponent = ({
 	newParticipants,
-	handleAddGuide,
-}: IParticipantsComponentProps) => {
+	handleUpdateGuide,
+}: IGuidesComponentProps) => {
 	return (
 		<div className='no-scrollbar flex max-h-[300px] w-3/5 flex-col overflow-y-auto rounded-2xl border border-dark bg-white p-2 dark:border-light dark:bg-black'>
 			{newParticipants?.map((participant, i) => (
 				<div
 					key={i}
-					onClick={() => handleAddGuide(participant.userModel._id)}
+					onClick={() => handleUpdateGuide(participant.userModel._id, true)}
 					className='flex min-h-12 cursor-pointer items-center justify-between border-b border-dark last:border-none dark:border-light'
 				>
 					<div className='flex items-center gap-2'>

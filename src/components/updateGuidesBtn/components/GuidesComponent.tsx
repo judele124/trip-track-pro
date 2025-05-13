@@ -1,25 +1,21 @@
 import Icon from '@/components/icons/Icon';
-import { INewParticipantsData } from '../UpdateGuidesBtn';
-interface IGuidesComponentProps {
-	newParticipants: INewParticipantsData[];
-	handleRemoveGuide: (userId: string) => void;
-}
+import { IGuidesComponentProps } from '../UpdateGuidesBtn';
 
 export const GuidesComponent = ({
 	newParticipants,
-	handleRemoveGuide,
+	handleUpdateGuide,
 }: IGuidesComponentProps) => {
 	return (
-		<div className='no-scrollbar flex max-h-[300px] w-2/5 flex-col gap-2 overflow-y-auto rounded-2xl border border-dark px-1.5 py-1.5 dark:border-light'>
+		<div className='no-scrollbar flex max-h-[300px] w-2/5 flex-col items-center justify-center gap-2 overflow-y-auto rounded-2xl border border-dark px-2 dark:border-light'>
 			{newParticipants
 				?.filter((p) => p.isGuide)
 				.map((participant, i) => (
 					<div
-						onClick={() => handleRemoveGuide(participant.userModel._id)}
+						onClick={() => handleUpdateGuide(participant.userModel._id, false)}
 						key={`guide-${i}`}
-						className='flex min-h-11 cursor-pointer items-center justify-between rounded-xl bg-white px-3 py-2 dark:bg-black'
+						className='flex min-h-11 w-full cursor-pointer flex-row items-center justify-between rounded-xl bg-white px-3 py-2 dark:bg-black'
 					>
-						<span className='w-[90px] overflow-hidden text-ellipsis text-left'>
+						<span className='w-full overflow-hidden text-ellipsis text-left'>
 							{participant.userModel.name || 'No name'}
 						</span>
 						<i>

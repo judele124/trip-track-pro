@@ -11,13 +11,18 @@ import { ParticipantsComponent } from './components/ParticipantsComponent';
 import { GuidesComponent } from './components/GuidesComponent';
 
 interface IUpdateGuidesBtnProps {
-	trip?: Trip;
-	onClose: () => void;
+	trip: Trip;
+	onClose?: () => void;
 }
 
 export interface INewParticipantsData {
 	userModel: Types['User']['Model'];
 	isGuide: boolean;
+}
+
+export interface IGuidesComponentProps {
+	newParticipants: INewParticipantsData[];
+	handleUpdateGuide: (userId: string, isGuide: boolean) => void;
 }
 const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 	const { activate, error, loading } = useAxios({ manual: true });
@@ -36,23 +41,11 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 		);
 	}, [trip]);
 
-	const handleAddGuide = (userId: string) => {
-		if (!trip) return;
+	const handleUpdateGuide = (userId: string, isGuide: boolean) => {
 		setNewParticipants((prev) => {
 			return prev.map((p) => {
 				if (p.userModel._id === userId) {
-					return { ...p, isGuide: true };
-				}
-				return p;
-			});
-		});
-	};
-
-	const handleRemoveGuide = (userId: string) => {
-		setNewParticipants((prev) => {
-			return prev.map((p) => {
-				if (p.userModel._id === userId) {
-					return { ...p, isGuide: false };
+					return { ...p, isGuide };
 				}
 				return p;
 			});
@@ -60,8 +53,7 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 	};
 
 	const handleClose = () => {
-		setNewParticipants([]);
-		onClose();
+		onClose?.();
 		toggle();
 	};
 
@@ -77,8 +69,7 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 			},
 		});
 		if (!error) {
-			onClose();
-			toggle();
+			handleClose();
 		}
 	};
 
@@ -104,12 +95,12 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 								{/* LEFT COLUMN */}
 								<ParticipantsComponent
 									newParticipants={newParticipants}
-									handleAddGuide={handleAddGuide}
+									handleUpdateGuide={handleUpdateGuide}
 								/>
 								{/* RIGHT COLUMN */}
 								<GuidesComponent
 									newParticipants={newParticipants}
-									handleRemoveGuide={handleRemoveGuide}
+									handleUpdateGuide={handleUpdateGuide}
 								/>
 							</div>
 
