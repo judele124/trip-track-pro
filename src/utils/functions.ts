@@ -1,3 +1,4 @@
+import { Trip } from '@/types/trip';
 import {
 	Children,
 	isValidElement,
@@ -52,4 +53,9 @@ export function canBrowserShareData(data: ShareData) {
 
 export const wordToCamelcase = (word: string) => {
 	return word.charAt(0).toUpperCase() + word.substring(1);
+};
+
+export const IsTripChangeable = (trip: Trip): boolean => {
+	const { status } = trip;
+	return status === 'created' || status === 'cancelled';
 };

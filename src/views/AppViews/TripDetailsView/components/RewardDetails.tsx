@@ -7,7 +7,7 @@ import InputWLabel from '@/components/ui/InputWLabel';
 import { useForm } from 'react-hook-form';
 import { useEffect, useRef } from 'react';
 import Input from '@/components/ui/Input';
-import { mergeRefs } from '@/utils/functions';
+import { IsTripChangeable, mergeRefs } from '@/utils/functions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useAxios from '@/hooks/useAxios';
 import { rewardUpdate } from '@/servises/tripService';
@@ -15,13 +15,13 @@ import { getErrorMessage } from '@/utils/errorMessages';
 import { Schemas } from 'trip-track-package';
 
 interface IRewardDetailsProps {
-	reward: Trip['reward'];
+	trip: Trip;
 	onUpdate: () => void;
 	tripId: string;
 }
 
 export default function RewardDetails({
-	reward,
+	trip,
 	onUpdate,
 	tripId,
 }: IRewardDetailsProps) {
@@ -29,7 +29,7 @@ export default function RewardDetails({
 	const { isOpen: editModeIsOpen, toggle: toggleEditMode } = useToggle();
 
 	useEffect(() => {
-		if (isOpen && !reward) {
+		if (isOpen && !trip.reward && IsTripChangeable(trip)) {
 			toggleEditMode();
 			toggle();
 		}
@@ -37,27 +37,37 @@ export default function RewardDetails({
 
 	return (
 		<>
-			<button
-				onClick={toggle}
-				className='rounded-xl border-2 border-dark bg-[#ffb900] px-3 py-1 text-center text-sm capitalize text-dark'
-			>
-				{reward ? `${reward?.title} 🏆` : 'Add reward'}
-			</button>
+			{(trip.reward || IsTripChangeable(trip)) && (
+				<button
+					onClick={toggle}
+					className='rounded-xl border-2 border-dark bg-[#ffb900] px-3 py-1 text-center text-sm capitalize text-dark'
+				>
+					{trip.reward && !IsTripChangeable(trip)
+						? `${trip.reward.title} 🏆`
+						: 'Add reward'}
+				</button>
+			)}
 
-			{reward && (
+			{trip.reward && (
 				<Modal open={isOpen} onBackdropClick={toggle} center>
 					<div className='page-colors w-[90vw] max-w-[400px] rounded-3xl p-5 text-center'>
-						<h3>{reward.title}</h3>
-						{reward.image && (
-							<img className='mt-2 rounded-2xl' src={reward.image} alt='' />
+						<h3>{trip.reward.title}</h3>
+						{trip.reward.image && (
+							<img
+								className='mt-2 rounded-2xl'
+								src={trip.reward.image}
+								alt=''
+							/>
 						)}
 						<div className='mt-2 flex items-center gap-2'>
 							<Button className='w-full' onClick={toggle}>
 								Close
 							</Button>
-							<Button className='w-full' primary onClick={toggleEditMode}>
-								Edit
-							</Button>
+							{IsTripChangeable(trip) && (
+								<Button className='w-full' primary onClick={toggleEditMode}>
+									Edit
+								</Button>
+							)}
 						</div>
 					</div>
 				</Modal>
