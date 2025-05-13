@@ -57,7 +57,7 @@ export default function TripDetailsView() {
 							<div className='mt-2 flex items-start gap-1'>
 								<TripStatusButton status={tripData.status} />
 								<RewardDetails
-									reward={tripData.reward}
+									trip={tripData}
 									onUpdate={() => {
 										if (!params.tripId) return;
 										tripGet(activate, tripData._id);
