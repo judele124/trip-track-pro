@@ -8,7 +8,7 @@ export const GuidesComponent = ({
 	return (
 		<div className='no-scrollbar flex max-h-[300px] w-2/5 flex-col items-center justify-center gap-2 overflow-y-auto rounded-2xl border border-dark px-2 dark:border-light'>
 			{newParticipants
-				?.filter((p) => p.isGuide)
+				.filter((p) => p.isGuide)
 				.map((participant, i) => (
 					<div
 						onClick={() => handleUpdateGuide(participant.userModel._id, false)}

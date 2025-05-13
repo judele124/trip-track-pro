@@ -9,6 +9,7 @@ import useAxios from '@/hooks/useAxios';
 import { API_BASE_URL } from '@/env.config';
 import { ParticipantsComponent } from './components/ParticipantsComponent';
 import { GuidesComponent } from './components/GuidesComponent';
+import { getErrorMessage } from '@/utils/errorMessages';
 
 interface IUpdateGuidesBtnProps {
 	trip: Trip;
@@ -25,14 +26,13 @@ export interface IGuidesComponentProps {
 	handleUpdateGuide: (userId: string, isGuide: boolean) => void;
 }
 const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
-	const { activate, error, loading } = useAxios({ manual: true });
+	const { activate, error, loading, status } = useAxios({ manual: true });
 	const { isOpen, toggle } = useToggle();
 	const [newParticipants, setNewParticipants] = useState<
 		INewParticipantsData[]
 	>([]);
 
 	useEffect(() => {
-		if (!trip) return;
 		setNewParticipants(() =>
 			trip.participants.map((participant) => ({
 				userModel: participant.userId,
@@ -42,14 +42,9 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 	}, [trip]);
 
 	const handleUpdateGuide = (userId: string, isGuide: boolean) => {
-		setNewParticipants((prev) => {
-			return prev.map((p) => {
-				if (p.userModel._id === userId) {
-					return { ...p, isGuide };
-				}
-				return p;
-			});
-		});
+		setNewParticipants((prev) =>
+			prev.map((p) => (p.userModel._id === userId ? { ...p, isGuide } : p))
+		);
 	};
 
 	const handleClose = () => {
@@ -58,8 +53,7 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 	};
 
 	const handleSubmit = async () => {
-		if (!trip || !newParticipants) return;
-		await activate({
+		const { error } = await activate({
 			url: `${API_BASE_URL}/trip/update-guides/${trip._id}`,
 			method: 'PUT',
 			data: {
@@ -89,7 +83,9 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 							<Icon name='xIcon' className='fill-white' />
 						</Button>
 					</div>
-					{newParticipants?.length > 0 ? (
+					{!newParticipants.length ? (
+						<p className='text-center text-lg'>No participants found</p>
+					) : (
 						<>
 							<div className='flex justify-between gap-4'>
 								{/* LEFT COLUMN */}
@@ -105,11 +101,13 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 							</div>
 
 							<Button onClick={handleSubmit} primary className='mt-4 w-full'>
-								{error ? 'bed req' : loading ? 'loading' : 'submit'}
+								{error && status
+									? getErrorMessage(status)
+									: loading
+										? 'loading'
+										: 'submit'}
 							</Button>
 						</>
-					) : (
-						<p className='text-center text-lg'>No participants found</p>
 					)}
 				</div>
 			</Modal>
