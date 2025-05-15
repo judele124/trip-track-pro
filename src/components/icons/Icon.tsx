@@ -380,7 +380,6 @@ export default function Icon({
 				viewBox='0 0 24 24'
 			>
 				<path
-					stroke='currentColor'
 					strokeLinecap='round'
 					strokeLinejoin='round'
 					strokeWidth='3'
@@ -393,6 +392,7 @@ export default function Icon({
 				width={size}
 				height={size}
 				className={`${className}`}
+				fill={fill}
 				viewBox='0 0 128.000000 128.000000'
 				preserveAspectRatio='xMidYMid meet'
 			>

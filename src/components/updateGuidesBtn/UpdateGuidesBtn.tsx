@@ -13,7 +13,7 @@ import { getErrorMessage } from '@/utils/errorMessages';
 
 interface IUpdateGuidesBtnProps {
 	trip: Trip;
-	onClose?: () => void;
+	onSuccess: () => void;
 }
 
 export interface INewParticipantsData {
@@ -21,13 +21,51 @@ export interface INewParticipantsData {
 	isGuide: boolean;
 }
 
-export interface IGuidesComponentProps {
-	newParticipants: INewParticipantsData[];
-	handleUpdateGuide: (userId: string, isGuide: boolean) => void;
+const UpdateGuidesBtn = ({ trip, onSuccess }: IUpdateGuidesBtnProps) => {
+	const { isOpen, toggle, setIsOpen } = useToggle();
+
+	return (
+		<>
+			<Button
+				type={'button'}
+				onClick={toggle}
+				className='flex justify-center gap-1 rounded-md px-2 py-1 text-sm font-normal text-white dark:text-dark'
+			>
+				{!trip.guides.length ? 'Add guides' : 'Edit guides'}
+				<i>
+					<Icon
+						size='17'
+						className='-mb-1 fill-white dark:fill-dark'
+						name={!trip.guides.length ? 'plus' : 'edit'}
+					/>
+				</i>
+			</Button>
+
+			{isOpen && (
+				<UpdateGuidesModal
+					trip={trip}
+					closeModal={() => setIsOpen(false)}
+					onSuccess={onSuccess}
+				/>
+			)}
+		</>
+	);
+};
+
+export default UpdateGuidesBtn;
+
+interface IUpdateGuidesModalProps {
+	trip: Trip;
+	closeModal: () => void;
+	onSuccess: () => void;
 }
-const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
+
+function UpdateGuidesModal({
+	trip,
+	closeModal,
+	onSuccess,
+}: IUpdateGuidesModalProps) {
 	const { activate, error, loading, status } = useAxios({ manual: true });
-	const { isOpen, toggle } = useToggle();
 	const [newParticipants, setNewParticipants] = useState<
 		INewParticipantsData[]
 	>([]);
@@ -39,17 +77,12 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 				isGuide: trip.guides.some((g) => g._id === participant.userId._id),
 			}))
 		);
-	}, [trip]);
+	}, []);
 
 	const handleUpdateGuide = (userId: string, isGuide: boolean) => {
 		setNewParticipants((prev) =>
 			prev.map((p) => (p.userModel._id === userId ? { ...p, isGuide } : p))
 		);
-	};
-
-	const handleClose = () => {
-		onClose?.();
-		toggle();
 	};
 
 	const handleSubmit = async () => {
@@ -62,65 +95,49 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 					.map((p) => p.userModel._id),
 			},
 		});
+
 		if (!error) {
-			handleClose();
+			closeModal();
+			onSuccess();
 		}
 	};
 
 	return (
-		<>
-			<Button
-				type={'button'}
-				onClick={toggle}
-				className='flex justify-center gap-1 rounded-md px-2 py-1 text-sm font-normal text-white dark:text-dark'
-			>
-				Edit guides
-				<i>
-					<Icon
-						size='17'
-						className='-mb-1 fill-white dark:fill-dark'
-						name='edit'
-					/>
-				</i>
-			</Button>
-			<Modal open={isOpen} onBackdropClick={handleClose} center>
-				<div className='page-colors w-[90vw] max-w-[400px] rounded-3xl px-5 pb-4'>
-					<div className='flex items-center justify-between'>
-						<p className='text-xl font-semibold'>Choose your guides</p>
-						<Button onClick={handleClose} className='my-3 -mr-2.5 px-3'>
-							<Icon name='xIcon' className='fill-white' />
-						</Button>
-					</div>
-					{!newParticipants.length ? (
-						<p className='text-center text-lg'>No participants found</p>
-					) : (
-						<>
-							<div className='flex justify-between gap-4'>
-								{/* LEFT COLUMN */}
-								<ParticipantsComponent
-									newParticipants={newParticipants}
-									handleUpdateGuide={handleUpdateGuide}
-								/>
-								{/* RIGHT COLUMN */}
-								<GuidesComponent
-									newParticipants={newParticipants}
-									handleUpdateGuide={handleUpdateGuide}
-								/>
-							</div>
-
-							<Button onClick={handleSubmit} primary className='mt-4 w-full'>
-								{error && status
-									? getErrorMessage(status)
-									: loading
-										? 'loading'
-										: 'submit'}
-							</Button>
-						</>
-					)}
+		<Modal open={true} onBackdropClick={closeModal} center>
+			<div className='page-colors w-[90vw] max-w-[400px] rounded-3xl p-5'>
+				<div className='mb-2 flex items-center justify-between'>
+					<h2>Choose your guides</h2>
+					<Button onClick={closeModal} className='rounded-lg px-1 py-1'>
+						<Icon name='xIcon' className='fill-white dark:fill-dark' />
+					</Button>
 				</div>
-			</Modal>
-		</>
-	);
-};
+				{!newParticipants.length ? (
+					<p className='text-center text-lg'>No participants found</p>
+				) : (
+					<>
+						<div className='flex justify-between gap-4'>
+							{/* LEFT COLUMN */}
+							<ParticipantsComponent
+								participants={newParticipants.filter((p) => !p.isGuide)}
+								handleUpdateGuide={handleUpdateGuide}
+							/>
+							{/* RIGHT COLUMN */}
+							<GuidesComponent
+								guides={newParticipants.filter((p) => p.isGuide)}
+								handleUpdateGuide={handleUpdateGuide}
+							/>
+						</div>
 
-export default UpdateGuidesBtn;
+						<Button onClick={handleSubmit} primary className='mt-4 w-full'>
+							{error && status
+								? getErrorMessage(status)
+								: loading
+									? 'loading'
+									: 'submit'}
+						</Button>
+					</>
+				)}
+			</div>
+		</Modal>
+	);
+}

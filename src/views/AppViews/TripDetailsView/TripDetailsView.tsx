@@ -110,6 +110,10 @@ function TripDetailsHeader({
 			<h4 className='my-2'>Guides</h4>
 			<div className='flex items-center justify-between'>
 				<div className='flex gap-2 overflow-x-scroll'>
+					{!tripData.guides.length && (
+						<p className='text-center'>No guides yet</p>
+					)}
+
 					{tripData.guides.map((guide) => (
 						<div
 							className='flex shrink-0 items-center gap-2 rounded-2xl bg-secondary px-4 py-2 text-white'
@@ -125,7 +129,7 @@ function TripDetailsHeader({
 				</div>
 				<UpdateGuidesBtn
 					trip={tripData}
-					onClose={() => tripId && tripGet(activate, tripId)}
+					onSuccess={() => tripId && tripGet(activate, tripId)}
 				/>
 			</div>
 		</div>

@@ -1,37 +1,37 @@
 import Icon from '@/components/icons/Icon';
-import { IGuidesComponentProps } from '../UpdateGuidesBtn';
+import { INewParticipantsData } from '../UpdateGuidesBtn';
+import User from './User';
+
+interface IParticipantsComponentProps {
+	participants: INewParticipantsData[];
+	handleUpdateGuide: (userId: string, isGuide: boolean) => void;
+}
 
 export const ParticipantsComponent = ({
-	newParticipants,
+	participants,
 	handleUpdateGuide,
-}: IGuidesComponentProps) => {
+}: IParticipantsComponentProps) => {
 	return (
-		<div className='no-scrollbar flex max-h-[300px] w-3/5 flex-col overflow-y-auto rounded-2xl border border-dark bg-white p-2 dark:border-light dark:bg-black'>
-			{newParticipants?.map((participant, i) => (
-				<div
-					key={i}
-					onClick={() => handleUpdateGuide(participant.userModel._id, true)}
-					className='flex min-h-12 cursor-pointer items-center justify-between border-b border-dark last:border-none dark:border-light'
-				>
-					<div className='flex items-center gap-2'>
-						{participant.userModel.imageUrl && (
-							<img
-								src={participant.userModel.imageUrl}
-								alt='user avatar'
-								className='m-1 h-6 w-6 rounded-full border-2 border-primary'
-							/>
-						)}
-						<span className='w-[90px] overflow-hidden text-ellipsis text-left'>
-							{participant.userModel.name}
-						</span>
-					</div>
-					{participant.isGuide && (
+		<div className='w-3/5'>
+			<h4 className='my-2'>Participants</h4>
+			<div className='no-scrollbar flex max-h-[300px] flex-col overflow-y-auto rounded-2xl border border-dark p-2 dark:border-light'>
+				{!participants.length && (
+					<p className='text-center'>No participants yet</p>
+				)}
+
+				{participants.map((participant) => (
+					<div
+						key={`participant-${participant.userModel._id}`}
+						onClick={() => handleUpdateGuide(participant.userModel._id, true)}
+						className='flex cursor-pointer items-center justify-between border-b border-dark last:border-none dark:border-light'
+					>
+						<User participant={participant} />
 						<i>
-							<Icon name='vIcon' size='20' className='fill-green-700' />
+							<Icon name='vIcon' className='fill-green-500' size='20' />
 						</i>
-					)}
-				</div>
-			))}
+					</div>
+				))}
+			</div>
 		</div>
 	);
 };
