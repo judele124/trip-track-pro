@@ -69,12 +69,20 @@ const UpdateGuidesBtn = ({ onClose, trip }: IUpdateGuidesBtnProps) => {
 
 	return (
 		<>
-			<button
+			<Button
+				type={'button'}
 				onClick={toggle}
-				className='rounded-xl border-2 border-dark bg-primary px-3 py-1 text-center text-sm capitalize text-dark'
+				className='flex justify-center gap-1 rounded-md px-2 py-1 text-sm font-normal text-white dark:text-dark'
 			>
-				add guides
-			</button>
+				Edit guides
+				<i>
+					<Icon
+						size='17'
+						className='-mb-1 fill-white dark:fill-dark'
+						name='edit'
+					/>
+				</i>
+			</Button>
 			<Modal open={isOpen} onBackdropClick={handleClose} center>
 				<div className='page-colors w-[90vw] max-w-[400px] rounded-3xl px-5 pb-4'>
 					<div className='flex items-center justify-between'>

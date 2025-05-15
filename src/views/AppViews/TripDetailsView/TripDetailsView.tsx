@@ -2,7 +2,7 @@ import Icon from '@/components/icons/Icon';
 import MapModal from '@/components/MapModal';
 import TripDetailsStops from '@/views/AppViews/TripDetailsView/components/TripDetailsStops';
 import Button from '@/components/ui/Button';
-import useAxios from '@/hooks/useAxios';
+import useAxios, { UseAxiosResponse } from '@/hooks/useAxios';
 import useToggle from '@/hooks/useToggle';
 import { Trip } from '@/types/trip';
 import { getErrorMessage } from '@/utils/errorMessages';
@@ -50,24 +50,11 @@ export default function TripDetailsView() {
 				)}
 				{tripData && (
 					<>
-						<div>
-							<h1 className='max-w-[70%] break-words capitalize'>
-								{tripData.name}
-							</h1>
-							{tripData.description && <p>{tripData.description}</p>}
-							<div className='mt-2 flex items-start gap-1'>
-								<TripStatusButton status={tripData.status} />
-								<RewardDetails
-									reward={tripData.reward}
-									onUpdate={() => {
-										if (!params.tripId) return;
-										tripGet(activate, tripData._id);
-									}}
-									tripId={tripData._id}
-								/>
-								<UpdateGuidesBtn trip={tripData} onClose={() => {}} />
-							</div>
-						</div>
+						<TripDetailsHeader
+							tripData={tripData}
+							activate={activate}
+							tripId={params.tripId}
+						/>
 
 						<TripDetailsStops
 							getUpdatedTrip={async () => {
@@ -96,5 +83,51 @@ export default function TripDetailsView() {
 				/>
 			)}
 		</>
+	);
+}
+
+function TripDetailsHeader({
+	tripData,
+	activate,
+	tripId,
+}: {
+	tripData: Trip;
+	activate: UseAxiosResponse<Trip>['activate'];
+	tripId: string | undefined;
+}) {
+	return (
+		<div>
+			<h1 className='max-w-[70%] break-words capitalize'>{tripData.name}</h1>
+			{tripData.description && <p>{tripData.description}</p>}
+			<div className='mt-2 flex items-start gap-1'>
+				<TripStatusButton status={tripData.status} />
+				<RewardDetails
+					reward={tripData.reward}
+					onUpdate={() => tripId && tripGet(activate, tripId)}
+					tripId={tripData._id}
+				/>
+			</div>
+			<h4 className='my-2'>Guides</h4>
+			<div className='flex items-center justify-between'>
+				<div className='flex gap-2 overflow-x-scroll'>
+					{tripData.guides.map((guide) => (
+						<div
+							className='flex shrink-0 items-center gap-2 rounded-2xl bg-secondary px-4 py-2 text-white'
+							key={guide._id}
+						>
+							<img
+								className='size-6 rounded-full border bg-white'
+								src={guide.imageUrl}
+							/>
+							<p className='text-sm capitalize'>{guide.name}</p>
+						</div>
+					))}
+				</div>
+				<UpdateGuidesBtn
+					trip={tripData}
+					onClose={() => tripId && tripGet(activate, tripId)}
+				/>
+			</div>
+		</div>
 	);
 }
