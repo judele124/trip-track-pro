@@ -18,7 +18,7 @@ export default function StopsDetails({
 	return (
 		<ScrollableMiddleWTopBottom
 			top={
-				<div className='mb-2 flex items-start justify-between'>
+				<div className='my-2 flex items-start justify-between'>
 					<h4>Stops</h4>
 
 					{/* edit button */}

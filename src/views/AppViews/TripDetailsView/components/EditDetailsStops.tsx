@@ -30,7 +30,9 @@ export default function EditDetailsStops({
 	toggleEditMode,
 	getUpdatedTrip,
 }: IEditDetailsStopsProps) {
-	const { activate, status, error, loading } = useAxios({ manual: true });
+	const { activate, status, error, loading } = useAxios<Trip>({
+		manual: true,
+	});
 
 	useEffect(() => {
 		if (!status || error) return;
@@ -100,7 +102,7 @@ export default function EditDetailsStops({
 				className='flex grow flex-col overflow-hidden'
 				onSubmit={handleSubmit(onSubmit)}
 			>
-				<div className='mb-2 flex items-start justify-between'>
+				<div className='my-2 flex items-start justify-between'>
 					<h4>Stops</h4>
 
 					{/* edit button */}
