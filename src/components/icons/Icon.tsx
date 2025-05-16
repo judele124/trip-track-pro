@@ -362,19 +362,13 @@ export default function Icon({
 		),
 		vIcon: (
 			<svg
+				fill={fill}
 				width={size}
 				height={size}
 				className={`${className}`}
-				fill={fill}
-				viewBox='0 0 24 24'
+				viewBox='0 0 448 512'
 			>
-				<path
-					stroke='currentColor'
-					strokeLinecap='round'
-					strokeLinejoin='round'
-					strokeWidth='2'
-					d='M5 11.917 9.724 16.5 19 7.5'
-				/>
+				<path d='M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z' />
 			</svg>
 		),
 		xIcon: (
@@ -386,7 +380,6 @@ export default function Icon({
 				viewBox='0 0 24 24'
 			>
 				<path
-					stroke='currentColor'
 					strokeLinecap='round'
 					strokeLinejoin='round'
 					strokeWidth='3'
@@ -399,6 +392,7 @@ export default function Icon({
 				width={size}
 				height={size}
 				className={`${className}`}
+				fill={fill}
 				viewBox='0 0 128.000000 128.000000'
 				preserveAspectRatio='xMidYMid meet'
 			>
