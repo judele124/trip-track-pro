@@ -5,6 +5,7 @@ import useToggle from '@/hooks/useToggle';
 import { useEffect } from 'react';
 import useAxios from '@/hooks/useAxios';
 import { navigationRoutes } from '@/Routes/routes';
+import { joinTrip } from '@/servises/tripService';
 const PageLayout = () => {
 	const { user, handleTokenValidation, handleSetGuestData } = useAuthContext();
 	const { isOpen, setIsOpen } = useToggle(false);
@@ -52,6 +53,11 @@ const PageLayout = () => {
 			await handleTokenValidation();
 			setIsOpen(false);
 			if (state.tripId) {
+				joinTrip(activate, state.tripId, {
+					name,
+					imageUrl,
+					role: user?.role,
+				});
 				nav(`${navigationRoutes.trip}?tripId=${state.tripId}`);
 			}
 		}
