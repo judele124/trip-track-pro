@@ -10,6 +10,7 @@ import {
 	startTrip,
 } from '@/servises/tripService';
 import { TripStatusArray } from 'trip-track-package';
+import { IconName } from '@/components/icons/Icon';
 
 interface IConditionProps {
 	isCreator: boolean;
@@ -21,10 +22,8 @@ interface IAction {
 	label: string;
 	statuses: (typeof TripStatusArray)[number][];
 	condition: (props: IConditionProps) => boolean;
-	styles?: {
-		primary?: boolean;
-		className?: string;
-	};
+	iconClassName: string;
+	iconName: IconName;
 }
 
 export const actions: IAction[] = [
@@ -33,63 +32,56 @@ export const actions: IAction[] = [
 		label: 'Start',
 		statuses: ['created'],
 		condition: ({ isCreator }) => isCreator,
-		styles: {
-			primary: true,
-		},
+		iconClassName: 'fill-green-500',
+		iconName: 'play',
 	},
 	{
 		name: 'complete',
 		label: 'Complete',
 		statuses: ['started'],
 		condition: ({ isCreator }) => isCreator,
-		styles: {
-			className: 'bg-green-500',
-		},
-	},
-	{
-		name: 'delete',
-		label: 'Delete',
-		statuses: ['created', 'cancelled'],
-		condition: ({ isCreator }) => isCreator,
-		styles: {
-			className: 'bg-red-500',
-		},
-	},
-	{
-		name: 'cancel',
-		label: 'Cancel',
-		statuses: ['created'],
-		condition: ({ isCreator }) => isCreator,
-		styles: {
-			className: 'bg-red-500',
-		},
+		iconClassName: 'fill-green-500',
+		iconName: 'checkbox',
 	},
 	{
 		name: 'join',
 		label: 'Join',
 		statuses: ['created', 'started'],
 		condition: ({ isAlreadyParticipant }) => !isAlreadyParticipant,
-		styles: {
-			className: 'bg-primary',
-		},
+		iconClassName: 'fill-primary',
+		iconName: 'join',
 	},
 	{
 		name: 'leave',
 		label: 'Leave',
 		statuses: ['created', 'started'],
 		condition: ({ isAlreadyParticipant }) => isAlreadyParticipant,
-		styles: {
-			className: 'bg-red-500',
-		},
+		iconClassName: 'fill-red-500',
+		iconName: 'leave',
 	},
 	{
 		name: 'enter',
 		label: 'Enter',
 		statuses: ['created', 'started'],
 		condition: ({ isAlreadyParticipant }) => isAlreadyParticipant,
-		styles: {
-			className: 'bg-primary',
-		},
+		iconClassName: 'fill-primary',
+		iconName: 'enter-trip',
+	},
+	{
+		name: 'delete',
+		label: 'Delete',
+		statuses: ['created', 'cancelled'],
+		condition: ({ isCreator }) => isCreator,
+		iconClassName: 'fill-red-500',
+		iconName: 'trash',
+	},
+	{
+		name: 'cancel',
+		label: 'Cancel',
+		statuses: ['created'],
+		condition: ({ isCreator }) => isCreator,
+		iconClassName: 'fill-red-500',
+		iconName: 'circle-cross',
 	},
 ] as const;
 
