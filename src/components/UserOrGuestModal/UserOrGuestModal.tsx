@@ -5,6 +5,7 @@ import { navigationRoutes } from '@/Routes/routes';
 import useAxios from '@/hooks/useAxios';
 import { API_BASE_URL } from '@/env.config';
 import Icon from '../icons/Icon';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 interface UserOrGuestModalProps {
 	open: boolean;
@@ -21,6 +22,7 @@ export default function UserOrGuestModal({
 		manual: true,
 	});
 	const nav = useNavigate();
+	const { handleTokenValidation } = useAuthContext();
 
 	const handleCreateGuestToken = async () => {
 		try {
@@ -28,6 +30,7 @@ export default function UserOrGuestModal({
 				url: `${API_BASE_URL}/auth/create-guest-token`,
 				method: 'GET',
 			});
+			handleTokenValidation();
 			onClose();
 		} catch (error) {
 			console.error(error);

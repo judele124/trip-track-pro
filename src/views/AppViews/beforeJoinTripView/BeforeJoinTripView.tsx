@@ -74,6 +74,7 @@ export default function BeforeJoinTripView() {
 		await joinTrip(activate, tripId, {
 			name: user?.name,
 			imageUrl: user?.imageUrl,
+			role: user?.role,
 		});
 
 		nav(`${navigationRoutes.map}`);

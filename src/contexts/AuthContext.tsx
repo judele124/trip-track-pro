@@ -31,6 +31,7 @@ interface IAuthContextValue {
 	verifyCodeStatus: number | undefined;
 	logoutStatus: number | undefined;
 	user: IUserResponseData | null;
+	handleSetGuestData: ({ guest }: { guest: IUserResponseData }) => void;
 }
 
 const AuthContext = createContext<null | IAuthContextValue>(null);
@@ -97,6 +98,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 		}
 	};
 
+	const handleSetGuestData = ({ guest }: { guest: IUserResponseData }) => {
+		setUser(guest);
+	};
+
 	useEffect(() => {
 		if (pathname.includes(navigationRoutes.firstEntry)) return;
 
@@ -120,6 +125,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 				sendCodeStatus,
 				verifyCodeStatus,
 				user,
+				handleSetGuestData,
 			}}
 		>
 			{children}
