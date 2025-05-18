@@ -31,13 +31,6 @@ interface IAuthContextValue {
 	verifyCodeStatus: number | undefined;
 	logoutStatus: number | undefined;
 	user: IUserResponseData | null;
-	handleSetGuestData: ({
-		name,
-		imageUrl,
-	}: {
-		name: string;
-		imageUrl: string;
-	}) => void;
 }
 
 const AuthContext = createContext<null | IAuthContextValue>(null);
@@ -104,16 +97,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 		}
 	};
 
-	const handleSetGuestData = ({
-		name,
-		imageUrl,
-	}: {
-		name: string;
-		imageUrl: string;
-	}) => {
-		setUser((prev) => prev && { ...prev, name, imageUrl, role: 'guest' });
-	};
-
 	useEffect(() => {
 		if (pathname.includes(navigationRoutes.firstEntry)) return;
 
@@ -137,7 +120,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 				sendCodeStatus,
 				verifyCodeStatus,
 				user,
-				handleSetGuestData,
 			}}
 		>
 			{children}

@@ -19,7 +19,7 @@ export default function UserInputNameModal({
 }: {
 	setIsOpen: (isOpen: boolean) => void;
 }) {
-	const { user, handleTokenValidation, handleSetGuestData } = useAuthContext();
+	const { user, handleTokenValidation } = useAuthContext();
 	const { activate, loading } = useAxios<string>({
 		manual: true,
 	});
@@ -86,7 +86,6 @@ export default function UserInputNameModal({
 		let status;
 
 		if (role === 'guest') {
-			handleSetGuestData({ name, imageUrl });
 			const { status: userStatus } = await activate({
 				url: '/auth/update-guest-info-token',
 				method: 'PUT',
