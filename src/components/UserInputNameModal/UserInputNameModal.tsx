@@ -14,14 +14,12 @@ import { useAuthContext } from '@/contexts/AuthContext';
 const LOADER_GIF =
 	'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200w.gif?cid=6c09b952aui5tunhas7rsybn9vumavkvdfvz88bxyjecfghh&ep=v1_gifs_search&rid=200w.gif&ct=g';
 
-interface IUserInputNameModalProps {
-	onSubmit: ({ name, imageUrl }: { name: string; imageUrl: string }) => void;
-}
-
 export default function UserInputNameModal({
-	onSubmit,
-}: IUserInputNameModalProps) {
-	const { user } = useAuthContext();
+	setIsOpen,
+}: {
+	setIsOpen: (isOpen: boolean) => void;
+}) {
+	const { user, handleTokenValidation, handleSetGuestData } = useAuthContext();
 	const { activate, loading } = useAxios<string>({
 		manual: true,
 	});
@@ -77,6 +75,48 @@ export default function UserInputNameModal({
 		}
 	};
 
+	const handleUpdateUserOrGuestAvatarInfo = async ({
+		name,
+	}: {
+		name: string;
+	}) => {
+		if (!user) return;
+		const imageUrl = `https://robohash.org/${name}.png`;
+		const { role } = user;
+		let status;
+
+		if (role === 'guest') {
+			handleSetGuestData({ name, imageUrl });
+			const { status: userStatus } = await activate({
+				url: '/auth/update-guest-info-token',
+				method: 'PUT',
+				data: {
+					name,
+					imageUrl,
+				},
+			});
+			status = userStatus;
+		} else if (role === 'user') {
+			const { email } = user;
+			const { status: userStatus } = await activate({
+				url: '/user/profile',
+				method: 'PUT',
+				data: {
+					email,
+					role,
+					name,
+					imageUrl,
+				},
+			});
+			status = userStatus;
+		}
+
+		if (status && status >= 200 && status <= 300) {
+			await handleTokenValidation();
+			setIsOpen(false);
+		}
+	};
+
 	return (
 		<Modal
 			containerClassName='page-padding w-[95vw] max-w-[400px]'
@@ -85,9 +125,7 @@ export default function UserInputNameModal({
 			open={true}
 		>
 			<form
-				onSubmit={handleSubmit(({ name }) => {
-					onSubmit({ name, imageUrl: `https://robohash.org/${name}.png` });
-				})}
+				onSubmit={handleSubmit(handleUpdateUserOrGuestAvatarInfo)}
 				className='page-colors flex flex-col justify-center gap-2 rounded-2xl p-5 text-center'
 			>
 				<h5>This is you</h5>
