@@ -38,14 +38,14 @@ export default function RewardDetails({
 	return (
 		<>
 			{(trip.reward || IsTripChangeable(trip)) && (
-				<button
+				<Button
 					onClick={toggle}
-					className='rounded-xl border-2 border-dark bg-[#ffb900] px-3 py-1 text-center text-sm capitalize text-dark'
+					className='border-2 border-dark bg-[#ffb900] text-center text-sm text-dark'
 				>
-					{trip.reward && !IsTripChangeable(trip)
-						? `${trip.reward.title} 🏆`
-						: 'Add reward'}
-				</button>
+					{trip.reward
+						? `${trip.reward.title} 🏆, click to edit`
+						: 'Click to add reward'}
+				</Button>
 			)}
 
 			{trip.reward && (
