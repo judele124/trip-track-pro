@@ -1,4 +1,3 @@
-import Icon from '@/components/icons/Icon';
 import { INewParticipantsData } from '../UpdateGuidesBtn';
 import User from './User';
 
@@ -17,15 +16,20 @@ export const GuidesComponent = ({
 			<div className='no-scrollbar flex max-h-[300px] flex-col justify-center gap-2 overflow-y-auto rounded-2xl border border-dark p-2 dark:border-light'>
 				{!guides.length && <p className='text-center'>No guides yet</p>}
 
-				{guides.map((guide) => (
-					<div
-						key={`guide-${guide.userModel._id}`}
-						onClick={() => handleUpdateGuide(guide.userModel._id, false)}
-						className='flex cursor-pointer items-center justify-between border-b border-dark last:border-none dark:border-light'
-					>
-						<User participant={guide} />
-						<p className='text-red-500'>❌</p>
-					</div>
+				{guides.map((guide, index) => (
+					<>
+						<div
+							key={`guide-${guide.userModel._id}`}
+							onClick={() => handleUpdateGuide(guide.userModel._id, false)}
+							className='flex cursor-pointer items-center justify-between border-dark last:border-none dark:border-light'
+						>
+							<User participant={guide} />
+							<p className='text-red-500'>❌</p>
+						</div>
+						{index < guides.length - 1 && (
+							<div className='h-[1px] w-full bg-dark dark:bg-light' />
+						)}
+					</>
 				))}
 			</div>
 		</div>
