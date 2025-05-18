@@ -94,7 +94,14 @@ const routes: RouteObject[] = [
 						path: appRoutes.joinTrip,
 						element: <BeforeJoinTripView />,
 					},
-					{ path: appRoutes.profile, element: <ProfileView /> },
+					{
+						path: appRoutes.profile,
+						element: (
+							<ProtectedRoute>
+								<ProfileView />
+							</ProtectedRoute>
+						),
+					},
 					{
 						path: `${appRoutes.trip}/:tripId`,
 						element: (

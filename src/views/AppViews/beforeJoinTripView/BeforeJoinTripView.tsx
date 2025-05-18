@@ -9,9 +9,10 @@ import TripNotActiveMessage from '@/components/TripNotActiveMessage';
 import TripCancelledMessage from '@/components/TripCancelledMessage';
 import { joinTrip } from '@/servises/tripService';
 import useAxios from '@/hooks/useAxios';
+import { getErrorMessage } from '@/utils/errorMessages';
 
 export default function BeforeJoinTripView() {
-	const { trip, loadingTrip, errorTrip, tripId } = useTripContext();
+	const { trip, loadingTrip, errorTrip, tripId, status } = useTripContext();
 	const { user } = useAuthContext();
 	const nav = useNavigate();
 	const {
@@ -30,8 +31,8 @@ export default function BeforeJoinTripView() {
 
 	if (loadingTrip) return <p>Loading...</p>;
 
-	if (errorTrip) {
-		return <p>{errorTrip.message}</p>;
+	if (errorTrip && status) {
+		return <p>{getErrorMessage(status)}</p>;
 	}
 
 	if (!tripId || !trip) {

@@ -7,12 +7,13 @@ import Button from './ui/Button';
 export default function Navbar() {
 	const { user } = useAuthContext();
 	const isLoggedIn = user != null;
+	const isGuest = user?.role === 'guest';
 
 	return (
 		<div className='mb-3 flex items-center justify-between'>
 			<BackButton />
 			<div className='flex items-center gap-3'>
-				{isLoggedIn ? (
+				{isLoggedIn && !isGuest ? (
 					<>
 						<Link
 							to={`${navigationRoutes.profile}`}
@@ -27,7 +28,10 @@ export default function Navbar() {
 						<LogoutBtn />
 					</>
 				) : (
-					<LoginBtn />
+					<>
+						{isGuest && <p className='text-sm'>You're logged in as guest</p>}
+						<LoginBtn />
+					</>
 				)}
 				<ToggleDarkMode />
 			</div>
