@@ -6,30 +6,112 @@ import {
 	cancelTrip,
 	deleteTrip,
 	endTrip,
-	joinTrip,
 	leaveTrip,
 	startTrip,
 } from '@/servises/tripService';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { TripStatusArray } from 'trip-track-package';
+import { IconName } from '@/components/icons/Icon';
 
-export const creatorTripsOptionsActions = [
-	'start',
-	'complete',
-	'delete',
-	'cancel',
+interface IConditionProps {
+	isCreator: boolean;
+	isAlreadyParticipant: boolean;
+}
+
+interface IAction {
+	name: string;
+	label: string;
+	statuses: (typeof TripStatusArray)[number][];
+	condition: (props: IConditionProps) => boolean;
+	iconClassName: string;
+	iconName: IconName;
+}
+
+export const actions: IAction[] = [
+	{
+		name: 'start',
+		label: 'Start',
+		statuses: ['created'],
+		condition: ({ isCreator }) => isCreator,
+		iconClassName: 'fill-green-500',
+		iconName: 'play',
+	},
+	{
+		name: 'complete',
+		label: 'Complete',
+		statuses: ['started'],
+		condition: ({ isCreator }) => isCreator,
+		iconClassName: 'fill-green-500',
+		iconName: 'checkbox',
+	},
+	{
+		name: 'join',
+		label: 'Join',
+		statuses: ['created', 'started'],
+		condition: ({ isAlreadyParticipant }) => !isAlreadyParticipant,
+		iconClassName: 'fill-primary',
+		iconName: 'join',
+	},
+	{
+		name: 'leave',
+		label: 'Leave',
+		statuses: ['created', 'started'],
+		condition: ({ isAlreadyParticipant }) => isAlreadyParticipant,
+		iconClassName: 'fill-red-500',
+		iconName: 'leave',
+	},
+	{
+		name: 'enter',
+		label: 'Enter',
+		statuses: ['created', 'started'],
+		condition: ({ isAlreadyParticipant }) => isAlreadyParticipant,
+		iconClassName: 'fill-primary',
+		iconName: 'enter-trip',
+	},
+	{
+		name: 'delete',
+		label: 'Delete',
+		statuses: ['created', 'cancelled'],
+		condition: ({ isCreator }) => isCreator,
+		iconClassName: 'fill-red-500',
+		iconName: 'trash',
+	},
+	{
+		name: 'cancel',
+		label: 'Cancel',
+		statuses: ['created'],
+		condition: ({ isCreator }) => isCreator,
+		iconClassName: 'fill-red-500',
+		iconName: 'circle-cross',
+	},
 ] as const;
-export const joinedTripsOptionsActions = ['join', 'leave'] as const;
 
-export type ActionOption =
-	| (typeof creatorTripsOptionsActions)[number]
-	| (typeof joinedTripsOptionsActions)[number];
+type ActionName = (typeof actions)[number]['name'];
+
+interface ICheckIsValidActionProps extends IConditionProps {
+	currentStatus: (typeof TripStatusArray)[number];
+	actionName: ActionName;
+}
+
+export const checkIsValidAction = ({
+	currentStatus,
+	actionName,
+	...conditionProps
+}: ICheckIsValidActionProps): boolean => {
+	const action = actions.find((a) => a.name === actionName);
+	if (!action) {
+		return false;
+	}
+	return (
+		action.statuses.includes(currentStatus) && action.condition(conditionProps)
+	);
+};
 
 interface IUseTripOptions {
 	tripId: string;
 }
 
 interface IUseTripOptionsReturn {
-	handleActions: (action: ActionOption) => Promise<void>;
+	handleActions: (actionName: ActionName) => Promise<void>;
 }
 
 export default function useTripOption({
@@ -42,8 +124,8 @@ export default function useTripOption({
 
 	const { getCreatedTripsData } = useTripShowcase();
 
-	const handleActions = async (action: ActionOption) => {
-		switch (action) {
+	const handleActions = async (actionName: ActionName) => {
+		switch (actionName) {
 			case 'join':
 				nav(`${navigationRoutes.joinTrip}?tripId=${tripId}`);
 				break;
@@ -62,8 +144,11 @@ export default function useTripOption({
 			case 'delete':
 				await deleteTrip(activate, tripId);
 				break;
+			case 'Enter trip':
+				nav(`${navigationRoutes.map}?tripId=${tripId}`);
+				break;
 			default:
-				throw new Error(`Action ${action} doesn't exist`);
+				throw new Error(`Action ${actionName} doesn't exist`);
 		}
 
 		await getCreatedTripsData();

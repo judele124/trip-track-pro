@@ -106,6 +106,7 @@ export const joinTrip = async (
 	userData: {
 		name?: string;
 		imageUrl?: string;
+		role: 'user' | 'guest';
 	}
 ) => {
 	try {
@@ -123,10 +124,12 @@ export const joinTrip = async (
 			throw new ServiceError(getErrorMessage(status), status);
 		}
 
-		await activate({
-			url: `${API_BASE_URL}/trip/user-to-participants/${id}`,
-			method: 'PUT',
-		});
+		if (userData.role === 'user') {
+			await activate({
+				url: `${API_BASE_URL}/trip/user-to-participants/${id}`,
+				method: 'PUT',
+			});
+		}
 
 		return { data, status };
 	} catch (error) {

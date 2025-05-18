@@ -63,13 +63,22 @@ export default function TripDetailsView() {
 							}}
 							trip={tripData}
 						/>
-
-						<Button
-							className='bg-transparent text-dark underline dark:text-light'
-							onClick={toggleMap}
-						>
-							Show on map
-						</Button>
+						<div className='flex flex-col'>
+							<RewardDetails
+								trip={tripData}
+								onUpdate={() => {
+									if (!params.tripId) return;
+									tripGet(activate, tripData._id);
+								}}
+								tripId={tripData._id}
+							/>
+							<Button
+								className='bg-transparent text-sm text-dark underline dark:text-light'
+								onClick={toggleMap}
+							>
+								Show trip on map
+							</Button>
+						</div>
 					</>
 				)}
 			</div>
@@ -101,11 +110,6 @@ function TripDetailsHeader({
 			{tripData.description && <p>{tripData.description}</p>}
 			<div className='mt-2 flex items-start gap-1'>
 				<TripStatusButton status={tripData.status} />
-				<RewardDetails
-					reward={tripData.reward}
-					onUpdate={() => tripId && tripGet(activate, tripId)}
-					tripId={tripData._id}
-				/>
 			</div>
 			<h4 className='my-2'>Guides</h4>
 			<div className='flex items-center justify-between'>

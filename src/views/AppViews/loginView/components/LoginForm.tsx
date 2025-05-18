@@ -43,7 +43,7 @@ const LoginFrom = () => {
 	useEffect(() => {
 		if (verifyCodeStatus === 200) {
 			if (state?.tripId) {
-				nav(`${navigationRoutes.trip}?tripId=${state.tripId}`);
+				nav(`${navigationRoutes.joinTrip}?tripId=${state.tripId}`);
 			} else {
 				nav(navigationRoutes.app);
 			}
