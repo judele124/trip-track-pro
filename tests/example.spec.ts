@@ -1,6 +1,83 @@
-import { test, request, expect, BrowserContext, Page } from '@playwright/test';
-import tripRoute from './tripRoute.json';
+import { test, request, expect, Page, BrowserContext } from '@playwright/test';
 
+// i went threw the logic until here line 161
+// from there is all by ai NEED TO LOOK ON THE CODE IF IT MAKES SENSE
+
+async function loginUser(
+	page: Page,
+	email: string,
+	options: {
+		apiContext?: any;
+		baseUrl?: string;
+		authUrl?: string;
+	} = {}
+): Promise<void> {
+	const {
+		apiContext = await request.newContext(),
+		baseUrl = 'http://localhost:5173',
+		authUrl = 'http://localhost:3000/auth/send-code',
+	} = options;
+
+	try {
+		// Navigate to the base URL and skip any welcome screens
+		await page.goto(baseUrl);
+		await page.getByText('Skip').click();
+
+		// Navigate to the login page
+		await page.goto(`${baseUrl}/app/login`);
+
+		// Start the login process
+		await page.getByRole('textbox').fill(email);
+		await page.getByRole('button', { name: 'Send code' }).click();
+
+		// Get the verification code
+		const response = await apiContext.post(authUrl, {
+			data: { email },
+		});
+
+		if (!response.ok()) {
+			throw new Error(`Failed to send verification code: ${response.status()}`);
+		}
+
+		const { code } = await response.json();
+		if (!code) {
+			throw new Error('No verification code received');
+		}
+
+		// Enter the verification code
+		await page.getByRole('textbox').fill(code);
+		await page.getByRole('button', { name: 'Verify code' }).click();
+
+		// Wait for navigation to complete
+		await page.waitForLoadState('networkidle');
+	} finally {
+		// Clean up the API context if we created it
+		if (options.apiContext === undefined) {
+			await apiContext.dispose();
+		}
+	}
+}
+
+interface TestUser {
+	id: number;
+	name: string;
+	speed: number;
+	context: BrowserContext | null;
+	page: Page | null;
+}
+
+interface CreatorUser extends TestUser {
+	gmail: string;
+}
+
+const creatorUser: CreatorUser = {
+	id: 0,
+	name: 'Creator',
+	speed: 1,
+	context: null,
+	page: null,
+	gmail: 'segal.netanel4@gmail.com',
+};
 // Number of users for the test
 const USER_COUNT = 5;
 
@@ -13,29 +90,22 @@ const getRouteCoordinates = () => {
 	return coordinates;
 };
 
-interface TestUser {
-	id: number;
-	name: string;
-	speed: number;
-	context: BrowserContext | null;
-	page: Page | null;
-}
-
 test.describe('Multi-user Trip Test', () => {
-	const users: TestUser[] = Array.from({ length: USER_COUNT }, (_, i) => ({
-		id: i,
-		name: `User ${i + 1}`,
-		// Each user will move at a slightly different speed
-		speed: 1 + i * 0.2,
-		context: null,
-		page: null,
-		route: null,
-	}));
+	const users: [CreatorUser, ...TestUser[]] = [
+		creatorUser,
+		...Array.from({ length: USER_COUNT }, (_, i) => ({
+			id: i + 1,
+			name: `User ${i + 1}`,
+			// Each user will move at a slightly different speed
+			speed: 1 + i * 0.2,
+			context: null,
+			page: null,
+			route: null,
+		})),
+	];
 
 	// Shared trip ID
-	let tripId;
-
-	let inviteCode;
+	let tripId = '6828ec551a665db484ee2a5e';
 
 	test.beforeAll(async ({ browser }) => {
 		// Initialize browser contexts and pages for each user
@@ -55,34 +125,41 @@ test.describe('Multi-user Trip Test', () => {
 	test('users can complete a trip together', async () => {
 		const [creator, ...participants] = users;
 		if (!creator.page || !creator.context) return;
-		const routeCoordinates = getRouteCoordinates();
+		await loginUser(creator.page, creator.gmail);
 
-		// Creator creates a new trip
-		await creator.page.getByText('Create Trip').click();
-		await creator.page.fill(
-			'input[placeholder="Trip name"]',
-			'Group Hiking Trip'
+		// maybe add check if trip is created and then start it
+		await creator.context.request.get(
+			`http://localhost:3000/trip/start/${tripId}`
 		);
-		// Add trip details and route...
 
-		// Get invite code
-		await creator.page.click('button:has-text("Invite")');
-		inviteCode = await creator.page.textContent('.invite-code');
-
-		// Other users join the trip
+		// all users join the trip
 		for (const user of participants) {
 			if (!user.page || !user.context) continue;
-			await user.page.click('button:has-text("Join Trip")');
-			await user.page.fill(
-				'input[placeholder="Enter invite code"]',
-				inviteCode
+			// join as a guest with a name
+			await user.page.goto(
+				`http://localhost:5173/app/join-trip?tripId=${tripId}`
 			);
-			await user.page.click('button:has-text("Join")');
+
+			await user.page.getByRole('button', { name: 'Join trip' }).click();
+
+			await user.page
+				.getByRole('button', { name: 'Create guest token' })
+				.click();
+
+			const currentName = await user.page.getByRole('textbox').innerText();
+
+			await user.page.getByRole('textbox').fill(`${currentName}-${user.id}`);
+
+			await user.page.getByRole('button', { name: 'Confirm' }).click();
+
 			await user.page.waitForLoadState('networkidle');
+
+			// join the trip
+			await user.page.getByRole('button', { name: 'Join trip' }).click();
 		}
 
-		// Start the trip
-		await creator.page.click('button:has-text("Start Trip")');
+		// get route coordinates
+		const routeCoordinates = getRouteCoordinates();
 
 		// Simulate movement for each user
 		const movePromises = users.map(
@@ -99,7 +176,11 @@ test.describe('Multi-user Trip Test', () => {
 		}
 	});
 
-	async function simulateUserMovement(user, coordinates, delay) {
+	async function simulateUserMovement(
+		user: TestUser,
+		coordinates: number[][],
+		delay: number
+	) {
 		if (!user.page) return;
 		await user.page.waitForTimeout(delay);
 
