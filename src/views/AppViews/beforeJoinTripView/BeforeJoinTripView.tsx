@@ -25,7 +25,11 @@ export default function BeforeJoinTripView() {
 	const { isOpen: isTripCancelledOpen, setIsOpen: setIsTripCancelledOpen } =
 		useToggle();
 
-	const { activate } = useAxios({
+	const {
+		activate,
+		error: errorJoinTrip,
+		status: joinTripStatus,
+	} = useAxios({
 		manual: true,
 	});
 
@@ -125,6 +129,11 @@ export default function BeforeJoinTripView() {
 				isOpen={isTripCancelledOpen}
 			/>
 
+			{errorJoinTrip && joinTripStatus && (
+				<p className='text-sm text-red-500'>
+					{getErrorMessage(joinTripStatus)}
+				</p>
+			)}
 			<Button onClick={handleOnjoin} primary className='w-full'>
 				join
 			</Button>
