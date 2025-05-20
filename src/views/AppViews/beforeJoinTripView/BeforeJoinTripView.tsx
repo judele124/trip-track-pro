@@ -10,6 +10,11 @@ import TripCancelledMessage from '@/components/TripCancelledMessage';
 import { joinTrip } from '@/servises/tripService';
 import useAxios from '@/hooks/useAxios';
 import { getErrorMessage } from '@/utils/errorMessages';
+import MapModal from '@/components/MapModal';
+import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
+import { useMemo } from 'react';
+import { Types } from 'trip-track-package';
+import { Trip } from '@/types/trip';
 
 export default function BeforeJoinTripView() {
 	const { trip, loadingTrip, errorTrip, tripId, status } = useTripContext();
@@ -32,6 +37,8 @@ export default function BeforeJoinTripView() {
 	} = useAxios({
 		manual: true,
 	});
+
+	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
 
 	if (loadingTrip) return <p>Loading...</p>;
 
@@ -129,14 +136,53 @@ export default function BeforeJoinTripView() {
 				isOpen={isTripCancelledOpen}
 			/>
 
+			{mapOpen && <ShowTripOnMapBtn trip={trip} toggleMap={toggleMap} />}
+
+			<Button onClick={handleOnjoin} primary className='w-full'>
+				join
+			</Button>
+
 			{errorJoinTrip && joinTripStatus && (
 				<p className='text-sm text-red-500'>
 					{getErrorMessage(joinTripStatus)}
 				</p>
 			)}
-			<Button onClick={handleOnjoin} primary className='w-full'>
-				join
+
+			<Button
+				className='bg-transparent text-sm text-dark underline dark:text-light'
+				onClick={toggleMap}
+			>
+				Show trip on map
 			</Button>
 		</div>
 	);
 }
+
+interface IShowTripOnMapBtnProps {
+	trip: Trip;
+	toggleMap: () => void;
+}
+
+const ShowTripOnMapBtn = ({ trip, toggleMap }: IShowTripOnMapBtnProps) => {
+	const points = useMemo(
+		() =>
+			trip?.stops.map(
+				(stop: Types['Trip']['Stop']['Model']) => stop.location
+			) || [],
+		[trip]
+	);
+
+	const { routeData } = useMapboxDirectionRoute({
+		points,
+	});
+	return (
+		<MapModal
+			key={`map-modal-${trip._id}`}
+			mapOpen={true}
+			toggleMap={toggleMap}
+			disableExperiences
+			routeData={routeData}
+			stops={trip.stops}
+		/>
+	);
+};
