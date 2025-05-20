@@ -2,17 +2,19 @@ import Icon from '@/components/icons/Icon';
 import Button from '@/components/ui/Button';
 import InputFeildError from '@/components/ui/InputFeildError';
 import Modal from '@/components/ui/Modal';
+import { useAuthContext } from '@/contexts/AuthContext';
 import useAxios from '@/hooks/useAxios';
 import useParamFromURL from '@/hooks/useParamFromURL';
 import useToggle from '@/hooks/useToggle';
 import { navigationRoutes } from '@/Routes/routes';
-import { tripGet } from '@/servises/tripService';
+import { joinTrip, startTrip, tripGet } from '@/servises/tripService';
 import { Trip } from '@/types/trip';
 import { QRCodeSVG } from 'qrcode.react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function ShareTrip() {
+	const { user } = useAuthContext();
 	const nav = useNavigate();
 	const tripId = useParamFromURL('tripId', () =>
 		nav(navigationRoutes.notFound)
@@ -40,6 +42,13 @@ export default function ShareTrip() {
 		} catch (error) {
 			console.error(error);
 		}
+	};
+
+	const handleStartTripNow = async ({ tripId }: { tripId: string }) => {
+		if (!user) return;
+		await startTrip(activate, tripId);
+		await joinTrip(activate, tripId, user);
+		nav(`${navigationRoutes.map}?tripId=${tripId}`);
 	};
 
 	if (error) {
@@ -139,8 +148,10 @@ and you can join it here:\n${shareTripUrl}`,
 						other share methods
 					</Button>
 				</div>
-				<Button primary>Start trip now</Button>
-				<Button>Start later</Button>
+				<Button onClick={() => handleStartTripNow({ tripId: _id })} primary>
+					Start trip now
+				</Button>
+				<Button onClick={() => nav(navigationRoutes.app)}>Start later</Button>
 			</div>
 		</>
 	);
