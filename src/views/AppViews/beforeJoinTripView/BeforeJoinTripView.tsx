@@ -118,6 +118,22 @@ export default function BeforeJoinTripView() {
 				</div>
 			)}
 
+			<div className='flex gap-2 overflow-x-scroll'>
+				{!trip.guides.length && <p className='text-center'>No guides yet</p>}
+				{trip.guides.map((guide) => (
+					<div
+						className='flex shrink-0 items-center gap-2 rounded-2xl bg-secondary px-4 py-2 text-white'
+						key={guide._id}
+					>
+						<img
+							className='size-6 rounded-full border bg-white'
+							src={guide.imageUrl}
+						/>
+						<p className='text-sm capitalize'>{guide.name}</p>
+					</div>
+				))}
+			</div>
+
 			<UserOrGuestModal
 				tripId={_id.toString()}
 				open={isUserOrGuestModalOpen}
@@ -138,22 +154,24 @@ export default function BeforeJoinTripView() {
 
 			{mapOpen && <ShowTripOnMapBtn trip={trip} toggleMap={toggleMap} />}
 
-			<Button onClick={handleOnjoin} primary className='w-full'>
-				join
-			</Button>
+			<div className='flex flex-col gap-3'>
+				<Button onClick={handleOnjoin} primary className='w-full'>
+					join
+				</Button>
 
-			{errorJoinTrip && joinTripStatus && (
-				<p className='text-sm text-red-500'>
-					{getErrorMessage(joinTripStatus)}
-				</p>
-			)}
+				{errorJoinTrip && joinTripStatus && (
+					<p className='text-center text-sm text-red-500'>
+						{getErrorMessage(joinTripStatus)}
+					</p>
+				)}
 
-			<Button
-				className='bg-transparent text-sm text-dark underline dark:text-light'
-				onClick={toggleMap}
-			>
-				Show trip on map
-			</Button>
+				<Button
+					className='bg-transparent text-sm text-dark underline dark:text-light'
+					onClick={toggleMap}
+				>
+					Show trip on map
+				</Button>
+			</div>
 		</div>
 	);
 }
