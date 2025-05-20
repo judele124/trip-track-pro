@@ -7,6 +7,8 @@ import Button from '@/components/ui/Button';
 import Icon from '@/components/icons/Icon';
 import TripNotActiveMessage from '@/components/TripNotActiveMessage';
 import { createContext, MutableRefObject, useContext, useRef } from 'react';
+import { useTripSocket } from '@/contexts/SocketContext';
+import FinishTripModal from '@/components/FinishTripModal';
 
 interface TripLayoutContextValue {
 	topNavigationRef: MutableRefObject<HTMLDivElement | null>;
@@ -20,6 +22,7 @@ const TripLayout = () => {
 	let { pathname } = useLocation();
 	const title = titleFromPath(pathname);
 	const { trip, tripId, loadingTrip, status } = useTripContext();
+	const { isTripActive } = useTripSocket();
 	const nav = useNavigate();
 
 	const topNavigationRef = useRef<HTMLDivElement | null>(null);
@@ -67,6 +70,8 @@ const TripLayout = () => {
 								</div>
 							) : trip.status !== 'started' ? (
 								<TripNotActiveMessage trip={trip} />
+							) : !isTripActive ? (
+								<FinishTripModal tripId={tripId} />
 							) : (
 								<Outlet />
 							)}
