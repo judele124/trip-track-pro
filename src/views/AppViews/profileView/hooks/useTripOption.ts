@@ -116,6 +116,7 @@ export const checkIsValidAction = ({
 
 interface IUseTripOptions {
 	tripId: string;
+	afterAction: () => void;
 }
 
 interface IUseTripOptionsReturn {
@@ -124,13 +125,12 @@ interface IUseTripOptionsReturn {
 
 export default function useTripOption({
 	tripId,
+	afterAction,
 }: IUseTripOptions): IUseTripOptionsReturn {
 	const nav = useNavigate();
 	const { activate } = useAxios({
 		manual: true,
 	});
-
-	const { getCreatedTripsData } = useTripShowcase();
 
 	const handleActions = async (actionName: ActionName) => {
 		switch (actionName) {
@@ -162,7 +162,7 @@ export default function useTripOption({
 				throw new Error(`Action ${actionName} doesn't exist`);
 		}
 
-		await getCreatedTripsData();
+		afterAction();
 	};
 
 	return {

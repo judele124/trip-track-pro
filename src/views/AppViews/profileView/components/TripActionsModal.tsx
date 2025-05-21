@@ -6,24 +6,31 @@ import useTripOption, {
 	checkIsValidAction,
 } from '../hooks/useTripOption';
 import { Trip } from '@/types/trip';
-import Modal from '@/components/ui/Modal';
+import Modal, { ModalAnchor } from '@/components/ui/Modal';
+
+interface ITripActionsModalProps {
+	trip: Trip;
+	isCreator: boolean;
+	isOpen: boolean;
+	setIsOpen: (open: boolean) => void;
+	encorElementRef: React.RefObject<HTMLButtonElement>;
+	afterAction: () => void;
+	anchorTo: ModalAnchor;
+}
 
 export default function TripActionsModal({
 	trip,
 	isCreator,
 	isOpen,
 	setIsOpen,
-	dotsRef,
-}: {
-	trip: Trip;
-	isCreator: boolean;
-	isOpen: boolean;
-	setIsOpen: (open: boolean) => void;
-	dotsRef: React.RefObject<HTMLButtonElement>;
-}) {
+	encorElementRef,
+	afterAction,
+	anchorTo,
+}: ITripActionsModalProps) {
 	const { user } = useAuthContext();
 	const { handleActions } = useTripOption({
 		tripId: trip._id,
+		afterAction,
 	});
 
 	const isAlreadyParticipant = trip.participants.some(({ userId }) => {
@@ -41,13 +48,15 @@ export default function TripActionsModal({
 
 	return (
 		<Modal
-			anchorTo='right'
-			anchorElement={dotsRef}
+			anchorTo={anchorTo}
+			anchorElement={encorElementRef}
 			backgroundClassname='bg-transparent backdrop-blur-none'
 			onBackdropClick={() => setIsOpen(false)}
 			open={isOpen}
 		>
-			<div className='page-colors grid grid-cols-3 gap-2 rounded-2xl border-2 border-primary p-3'>
+			<div
+				className={`page-colors ${filteredActions.length >= 3 ? 'grid grid-cols-3' : 'flex'} gap-2 rounded-2xl border-2 border-primary p-3`}
+			>
 				{filteredActions.map(({ name, label, iconName, iconClassName }) => {
 					return (
 						<Button

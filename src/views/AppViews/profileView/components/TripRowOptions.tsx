@@ -3,6 +3,7 @@ import useToggle from '@/hooks/useToggle';
 import { Trip } from '@/types/trip';
 import { useRef } from 'react';
 import TripActionsModal from './TripActionsModal';
+import { useTripShowcase } from './TripsShowcase';
 
 interface ITripRowOptions {
 	trip: Trip;
@@ -12,7 +13,7 @@ interface ITripRowOptions {
 export default function TripRowOptions({ trip, isCreator }: ITripRowOptions) {
 	const { isOpen, setIsOpen } = useToggle();
 	const dotsRef = useRef<HTMLButtonElement>(null);
-
+	const { getCreatedTripsData } = useTripShowcase();
 	return (
 		<>
 			<button
@@ -28,11 +29,13 @@ export default function TripRowOptions({ trip, isCreator }: ITripRowOptions) {
 
 			{isOpen && (
 				<TripActionsModal
+					anchorTo='right'
 					trip={trip}
 					isCreator={isCreator}
 					isOpen={isOpen}
 					setIsOpen={setIsOpen}
-					dotsRef={dotsRef}
+					encorElementRef={dotsRef}
+					afterAction={getCreatedTripsData}
 				/>
 			)}
 		</>
