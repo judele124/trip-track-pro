@@ -123,10 +123,27 @@ test.describe('Multi-user Trip Test', () => {
 		if (!creator.page || !creator.context) return;
 		await loginUser(creator.page, creator.gmail);
 
-		// maybe add check if trip is created and then start it
-		await creator.context.request.get(
-			`http://localhost:3000/trip/start/${tripId}`
+		const tripRes = await creator.context.request.get(
+			`http://localhost:3000/trip/${tripId}`
 		);
+		if (!tripRes.ok()) {
+			throw new Error(`Failed to get trip: ${tripRes.status()}`);
+		}
+		const tripData = await tripRes.json();
+		if (tripData.status !== 'started') {
+			// maybe add check if trip is created and then start it
+			const res = await creator.context.request.post(
+				`http://localhost:3000/trip/start/${tripId}`,
+				{
+					data: {
+						status: 'started',
+					},
+				}
+			);
+			if (!res.ok()) {
+				throw new Error(`Failed to start trip: ${res.status()}`);
+			}
+		}
 
 		// all users join the trip
 		for (const user of participants) {
@@ -142,13 +159,13 @@ test.describe('Multi-user Trip Test', () => {
 				.getByRole('button', { name: 'Create guest token' })
 				.click();
 
-			const currentName = await user.page.getByRole('textbox').innerText();
+			await user.page.setDefaultTimeout(200);
 
-			await user.page.getByRole('textbox').fill(`${currentName}-${user.id}`);
+			await user.page.getByRole('textbox').fill(`${user.name}`);
+
+			await user.page.waitForTimeout(200);
 
 			await user.page.getByRole('button', { name: 'Confirm' }).click();
-
-			await user.page.waitForLoadState('networkidle');
 
 			// join the trip
 			await user.page.getByRole('button', { name: 'join' }).click();
