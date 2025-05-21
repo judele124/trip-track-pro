@@ -2,12 +2,18 @@ import { NavLink, NavLinkProps } from 'react-router-dom';
 import Icon from '../icons/Icon';
 
 interface ILinkProps extends NavLinkProps {
-	notificationCount: number | undefined;
+	notificationCount?: number;
 	to: 'map' | 'participants' | 'chat';
+	hndleClick?: () => void;
 }
-const BottomNavigationBtn = ({ notificationCount, to }: ILinkProps) => {
+const BottomNavigationBtn = ({
+	notificationCount,
+	to,
+	hndleClick,
+}: ILinkProps) => {
 	return (
 		<NavLink
+			onClick={hndleClick}
 			to={to}
 			className={({ isActive }) =>
 				`relative size-12 content-center rounded-full text-center text-dark transition-all focus:bg-white dark:focus:bg-secondary ${isActive ? 'bg-white dark:bg-secondary' : ''}`

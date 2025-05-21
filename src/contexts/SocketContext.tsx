@@ -38,6 +38,8 @@ interface ISocketContextValue {
 	usersLocations: IUserLocation[];
 	usersInLiveTripExpData: IRedisUserTripData[];
 	currentExpIndex: number;
+	unreadMsg: { count: number; isInChat: boolean };
+	setUnreadMsg: (data: { count: number; isInChat: boolean }) => void;
 }
 
 interface ITripSocketProviderProps {
@@ -55,6 +57,10 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		IRedisUserTripData[]
 	>([]);
 	const [currentExpIndex, setCurrentExpIndex] = useState<number>(0);
+	const [unreadMsg, setUnreadMsg] = useState({
+		count: 0,
+		isInChat: false,
+	});
 
 	const { activate, data: usersInLiveTripData } = useAxios<
 		IRedisUserTripData[]
@@ -152,6 +158,12 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 					minute: '2-digit',
 				}),
 			});
+			setUnreadMsg((prev) => {
+				if (prev.isInChat) {
+					return { ...prev, count: 0 };
+				}
+				return { ...prev, count: prev.count + 1 };
+			});
 		});
 
 		socket.on('connect', () => {
@@ -182,6 +194,8 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				usersLocations,
 				usersInLiveTripExpData,
 				currentExpIndex,
+				unreadMsg,
+				setUnreadMsg,
 			}}
 		>
 			{children}
