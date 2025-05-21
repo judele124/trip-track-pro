@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import CreateTripForm from './components/CreateTripForm';
-import ShareTrip from './components/ShareTrip';
+import ShareTrip from '../shareTripView/components/ShareTrip';
 
 const STAGES_COUNT = 3;
 
