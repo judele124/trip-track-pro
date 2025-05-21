@@ -83,6 +83,14 @@ export const actions: IAction[] = [
 		iconClassName: 'fill-red-500',
 		iconName: 'circle-cross',
 	},
+	{
+		name: 'share',
+		label: 'Share',
+		statuses: ['created'],
+		condition: ({ isCreator }) => isCreator,
+		iconClassName: 'fill-blue-400',
+		iconName: 'share',
+	},
 ] as const;
 
 type ActionName = (typeof actions)[number]['name'];
@@ -146,6 +154,9 @@ export default function useTripOption({
 				break;
 			case 'Enter trip':
 				nav(`${navigationRoutes.map}?tripId=${tripId}`);
+				break;
+			case 'share':
+				nav(`${navigationRoutes.shareTrip}?tripId=${tripId}`);
 				break;
 			default:
 				throw new Error(`Action ${actionName} doesn't exist`);
