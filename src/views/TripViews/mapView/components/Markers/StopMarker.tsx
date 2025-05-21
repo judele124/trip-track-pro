@@ -19,7 +19,7 @@ export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
 			<>
 				<Button
 					ref={ref}
-					onClick={toggle}
+					onClick={!disableExperience ? toggle : undefined}
 					className={`relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 bg-light text-dark dark:bg-dark dark:text-light ${!stop.experience ? 'cursor-default hover:bg-opacity-100' : disableExperience ? 'cursor-not-allowed' : ''}`}
 				>
 					<p className='overflow-hidden text-ellipsis whitespace-nowrap'>
@@ -52,7 +52,7 @@ export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
 						</>
 					)}
 				</Button>
-				{stop.experience && !disableExperience && (
+				{stop.experience && (
 					<ExirienceModal
 						open={isOpen}
 						onBackdropClick={toggle}
