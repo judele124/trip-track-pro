@@ -1,5 +1,5 @@
 import { test, request, expect, Page, BrowserContext } from '@playwright/test';
-
+import tripRoute from './tripRoute.json' assert { type: 'json' };
 // i went threw the logic until here line 161
 // from there is all by ai NEED TO LOOK ON THE CODE IF IT MAKES SENSE
 
@@ -21,7 +21,7 @@ async function loginUser(
 	try {
 		// Navigate to the base URL and skip any welcome screens
 		await page.goto(baseUrl);
-		await page.getByText('Skip').click();
+		await page.getByText('Home').click();
 
 		// Navigate to the login page
 		await page.goto(`${baseUrl}/app/login`);
@@ -83,11 +83,7 @@ const USER_COUNT = 5;
 
 // Extract coordinates from the route
 const getRouteCoordinates = () => {
-	// This is a simplified version - you'll need to parse your actual route data
-	// The actual implementation will depend on your tripRoute.json structure
-	const coordinates = [];
-	// Add logic to extract coordinates from tripRoute.json
-	return coordinates;
+	return tripRoute.routes[0].geometry.coordinates;
 };
 
 test.describe('Multi-user Trip Test', () => {
@@ -139,8 +135,8 @@ test.describe('Multi-user Trip Test', () => {
 			await user.page.goto(
 				`http://localhost:5173/app/join-trip?tripId=${tripId}`
 			);
-
-			await user.page.getByRole('button', { name: 'Join trip' }).click();
+			await user.page.waitForLoadState('networkidle');
+			await user.page.getByRole('button', { name: 'join' }).click();
 
 			await user.page
 				.getByRole('button', { name: 'Create guest token' })
@@ -155,7 +151,7 @@ test.describe('Multi-user Trip Test', () => {
 			await user.page.waitForLoadState('networkidle');
 
 			// join the trip
-			await user.page.getByRole('button', { name: 'Join trip' }).click();
+			await user.page.getByRole('button', { name: 'join' }).click();
 		}
 
 		// get route coordinates
