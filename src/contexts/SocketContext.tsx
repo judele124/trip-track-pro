@@ -38,6 +38,7 @@ interface ISocketContextValue {
 	usersLocations: IUserLocation[];
 	usersInLiveTripExpData: IRedisUserTripData[];
 	currentExpIndex: number;
+	isTripActive: boolean;
 }
 
 interface ITripSocketProviderProps {
@@ -55,6 +56,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		IRedisUserTripData[]
 	>([]);
 	const [currentExpIndex, setCurrentExpIndex] = useState<number>(0);
+	const [isTripActive, setIsTripActive] = useState<boolean>(false);
 
 	const { activate, data: usersInLiveTripData } = useAxios<
 		IRedisUserTripData[]
@@ -97,7 +99,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		});
 
 		setSocket(socketClient);
-
+		setIsTripActive(trip.status === 'started');
 		initUsersLiveData();
 		initExpirenceIndex();
 	}, [tripId, trip]);
@@ -154,6 +156,10 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			});
 		});
 
+		socket.on('finishedTrip', () => {
+			setIsTripActive(false);
+		});
+
 		socket.on('connect', () => {
 			console.log('Connected to socket');
 		});
@@ -182,6 +188,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				usersLocations,
 				usersInLiveTripExpData,
 				currentExpIndex,
+				isTripActive,
 			}}
 		>
 			{children}
