@@ -58,6 +58,28 @@ async function loginUser(
 	}
 }
 
+async function userJoinTripAsGuest(user: TestUser, tripId: string) {
+	if (!user.page || !user.context) return;
+	// join as a guest with a name
+	await user.page.goto(`http://localhost:5173/app/join-trip?tripId=${tripId}`);
+	await user.page.waitForLoadState('networkidle');
+	await user.page.getByRole('button', { name: 'join' }).click();
+
+	await user.page.getByRole('button', { name: 'Create guest token' }).click();
+
+	// Wait for and click confirm button
+	const confirmButton = user.page.getByRole('button', { name: 'Confirm' });
+	await confirmButton.waitFor({ state: 'visible', timeout: 10000 });
+	await confirmButton.click();
+
+	// Wait for and click the final join button
+	const finalJoinButton = user.page.getByRole('button', { name: 'join' });
+	await finalJoinButton.waitFor({ state: 'visible', timeout: 10000 });
+	await finalJoinButton.click();
+
+	// Wait for navigation to complete
+	await user.page.waitForURL('**/trip/map', { timeout: 15000 });
+}
 interface TestUser {
 	id: number;
 	name: string;
@@ -80,11 +102,6 @@ const creatorUser: CreatorUser = {
 };
 // Number of users for the test
 const USER_COUNT = 5;
-
-// Extract coordinates from the route
-const getRouteCoordinates = () => {
-	return tripRoute.routes[0].geometry.coordinates;
-};
 
 test.describe('Multi-user Trip Test', () => {
 	const users: [CreatorUser, ...TestUser[]] = [
@@ -146,84 +163,47 @@ test.describe('Multi-user Trip Test', () => {
 		}
 
 		// all users join the trip
-		for (const user of participants) {
-			if (!user.page || !user.context) continue;
-			// join as a guest with a name
-			await user.page.goto(
-				`http://localhost:5173/app/join-trip?tripId=${tripId}`
-			);
-			await user.page.waitForLoadState('networkidle');
-			await user.page.getByRole('button', { name: 'join' }).click();
+		await Promise.all(
+			participants.map((user) => userJoinTripAsGuest(user, tripId))
+		);
 
-			await user.page
-				.getByRole('button', { name: 'Create guest token' })
-				.click();
+		for (const user of users) {
+			if (!user.page) continue;
+			expect(user.page.url()).toContain('/trip/map');
 
-			await user.page.setDefaultTimeout(200);
-
-			await user.page.getByRole('textbox').fill(`${user.name}`);
-
-			await user.page.waitForTimeout(200);
-
-			await user.page.getByRole('button', { name: 'Confirm' }).click();
-
-			// join the trip
-			await user.page.getByRole('button', { name: 'join' }).click();
+			await user.page.screenshot({
+				fullPage: true,
+				path: `./test-pics/${user.name}.png`,
+			});
 		}
 
 		// get route coordinates
-		const routeCoordinates = getRouteCoordinates();
+		const routeCoordinates = tripRoute.routes[0].geometry.coordinates;
 
 		// Simulate movement for each user
-		const movePromises = users.map(
-			(user, index) =>
-				simulateUserMovement(user, routeCoordinates, index * 1000) // Stagger start times
+		const movePromises = users.map((user) =>
+			simulateUserMovement(user, routeCoordinates)
 		);
 
 		await Promise.all(movePromises);
 
-		// Verify all users completed the trip
 		for (const user of users) {
 			if (!user.page) continue;
 			await expect(user.page.locator('.trip-complete')).toBeVisible();
 		}
 	});
 
-	async function simulateUserMovement(
-		user: TestUser,
-		coordinates: number[][],
-		delay: number
-	) {
+	async function simulateUserMovement(user: TestUser, coordinates: number[][]) {
 		if (!user.page) return;
-		await user.page.waitForTimeout(delay);
 
-		for (
-			let i = 0;
-			i < coordinates.length;
-			i += Math.ceil(coordinates.length / 100)
-		) {
-			const [lon, lat] = coordinates[i];
+		if (!user.context) return;
 
-			// Update user's location
-			await user.page.evaluate(
-				({ lon, lat }) => {
-					window.dispatchEvent(
-						new CustomEvent('locationUpdate', {
-							detail: {
-								coords: {
-									longitude: lon,
-									latitude: lat,
-									accuracy: 5,
-								},
-							},
-						})
-					);
-				},
-				{ lon, lat }
-			);
-
-			// Wait based on user's speed
-			await user.page.waitForTimeout(1000 / user.speed);
+		for (const coords of coordinates) {
+			await user.context.setGeolocation({
+				latitude: coords[1],
+				longitude: coords[0],
+			});
+			await new Promise((res) => setTimeout(res, 100));
 		}
 	}
 
