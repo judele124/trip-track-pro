@@ -144,7 +144,7 @@ export default function useTripOption({
 			case 'delete':
 				await deleteTrip(activate, tripId);
 				break;
-			case 'Enter trip':
+			case 'enter':
 				nav(`${navigationRoutes.map}?tripId=${tripId}`);
 				break;
 			default:
