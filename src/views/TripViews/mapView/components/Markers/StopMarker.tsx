@@ -8,18 +8,31 @@ import { forwardRef } from 'react';
 interface IStopMarkerProps {
 	stop: Types['Trip']['Stop']['Model'];
 	disableExperience?: boolean;
+	isExperienceActive?: boolean;
 	index: number;
+	isSocketContextChild?: boolean;
 }
 
 export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
-	function StopMarker({ stop, disableExperience = true, index }, ref) {
+	function StopMarker(
+		{
+			stop,
+			disableExperience = true,
+			isExperienceActive = false,
+			isSocketContextChild = true,
+			index,
+		},
+		ref
+	) {
 		const { isOpen, toggle } = useToggle();
 
 		return (
 			<>
 				<Button
 					ref={ref}
-					onClick={!disableExperience ? toggle : undefined}
+					onClick={
+						!disableExperience && isExperienceActive ? toggle : undefined
+					}
 					className={`relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 bg-light text-dark dark:bg-dark dark:text-light ${!stop.experience ? 'cursor-default hover:bg-opacity-100' : disableExperience ? 'cursor-not-allowed' : ''}`}
 				>
 					<p className='overflow-hidden text-ellipsis whitespace-nowrap'>
@@ -52,7 +65,7 @@ export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
 						</>
 					)}
 				</Button>
-				{stop.experience && (
+				{stop.experience && isSocketContextChild && (
 					<ExirienceModal
 						open={isOpen}
 						onBackdropClick={toggle}

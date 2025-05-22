@@ -24,16 +24,38 @@ const ROUTE_FILL_COLOR = '#5fa8d3';
 
 const ROUTE_WIDTH = 6;
 const ROUTE_FILL_WIDTH = 2;
+const STOP_MARKER = 30;
 
 export default function MapView() {
 	const { user } = useAuthContext();
 	const { trip } = useTripContext();
-	const { usersLocations, socket, currentExpIndex } = useTripSocket();
+	const {
+		usersLocations,
+		socket,
+		currentExpIndex,
+		isExperienceActive,
+		toggleExperienceActive,
+	} = useTripSocket();
 
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			if (!trip || !socket) return;
 			socket.emit('updateLocation', trip._id, location);
+			if (
+				calculateDistanceOnEarth(
+					[location.lon, location.lat],
+					[
+						trip.stops[currentExpIndex].location.lon,
+						trip.stops[currentExpIndex].location.lat,
+					]
+				) < STOP_MARKER
+			) {
+				if (!user || isExperienceActive) return;
+				socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
+			} else {
+				if (!isExperienceActive) return;
+				toggleExperienceActive();
+			}
 		},
 	});
 
@@ -50,7 +72,8 @@ export default function MapView() {
 		[trip, initialUserLocation]
 	);
 
-	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } = useToggle();
+	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } =
+		useToggle(true);
 
 	useEffect(() => {
 		if (!trip || !userCurrentLocation || !trip.stops[0].location) return;
@@ -82,6 +105,7 @@ export default function MapView() {
 					<>
 						{isAtTripRoute ? (
 							<TripStopsMarkers
+								isExperienceActive={isExperienceActive}
 								currentExpIndex={currentExpIndex}
 								stops={trip.stops}
 							/>
@@ -153,9 +177,11 @@ function LoadingLocation() {
 function TripStopsMarkers({
 	stops,
 	currentExpIndex,
+	isExperienceActive,
 }: {
 	stops: Types['Trip']['Stop']['Model'][];
 	currentExpIndex: number;
+	isExperienceActive?: boolean;
 }) {
 	return stops.map((stop, i) => (
 		<GeneralMarker
@@ -164,6 +190,7 @@ function TripStopsMarkers({
 		>
 			<StopMarker
 				disableExperience={i !== currentExpIndex}
+				isExperienceActive={isExperienceActive}
 				stop={stop}
 				index={i}
 			/>

@@ -34,6 +34,7 @@ export default function MapModal({
 							<StopMarker
 								index={i}
 								disableExperience={disableExperiences}
+								isSocketContextChild={false}
 								stop={stop}
 							/>
 						</GeneralMarker>
