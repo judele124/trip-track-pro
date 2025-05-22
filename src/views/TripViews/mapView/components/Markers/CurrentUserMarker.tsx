@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useMap } from '../../Map';
 import GeneralMarker from './GeneralMarker';
 import { IUserResponseData } from '@/types/user';
 
@@ -10,6 +12,17 @@ export default function CurrentUserMarker({
 	location,
 	user,
 }: IUserMarkerProps) {
+	const { isMapReady, mapRef } = useMap();
+
+	useEffect(() => {
+		if (!mapRef.current || !isMapReady || !location) return;
+		mapRef.current.easeTo({
+			center: [location.lon, location.lat],
+			duration: 1000,
+			easing: (t) => t,
+			zoom: 16,
+		});
+	}, [isMapReady, location]);
 	return (
 		<GeneralMarker
 			location={location}

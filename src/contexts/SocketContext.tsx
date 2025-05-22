@@ -10,6 +10,7 @@ import { API_BASE_URL } from '../env.config';
 import { SocketClientType } from '@/types/socket';
 import { useTripContext } from './TripContext';
 import useAxios from '@/hooks/useAxios';
+import useToggle from '@/hooks/useToggle';
 
 export interface IMessage {
 	userId: string;
@@ -38,6 +39,8 @@ interface ISocketContextValue {
 	usersLocations: IUserLocation[];
 	usersInLiveTripExpData: IRedisUserTripData[];
 	currentExpIndex: number;
+	toggleExperienceActive: () => void;
+	isExperienceActive: boolean;
 }
 
 interface ITripSocketProviderProps {
@@ -55,7 +58,8 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		IRedisUserTripData[]
 	>([]);
 	const [currentExpIndex, setCurrentExpIndex] = useState<number>(0);
-
+	const { isOpen: isExperienceActive, toggle: toggleExperienceActive } =
+		useToggle(false);
 	const { activate, data: usersInLiveTripData } = useAxios<
 		IRedisUserTripData[]
 	>({
@@ -124,6 +128,9 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				];
 			});
 		});
+		socket.on('allUsersInExperience', (isAllUSersInExperience) => {
+			toggleExperienceActive();
+		});
 
 		socket.on('experienceFinished', (data, userId, index) => {
 			setUsersInLiveTripExpData((prev) => {
@@ -182,6 +189,8 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				usersLocations,
 				usersInLiveTripExpData,
 				currentExpIndex,
+				toggleExperienceActive,
+				isExperienceActive,
 			}}
 		>
 			{children}
