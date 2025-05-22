@@ -1,44 +1,14 @@
-import Button from '@/components/ui/Button';
-import { navigationRoutes } from '@/Routes/routes';
-import { useNavigate } from 'react-router-dom';
 import { useTripContext } from '@/contexts/TripContext';
-import { useAuthContext } from '@/contexts/AuthContext';
-import useToggle from '@/hooks/useToggle';
-import UserOrGuestModal from '@/components/UserOrGuestModal';
-import TripNotActiveMessage from '@/components/TripNotActiveMessage';
-import TripCancelledMessage from '@/components/TripCancelledMessage';
-import { joinTrip } from '@/servises/tripService';
-import useAxios from '@/hooks/useAxios';
 import { getErrorMessage } from '@/utils/errorMessages';
-import MapModal from '@/components/MapModal';
-import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
-import { useMemo } from 'react';
-import { Types } from 'trip-track-package';
-import { Trip } from '@/types/trip';
+import Guides from './components/Guides';
+import TripErrorState from './components/TripErrorState';
+import Header from './components/Header';
+import JoinButton from './components/Buttons';
+import Reward from './components/Reward';
+import ShowTripOnMapBtn from './components/ShowTripOnMapBtn';
 
 export default function BeforeJoinTripView() {
 	const { trip, loadingTrip, errorTrip, tripId, status } = useTripContext();
-	const { user } = useAuthContext();
-	const nav = useNavigate();
-	const {
-		isOpen: isUserOrGuestModalOpen,
-		setIsOpen: setIsUserOrGuestModalOpen,
-	} = useToggle();
-	const { isOpen: isTripNotActiveOpen, setIsOpen: setIsTripNotActiveOpen } =
-		useToggle();
-
-	const { isOpen: isTripCancelledOpen, setIsOpen: setIsTripCancelledOpen } =
-		useToggle();
-
-	const {
-		activate,
-		error: errorJoinTrip,
-		status: joinTripStatus,
-	} = useAxios({
-		manual: true,
-	});
-
-	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
 
 	if (loadingTrip) return <p>Loading...</p>;
 
@@ -47,160 +17,22 @@ export default function BeforeJoinTripView() {
 	}
 
 	if (!tripId || !trip) {
-		return (
-			<div className='text-center'>
-				<p>
-					{!tripId
-						? '⚠️ Oops! No trip was found.'
-						: '🚨 Error: The trip could not be loaded.'}
-				</p>
-				<Button
-					className='mt-5 w-full'
-					onClick={() => nav(navigationRoutes.app)}
-					primary
-				>
-					Go Home
-				</Button>
-			</div>
-		);
+		return <TripErrorState hasTripId={!!tripId} />;
 	}
 
-	const { name, description, reward, _id } = trip;
-
-	const handleOnjoin = async () => {
-		if (trip.status === 'cancelled') {
-			setIsTripCancelledOpen(true);
-			return;
-		}
-
-		if (trip.status !== 'started') {
-			setIsTripNotActiveOpen(true);
-			return;
-		}
-
-		if (!user) {
-			setIsUserOrGuestModalOpen(true);
-			return;
-		}
-
-		await joinTrip(activate, tripId, {
-			name: user?.name,
-			imageUrl: user?.imageUrl,
-			role: user?.role,
-		});
-
-		nav(`${navigationRoutes.map}`);
-	};
+	const { name, description, reward } = trip;
 
 	return (
-		<div className='flex flex-col gap-6'>
-			<h1>
-				You're invieted to join
-				<span className='text-pretty text-primary'> {name} </span>
-				trip
-			</h1>
+		<div className='flex flex-col gap-4 overflow-y-auto'>
+			<Header description={description || ''} name={name} />
 
-			<p
-				style={{ scrollbarWidth: 'none' }}
-				className='line-clamp-7 mt-2 overflow-y-scroll px-1 text-sm'
-			>
-				{description}
-			</p>
+			<Guides guides={trip.guides} />
 
-			{reward?.image && (
-				<div className='flex w-[65%] flex-col items-center self-center rounded-xl border border-primary bg-light p-2 dark:bg-secondary'>
-					<p className='p-3 text-base font-medium'>{reward.title + ' 🏆 '}</p>
-					<img
-						src={reward.image}
-						alt={reward.title}
-						className='size-[65%] object-contain'
-					/>
-				</div>
-			)}
+			<Reward reward={reward} />
 
-			<div className='flex gap-2 overflow-x-scroll'>
-				{!trip.guides.length && <p className='text-center'>No guides yet</p>}
-				{trip.guides.map((guide) => (
-					<div
-						className='flex shrink-0 items-center gap-2 rounded-2xl bg-secondary px-4 py-2 text-white'
-						key={guide._id}
-					>
-						<img
-							className='size-6 rounded-full border bg-white'
-							src={guide.imageUrl}
-						/>
-						<p className='text-sm capitalize'>{guide.name}</p>
-					</div>
-				))}
-			</div>
+			<JoinButton trip={trip} />
 
-			<UserOrGuestModal
-				tripId={_id.toString()}
-				open={isUserOrGuestModalOpen}
-				onClose={() => setIsUserOrGuestModalOpen(false)}
-			/>
-
-			<TripNotActiveMessage
-				trip={trip}
-				onClose={() => setIsTripNotActiveOpen(false)}
-				isOpen={isTripNotActiveOpen}
-			/>
-
-			<TripCancelledMessage
-				trip={trip}
-				onClose={() => setIsTripCancelledOpen(false)}
-				isOpen={isTripCancelledOpen}
-			/>
-
-			{mapOpen && <ShowTripOnMapBtn trip={trip} toggleMap={toggleMap} />}
-
-			<div className='flex flex-col gap-3'>
-				<Button onClick={handleOnjoin} primary className='w-full'>
-					join
-				</Button>
-
-				{errorJoinTrip && joinTripStatus && (
-					<p className='text-center text-sm text-red-500'>
-						{getErrorMessage(joinTripStatus)}
-					</p>
-				)}
-
-				<Button
-					className='bg-transparent text-sm text-dark underline dark:text-light'
-					onClick={toggleMap}
-				>
-					Show trip on map
-				</Button>
-			</div>
+			<ShowTripOnMapBtn trip={trip} />
 		</div>
 	);
 }
-
-interface IShowTripOnMapBtnProps {
-	trip: Trip;
-	toggleMap: () => void;
-}
-
-const ShowTripOnMapBtn = ({ trip, toggleMap }: IShowTripOnMapBtnProps) => {
-	const points = useMemo(
-		() =>
-			trip?.stops.map(
-				(stop: Types['Trip']['Stop']['Model']) => stop.location
-			) || [],
-		[trip]
-	);
-
-	const { routeData } = useMapboxDirectionRoute({
-		points,
-	});
-	return (
-		<MapModal
-			key={`map-modal-${trip._id}`}
-			mapOpen={true}
-			toggleMap={toggleMap}
-			disableExperiences
-			routeData={routeData}
-			stops={trip.stops}
-		/>
-	);
-};
