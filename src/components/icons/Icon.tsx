@@ -626,8 +626,8 @@ export default function Icon({
 		<div
 			className={`relative mx-auto w-fit ${name === 'spinner' ? 'animate-spin' : ''}`}
 		>
-			{notificationCount && (
-				<span className='absolute right-0 top-0 size-4 -translate-y-2/3 translate-x-2/3 content-center rounded-full bg-primary text-center text-xs font-semibold leading-none text-white'>
+			{notificationCount! > 0 && (
+				<span className='absolute right-0 top-0 size-4 -translate-y-2/3 translate-x-2/3 content-center rounded-full bg-primary text-xs font-semibold leading-none text-white'>
 					{notificationCount}
 				</span>
 			)}
