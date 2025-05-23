@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import useLocalStorage from './useLocalStorage';
 import useParamFromURL from './useParamFromURL';
+import { useSearchParams } from 'react-router-dom';
 
 function useTripId(): string {
 	const [tripIdFromStorage, setTripIdFromStorage] = useLocalStorage(
@@ -8,6 +9,7 @@ function useTripId(): string {
 		''
 	);
 	const tripIdFromParams = useParamFromURL('tripId');
+	const [_, setSearchParams] = useSearchParams();
 	const [finalTripId, setFinalTripId] = useState<string>('');
 
 	useEffect(() => {
@@ -16,6 +18,7 @@ function useTripId(): string {
 			setTripIdFromStorage(tripIdFromParams);
 		} else if (tripIdFromStorage) {
 			setFinalTripId(tripIdFromStorage);
+			setSearchParams({ tripId: tripIdFromStorage });
 		} else {
 			setFinalTripId('');
 		}
