@@ -1,4 +1,3 @@
-import { useTripContext } from '@/contexts/TripContext';
 import { getErrorMessage } from '@/utils/errorMessages';
 import Guides from './components/Guides';
 import TripErrorState from './components/TripErrorState';
@@ -6,33 +5,49 @@ import Header from './components/Header';
 import JoinButton from './components/Buttons';
 import Reward from './components/Reward';
 import ShowTripOnMapBtn from './components/ShowTripOnMapBtn';
+import useAxios from '@/hooks/useAxios';
+import { Trip } from '@/types/trip';
+import { API_BASE_URL } from '@/env.config';
+import useParamFromURL from '@/hooks/useParamFromURL';
 
 export default function BeforeJoinTripView() {
-	const { trip, loadingTrip, errorTrip, tripId, status } = useTripContext();
+	const tripId = useParamFromURL('tripId');
 
-	if (loadingTrip) return <p>Loading...</p>;
-
-	if (errorTrip && status) {
-		return <p>{getErrorMessage(status)}</p>;
-	}
-
-	if (!tripId || !trip) {
-		return <TripErrorState hasTripId={!!tripId} />;
-	}
-
-	const { name, description, reward } = trip;
+	const {
+		data: trip,
+		loading: loadingTrip,
+		error: errorTrip,
+		status,
+	} = useAxios<Trip>({
+		url: `${API_BASE_URL}/trip/
+		${tripId}`,
+	});
 
 	return (
 		<div className='flex flex-col gap-4 overflow-y-auto'>
-			<Header description={description || ''} name={name} />
+			{loadingTrip && <p>Loading...</p>}
+			{errorTrip && status && (
+				<>
+					{status === 404 ? (
+						<TripErrorState hasTripId={false} />
+					) : (
+						<p>{getErrorMessage(status)}</p>
+					)}
+				</>
+			)}
+			{trip && (
+				<>
+					<Header description={trip.description || ''} name={trip.name} />
 
-			<Guides guides={trip.guides} />
+					<Guides guides={trip.guides} />
 
-			<Reward reward={reward} />
+					<Reward reward={trip.reward} />
 
-			<JoinButton trip={trip} />
+					<JoinButton trip={trip} />
 
-			<ShowTripOnMapBtn trip={trip} />
+					<ShowTripOnMapBtn trip={trip} />
+				</>
+			)}
 		</div>
 	);
 }
