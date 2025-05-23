@@ -5,7 +5,7 @@ import TripErrorState from './components/TripErrorState';
 import Header from './components/Header';
 import JoinButton from './components/Buttons';
 import Reward from './components/Reward';
-import ShowTripOnMapBtn from './components/ShowTripOnMapBtn';
+import ShowTripOnMapBtn from '../../../components/ShowTripOnMapBtn';
 
 export default function BeforeJoinTripView() {
 	const { trip, loadingTrip, errorTrip, tripId, status } = useTripContext();
