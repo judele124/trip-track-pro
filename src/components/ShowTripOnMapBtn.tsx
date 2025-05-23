@@ -2,8 +2,6 @@ import MapModal from '@/components/MapModal';
 import Button from '@/components/ui/Button';
 import useToggle from '@/hooks/useToggle';
 import { Trip } from '@/types/trip';
-import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
-import { useMemo } from 'react';
 
 interface IShowTripOnMapBtnProps {
 	trip: Trip;
@@ -11,15 +9,6 @@ interface IShowTripOnMapBtnProps {
 
 export default function ShowTripOnMapBtn({ trip }: IShowTripOnMapBtnProps) {
 	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
-
-	const points = useMemo(
-		() => trip?.stops.map((stop: Trip['stops'][number]) => stop.location) || [],
-		[trip]
-	);
-
-	const { routeData } = useMapboxDirectionRoute({
-		points,
-	});
 
 	return (
 		<>
@@ -35,7 +24,6 @@ export default function ShowTripOnMapBtn({ trip }: IShowTripOnMapBtnProps) {
 				mapOpen={mapOpen}
 				toggleMap={toggleMap}
 				disableExperiences
-				routeData={routeData}
 				stops={trip.stops}
 			/>
 		</>
