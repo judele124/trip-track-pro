@@ -52,7 +52,7 @@ export default function UserOrGuestModal({
 					<p>Sign in to continue</p>
 				</div>
 				<Button
-					className={status ? 'bg-green-500' : ''}
+					className={!error && status ? 'bg-green-500' : ''}
 					onClick={handleCreateGuestToken}
 				>
 					{(error && (
@@ -61,8 +61,8 @@ export default function UserOrGuestModal({
 						</p>
 					)) ||
 						(loading && <Icon name='spinner' />) ||
-						(status && 'Token created') ||
-						'Create guest token'}
+						(status && 'Logged in') ||
+						'Login as guest'}
 				</Button>
 				<Button primary onClick={handleLoginAsUser}>
 					Login as user
