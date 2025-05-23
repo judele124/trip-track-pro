@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import GeneralMarker from './GeneralMarker';
 import { IUserResponseData } from '@/types/user';
+import { useMap } from '../../Map';
 
 interface IUserMarkerProps {
 	location: { lon: number; lat: number };
@@ -10,6 +12,16 @@ export default function CurrentUserMarker({
 	location,
 	user,
 }: IUserMarkerProps) {
+	const { isMapReady, mapRef } = useMap();
+
+	useEffect(() => {
+		if (!isMapReady || !mapRef.current) return;
+		mapRef.current.flyTo({
+			center: [location.lon, location.lat],
+			zoom: 15,
+		});
+	}, [location]);
+
 	return (
 		<GeneralMarker
 			location={location}
