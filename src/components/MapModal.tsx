@@ -26,12 +26,16 @@ export default function MapModal({
 			<div className='h-[80vh] w-[90vw] overflow-hidden rounded-2xl'>
 				<Map>
 					{routeData && <MapRoute id='modal-route' route={routeData} />}
-					{stops.map((stop: Types['Trip']['Stop']['Model']) => (
+					{stops.map((stop: Types['Trip']['Stop']['Model'], i) => (
 						<GeneralMarker
-							key={`${stop.location.lon}-${stop.location.lat}`}
+							key={`${stop.location.lon}-${stop.location.lat}-${i}`}
 							location={stop.location}
 						>
-							<StopMarker disableExperience={disableExperiences} stop={stop} />
+							<StopMarker
+								index={i}
+								disableExperience={disableExperiences}
+								stop={stop}
+							/>
 						</GeneralMarker>
 					))}
 				</Map>

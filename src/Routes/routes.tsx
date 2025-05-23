@@ -84,11 +84,7 @@ const routes: RouteObject[] = [
 					},
 					{
 						path: appRoutes.shareTrip,
-						element: (
-							<ProtectedRoute>
-								<ShareTripView />
-							</ProtectedRoute>
-						),
+						element: <ShareTripView />,
 					},
 					{
 						path: appRoutes.joinTrip,
