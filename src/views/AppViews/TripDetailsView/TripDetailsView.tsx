@@ -3,13 +3,18 @@ import TripDetailsStops from '@/views/AppViews/TripDetailsView/components/TripDe
 import useAxios, { UseAxiosResponse } from '@/hooks/useAxios';
 import { Trip } from '@/types/trip';
 import { getErrorMessage } from '@/utils/errorMessages';
-import { useEffect } from 'react';
+import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
+import { useEffect, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import TripStatusButton from '../profileView/components/TripStatusButton';
 import RewardDetails from './components/RewardDetails';
 import { tripGet } from '@/servises/tripService';
 import UpdateGuidesBtn from '@/components/updateGuidesBtn/UpdateGuidesBtn';
+import TripActionsModal from '../profileView/components/TripActionsModal';
+import { useAuthContext } from '@/contexts/AuthContext';
 import ShowTripOnMapBtn from '@/components/ShowTripOnMapBtn';
+import { Types } from 'trip-track-package';
+import useToggle from '@/hooks/useToggle';
 
 export default function TripDetailsView() {
 	const params = useParams();
@@ -40,7 +45,7 @@ export default function TripDetailsView() {
 						<TripDetailsHeader
 							tripData={tripData}
 							activate={activate}
-							tripId={params.tripId}
+							tripId={tripData._id}
 						/>
 
 						<TripDetailsStops
@@ -68,18 +73,42 @@ export default function TripDetailsView() {
 	);
 }
 
+interface TripDetailsHeaderProps {
+	tripData: Trip;
+	activate: UseAxiosResponse<Trip>['activate'];
+	tripId: string;
+}
+
 function TripDetailsHeader({
 	tripData,
 	activate,
 	tripId,
-}: {
-	tripData: Trip;
-	activate: UseAxiosResponse<Trip>['activate'];
-	tripId: string | undefined;
-}) {
+}: TripDetailsHeaderProps) {
+	const { user } = useAuthContext();
+	const encorElementRef = useRef<HTMLButtonElement>(null);
+	const { isOpen, setIsOpen } = useToggle();
+
 	return (
 		<div>
-			<h1 className='max-w-[70%] break-words capitalize'>{tripData.name}</h1>
+			<div className='flex items-start justify-between'>
+				<h1 className='max-w-[70%] break-words capitalize'>{tripData.name}</h1>
+				<button
+					ref={encorElementRef}
+					onClick={() => setIsOpen(true)}
+					className='mt-2 px-0 py-0'
+				>
+					<Icon name='settings' />
+				</button>
+				<TripActionsModal
+					anchorTo='right'
+					trip={tripData}
+					isCreator={tripData.creator._id === user?._id}
+					isOpen={isOpen}
+					setIsOpen={setIsOpen}
+					encorElementRef={encorElementRef}
+					afterAction={() => tripGet(activate, tripId)}
+				/>
+			</div>
 			{tripData.description && <p>{tripData.description}</p>}
 			<div className='mt-2 flex items-start gap-1'>
 				<TripStatusButton status={tripData.status} />
@@ -106,7 +135,7 @@ function TripDetailsHeader({
 				</div>
 				<UpdateGuidesBtn
 					trip={tripData}
-					onSuccess={() => tripId && tripGet(activate, tripId)}
+					onSuccess={() => tripGet(activate, tripId)}
 				/>
 			</div>
 		</div>
