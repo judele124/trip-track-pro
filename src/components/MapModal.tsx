@@ -2,7 +2,6 @@ import Modal from './ui/Modal';
 import GeneralMarker from '@/views/TripViews/mapView/components/Markers/GeneralMarker';
 import Map from '@/views/TripViews/mapView/Map';
 import StopMarker from '@/views/TripViews/mapView/components/Markers/StopMarker';
-import { MapBoxDirectionsResponse } from '@/types/map';
 import { Types } from 'trip-track-package';
 import MapRoute from '@/views/TripViews/mapView/components/RoutesAndNavigation/MapRoute';
 import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
@@ -41,6 +40,7 @@ export default function MapModal({
 							<StopMarker
 								index={i}
 								disableExperience={disableExperiences}
+								isTripActive={false}
 								stop={stop}
 							/>
 						</GeneralMarker>

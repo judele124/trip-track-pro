@@ -91,6 +91,19 @@ textarea {
   @apply bg-light text-dark dark:bg-dark dark:text-light;
 }
 
+@keyframes stop-pulse {
+  0% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.05;
+  }
+  100% {
+    scale: 1;
+  }
+  
+}
+
 
 .no-scrollbar {
     -ms-overflow-style: none;
