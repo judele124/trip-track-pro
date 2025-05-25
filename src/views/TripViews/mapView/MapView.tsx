@@ -1,4 +1,4 @@
-import Map from './Map';
+import Map, { useMap } from './Map';
 import { useEffect, useMemo } from 'react';
 import { useTripContext } from '@/contexts/TripContext';
 import { useTripSocket } from '@/contexts/SocketContext';
@@ -14,6 +14,8 @@ import RouteAndNavigation from './components/RoutesAndNavigation/RouteAndNavigat
 import OtherUserMarker from './components/Markers/OtherUserMarker';
 import Icon from '@/components/icons/Icon';
 import { Types } from 'trip-track-package';
+import useFakeUserLocation from './tests/useFakeUserLocation';
+import useDrawRangeAroundStop from './hooks/useDrawRangeAroundStop';
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
 const ROUTE_OPACITY = 1;
@@ -24,7 +26,7 @@ const ROUTE_FILL_COLOR = '#5fa8d3';
 
 const ROUTE_WIDTH = 6;
 const ROUTE_FILL_WIDTH = 2;
-const STOP_MARKER = 30;
+const STOP_MARKER_RANGE = 30;
 
 export default function MapView() {
 	const { user } = useAuthContext();
@@ -34,43 +36,69 @@ export default function MapView() {
 		socket,
 		currentExpIndex,
 		isExperienceActive,
-		toggleExperienceActive,
+		setExperienceActive,
 	} = useTripSocket();
 
-	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
-		onLocationUpdate: (location) => {
-			if (!trip || !socket) return;
-			socket.emit('updateLocation', trip._id, location);
-			if (
-				calculateDistanceOnEarth(
-					[location.lon, location.lat],
-					[
-						trip.stops[currentExpIndex].location.lon,
-						trip.stops[currentExpIndex].location.lat,
-					]
-				) < STOP_MARKER
-			) {
-				if (!user || isExperienceActive) return;
-				socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
-			} else {
-				if (!isExperienceActive) return;
-				toggleExperienceActive();
-			}
-		},
-	});
+	// const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
+	// 	onLocationUpdate: (location) => {
+	// 		if (!trip || !socket) return;
+	// 		socket.emit('updateLocation', trip._id, location);
+	// 		if (
+	// 			calculateDistanceOnEarth(
+	// 				[location.lon, location.lat],
+	// 				[
+	// 					experienceStops[currentExpIndex].location.lon,
+	// 					experienceStops[currentExpIndex].location.lat,
+	// 				]
+	// 			) < STOP_MARKER_RANGE
+	// 		) {
+	// 			if (!user || isExperienceActive) return;
+	// 			socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
+	// 		} else {
+	// 			if (!isExperienceActive) return;
+	// 			setExperienceActive(false);
+	// 		}
+	// 	},
+	// });
 
 	const memoizedTripPoints = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
 		[trip]
 	);
 
-	const memoizedUserToTripPoints = useMemo(
-		() =>
-			trip && initialUserLocation
-				? [initialUserLocation, trip.stops[0].location]
-				: [],
-		[trip, initialUserLocation]
-	);
+	// const memoizedUserToTripPoints = useMemo(
+	// 	() =>
+	// 		trip && initialUserLocation
+	// 			? [initialUserLocation, trip.stops[0].location]
+	// 			: [],
+	// 	[trip, initialUserLocation]
+	// );
+
+	const userCurrentLocation = useFakeUserLocation({
+		points: memoizedTripPoints,
+		speed: 20,
+		onLocationUpdate: (location) => {
+			if (!trip || !socket) return;
+			const experienceStops = trip.stops.filter((stop) => stop.experience);
+			socket.emit('updateLocation', trip._id, location);
+			if (currentExpIndex >= experienceStops.length) return;
+			if (
+				calculateDistanceOnEarth(
+					[location.lon, location.lat],
+					[
+						experienceStops[currentExpIndex].location.lon,
+						experienceStops[currentExpIndex].location.lat,
+					]
+				) < STOP_MARKER_RANGE
+			) {
+				if (!user || isExperienceActive) return;
+				socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
+			} else {
+				if (!isExperienceActive) return;
+				setExperienceActive(false);
+			}
+		},
+	});
 
 	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } =
 		useToggle(true);
@@ -134,7 +162,7 @@ export default function MapView() {
 							active={isAtTripRoute}
 						/>
 
-						{!isAtTripRoute && (
+						{/* {!isAtTripRoute && (
 							<RouteAndNavigation
 								active={true}
 								routeId='user-to-trip-route'
@@ -151,7 +179,7 @@ export default function MapView() {
 								}}
 								userLocation={userCurrentLocation}
 							/>
-						)}
+						)} */}
 					</>
 				)}
 			</Map>
@@ -183,19 +211,50 @@ function TripStopsMarkers({
 	currentExpIndex: number;
 	isExperienceActive?: boolean;
 }) {
-	return stops.map((stop, i) => (
-		<GeneralMarker
-			key={`${stop.location.lat}-${stop.location.lon}-${i}`}
-			location={stop.location}
-		>
-			<StopMarker
-				disableExperience={i !== currentExpIndex}
-				isExperienceActive={isExperienceActive}
-				stop={stop}
-				index={i}
-			/>
-		</GeneralMarker>
-	));
+	const { mapRef, isMapReady } = useMap();
+
+	useDrawRangeAroundStop({
+		isMapReady,
+		mapRef,
+		location: [
+			stops[currentExpIndex].location.lon,
+			stops[currentExpIndex].location.lat,
+		],
+		circleRadius: 40,
+	});
+
+	const experienceStops = stops.filter((stop) => stop.experience);
+	const nurmalStops = stops.filter((stop) => !stop.experience);
+	return (
+		<>
+			{experienceStops.map((stop, i) => (
+				<GeneralMarker
+					key={`exp-${stop.location.lat}-${stop.location.lon}-${i}`}
+					location={stop.location}
+				>
+					<StopMarker
+						disableExperience={currentExpIndex !== i}
+						isExperienceActive={isExperienceActive}
+						stop={stop}
+						index={i}
+					/>
+				</GeneralMarker>
+			))}
+			{nurmalStops.map((stop, i) => (
+				<GeneralMarker
+					key={`norm-${stop.location.lat}-${stop.location.lon}-${i}`}
+					location={stop.location}
+				>
+					<StopMarker
+						disableExperience={false}
+						isExperienceActive={false}
+						stop={stop}
+						index={i}
+					/>
+				</GeneralMarker>
+			))}
+		</>
+	);
 }
 
 function TripStartLocationMarker({

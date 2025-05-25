@@ -33,7 +33,7 @@ export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
 					onClick={
 						!disableExperience && isExperienceActive ? toggle : undefined
 					}
-					className={`relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 bg-light text-dark dark:bg-dark dark:text-light ${!stop.experience ? 'cursor-default hover:bg-opacity-100' : disableExperience ? 'cursor-not-allowed' : ''}`}
+					className={`relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 bg-light text-dark dark:bg-dark dark:text-light ${!stop.experience ? 'cursor-default hover:bg-opacity-100' : disableExperience ? 'cursor-not-allowed' : ''} ${isExperienceActive && !disableExperience ? 'animate-stop-pulse shadow-[0px_0px_8px_0px] shadow-primary' : ''} `}
 				>
 					<p className='overflow-hidden text-ellipsis whitespace-nowrap'>
 						{stop.address}

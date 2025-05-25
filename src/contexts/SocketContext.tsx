@@ -39,7 +39,7 @@ interface ISocketContextValue {
 	usersLocations: IUserLocation[];
 	usersInLiveTripExpData: IRedisUserTripData[];
 	currentExpIndex: number;
-	toggleExperienceActive: () => void;
+	setExperienceActive: (value: boolean) => void;
 	isExperienceActive: boolean;
 }
 
@@ -58,7 +58,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		IRedisUserTripData[]
 	>([]);
 	const [currentExpIndex, setCurrentExpIndex] = useState<number>(0);
-	const { isOpen: isExperienceActive, toggle: toggleExperienceActive } =
+	const { isOpen: isExperienceActive, setIsOpen: setExperienceActive } =
 		useToggle(false);
 	const { activate, data: usersInLiveTripData } = useAxios<
 		IRedisUserTripData[]
@@ -129,7 +129,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			});
 		});
 		socket.on('allUsersInExperience', (isAllUSersInExperience) => {
-			toggleExperienceActive();
+			setExperienceActive(true);
 		});
 
 		socket.on('experienceFinished', (data, userId, index) => {
@@ -189,7 +189,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				usersLocations,
 				usersInLiveTripExpData,
 				currentExpIndex,
-				toggleExperienceActive,
+				setExperienceActive,
 				isExperienceActive,
 			}}
 		>
