@@ -83,6 +83,14 @@ export const actions: IAction[] = [
 		iconClassName: 'fill-red-500',
 		iconName: 'circle-cross',
 	},
+	{
+		name: 'share',
+		label: 'Share',
+		statuses: ['created'],
+		condition: ({ isCreator }) => isCreator,
+		iconClassName: 'fill-blue-400',
+		iconName: 'share',
+	},
 ] as const;
 
 type ActionName = (typeof actions)[number]['name'];
@@ -108,6 +116,7 @@ export const checkIsValidAction = ({
 
 interface IUseTripOptions {
 	tripId: string;
+	afterAction: () => void;
 }
 
 interface IUseTripOptionsReturn {
@@ -116,13 +125,12 @@ interface IUseTripOptionsReturn {
 
 export default function useTripOption({
 	tripId,
+	afterAction,
 }: IUseTripOptions): IUseTripOptionsReturn {
 	const nav = useNavigate();
 	const { activate } = useAxios({
 		manual: true,
 	});
-
-	const { getCreatedTripsData } = useTripShowcase();
 
 	const handleActions = async (actionName: ActionName) => {
 		switch (actionName) {
@@ -144,14 +152,17 @@ export default function useTripOption({
 			case 'delete':
 				await deleteTrip(activate, tripId);
 				break;
-			case 'Enter trip':
+			case 'enter':
 				nav(`${navigationRoutes.map}?tripId=${tripId}`);
+				break;
+			case 'share':
+				nav(`${navigationRoutes.shareTrip}?tripId=${tripId}`);
 				break;
 			default:
 				throw new Error(`Action ${actionName} doesn't exist`);
 		}
 
-		await getCreatedTripsData();
+		afterAction();
 	};
 
 	return {

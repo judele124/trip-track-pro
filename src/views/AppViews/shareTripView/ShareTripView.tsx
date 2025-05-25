@@ -1,5 +1,5 @@
 import ProgressLine from '../createTripView/components/ProgressLine';
-import ShareTrip from '../createTripView/components/ShareTrip';
+import ShareTrip from './components/ShareTrip';
 
 export default function ShareTripView() {
 	return (

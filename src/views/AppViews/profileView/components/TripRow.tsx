@@ -34,7 +34,9 @@ export default function TripRow({ trip, i, isCreator }: TripRowProps) {
 				<div className='flex w-[50%] items-center justify-between gap-2 pl-2'>
 					<TripStatusButton status={trip.status} />
 					{trip.reward && <span className='text-lg'>🏆</span>}
-					<TripRowOptions trip={trip} isCreator={isCreator} />
+					{trip.status !== 'completed' && (
+						<TripRowOptions trip={trip} isCreator={isCreator} />
+					)}
 				</div>
 			</div>
 		</>

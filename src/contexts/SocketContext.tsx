@@ -10,11 +10,13 @@ import { API_BASE_URL } from '../env.config';
 import { SocketClientType } from '@/types/socket';
 import { useTripContext } from './TripContext';
 import useAxios from '@/hooks/useAxios';
+import useToggle from '@/hooks/useToggle';
 
 export interface IMessage {
 	userId: string;
 	message: string;
 	timestamp: string;
+	userName?: string;
 }
 
 export interface IRedisUserTripData {
@@ -39,6 +41,13 @@ interface ISocketContextValue {
 	usersInLiveTripExpData: IRedisUserTripData[];
 	currentExpIndex: number;
 	isTripActive: boolean;
+	unreadMessagesState: {
+		count: number;
+		isInChat: boolean;
+	};
+	setUnreadMessagesState: (state: { count: number; isInChat: boolean }) => void;
+	setExperienceActive: (value: boolean) => void;
+	isExperienceActive: boolean;
 }
 
 interface ITripSocketProviderProps {
@@ -57,10 +66,21 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	>([]);
 	const [currentExpIndex, setCurrentExpIndex] = useState<number>(0);
 	const [isTripActive, setIsTripActive] = useState<boolean>(false);
+	const { isOpen: isExperienceActive, setIsOpen: setExperienceActive } =
+		useToggle(false);
+	const [unreadMessagesState, setUnreadMessagesState] = useState<{
+		count: number;
+		isInChat: boolean;
+	}>({
+		count: 0,
+		isInChat: false,
+	});
 
-	const { activate, data: usersInLiveTripData } = useAxios<
-		IRedisUserTripData[]
-	>({
+	const {
+		activate,
+		data: usersInLiveTripData,
+		loading: loadingUsersInLiveTripData,
+	} = useAxios<IRedisUserTripData[]>({
 		manual: true,
 	});
 
@@ -102,6 +122,11 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		setIsTripActive(trip.status === 'started');
 		initUsersLiveData();
 		initExpirenceIndex();
+
+		return () => {
+			socketClient.disconnect();
+			console.log('Socket disconnected');
+		};
 	}, [tripId, trip]);
 
 	useEffect(() => {
@@ -126,8 +151,11 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				];
 			});
 		});
+		socket.on('allUsersInExperience', (isAllUSersInExperience) => {
+			setExperienceActive(true);
+		});
 
-		socket.on('experienceFinished', (data, userId, index) => {
+		socket.on('experienceFinished', (data, userId) => {
 			setUsersInLiveTripExpData((prev) => {
 				const userIndex = prev.findIndex((user) => user.userId === userId);
 				if (userIndex === -1) {
@@ -153,7 +181,13 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 					hour: '2-digit',
 					minute: '2-digit',
 				}),
+				userName: usersInLiveTripData?.find((user) => user.userId === userId)
+					?.name,
 			});
+			setUnreadMessagesState((prev) => ({
+				...prev,
+				count: prev.isInChat ? 0 : prev.count + 1,
+			}));
 		});
 
 		socket.on('finishedTrip', () => {
@@ -173,10 +207,9 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		});
 
 		return () => {
-			socket.disconnect();
-			console.log('Socket disconnected');
+			socket.removeAllListeners();
 		};
-	}, [socket]);
+	}, [socket, usersInLiveTripData, loadingUsersInLiveTripData]);
 
 	return (
 		<tripSocketContext.Provider
@@ -189,6 +222,10 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				usersInLiveTripExpData,
 				currentExpIndex,
 				isTripActive,
+				setExperienceActive,
+				isExperienceActive,
+				unreadMessagesState,
+				setUnreadMessagesState,
 			}}
 		>
 			{children}
