@@ -10,6 +10,9 @@ module.exports = {
 				secondary: '#383644',
 			},
 		},
+		animation: {
+			'stop-pulse': 'stop-pulse 1.5s ease infinite',
+		},
 	},
 	darkMode: 'class',
 	plugins: [],

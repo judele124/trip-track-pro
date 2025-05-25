@@ -43,6 +43,8 @@ export default function MapRoute({
 			} catch (error) {
 				console.error('Error updating existing route:', error);
 			}
+		} else {
+			addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
 		}
 	}, [route]);
 
@@ -52,5 +54,6 @@ export default function MapRoute({
 		mapRef.current.setPaintProperty(id, 'line-opacity', options.lineOpacity);
 		mapRef.current.setPaintProperty(id, 'line-width', options.lineWidth);
 	}, [options]);
+
 	return null;
 }
