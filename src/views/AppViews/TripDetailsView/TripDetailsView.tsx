@@ -1,41 +1,31 @@
 import Icon from '@/components/icons/Icon';
-import MapModal from '@/components/MapModal';
 import TripDetailsStops from '@/views/AppViews/TripDetailsView/components/TripDetailsStops';
-import Button from '@/components/ui/Button';
 import useAxios, { UseAxiosResponse } from '@/hooks/useAxios';
-import useToggle from '@/hooks/useToggle';
 import { Trip } from '@/types/trip';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
 import { useEffect, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Types } from 'trip-track-package';
 import TripStatusButton from '../profileView/components/TripStatusButton';
 import RewardDetails from './components/RewardDetails';
 import { tripGet } from '@/servises/tripService';
 import UpdateGuidesBtn from '@/components/updateGuidesBtn/UpdateGuidesBtn';
 import TripActionsModal from '../profileView/components/TripActionsModal';
 import { useAuthContext } from '@/contexts/AuthContext';
+import ShowTripOnMapBtn from '@/components/ShowTripOnMapBtn';
+import { Types } from 'trip-track-package';
+import useToggle from '@/hooks/useToggle';
 
 export default function TripDetailsView() {
-	const { isOpen: mapOpen, toggle: toggleMap } = useToggle();
 	const params = useParams();
-	const { data, loading, error, status, activate } = useAxios<Trip>({
+	const {
+		data: tripData,
+		loading,
+		error,
+		status,
+		activate,
+	} = useAxios<Trip>({
 		manual: true,
-	});
-
-	const tripData = data as Trip | undefined;
-
-	const points = useMemo(
-		() =>
-			tripData?.stops.map(
-				(stop: Types['Trip']['Stop']['Model']) => stop.location
-			) || [],
-		[tripData]
-	);
-
-	const { routeData } = useMapboxDirectionRoute({
-		points,
 	});
 
 	useEffect(() => {
@@ -74,25 +64,11 @@ export default function TripDetailsView() {
 								}}
 								tripId={tripData._id}
 							/>
-							<Button
-								className='bg-transparent text-sm text-dark underline dark:text-light'
-								onClick={toggleMap}
-							>
-								Show trip on map
-							</Button>
+							<ShowTripOnMapBtn trip={tripData} />
 						</div>
 					</>
 				)}
 			</div>
-			{tripData && (
-				<MapModal
-					disableExperiences
-					mapOpen={mapOpen}
-					toggleMap={toggleMap}
-					routeData={routeData}
-					stops={tripData.stops}
-				/>
-			)}
 		</>
 	);
 }
