@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useMap } from '../../Map';
 import GeneralMarker from './GeneralMarker';
 import { IUserResponseData } from '@/types/user';
-import { useMap } from '../../Map';
 
 interface IUserMarkerProps {
 	location: { lon: number; lat: number };
