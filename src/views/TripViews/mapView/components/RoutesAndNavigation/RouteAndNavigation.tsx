@@ -4,6 +4,7 @@ import DirectionComponent from './DirectionComponent';
 import useRouteAndNavigation from '../../hooks/useRouteAndNavigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import MapArrow from './MapArrow';
+import { useMemo } from 'react';
 
 interface IRouteAndNavigationProps {
 	routeId: string;
@@ -31,17 +32,21 @@ export default function RouteAndNavigation({
 			active,
 		});
 
-	if (!routeData || !userLocation || !user) return null;
+	const memoizedRouteData = useMemo(() => routeData, [routeData]);
+
+	if (!memoizedRouteData || !userLocation || !user) return null;
 
 	return (
 		<>
 			{active && (
 				<>
-					{nextStepIndex != routeData.routes[0].legs[0].steps.length - 1 && (
+					{nextStepIndex !=
+						memoizedRouteData.routes[0].legs[0].steps.length - 1 && (
 						<MapArrow
 							outerId={`arrow-${routeId}`}
 							maneuver={
-								routeData.routes[0].legs[0].steps[nextStepIndex].maneuver
+								memoizedRouteData.routes[0].legs[0].steps[nextStepIndex]
+									.maneuver
 							}
 							fillColor='#32adff'
 							outlineColor='#264fa8'
@@ -66,7 +71,8 @@ export default function RouteAndNavigation({
 						}}
 						options={fillRouteOption}
 						beforeLayerIds={
-							nextStepIndex != routeData.routes[0].legs[0].steps.length - 1
+							nextStepIndex !=
+							memoizedRouteData.routes[0].legs[0].steps.length - 1
 								? `arrow-${routeId}`
 								: undefined
 						}
@@ -76,13 +82,13 @@ export default function RouteAndNavigation({
 					<DirectionComponent
 						nextStepIndex={nextStepIndex}
 						userToStepNextDistance={userToStepNextDistance}
-						steps={routeData.routes[0].legs[0].steps}
+						steps={memoizedRouteData.routes[0].legs[0].steps}
 					/>
 				</>
 			)}
 
 			<MapRoute
-				route={routeData}
+				route={memoizedRouteData}
 				options={routeOptions}
 				id={`route-${routeId}`}
 				beforeLayerIds={active ? `walkedPath-${routeId}` : undefined}

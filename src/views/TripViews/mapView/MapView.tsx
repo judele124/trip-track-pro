@@ -14,7 +14,6 @@ import RouteAndNavigation from './components/RoutesAndNavigation/RouteAndNavigat
 import OtherUserMarker from './components/Markers/OtherUserMarker';
 import Icon from '@/components/icons/Icon';
 import { Types } from 'trip-track-package';
-import useFakeUserLocation from './tests/useFakeUserLocation';
 import useUserCompletingTrip from './tests/useUserCompletingTrip';
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
