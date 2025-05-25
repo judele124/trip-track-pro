@@ -4,6 +4,7 @@ import {
 	addPolygonFillAndOuterFillToMap,
 	offsetLocationByMeters,
 	Point,
+	removePolygonFillAndOuterFillFromMap,
 } from './map.functions';
 
 interface IAddArrowToMap {
@@ -82,6 +83,10 @@ export function addArrowToMap({
 			'fill-color': outlineColor,
 		},
 	});
+}
+
+export function removeArrowFromMap(map: Map, outerId: string) {
+	removePolygonFillAndOuterFillFromMap(map, outerId);
 }
 
 function getArrowBasePoints({
