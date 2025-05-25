@@ -2,7 +2,7 @@ import { NavLink, NavLinkProps } from 'react-router-dom';
 import Icon from '../icons/Icon';
 
 interface ILinkProps extends NavLinkProps {
-	notificationCount: number | undefined;
+	notificationCount?: number;
 	to: 'map' | 'participants' | 'chat';
 }
 const BottomNavigationBtn = ({ notificationCount, to }: ILinkProps) => {

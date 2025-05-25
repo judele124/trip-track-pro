@@ -3,6 +3,7 @@ import Input from '@/components/ui/Input';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { IMessage, useTripSocket } from '@/contexts/SocketContext';
 import { useTripContext } from '@/contexts/TripContext';
+import { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 interface FormValues {
@@ -12,12 +13,11 @@ interface FormValues {
 const ChatView = () => {
 	const { trip } = useTripContext();
 	const { user } = useAuthContext();
-	const { socket, messages } = useTripSocket();
+	const { socket, messages, setUnreadMessagesState } = useTripSocket();
 	const { register, handleSubmit, reset } = useForm<FormValues>();
 
 	const handleSendMessage: SubmitHandler<FormValues> = ({ message }) => {
 		if (!trip || !user || !socket) return;
-
 		socket.emit(
 			'sendMessage',
 			trip._id.toString(),
@@ -26,6 +26,20 @@ const ChatView = () => {
 		);
 		reset();
 	};
+
+	useEffect(() => {
+		setUnreadMessagesState({
+			count: 0,
+			isInChat: true,
+		});
+
+		return () => {
+			setUnreadMessagesState({
+				count: 0,
+				isInChat: false,
+			});
+		};
+	}, []);
 
 	return (
 		<div className='flex h-full flex-col'>
@@ -67,7 +81,9 @@ function Message({ message, userId }: { message: IMessage; userId?: string }) {
 			}`}
 		>
 			{message.userId !== userId && (
-				<span className='font-semibold'>{message.userId}</span>
+				<span className='font-semibold'>
+					{message.userName || message.userId}
+				</span>
 			)}
 			<div className='flex flex-row items-end gap-2'>
 				<span className='text-nowrap text-xs text-gray-500'>
