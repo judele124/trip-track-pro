@@ -55,7 +55,7 @@ export default function JoinButton({ trip }: { trip: Trip }) {
 			role: user?.role,
 		});
 
-		nav(`${navigationRoutes.map}`);
+		nav(`${navigationRoutes.map}?tripId=${trip._id}`);
 	};
 
 	return (
