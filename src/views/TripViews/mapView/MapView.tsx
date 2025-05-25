@@ -14,6 +14,8 @@ import RouteAndNavigation from './components/RoutesAndNavigation/RouteAndNavigat
 import OtherUserMarker from './components/Markers/OtherUserMarker';
 import Icon from '@/components/icons/Icon';
 import { Types } from 'trip-track-package';
+import useFakeUserLocation from './tests/useFakeUserLocation';
+import useUserCompletingTrip from './tests/useUserCompletingTrip';
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
 const ROUTE_OPACITY = 1;
@@ -52,33 +54,39 @@ export default function MapView() {
 
 	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } = useToggle();
 
+	const { fakeUserLocation } = useUserCompletingTrip({
+		trip,
+		initialUserLocation,
+		isAtTripRoute,
+	});
+
 	useEffect(() => {
-		if (!trip || !userCurrentLocation || !trip.stops[0].location) return;
+		if (!trip || !fakeUserLocation || !trip.stops[0].location) return;
 		const distance = calculateDistanceOnEarth(
-			[userCurrentLocation.lon, userCurrentLocation.lat],
+			[fakeUserLocation.lon, fakeUserLocation.lat],
 			[trip.stops[0].location.lon, trip.stops[0].location.lat]
 		);
 
 		if (distance < RANGE_STEP_THRESHOLD) {
 			setIsAtTripRoute(true);
 		}
-	}, [userCurrentLocation, trip?.stops]);
+	}, [fakeUserLocation, trip?.stops]);
 
 	return (
 		<div className='page-colors mx-auto h-full'>
 			<Map>
 				{/* loading location */}
-				{!userCurrentLocation && <LoadingLocation />}
+				{!initialUserLocation && <LoadingLocation />}
 
-				{userCurrentLocation && user && (
-					<CurrentUserMarker location={userCurrentLocation} user={user} />
+				{fakeUserLocation && user && (
+					<CurrentUserMarker location={fakeUserLocation} user={user} />
 				)}
 
 				{usersLocations.map(({ id, location }) => (
 					<OtherUserMarker location={location} key={id} />
 				))}
 
-				{trip && userCurrentLocation && (
+				{trip && fakeUserLocation && (
 					<>
 						{isAtTripRoute ? (
 							<TripStopsMarkers
@@ -106,7 +114,7 @@ export default function MapView() {
 								lineWidth: ROUTE_FILL_WIDTH,
 								lineOpacity: ROUTE_OPACITY,
 							}}
-							userLocation={userCurrentLocation}
+							userLocation={fakeUserLocation}
 							active={isAtTripRoute}
 						/>
 
@@ -125,7 +133,7 @@ export default function MapView() {
 									lineWidth: ROUTE_FILL_WIDTH,
 									lineOpacity: ROUTE_OPACITY,
 								}}
-								userLocation={userCurrentLocation}
+								userLocation={fakeUserLocation}
 							/>
 						)}
 					</>

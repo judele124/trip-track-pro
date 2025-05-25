@@ -32,7 +32,6 @@ export default function RouteAndNavigation({
 		});
 
 	if (!routeData || !userLocation || !user) return null;
-	console.log(routeData, routeId);
 
 	return (
 		<>

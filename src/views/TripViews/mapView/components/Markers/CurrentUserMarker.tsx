@@ -16,7 +16,7 @@ export default function CurrentUserMarker({
 
 	useEffect(() => {
 		if (!isMapReady || !mapRef.current) return;
-		mapRef.current.flyTo({
+		mapRef.current.easeTo({
 			center: [location.lon, location.lat],
 			zoom: 15,
 		});
