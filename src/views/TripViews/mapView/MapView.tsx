@@ -14,7 +14,6 @@ import RouteAndNavigation from './components/RoutesAndNavigation/RouteAndNavigat
 import OtherUserMarker from './components/Markers/OtherUserMarker';
 import Icon from '@/components/icons/Icon';
 import { Types } from 'trip-track-package';
-import useFakeUserLocation from './tests/useFakeUserLocation';
 import useDrawRangeAroundStop from './hooks/useDrawRangeAroundStop';
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
@@ -39,44 +38,7 @@ export default function MapView() {
 		setExperienceActive,
 	} = useTripSocket();
 
-	// const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
-	// 	onLocationUpdate: (location) => {
-	// 		if (!trip || !socket) return;
-	// 		socket.emit('updateLocation', trip._id, location);
-	// 		if (
-	// 			calculateDistanceOnEarth(
-	// 				[location.lon, location.lat],
-	// 				[
-	// 					experienceStops[currentExpIndex].location.lon,
-	// 					experienceStops[currentExpIndex].location.lat,
-	// 				]
-	// 			) < STOP_MARKER_RANGE
-	// 		) {
-	// 			if (!user || isExperienceActive) return;
-	// 			socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
-	// 		} else {
-	// 			if (!isExperienceActive) return;
-	// 			setExperienceActive(false);
-	// 		}
-	// 	},
-	// });
-
-	const memoizedTripPoints = useMemo(
-		() => trip?.stops.map((stop) => stop.location) || [],
-		[trip]
-	);
-
-	// const memoizedUserToTripPoints = useMemo(
-	// 	() =>
-	// 		trip && initialUserLocation
-	// 			? [initialUserLocation, trip.stops[0].location]
-	// 			: [],
-	// 	[trip, initialUserLocation]
-	// );
-
-	const userCurrentLocation = useFakeUserLocation({
-		points: memoizedTripPoints,
-		speed: 20,
+	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			if (!trip || !socket) return;
 			const experienceStops = trip.stops.filter((stop) => stop.experience);
@@ -99,6 +61,19 @@ export default function MapView() {
 			}
 		},
 	});
+
+	const memoizedTripPoints = useMemo(
+		() => trip?.stops.map((stop) => stop.location) || [],
+		[trip]
+	);
+
+	const memoizedUserToTripPoints = useMemo(
+		() =>
+			trip && initialUserLocation
+				? [initialUserLocation, trip.stops[0].location]
+				: [],
+		[trip, initialUserLocation]
+	);
 
 	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } =
 		useToggle(true);
@@ -162,7 +137,7 @@ export default function MapView() {
 							active={isAtTripRoute}
 						/>
 
-						{/* {!isAtTripRoute && (
+						{!isAtTripRoute && (
 							<RouteAndNavigation
 								active={true}
 								routeId='user-to-trip-route'
@@ -179,7 +154,7 @@ export default function MapView() {
 								}}
 								userLocation={userCurrentLocation}
 							/>
-						)} */}
+						)}
 					</>
 				)}
 			</Map>
