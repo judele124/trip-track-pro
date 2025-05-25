@@ -74,8 +74,7 @@ export default function MapView() {
 		[trip, initialUserLocation]
 	);
 
-	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } =
-		useToggle(true);
+	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } = useToggle();
 
 	useEffect(() => {
 		if (!trip || !userCurrentLocation || !trip.stops[0].location) return;

@@ -10,7 +10,7 @@ interface IStopMarkerProps {
 	disableExperience?: boolean;
 	isExperienceActive?: boolean;
 	index: number;
-	isSocketContextChild?: boolean;
+	isTripActive?: boolean;
 }
 
 export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
@@ -19,7 +19,7 @@ export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
 			stop,
 			disableExperience = true,
 			isExperienceActive = false,
-			isSocketContextChild = true,
+			isTripActive = true,
 			index,
 		},
 		ref
@@ -65,7 +65,7 @@ export default forwardRef<HTMLButtonElement, IStopMarkerProps>(
 						</>
 					)}
 				</Button>
-				{stop.experience && isSocketContextChild && (
+				{stop.experience && isTripActive && (
 					<ExirienceModal
 						open={isOpen}
 						onBackdropClick={toggle}
