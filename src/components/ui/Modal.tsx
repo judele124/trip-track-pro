@@ -12,7 +12,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-type ModalAnchor =
+export type ModalAnchor =
 	| 'center'
 	| 'top'
 	| 'top-right'
