@@ -179,21 +179,23 @@ function TripStartLocationMarker({
 		lon: number;
 	};
 }) {
-	return (
-		<GeneralMarker location={location}>
-			<div
-				className={`relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 rounded-2xl bg-light p-3 text-dark dark:bg-dark dark:text-light`}
+	const markerHtml = `
+		<div
+			class="relative flex max-w-60 -translate-y-12 items-center justify-between gap-4 rounded-2xl bg-light p-3 text-dark dark:bg-dark dark:text-light"
+		>
+			<p class="text-sm font-semibold">Trip start point</p>
+			<svg
+				class="absolute left-1/2 top-full size-5 -translate-x-1/2 fill-light dark:fill-dark"
+				width="51"
+				height="60"
+				viewBox="0 0 51 60"
 			>
-				<p className='text-sm font-semibold'>Trip start point</p>
-				<svg
-					className='absolute left-1/2 top-full size-5 -translate-x-1/2 fill-light dark:fill-dark'
-					width='51'
-					height='60'
-					viewBox='0 0 51 60'
-				>
-					<path d='M50.75 0H0.75L27.2806 62L50.75 0Z' />
-				</svg>
-			</div>
-		</GeneralMarker>
+				<path d="M50.75 0H0.75L27.2806 62L50.75 0Z" />
+			</svg>
+		</div>
+	`;
+
+	return (
+		<GeneralMarker location={location} childrenAsInnerHtmlString={markerHtml} />
 	);
 }
