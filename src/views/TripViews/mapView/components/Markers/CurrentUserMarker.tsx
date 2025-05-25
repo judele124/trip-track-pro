@@ -20,7 +20,7 @@ export default function CurrentUserMarker({
 			center: [location.lon, location.lat],
 			duration: 1000,
 			easing: (t) => t,
-			zoom: 16,
+			zoom: 18,
 		});
 	}, [isMapReady, location]);
 	return (

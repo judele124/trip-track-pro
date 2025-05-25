@@ -1,10 +1,12 @@
 import { Trip } from '@/types/trip';
 import useFakeUserLocation from './useFakeUserLocation';
 import { useMapboxDirectionRoute } from '../hooks/useMapboxDirectionRoute';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { calculateDistanceOnEarth } from '@/utils/map.functions';
+import useToggle from '@/hooks/useToggle';
+import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
 
 interface IUseUserCompletingTripProps {
-	isAtTripRoute: boolean;
 	trip: Trip | null;
 	initialUserLocation: { lat: number; lon: number } | null;
 }
@@ -12,8 +14,9 @@ interface IUseUserCompletingTripProps {
 export default function useUserCompletingTrip({
 	trip,
 	initialUserLocation,
-	isAtTripRoute,
 }: IUseUserCompletingTripProps) {
+	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } = useToggle();
+
 	const memoizedPoints = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
 		[trip]
@@ -38,10 +41,23 @@ export default function useUserCompletingTrip({
 				lon: point[0],
 			})) || [],
 		speed: 100,
-		updateIntervalMs: 100,
+		updateIntervalMs: 500,
 	});
+
+	useEffect(() => {
+		if (!trip || !fakeUserLocation || !trip.stops[0].location) return;
+		const distance = calculateDistanceOnEarth(
+			[fakeUserLocation.lon, fakeUserLocation.lat],
+			[trip.stops[0].location.lon, trip.stops[0].location.lat]
+		);
+
+		if (distance < RANGE_STEP_THRESHOLD) {
+			setIsAtTripRoute(true);
+		}
+	}, [fakeUserLocation, trip?.stops]);
 
 	return {
 		fakeUserLocation,
+		isAtTripRoute,
 	};
 }

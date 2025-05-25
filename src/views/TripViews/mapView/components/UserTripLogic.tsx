@@ -12,6 +12,7 @@ import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
 import { useTripSocket } from '@/contexts/SocketContext';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import useToggle from '@/hooks/useToggle';
+import useUserCompletingTrip from '../tests/useUserCompletingTrip';
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
 const ROUTE_OPACITY = 1;
@@ -85,13 +86,21 @@ export default function UserTripLogic() {
 		}
 	}, [userCurrentLocation, trip?.stops]);
 
+	const { fakeUserLocation, isAtTripRoute: isFakeUserAtTripRoute } =
+		useUserCompletingTrip({
+			trip,
+			initialUserLocation,
+		});
+
+	const currentIsAtTripRoute = isFakeUserAtTripRoute || isAtTripRoute;
+
 	return (
 		<>
 			{/* loading location */}
-			{!userCurrentLocation && <LoadingLocation />}
+			{!fakeUserLocation && <LoadingLocation />}
 
-			{userCurrentLocation && user && (
-				<CurrentUserMarker location={userCurrentLocation} user={user} />
+			{fakeUserLocation && user && (
+				<CurrentUserMarker location={fakeUserLocation} user={user} />
 			)}
 
 			{usersLocations.map(({ id, location }) => (
@@ -100,7 +109,7 @@ export default function UserTripLogic() {
 
 			{trip && userCurrentLocation && (
 				<>
-					{isAtTripRoute ? (
+					{currentIsAtTripRoute ? (
 						<TripStopsMarkers
 							isExperienceActive={isExperienceActive}
 							currentExpIndex={currentExpIndex}
@@ -114,11 +123,11 @@ export default function UserTripLogic() {
 						routeId='trip-route'
 						originalPoints={memoizedTripPoints}
 						routeOptions={{
-							lineColor: isAtTripRoute
+							lineColor: currentIsAtTripRoute
 								? ACTIVE_ROUTE_COLOR
 								: INACTIVE_ROUTE_COLOR,
 							lineWidth: ROUTE_WIDTH,
-							lineOpacity: isAtTripRoute
+							lineOpacity: currentIsAtTripRoute
 								? ROUTE_OPACITY
 								: INACTIVE_ROUTE_OPACITY,
 						}}
@@ -127,11 +136,11 @@ export default function UserTripLogic() {
 							lineWidth: ROUTE_FILL_WIDTH,
 							lineOpacity: ROUTE_OPACITY,
 						}}
-						userLocation={userCurrentLocation}
-						active={isAtTripRoute}
+						userLocation={fakeUserLocation}
+						active={currentIsAtTripRoute}
 					/>
 
-					{!isAtTripRoute && (
+					{!currentIsAtTripRoute && (
 						<RouteAndNavigation
 							active={true}
 							routeId='user-to-trip-route'
@@ -146,7 +155,7 @@ export default function UserTripLogic() {
 								lineWidth: ROUTE_FILL_WIDTH,
 								lineOpacity: ROUTE_OPACITY,
 							}}
-							userLocation={userCurrentLocation}
+							userLocation={fakeUserLocation}
 						/>
 					)}
 				</>
