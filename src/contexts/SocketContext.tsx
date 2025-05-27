@@ -40,6 +40,8 @@ interface ISocketContextValue {
 	usersLocations: IUserLocation[];
 	usersInLiveTripExpData: IRedisUserTripData[];
 	currentExpIndex: number;
+	isTripActive: boolean;
+	setIsTripActive: (value: boolean) => void;
 	unreadMessagesState: {
 		count: number;
 		isInChat: boolean;
@@ -64,6 +66,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		IRedisUserTripData[]
 	>([]);
 	const [currentExpIndex, setCurrentExpIndex] = useState<number>(0);
+	const [isTripActive, setIsTripActive] = useState<boolean>(true);
 	const { isOpen: isExperienceActive, setIsOpen: setExperienceActive } =
 		useToggle(false);
 	const [unreadMessagesState, setUnreadMessagesState] = useState<{
@@ -117,7 +120,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		});
 
 		setSocket(socketClient);
-
+		setIsTripActive(trip.status === 'started');
 		initUsersLiveData();
 		initExpirenceIndex();
 
@@ -188,6 +191,10 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			}));
 		});
 
+		socket.on('finishedTrip', () => {
+			setIsTripActive(false);
+		});
+
 		socket.on('connect', () => {
 			console.log('Connected to socket');
 		});
@@ -215,6 +222,8 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				usersLocations,
 				usersInLiveTripExpData,
 				currentExpIndex,
+				isTripActive,
+				setIsTripActive,
 				setExperienceActive,
 				isExperienceActive,
 				unreadMessagesState,
