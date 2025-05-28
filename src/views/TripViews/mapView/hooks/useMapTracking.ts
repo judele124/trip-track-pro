@@ -1,7 +1,24 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Map } from 'mapbox-gl';
 
-export function useMapTracking(mapRef: React.RefObject<Map | null>) {
+interface MapTrackingOptions {
+	zoom?: number;
+	speed?: number;
+	duration?: number;
+	autoReenableDelay?: number | null;
+}
+
+export function useMapTracking(
+	mapRef: React.RefObject<Map | null>,
+	options: MapTrackingOptions = {}
+) {
+	const {
+		zoom = 16,
+		speed = 1.5,
+		duration = 1000,
+		autoReenableDelay = 30000, // 30 seconds
+	} = options;
+
 	const [isTracking, setIsTracking] = useState(true);
 	const trackingTimeoutRef = useRef<number | null>(null);
 
@@ -9,30 +26,55 @@ export function useMapTracking(mapRef: React.RefObject<Map | null>) {
 		(location: { lon: number; lat: number }) => {
 			if (!mapRef.current) return;
 
+			const currentZoom = mapRef.current.getZoom();
+			const currentBearing = mapRef.current.getBearing();
+			const currentPitch = mapRef.current.getPitch();
+
 			mapRef.current.flyTo({
 				center: [location.lon, location.lat],
-				zoom: 16,
-				speed: 1.5,
+				zoom: currentZoom,
+				bearing: currentBearing,
+				pitch: currentPitch,
+				speed: 1.2,
 				essential: true,
-				duration: 1000,
+				duration: 800,
 			});
 		},
-		[mapRef]
+		[mapRef, zoom, speed, duration]
 	);
 
-	const toggleTracking = useCallback(() => {
-		setIsTracking((prev) => !prev);
-	}, []);
+	const toggleTracking = useCallback(
+		(value?: boolean) => {
+			const newValue = value ?? !isTracking;
+			setIsTracking(newValue);
+
+			if (trackingTimeoutRef.current) {
+				window.clearTimeout(trackingTimeoutRef.current);
+				trackingTimeoutRef.current = null;
+			}
+
+			if (!newValue && autoReenableDelay !== null) {
+				trackingTimeoutRef.current = window.setTimeout(() => {
+					setIsTracking(true);
+				}, autoReenableDelay);
+			}
+		},
+		[isTracking, autoReenableDelay]
+	);
 
 	const handleDragStart = useCallback(() => {
 		if (isTracking) {
-			setIsTracking(false);
-
-			trackingTimeoutRef.current = window.setTimeout(() => {
-				setIsTracking(true);
-			}, 30000);
+			toggleTracking(false);
 		}
-	}, [isTracking]);
+	}, [isTracking, toggleTracking]);
+
+	useEffect(() => {
+		return () => {
+			if (trackingTimeoutRef.current) {
+				window.clearTimeout(trackingTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	useEffect(() => {
 		const map = mapRef.current;
@@ -42,9 +84,6 @@ export function useMapTracking(mapRef: React.RefObject<Map | null>) {
 
 		return () => {
 			map.off('dragstart', handleDragStart);
-			if (trackingTimeoutRef.current) {
-				window.clearTimeout(trackingTimeoutRef.current);
-			}
 		};
 	}, [mapRef, handleDragStart]);
 
