@@ -40,7 +40,7 @@ const TripLayout = () => {
 			>
 				<div
 					ref={pageContentRef}
-					className='-z-10 grow overflow-hidden bg-secondary/20'
+					className='relative -z-10 grow overflow-hidden bg-secondary/20'
 				>
 					{loadingTrip && (
 						<div className='flex h-full items-center justify-center'>
