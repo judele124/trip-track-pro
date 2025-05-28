@@ -1,30 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Map } from 'mapbox-gl';
+import { useMap } from '../Map';
 
 interface MapTrackingOptions {
 	zoom?: number;
 	speed?: number;
 	duration?: number;
-	autoReenableDelay?: number | null;
 }
 
-export function useMapTracking(
-	mapRef: React.RefObject<Map | null>,
-	options: MapTrackingOptions = {}
-) {
-	const {
-		zoom = 16,
-		speed = 1.5,
-		duration = 1000,
-		autoReenableDelay = 30000, // 30 seconds
-	} = options;
-
+export function useMapTracking(options: MapTrackingOptions = {}) {
+	const { mapRef, isMapReady } = useMap();
+	const { zoom = 16, speed = 1.5, duration = 1000 } = options;
 	const [isTracking, setIsTracking] = useState(true);
-	const trackingTimeoutRef = useRef<number | null>(null);
+	const isUserInteractingWithMap = useRef(false);
 
 	const centerOnUser = useCallback(
 		(location: { lon: number; lat: number }) => {
-			if (!mapRef.current) return;
+			if (!mapRef.current || isUserInteractingWithMap.current) return;
 
 			const currentZoom = mapRef.current.getZoom();
 			const currentBearing = mapRef.current.getBearing();
@@ -35,9 +26,9 @@ export function useMapTracking(
 				zoom: currentZoom,
 				bearing: currentBearing,
 				pitch: currentPitch,
-				speed: 1.2,
+				speed,
 				essential: true,
-				duration: 800,
+				duration,
 			});
 		},
 		[mapRef, zoom, speed, duration]
@@ -47,19 +38,8 @@ export function useMapTracking(
 		(value?: boolean) => {
 			const newValue = value ?? !isTracking;
 			setIsTracking(newValue);
-
-			if (trackingTimeoutRef.current) {
-				window.clearTimeout(trackingTimeoutRef.current);
-				trackingTimeoutRef.current = null;
-			}
-
-			if (!newValue && autoReenableDelay !== null) {
-				trackingTimeoutRef.current = window.setTimeout(() => {
-					setIsTracking(true);
-				}, autoReenableDelay);
-			}
 		},
-		[isTracking, autoReenableDelay]
+		[isTracking]
 	);
 
 	const handleDragStart = useCallback(() => {
@@ -69,23 +49,50 @@ export function useMapTracking(
 	}, [isTracking, toggleTracking]);
 
 	useEffect(() => {
-		return () => {
-			if (trackingTimeoutRef.current) {
-				window.clearTimeout(trackingTimeoutRef.current);
-			}
-		};
-	}, []);
-
-	useEffect(() => {
 		const map = mapRef.current;
 		if (!map) return;
-
 		map.on('dragstart', handleDragStart);
+		map.on('zoomstart', () => {
+			isUserInteractingWithMap.current = true;
+		});
+		map.on('pitchstart', () => {
+			isUserInteractingWithMap.current = true;
+		});
+		map.on('rotatestart', () => {
+			isUserInteractingWithMap.current = true;
+		});
+		map.on('zoomend', () => {
+			isUserInteractingWithMap.current = false;
+		});
+		map.on('pitchend', () => {
+			isUserInteractingWithMap.current = false;
+		});
+		map.on('rotateend', () => {
+			isUserInteractingWithMap.current = false;
+		});
 
 		return () => {
 			map.off('dragstart', handleDragStart);
+			map.off('zoomstart', () => {
+				isUserInteractingWithMap.current = true;
+			});
+			map.off('pitchstart', () => {
+				isUserInteractingWithMap.current = true;
+			});
+			map.off('rotatestart', () => {
+				isUserInteractingWithMap.current = true;
+			});
+			map.off('zoomend', () => {
+				isUserInteractingWithMap.current = false;
+			});
+			map.off('pitchend', () => {
+				isUserInteractingWithMap.current = false;
+			});
+			map.off('rotateend', () => {
+				isUserInteractingWithMap.current = false;
+			});
 		};
-	}, [mapRef, handleDragStart]);
+	}, [isMapReady, handleDragStart, toggleTracking]);
 
 	return {
 		isTracking,

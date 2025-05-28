@@ -13,8 +13,8 @@ export default function CurrentUserMarker({
 	location,
 	user,
 }: IUserMarkerProps) {
-	const { isMapReady, mapRef } = useMap();
-	const { isTracking, toggleTracking, centerOnUser } = useMapTracking(mapRef);
+	const { isMapReady } = useMap();
+	const { isTracking, toggleTracking, centerOnUser } = useMapTracking();
 
 	useEffect(() => {
 		if (!isMapReady || !location || !isTracking) return;
