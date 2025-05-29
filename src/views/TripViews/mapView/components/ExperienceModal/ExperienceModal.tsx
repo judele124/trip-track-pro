@@ -4,7 +4,7 @@ import { ExperienceType, Types } from 'trip-track-package';
 import InfoExperienceData from './InfoExperienceData';
 import TriviaExperienceData from './TriviaExperienceData';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { useTripSocket } from '@/contexts/SocketContext';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 import { useTripContext } from '@/contexts/TripContext';
 
 interface IExperienceModalProps {

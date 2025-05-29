@@ -5,7 +5,9 @@ import { useRouteProgress } from './useRouteProgress';
 import { Point } from '@/utils/map.functions';
 import useCurrentUserOutOfTripRoute from './useCurrentUserOutOfTripRoute';
 import { useEffect, useState } from 'react';
-
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useTripContext } from '@/contexts/TripContext';
 interface IUseRouteAndNavigationProps {
 	userLocation: { lon: number; lat: number } | null;
 	points: { lon: number; lat: number }[];
@@ -25,6 +27,10 @@ export default function useRouteAndNavigation({
 	points,
 	active,
 }: IUseRouteAndNavigationProps): IUseRouteAndNavigationReturn {
+	const { socket, setNotification } = useTripSocket();
+	const { user } = useAuthContext();
+	const { trip } = useTripContext();
+
 	const [currentRoutePoints, setCurrentRoutePoints] =
 		useState<{ lon: number; lat: number }[]>(points);
 
@@ -56,11 +62,26 @@ export default function useRouteAndNavigation({
 
 	// when user is out of route, update points state to restart the route data logic
 	useEffect(() => {
+		let isFirst = true;
 		if (isOutOfRoute && userLocation) {
 			const newPoints = [
 				userLocation,
 				...points.slice(nextStepIndex, points.length),
 			];
+			if (isFirst) {
+				isFirst = false;
+				setNotification({
+					message: 'You are out of trip route',
+					status: 'warning',
+					timestamp: new Date().toLocaleTimeString([], {
+						hour: '2-digit',
+						minute: '2-digit',
+					}),
+				});
+				if (socket && user && trip) {
+					socket.emit('iAmOutOfTripRoute', trip._id, user._id);
+				}
+			}
 			setCurrentRoutePoints(newPoints);
 		}
 	}, [isOutOfRoute]);

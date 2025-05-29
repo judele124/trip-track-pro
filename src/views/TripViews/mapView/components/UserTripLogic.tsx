@@ -9,9 +9,10 @@ import LoadingLocation from './LoadingLocation';
 import { useEffect, useMemo } from 'react';
 import { calculateDistanceOnEarth } from '@/utils/map.functions';
 import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
-import { useTripSocket } from '@/contexts/SocketContext';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import useToggle from '@/hooks/useToggle';
+import Notification from './Notifications';
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
 const ROUTE_OPACITY = 1;
@@ -33,6 +34,11 @@ export default function UserTripLogic() {
 		currentExpIndex,
 		isExperienceActive,
 		setExperienceActive,
+		notification,
+		urgentNotifications,
+		isNotificationActive,
+		setNotification,
+		setIsNotificationActive,
 	} = useTripSocket();
 
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
@@ -109,6 +115,20 @@ export default function UserTripLogic() {
 					) : (
 						<TripStartLocationMarker location={trip.stops[0].location} />
 					)}
+
+					<Notification
+						isModalOpen={isNotificationActive || notification !== null}
+						notification={
+							isNotificationActive
+								? urgentNotifications[urgentNotifications.length - 1]
+								: notification!
+						}
+						closeModal={() => {
+							isNotificationActive
+								? setIsNotificationActive(false)
+								: setNotification(null);
+						}}
+					/>
 
 					<RouteAndNavigation
 						routeId='trip-route'
