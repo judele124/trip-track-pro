@@ -4,6 +4,7 @@ import { Types } from 'trip-track-package';
 import { useNavigate } from 'react-router-dom';
 import { navigationRoutes } from '@/Routes/routes';
 import TripRowOptions from './TripRowOptions';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 interface TripRowProps {
 	trip: Trip;
@@ -13,6 +14,7 @@ interface TripRowProps {
 
 export default function TripRow({ trip, i, isCreator }: TripRowProps) {
 	const nav = useNavigate();
+	const { user } = useAuthContext();
 
 	return (
 		<>
@@ -34,7 +36,7 @@ export default function TripRow({ trip, i, isCreator }: TripRowProps) {
 				<div className='flex w-[50%] items-center justify-between gap-2 pl-2'>
 					<TripStatusButton status={trip.status} />
 					{trip.reward && <span className='text-lg'>🏆</span>}
-					{trip.status !== 'completed' && (
+					{(trip.status !== 'completed' || user?.role === 'developer') && (
 						<TripRowOptions trip={trip} isCreator={isCreator} />
 					)}
 				</div>
