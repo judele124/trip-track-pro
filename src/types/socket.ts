@@ -7,7 +7,7 @@ type LocationPayload = {
 };
 
 type ClientEventPayloads = {
-	joinTrip: [tripId: string];
+	joinTrip: [tripId: string, userId: string];
 	updateLocation: [tripId: string, location: LocationPayload];
 	finishExperience: [
 		tripId: string,
@@ -17,12 +17,12 @@ type ClientEventPayloads = {
 	];
 	sendMessage: [tripId: string, message: string, userId: string];
 	userInExperience: [tripId: string, userId: string, index: number];
-	iAmOutOfTripRoute: [tripId: string, userId: string];
+	currentUserOutOfTripRoute: [tripId: string, userId: string];
 	'connect-error': [error: Error];
 };
 
 type ServerEventPayloads = {
-	tripJoined: [userSocketId: string];
+	tripJoined: [userData: IRedisUserTripData];
 	locationUpdated: [userSocketId: string, location: LocationPayload];
 	experienceFinished: [
 		updateData: IRedisUserTripData,
@@ -57,7 +57,7 @@ export const ClientEvents = {
 	finishExperience: 'finishExperience',
 	sendMessage: 'sendMessage',
 	userInExperience: 'userInExperience',
-	iAmOutOfTripRoute: 'iAmOutOfTripRoute',
+	currentUserOutOfTripRoute: 'currentUserOutOfTripRoute',
 	connectError: 'connect-error',
 } as const;
 

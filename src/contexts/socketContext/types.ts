@@ -16,16 +16,22 @@ export interface IMessage {
 }
 
 export interface INotification {
-	message: string;
 	status: 'good' | 'bad' | 'warning' | 'default';
 	timestamp: string;
 	icon?: IconName;
+	message: string;
 }
 
-export interface IUrgentNotification extends INotification {
+export interface IBadNotification extends INotification {
+	status: 'bad';
+}
+
+export interface UserOutOfRouteNotification extends IBadNotification {
 	userId: string;
+	message: 'user is out of trip route';
 }
 
+export type UrgentNotificationType = UserOutOfRouteNotification;
 export interface IUserLocation {
 	id: string;
 	location: { lat: number; lon: number };

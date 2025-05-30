@@ -36,9 +36,9 @@ export default function UserTripLogic() {
 		setExperienceActive,
 		notification,
 		urgentNotifications,
-		isNotificationActive,
+		isUrgentNotificationActive,
 		setNotification,
-		setIsNotificationActive,
+		setIsUrgentNotificationActive,
 	} = useTripSocket();
 
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
@@ -117,15 +117,15 @@ export default function UserTripLogic() {
 					)}
 
 					<Notification
-						isModalOpen={isNotificationActive || notification !== null}
+						isModalOpen={isUrgentNotificationActive || notification !== null}
 						notification={
-							isNotificationActive
+							isUrgentNotificationActive
 								? urgentNotifications[urgentNotifications.length - 1]
 								: notification!
 						}
 						closeModal={() => {
-							isNotificationActive
-								? setIsNotificationActive(false)
+							isUrgentNotificationActive
+								? setIsUrgentNotificationActive(false)
 								: setNotification(null);
 						}}
 					/>

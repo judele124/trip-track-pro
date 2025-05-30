@@ -79,7 +79,7 @@ export default function useRouteAndNavigation({
 					}),
 				});
 				if (socket && user && trip) {
-					socket.emit('iAmOutOfTripRoute', trip._id, user._id);
+					socket.emit('currentUserOutOfTripRoute', trip._id, user._id);
 				}
 			}
 			setCurrentRoutePoints(newPoints);

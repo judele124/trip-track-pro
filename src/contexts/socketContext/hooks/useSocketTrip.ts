@@ -1,7 +1,6 @@
 import { useTripContext } from '@/contexts/TripContext';
 import useAxios from '@/hooks/useAxios';
-import { SocketClientType } from '@/types/socket';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IRedisUserTripData } from '../types';
 import { API_BASE_URL } from '@/env.config';
 import { Trip } from '@/types/trip';
@@ -18,11 +17,7 @@ export interface ITripSocketProviderValue {
 	>;
 }
 
-export default function useSocketTrip({
-	socket,
-}: {
-	socket: SocketClientType | null;
-}): ITripSocketProviderValue {
+export default function useSocketTrip(): ITripSocketProviderValue {
 	const { tripId, trip } = useTripContext();
 	const [usersInLiveTripExpData, setUsersInLiveTripExpData] = useState<
 		IRedisUserTripData[]
@@ -44,15 +39,6 @@ export default function useSocketTrip({
 			setUsersInLiveTripExpData(usersLiveData);
 		}
 	};
-
-	useEffect(() => {
-		if (!socket || !tripId) return;
-		socket.emit('joinTrip', tripId);
-
-		socket.on('tripJoined', (userId) => {
-			console.log('User joined trip:', userId);
-		});
-	}, [socket, tripId]);
 
 	return {
 		tripId,
