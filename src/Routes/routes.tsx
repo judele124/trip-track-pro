@@ -2,7 +2,7 @@ import NavbarLayout from '@/components/layouts/NavbarLayout';
 import PageLayout from '@/components/layouts/PageLayout';
 import TripLayout from '@/components/layouts/TripLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import SocketProvider from '@/contexts/SocketContext';
+import SocketProvider from '@/contexts/socketContext';
 import TripProvider from '@/contexts/TripContext';
 import BeforeJoinTripView from '@/views/AppViews/beforeJoinTripView';
 import CreateTripView from '@/views/AppViews/createTripView';

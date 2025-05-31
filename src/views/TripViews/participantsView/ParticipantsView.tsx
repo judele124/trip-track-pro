@@ -1,4 +1,4 @@
-import { useTripSocket } from '@/contexts/SocketContext';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 
 const ParticipantsView = () => {
 	const { usersInLiveTripExpData } = useTripSocket();

@@ -1,7 +1,8 @@
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { IMessage, useTripSocket } from '@/contexts/SocketContext';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
+import { IMessage } from '@/contexts/socketContext/types';
 import { useTripContext } from '@/contexts/TripContext';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';

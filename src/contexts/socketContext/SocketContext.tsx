@@ -6,33 +6,22 @@ import {
 	useState,
 } from 'react';
 import { io } from 'socket.io-client';
-import { API_BASE_URL } from '../env.config';
+import { API_BASE_URL } from '../../env.config';
 import { SocketClientType } from '@/types/socket';
-import { useTripContext } from './TripContext';
-import useAxios from '@/hooks/useAxios';
-import useToggle from '@/hooks/useToggle';
+import useSocketTrip from './hooks/useSocketTrip';
+import useSocketMessages from './hooks/useSocketMessages';
+import useSocketExperiences from './hooks/useSocketExperiences';
+import useSocketNotifications from './hooks/useSocketNotifications';
+import {
+	IRedisUserTripData,
+	IUserLocation,
+	UrgentNotificationType,
+	INotification,
+	IMessage,
+} from './types';
+import { useAuthContext } from '../AuthContext';
 
-export interface IMessage {
-	userId: string;
-	message: string;
-	timestamp: string;
-	userName?: string;
-}
-
-export interface IRedisUserTripData {
-	imageUrl: string;
-	name: string;
-	score: number[]; // score for each experience in the trip
-	finishedExperiences: boolean[];
-	userId: string;
-}
-
-export interface IUserLocation {
-	id: string;
-	location: { lat: number; lon: number };
-}
-
-interface ISocketContextValue {
+export interface ISocketContextValue {
 	socket: SocketClientType | null;
 	messages: IMessage[];
 	addMsgToMsgs: (message: IMessage) => void;
@@ -47,6 +36,12 @@ interface ISocketContextValue {
 	setUnreadMessagesState: (state: { count: number; isInChat: boolean }) => void;
 	setExperienceActive: (value: boolean) => void;
 	isExperienceActive: boolean;
+	addUrgentNotification: (notification: UrgentNotificationType) => void;
+	setNotification: React.Dispatch<React.SetStateAction<INotification | null>>;
+	setIsUrgentNotificationActive: React.Dispatch<React.SetStateAction<boolean>>;
+	isUrgentNotificationActive: boolean;
+	notification: INotification | null;
+	urgentNotifications: UrgentNotificationType[];
 }
 
 interface ITripSocketProviderProps {
@@ -56,58 +51,45 @@ interface ITripSocketProviderProps {
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
+	const { user } = useAuthContext();
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
-	const [messages, setMessages] = useState<IMessage[]>([]);
-	const { tripId, trip } = useTripContext();
 	const [usersLocations, setUsersLocations] = useState<IUserLocation[]>([]);
-	const [usersInLiveTripExpData, setUsersInLiveTripExpData] = useState<
-		IRedisUserTripData[]
-	>([]);
-	const [currentExpIndex, setCurrentExpIndex] = useState<number>(0);
-	const { isOpen: isExperienceActive, setIsOpen: setExperienceActive } =
-		useToggle(false);
-	const [unreadMessagesState, setUnreadMessagesState] = useState<{
-		count: number;
-		isInChat: boolean;
-	}>({
-		count: 0,
-		isInChat: false,
+
+	const {
+		initUsersLiveData,
+		setUsersInLiveTripExpData,
+		tripId,
+		trip,
+		usersInLiveTripData,
+		usersInLiveTripExpData,
+		loadingUsersInLiveTripData,
+	} = useSocketTrip();
+
+	const {
+		addUrgentNotification,
+		setNotification,
+		setIsUrgentNotificationActive,
+		isUrgentNotificationActive,
+		notification,
+		urgentNotifications,
+	} = useSocketNotifications();
+
+	const {
+		initExpirenceIndex,
+		setExperienceActive,
+		currentExpIndex,
+		isExperienceActive,
+		setCurrentExpIndex,
+	} = useSocketExperiences({
+		tripId,
 	});
 
 	const {
-		activate,
-		data: usersInLiveTripData,
-		loading: loadingUsersInLiveTripData,
-	} = useAxios<IRedisUserTripData[]>({
-		manual: true,
-	});
-
-	const { activate: activateGetExpIndex, data: dataCurrentExpIndex } =
-		useAxios<{ data: number }>({
-			manual: true,
-		});
-
-	const addMsgToMsgs = (message: IMessage) => {
-		setMessages((prev) => [...prev, message]);
-	};
-
-	const initUsersLiveData = async () => {
-		const { data: usersLiveData } = await activate({
-			url: `${API_BASE_URL}/trip/${tripId}/users`,
-		});
-		if (usersLiveData) {
-			setUsersInLiveTripExpData(usersLiveData);
-		}
-	};
-
-	const initExpirenceIndex = async () => {
-		const { data } = await activateGetExpIndex({
-			url: `${API_BASE_URL}/trip/current-exp-index/${tripId}`,
-		});
-		if (data) {
-			setCurrentExpIndex(data.data || 0);
-		}
-	};
+		addMsgToMsgs,
+		setUnreadMessagesState,
+		messages,
+		unreadMessagesState,
+	} = useSocketMessages();
 
 	useEffect(() => {
 		if (!tripId || !trip || socket) return;
@@ -128,12 +110,19 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	}, [tripId, trip]);
 
 	useEffect(() => {
-		if (!socket || !tripId) return;
+		if (!socket || !tripId || !user) return;
+		socket.on('connect', () => {
+			console.log('Connected to socket');
+		});
 
-		socket.emit('joinTrip', tripId);
+		socket.emit('joinTrip', tripId, user._id);
 
-		socket.on('tripJoined', (userId) => {
-			console.log('User joined trip:', userId);
+		socket.on('tripJoined', (userData) => {
+			setUsersInLiveTripExpData((prev) => {
+				const isExist = prev.some((user) => user.userId === userData.userId);
+				if (isExist) return prev;
+				return [...prev, userData];
+			});
 		});
 
 		socket.on('locationUpdated', (userId, location) => {
@@ -149,6 +138,19 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				];
 			});
 		});
+
+		socket.on('userIsOutOfTripRoute', (userId) => {
+			addUrgentNotification({
+				status: 'bad',
+				message: 'user is out of trip route',
+				timestamp: new Date().toLocaleTimeString([], {
+					hour: '2-digit',
+					minute: '2-digit',
+				}),
+				userId,
+			});
+		});
+
 		socket.on('allUsersInExperience', (isAllUSersInExperience) => {
 			setExperienceActive(true);
 		});
@@ -182,14 +184,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				userName: usersInLiveTripData?.find((user) => user.userId === userId)
 					?.name,
 			});
-			setUnreadMessagesState((prev) => ({
-				...prev,
-				count: prev.isInChat ? 0 : prev.count + 1,
-			}));
-		});
-
-		socket.on('connect', () => {
-			console.log('Connected to socket');
 		});
 
 		socket.on('disconnect', () => {
@@ -203,7 +197,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		return () => {
 			socket.removeAllListeners();
 		};
-	}, [socket, usersInLiveTripData, loadingUsersInLiveTripData]);
+	}, [socket, usersInLiveTripData]);
 
 	return (
 		<tripSocketContext.Provider
@@ -219,6 +213,12 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				isExperienceActive,
 				unreadMessagesState,
 				setUnreadMessagesState,
+				isUrgentNotificationActive,
+				urgentNotifications,
+				addUrgentNotification,
+				setNotification,
+				setIsUrgentNotificationActive,
+				notification,
 			}}
 		>
 			{children}
