@@ -15,24 +15,53 @@ export interface IMessage {
 	userName?: string;
 }
 
-export interface INotification {
-	status: 'good' | 'bad' | 'warning' | 'default';
-	timestamp: string;
-	icon?: IconName;
-	message: string;
+type NotificationStatus = 'good' | 'bad' | 'warning' | 'default';
+
+export class Notification {
+	public timestamp: string;
+	public message: string;
+	public status: NotificationStatus;
+	public icon?: IconName;
+	constructor(
+		message: string,
+		status: NotificationStatus = 'default',
+		icon?: IconName
+	) {
+		this.status = status;
+		this.message = message;
+		this.timestamp = new Date().toLocaleTimeString([], {
+			hour: '2-digit',
+			minute: '2-digit',
+		});
+		this.icon = icon;
+	}
 }
 
-export interface IBadNotification extends INotification {
+export interface IBadNotification extends Notification {
 	status: 'bad';
 }
 
-export interface UserOutOfRouteNotification extends IBadNotification {
+export interface IUserOutOfRouteNotification extends IBadNotification {
 	userId: string;
 	message: 'user is out of trip route';
 }
 
 export type UrgentNotificationType = UserOutOfRouteNotification;
+
 export interface IUserLocation {
 	id: string;
 	location: { lat: number; lon: number };
+}
+
+export class UserOutOfRouteNotification implements IUserOutOfRouteNotification {
+	public message = 'user is out of trip route' as const;
+	public status = 'bad' as const;
+	public timestamp: string;
+	constructor(public userId: string) {
+		this.userId = userId;
+		this.timestamp = new Date().toLocaleTimeString([], {
+			hour: '2-digit',
+			minute: '2-digit',
+		});
+	}
 }

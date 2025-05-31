@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useTripContext } from '@/contexts/TripContext';
+import { Notification } from '@/contexts/socketContext/types';
 interface IUseRouteAndNavigationProps {
 	userLocation: { lon: number; lat: number } | null;
 	points: { lon: number; lat: number }[];
@@ -69,14 +70,7 @@ export default function useRouteAndNavigation({
 				...points.slice(nextStepIndex, points.length),
 			];
 
-			setNotification({
-				message: 'You are out of trip route',
-				status: 'warning',
-				timestamp: new Date().toLocaleTimeString([], {
-					hour: '2-digit',
-					minute: '2-digit',
-				}),
-			});
+			setNotification(new Notification('You are out of trip route', 'warning'));
 
 			if (socket && user && trip) {
 				socket.emit('currentUserOutOfTripRoute', trip._id, user._id);

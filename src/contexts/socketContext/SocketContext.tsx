@@ -1,6 +1,8 @@
 import {
 	createContext,
+	Dispatch,
 	ReactNode,
+	SetStateAction,
 	useContext,
 	useEffect,
 	useState,
@@ -8,39 +10,39 @@ import {
 import { io } from 'socket.io-client';
 import { API_BASE_URL } from '../../env.config';
 import { SocketClientType } from '@/types/socket';
-import useSocketTrip from './hooks/useSocketTrip';
-import useSocketMessages from './hooks/useSocketMessages';
+import useUsersExpData from './hooks/useUsersExpData';
+import useSocketMessages, {
+	UnreadMessagesStateType,
+} from './hooks/useSocketMessages';
 import useSocketExperiences from './hooks/useSocketExperiences';
 import useSocketNotifications from './hooks/useSocketNotifications';
 import {
 	IRedisUserTripData,
 	IUserLocation,
 	UrgentNotificationType,
-	INotification,
+	Notification,
 	IMessage,
+	UserOutOfRouteNotification,
 } from './types';
 import { useAuthContext } from '../AuthContext';
+import { useTripContext } from '../TripContext';
 
 export interface ISocketContextValue {
 	socket: SocketClientType | null;
 	messages: IMessage[];
 	addMsgToMsgs: (message: IMessage) => void;
-	usersInLiveTripData: IRedisUserTripData[] | undefined;
 	usersLocations: IUserLocation[];
 	usersInLiveTripExpData: IRedisUserTripData[];
 	currentExpIndex: number;
-	unreadMessagesState: {
-		count: number;
-		isInChat: boolean;
-	};
-	setUnreadMessagesState: (state: { count: number; isInChat: boolean }) => void;
+	unreadMessagesState: UnreadMessagesStateType;
+	setUnreadMessagesState: (state: UnreadMessagesStateType) => void;
 	setExperienceActive: (value: boolean) => void;
 	isExperienceActive: boolean;
 	addUrgentNotification: (notification: UrgentNotificationType) => void;
-	setNotification: React.Dispatch<React.SetStateAction<INotification | null>>;
-	setIsUrgentNotificationActive: React.Dispatch<React.SetStateAction<boolean>>;
+	setNotification: Dispatch<SetStateAction<Notification | null>>;
+	setIsUrgentNotificationActive: Dispatch<SetStateAction<boolean>>;
 	isUrgentNotificationActive: boolean;
-	notification: INotification | null;
+	notification: Notification | null;
 	urgentNotifications: UrgentNotificationType[];
 }
 
@@ -51,6 +53,8 @@ interface ITripSocketProviderProps {
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
+	const { tripId } = useTripContext();
+
 	const { user } = useAuthContext();
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
 	const [usersLocations, setUsersLocations] = useState<IUserLocation[]>([]);
@@ -58,12 +62,8 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	const {
 		initUsersLiveData,
 		setUsersInLiveTripExpData,
-		tripId,
-		trip,
-		usersInLiveTripData,
 		usersInLiveTripExpData,
-		loadingUsersInLiveTripData,
-	} = useSocketTrip();
+	} = useUsersExpData({ tripId });
 
 	const {
 		addUrgentNotification,
@@ -92,7 +92,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	} = useSocketMessages();
 
 	useEffect(() => {
-		if (!tripId || !trip || socket) return;
+		if (!tripId || socket) return;
 
 		const socketClient: SocketClientType = io(API_BASE_URL, {
 			query: { tripId },
@@ -107,10 +107,11 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			socketClient.disconnect();
 			console.log('Socket disconnected');
 		};
-	}, [tripId, trip]);
+	}, [tripId]);
 
 	useEffect(() => {
 		if (!socket || !tripId || !user) return;
+
 		socket.on('connect', () => {
 			console.log('Connected to socket');
 		});
@@ -119,9 +120,13 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 
 		socket.on('tripJoined', (userData) => {
 			setUsersInLiveTripExpData((prev) => {
-				const isExist = prev.some((user) => user.userId === userData.userId);
-				if (isExist) return prev;
-				return [...prev, userData];
+				const index = prev.findIndex((user) => user.userId === userData.userId);
+
+				if (index === -1) return [...prev, userData];
+
+				const newUsersData = [...prev];
+				newUsersData[index] = userData;
+				return newUsersData;
 			});
 		});
 
@@ -131,27 +136,18 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				if (index === -1) {
 					return [...prev, { id: userId, location }];
 				}
-				return [
-					...prev.slice(0, index),
-					{ id: userId, location },
-					...prev.slice(index + 1),
-				];
+				const newLocation = [...prev];
+				newLocation[index].location = location;
+				return newLocation;
 			});
 		});
 
 		socket.on('userIsOutOfTripRoute', (userId) => {
-			addUrgentNotification({
-				status: 'bad',
-				message: 'user is out of trip route',
-				timestamp: new Date().toLocaleTimeString([], {
-					hour: '2-digit',
-					minute: '2-digit',
-				}),
-				userId,
-			});
+			const not = new UserOutOfRouteNotification(userId);
+			addUrgentNotification(not);
 		});
 
-		socket.on('allUsersInExperience', (isAllUSersInExperience) => {
+		socket.on('allUsersInExperience', () => {
 			setExperienceActive(true);
 		});
 
@@ -161,29 +157,15 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				if (userIndex === -1) {
 					return [...prev, data];
 				}
-				return [
-					...prev.slice(0, userIndex),
-					data,
-					...prev.slice(userIndex + 1),
-				];
+
+				const newUsersData = [...prev];
+				newUsersData[userIndex] = data;
+				return newUsersData;
 			});
 		});
 
 		socket.on('allUsersFinishedCurrentExp', (nextStepIndex) => {
 			setCurrentExpIndex(nextStepIndex);
-		});
-
-		socket.on('messageSent', (message, userId) => {
-			addMsgToMsgs({
-				userId,
-				message,
-				timestamp: new Date().toLocaleTimeString([], {
-					hour: '2-digit',
-					minute: '2-digit',
-				}),
-				userName: usersInLiveTripData?.find((user) => user.userId === userId)
-					?.name,
-			});
 		});
 
 		socket.on('disconnect', () => {
@@ -197,7 +179,35 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		return () => {
 			socket.removeAllListeners();
 		};
-	}, [socket, usersInLiveTripData]);
+	}, [user, socket]);
+
+	useEffect(() => {
+		if (!socket) return;
+
+		const handleMessageSent = (message: string, userId: string) => {
+			const timestamp = new Date().toLocaleTimeString([], {
+				hour: '2-digit',
+				minute: '2-digit',
+			});
+			const userName =
+				usersInLiveTripExpData.find((user) => {
+					return user.userId === userId;
+				})?.name || 'Unknown';
+
+			addMsgToMsgs({
+				userId,
+				message,
+				timestamp,
+				userName,
+			});
+		};
+
+		socket.on('messageSent', handleMessageSent);
+
+		return () => {
+			socket.removeListener('messageSent', handleMessageSent);
+		};
+	}, [socket, usersInLiveTripExpData]);
 
 	return (
 		<tripSocketContext.Provider
@@ -205,7 +215,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				socket,
 				messages,
 				addMsgToMsgs,
-				usersInLiveTripData,
 				usersLocations,
 				usersInLiveTripExpData,
 				currentExpIndex,

@@ -1,24 +1,25 @@
 import { useState } from 'react';
 import { IMessage } from '../types';
 
+export type UnreadMessagesStateType = {
+	count: number;
+	isInChat: boolean;
+};
+
 interface IUseSocketMessagesValue {
 	addMsgToMsgs: (message: IMessage) => void;
 	messages: IMessage[];
-	unreadMessagesState: {
-		count: number;
-		isInChat: boolean;
-	};
-	setUnreadMessagesState: (state: { count: number; isInChat: boolean }) => void;
+	unreadMessagesState: UnreadMessagesStateType;
+	setUnreadMessagesState: (state: UnreadMessagesStateType) => void;
 }
+
 export default function useSocketMessages(): IUseSocketMessagesValue {
 	const [messages, setMessages] = useState<IMessage[]>([]);
-	const [unreadMessagesState, setUnreadMessagesState] = useState<{
-		count: number;
-		isInChat: boolean;
-	}>({
-		count: 0,
-		isInChat: false,
-	});
+	const [unreadMessagesState, setUnreadMessagesState] =
+		useState<UnreadMessagesStateType>({
+			count: 0,
+			isInChat: false,
+		});
 
 	const addMsgToMsgs = (message: IMessage) => {
 		setMessages((prev) => [...prev, message]);
