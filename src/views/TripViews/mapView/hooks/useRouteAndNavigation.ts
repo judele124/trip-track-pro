@@ -62,25 +62,24 @@ export default function useRouteAndNavigation({
 
 	// when user is out of route, update points state to restart the route data logic
 	useEffect(() => {
-		let isFirst = true;
 		if (isOutOfRoute && userLocation) {
 			const newPoints = [
 				userLocation,
+
 				...points.slice(nextStepIndex, points.length),
 			];
-			if (isFirst) {
-				isFirst = false;
-				setNotification({
-					message: 'You are out of trip route',
-					status: 'warning',
-					timestamp: new Date().toLocaleTimeString([], {
-						hour: '2-digit',
-						minute: '2-digit',
-					}),
-				});
-				if (socket && user && trip) {
-					socket.emit('currentUserOutOfTripRoute', trip._id, user._id);
-				}
+
+			setNotification({
+				message: 'You are out of trip route',
+				status: 'warning',
+				timestamp: new Date().toLocaleTimeString([], {
+					hour: '2-digit',
+					minute: '2-digit',
+				}),
+			});
+
+			if (socket && user && trip) {
+				socket.emit('currentUserOutOfTripRoute', trip._id, user._id);
 			}
 			setCurrentRoutePoints(newPoints);
 		}

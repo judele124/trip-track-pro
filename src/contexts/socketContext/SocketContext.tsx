@@ -117,8 +117,12 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 
 		socket.emit('joinTrip', tripId, user._id);
 
-		socket.on('tripJoined', (userId) => {
-			console.log('User joined trip:', userId);
+		socket.on('tripJoined', (userData) => {
+			setUsersInLiveTripExpData((prev) => {
+				const isExist = prev.some((user) => user.userId === userData.userId);
+				if (isExist) return prev;
+				return [...prev, userData];
+			});
 		});
 
 		socket.on('locationUpdated', (userId, location) => {
