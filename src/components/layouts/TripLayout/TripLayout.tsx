@@ -7,6 +7,8 @@ import Button from '@/components/ui/Button';
 import Icon from '@/components/icons/Icon';
 import TripNotActiveMessage from '@/components/TripNotActiveMessage';
 import { createContext, MutableRefObject, useContext, useRef } from 'react';
+import DevPanel from '@/components/DevPanel';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 interface TripLayoutContextValue {
 	topNavigationRef: MutableRefObject<HTMLDivElement | null>;
@@ -21,6 +23,7 @@ const TripLayout = () => {
 	const title = titleFromPath(pathname);
 	const { trip, tripId, loadingTrip, status } = useTripContext();
 	const nav = useNavigate();
+	const { user } = useAuthContext();
 
 	const topNavigationRef = useRef<HTMLDivElement | null>(null);
 	const bottomNavigationRef = useRef<HTMLDivElement | null>(null);
@@ -34,13 +37,15 @@ const TripLayout = () => {
 				title={title}
 			/>
 
+			{user?.role === 'developer' && trip && <DevPanel tripId={trip._id} />}
+
 			{/* main content */}
 			<TripLayoutContext.Provider
 				value={{ topNavigationRef, bottomNavigationRef, pageContentRef }}
 			>
 				<div
 					ref={pageContentRef}
-					className='-z-10 grow overflow-hidden bg-secondary/20'
+					className='relative -z-10 grow overflow-hidden bg-secondary/20'
 				>
 					{loadingTrip && (
 						<div className='flex h-full items-center justify-center'>

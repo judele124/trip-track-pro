@@ -3,8 +3,7 @@ import TripDetailsStops from '@/views/AppViews/TripDetailsView/components/TripDe
 import useAxios, { UseAxiosResponse } from '@/hooks/useAxios';
 import { Trip } from '@/types/trip';
 import { getErrorMessage } from '@/utils/errorMessages';
-import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import TripStatusButton from '../profileView/components/TripStatusButton';
 import RewardDetails from './components/RewardDetails';
@@ -13,7 +12,6 @@ import UpdateGuidesBtn from '@/components/updateGuidesBtn/UpdateGuidesBtn';
 import TripActionsModal from '../profileView/components/TripActionsModal';
 import { useAuthContext } from '@/contexts/AuthContext';
 import ShowTripOnMapBtn from '@/components/ShowTripOnMapBtn';
-import { Types } from 'trip-track-package';
 import useToggle from '@/hooks/useToggle';
 
 export default function TripDetailsView() {
@@ -92,13 +90,15 @@ function TripDetailsHeader({
 		<div>
 			<div className='flex items-start justify-between'>
 				<h1 className='max-w-[70%] break-words capitalize'>{tripData.name}</h1>
-				<button
-					ref={encorElementRef}
-					onClick={() => setIsOpen(true)}
-					className='mt-2 px-0 py-0'
-				>
-					<Icon name='settings' />
-				</button>
+				{(tripData.status !== 'completed' || user?.role === 'developer') && (
+					<button
+						ref={encorElementRef}
+						onClick={() => setIsOpen(true)}
+						className='mt-2 px-0 py-0'
+					>
+						<Icon name='settings' className='fill-dark dark:fill-light' />
+					</button>
+				)}
 				<TripActionsModal
 					anchorTo='right'
 					trip={tripData}
