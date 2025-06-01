@@ -1,5 +1,5 @@
 import BottomNavigationBtn from '@/components/ui/BottomNavigationBtn';
-import { useTripSocket } from '@/contexts/SocketContext';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 
 export default function BottomNavigation({
 	setRef,
