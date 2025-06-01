@@ -3,13 +3,10 @@ import Icon, { IconName } from '@/components/icons/Icon';
 import Modal from '@/components/ui/Modal';
 import useToggle from '@/hooks/useToggle';
 import { useTripLayout } from '@/components/layouts/TripLayout/TripLayout';
-import {
-	INotification,
-	IUrgentNotification,
-} from '@/contexts/socketContext/types';
+import { Notification as NotificationType } from '@/contexts/socketContext/types';
 
 interface NotificationProps {
-	notification: INotification | IUrgentNotification;
+	notification: NotificationType;
 	isModalOpen: boolean;
 	closeModal: () => void;
 	duration?: number;
@@ -47,7 +44,7 @@ const Notification: React.FC<NotificationProps> = ({
 
 	return (
 		<Modal
-			backgroundClassname='bg-transparent'
+			backgroundClassname='bg-transparent pointer-events-none'
 			backdropBlur='none'
 			open={isModalOpen}
 			portalElementsRef={pageContentRef}
@@ -80,7 +77,7 @@ export const NotificationsComponent = ({
 }: NotificationComponentProps) => {
 	return (
 		<div
-			className={`min-w-48 opacity-100 transition-all duration-700 ${statusColor} flex items-center justify-center gap-2 rounded-md border-2 p-4 shadow-lg ${isOpen ? 'translate-y-3 opacity-100' : 'translate-y-[-130%] opacity-0'} `}
+			className={`min-w-48 opacity-100 transition-all duration-700 ${statusColor} flex items-center justify-center gap-2 rounded-md border-2 p-4 text-dark shadow-lg ${isOpen ? 'translate-y-3 opacity-100' : 'translate-y-[-130%] opacity-0'} `}
 		>
 			<i>{icon && <Icon name={icon} size='20' />}</i>
 			<span>{message}</span>
