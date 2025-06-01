@@ -239,6 +239,41 @@ function TripStopsMarkers({
 	normalStops: Types['Trip']['Stop']['Model'][];
 	experienceStops: Types['Trip']['Stop']['Model'][];
 }) {
+	return (
+		<>
+			{experienceStops.length > 0 && (
+				<StopsWithExperienceMarker
+					currentExpIndex={currentExpIndex}
+					isExperienceActive={isExperienceActive}
+					experienceStops={experienceStops}
+				/>
+			)}
+			{normalStops.map((stop, i) => (
+				<GeneralMarker
+					key={`norm-${stop.location.lat}-${stop.location.lon}-${i}`}
+					location={stop.location}
+				>
+					<StopMarker
+						disableExperience={false}
+						isExperienceActive={false}
+						stop={stop}
+						index={i}
+					/>
+				</GeneralMarker>
+			))}
+		</>
+	);
+}
+
+function StopsWithExperienceMarker({
+	currentExpIndex,
+	isExperienceActive,
+	experienceStops,
+}: {
+	currentExpIndex: number;
+	isExperienceActive?: boolean;
+	experienceStops: Types['Trip']['Stop']['Model'][];
+}) {
 	const { mapRef, isMapReady } = useMap();
 	useDrawRangeAroundStop({
 		isMapReady,
@@ -268,19 +303,6 @@ function TripStopsMarkers({
 					<StopMarker
 						disableExperience={currentExpIndex !== i}
 						isExperienceActive={isExperienceActive}
-						stop={stop}
-						index={i}
-					/>
-				</GeneralMarker>
-			))}
-			{normalStops.map((stop, i) => (
-				<GeneralMarker
-					key={`norm-${stop.location.lat}-${stop.location.lon}-${i}`}
-					location={stop.location}
-				>
-					<StopMarker
-						disableExperience={false}
-						isExperienceActive={false}
 						stop={stop}
 						index={i}
 					/>
