@@ -1,5 +1,5 @@
 import Map, { useMap } from './Map';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTripContext } from '@/contexts/TripContext';
 import { useTripSocket } from '@/contexts/SocketContext';
 import StopMarker from './components/Markers/StopMarker';
@@ -15,6 +15,7 @@ import OtherUserMarker from './components/Markers/OtherUserMarker';
 import Icon from '@/components/icons/Icon';
 import { Types } from 'trip-track-package';
 import useDrawRangeAroundStop from './hooks/useDrawRangeAroundStop';
+import { Trip } from '@/types/trip';
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
 const ROUTE_OPACITY = 1;
@@ -27,33 +28,32 @@ const ROUTE_WIDTH = 6;
 const ROUTE_FILL_WIDTH = 2;
 const STOP_MARKER_RANGE = 30;
 
+type StopMarkerProps = Trip['stops'];
+
 interface SplitStopsByExperienceValue {
-	normalStops: Types['Trip']['Stop']['Model'][];
-	stopsWithExperience: Types['Trip']['Stop']['Model'][];
+	normalStops: StopMarkerProps;
+	stopsWithExperience: StopMarkerProps;
 	lastStopLocation: number[] | null;
 }
 
 const splitStopsByExperience = (
-	stops: Types['Trip']['Stop']['Model'][]
+	stops: StopMarkerProps
 ): SplitStopsByExperienceValue => {
-	return stops.reduce<SplitStopsByExperienceValue>(
-		(acc, stop, index) => {
-			if (stop.experience) {
-				acc.stopsWithExperience.push(stop);
-			} else {
-				acc.normalStops.push(stop);
-				if (index === stops.length - 1) {
-					acc.lastStopLocation = [stop.location.lon, stop.location.lat];
-				}
+	const stopsWithExperience: StopMarkerProps = [];
+	const normalStops: StopMarkerProps = [];
+	let lastStopLocation: SplitStopsByExperienceValue['lastStopLocation'] = null;
+	stops.forEach((stop, index) => {
+		if (stop.experience) {
+			stopsWithExperience.push(stop);
+		} else {
+			normalStops.push(stop);
+			if (index === stops.length - 1) {
+				//This variable is set to know if the last stop is just a stop or stop with experience.
+				lastStopLocation = [stop.location.lon, stop.location.lat];
 			}
-			return acc;
-		},
-		{
-			normalStops: [],
-			stopsWithExperience: [],
-			lastStopLocation: null,
 		}
-	);
+	});
+	return { normalStops, stopsWithExperience, lastStopLocation };
 };
 
 export default function MapView() {
@@ -275,20 +275,13 @@ function StopsWithExperienceMarker({
 	experienceStops: Types['Trip']['Stop']['Model'][];
 }) {
 	const { mapRef, isMapReady } = useMap();
+	const safeExpIndex = Math.min(currentExpIndex, experienceStops.length - 1);
 	useDrawRangeAroundStop({
 		isMapReady,
 		mapRef,
 		location: [
-			experienceStops[
-				currentExpIndex >= experienceStops.length
-					? experienceStops.length - 1
-					: currentExpIndex
-			].location.lon,
-			experienceStops[
-				currentExpIndex >= experienceStops.length
-					? experienceStops.length - 1
-					: currentExpIndex
-			].location.lat,
+			experienceStops[safeExpIndex].location.lon,
+			experienceStops[safeExpIndex].location.lat,
 		],
 		circleRadius: 40,
 	});

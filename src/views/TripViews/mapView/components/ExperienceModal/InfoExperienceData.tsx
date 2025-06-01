@@ -12,7 +12,7 @@ export default function InfoExperienceData({
 	onClose,
 	finishExperience,
 }: InfoExperienceDataProps) {
-	const hndleClose = () => {
+	const handleClose = () => {
 		finishExperience(score);
 		onClose();
 	};
@@ -20,7 +20,7 @@ export default function InfoExperienceData({
 	return (
 		<div className='flex flex-col gap-2'>
 			<p>{data.text}</p>
-			<Button className='w-full' onClick={hndleClose}>
+			<Button className='w-full' onClick={handleClose}>
 				Close
 			</Button>
 		</div>
