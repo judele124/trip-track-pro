@@ -1,9 +1,19 @@
 import { Feature, LineString } from 'geojson';
 
+type ManeuverModifier =
+	| 'left'
+	| 'right'
+	| 'slight left'
+	| 'slight right'
+	| 'straight'
+	| 'uturn'
+	| 'sharp left'
+	| 'sharp right';
+
 export interface Maneuver {
 	location: [number, number];
 	instruction: string;
-	modifier: string;
+	modifier: ManeuverModifier;
 	type: string;
 	bearing_before: number;
 	bearing_after: number;

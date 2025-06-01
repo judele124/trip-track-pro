@@ -16,6 +16,10 @@ const directions: Record<string, IconName> = {
 	straight: 'directionStraightArrow',
 	right: 'directionRightArrow',
 	left: 'directionLeftArrow',
+	'sharp left': 'directionLeftArrow',
+	'sharp right': 'directionRightArrow',
+	'slight left': 'directionSlightLeftArrow',
+	'slight right': 'directionSlightRightArrow',
 };
 
 function DirectionComponent({
