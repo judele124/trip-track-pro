@@ -19,9 +19,6 @@ const ChatView = () => {
 
 	const handleSendMessage: SubmitHandler<FormValues> = ({ message }) => {
 		if (!trip || !user || !socket) return;
-		console.log('trip', trip);
-		console.log('user', user);
-
 		socket.emit(
 			'sendMessage',
 			trip._id.toString(),
