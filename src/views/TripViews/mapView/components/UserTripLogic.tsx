@@ -9,9 +9,10 @@ import LoadingLocation from './LoadingLocation';
 import { useEffect, useMemo } from 'react';
 import { calculateDistanceOnEarth } from '@/utils/map.functions';
 import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
-import { useTripSocket } from '@/contexts/SocketContext';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import useToggle from '@/hooks/useToggle';
+import Notification from './Notifications';
 import useUserCompletingTrip from '../tests/useUserCompletingTrip';
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
@@ -34,19 +35,30 @@ export default function UserTripLogic() {
 		currentExpIndex,
 		isExperienceActive,
 		setExperienceActive,
+		notification,
+		urgentNotifications,
+		isUrgentNotificationActive,
+		setNotification,
+		setIsUrgentNotificationActive,
 	} = useTripSocket();
 
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			if (!trip || !socket || !user) return;
+
 			const stopLocation = trip.stops[currentExpIndex]?.location;
+
 			if (!stopLocation) return;
+
 			const userPosition = [location.lon, location.lat];
 			const stopPosition = [stopLocation.lon, stopLocation.lat];
+
 			const isUserNearStop =
 				calculateDistanceOnEarth(userPosition, stopPosition) <
 				STOP_MARKER_RANGE;
+
 			socket.emit('updateLocation', trip._id, location);
+
 			if (isUserNearStop) {
 				if (!isExperienceActive) {
 					socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
@@ -118,6 +130,21 @@ export default function UserTripLogic() {
 					) : (
 						<TripStartLocationMarker location={trip.stops[0].location} />
 					)}
+
+					<Notification
+						{...(isUrgentNotificationActive
+							? {
+									isModalOpen: true,
+									notification:
+										urgentNotifications[urgentNotifications.length - 1],
+									closeModal: () => setIsUrgentNotificationActive(false),
+								}
+							: {
+									isModalOpen: notification !== null,
+									notification: notification!,
+									closeModal: () => setNotification(null),
+								})}
+					/>
 
 					<RouteAndNavigation
 						routeId='trip-route'
