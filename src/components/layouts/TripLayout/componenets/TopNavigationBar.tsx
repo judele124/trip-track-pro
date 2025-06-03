@@ -62,7 +62,7 @@ export default function TopNavigation({
 					{user?.name ? (
 						<img
 							className='size-10 rounded-full bg-slate-400'
-							src={`https://robohash.org/${user.name}.png`}
+							src={user.imageUrl || `https://robohash.org/${user.name}.png`}
 							alt={`${user.name} profile picture`}
 						/>
 					) : (
