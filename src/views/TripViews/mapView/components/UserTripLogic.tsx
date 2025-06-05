@@ -51,10 +51,6 @@ export default function UserTripLogic() {
 		onLocationUpdate: (location) => {
 			if (!trip || !socket || !user) return;
 
-			const stopLocation = trip.stops[currentExpIndex]?.location;
-
-			if (!stopLocation) return;
-
 			const userPosition = [location.lon, location.lat];
 
 			const isUserNearLastStop =
@@ -67,21 +63,30 @@ export default function UserTripLogic() {
 				return;
 			}
 
-			const stopPosition = [stopLocation.lon, stopLocation.lat];
-
-			const isUserNearStop =
-				calculateDistanceOnEarth(userPosition, stopPosition) <
-				STOP_MARKER_RANGE;
-
 			socket.emit('updateLocation', trip._id, location);
 
-			if (isUserNearStop) {
-				if (!isExperienceActive) {
-					socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
-				}
-			} else {
-				if (isExperienceActive) {
-					setExperienceActive(false);
+			const stopLocation = stopsWithExperience[currentExpIndex]?.location;
+
+			if (stopLocation) {
+				const stopPosition = [stopLocation.lon, stopLocation.lat];
+
+				const isUserNearStop =
+					calculateDistanceOnEarth(userPosition, stopPosition) <
+					STOP_MARKER_RANGE;
+
+				if (isUserNearStop) {
+					if (!isExperienceActive) {
+						socket.emit(
+							'userInExperience',
+							trip._id,
+							user._id,
+							currentExpIndex
+						);
+					}
+				} else {
+					if (isExperienceActive) {
+						setExperienceActive(false);
+					}
 				}
 			}
 		},
