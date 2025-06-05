@@ -1,5 +1,4 @@
 import Button from '@/components/ui/Button';
-import { useEffect } from 'react';
 import { Types } from 'trip-track-package';
 
 interface InfoExperienceDataProps {
@@ -13,14 +12,15 @@ export default function InfoExperienceData({
 	onClose,
 	finishExperience,
 }: InfoExperienceDataProps) {
-	useEffect(() => {
+	const handleClose = () => {
 		finishExperience(score);
-	}, []);
+		onClose();
+	};
 
 	return (
 		<div className='flex flex-col gap-2'>
 			<p>{data.text}</p>
-			<Button className='w-full' onClick={onClose}>
+			<Button className='w-full' onClick={handleClose}>
 				Close
 			</Button>
 		</div>

@@ -14,6 +14,7 @@ import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
 import useUserCompletingTrip from '../tests/useUserCompletingTrip';
+import { Trip } from '@/types/trip';
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
 const ROUTE_OPACITY = 1;
@@ -40,25 +41,36 @@ export default function UserTripLogic() {
 		isUrgentNotificationActive,
 		setNotification,
 		setIsUrgentNotificationActive,
+		setIsTripActive,
 	} = useTripSocket();
+
+	const { normalStops, lastStopLocation, stopsWithExperience } = useMemo(() => {
+		return splitStopsByExperience(trip?.stops || []);
+	}, [trip?.stops]);
 
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			if (!trip || !socket || !user) return;
-
 			const stopLocation = trip.stops[currentExpIndex]?.location;
-
 			if (!stopLocation) return;
-
 			const userPosition = [location.lon, location.lat];
+
+			const isUserNearLastStop =
+				lastStopLocation &&
+				calculateDistanceOnEarth(userPosition, lastStopLocation) <
+					STOP_MARKER_RANGE;
+
+			if (isUserNearLastStop) {
+				setIsTripActive(false);
+				return;
+			}
+
 			const stopPosition = [stopLocation.lon, stopLocation.lat];
 
 			const isUserNearStop =
 				calculateDistanceOnEarth(userPosition, stopPosition) <
 				STOP_MARKER_RANGE;
-
 			socket.emit('updateLocation', trip._id, location);
-
 			if (isUserNearStop) {
 				if (!isExperienceActive) {
 					socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
@@ -70,6 +82,12 @@ export default function UserTripLogic() {
 			}
 		},
 	});
+
+	useEffect(() => {
+		if (!lastStopLocation && currentExpIndex >= stopsWithExperience.length) {
+			setIsTripActive(false);
+		}
+	}, [currentExpIndex]);
 
 	const memoizedTripPoints = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
@@ -125,7 +143,8 @@ export default function UserTripLogic() {
 						<TripStopsMarkers
 							isExperienceActive={isExperienceActive}
 							currentExpIndex={currentExpIndex}
-							stops={trip.stops}
+							normalStops={normalStops}
+							experienceStops={stopsWithExperience}
 						/>
 					) : (
 						<TripStartLocationMarker location={trip.stops[0].location} />
@@ -190,3 +209,31 @@ export default function UserTripLogic() {
 		</>
 	);
 }
+
+type StopMarkerProps = Trip['stops'];
+
+interface SplitStopsByExperienceValue {
+	normalStops: StopMarkerProps;
+	stopsWithExperience: StopMarkerProps;
+	lastStopLocation: number[] | null;
+}
+
+const splitStopsByExperience = (
+	stops: StopMarkerProps
+): SplitStopsByExperienceValue => {
+	const stopsWithExperience: StopMarkerProps = [];
+	const normalStops: StopMarkerProps = [];
+	let lastStopLocation: SplitStopsByExperienceValue['lastStopLocation'] = null;
+	stops.forEach((stop, index) => {
+		if (stop.experience) {
+			stopsWithExperience.push(stop);
+		} else {
+			normalStops.push(stop);
+			if (index === stops.length - 1) {
+				//This variable is set to know if the last stop is just a stop or stop with experience.
+				lastStopLocation = [stop.location.lon, stop.location.lat];
+			}
+		}
+	});
+	return { normalStops, stopsWithExperience, lastStopLocation };
+};

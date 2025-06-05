@@ -18,6 +18,7 @@ const ProfileView = () => {
 		<div className='flex size-full max-h-[600px] flex-col'>
 			{user && (
 				<UserDetailsComponent
+					role={user.role}
 					className='border-b-2 border-primary p-2'
 					name={user.name || 'Default'}
 					imageUrl={user.imageUrl || 'https://robohash.org/Default.png'}
