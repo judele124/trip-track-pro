@@ -34,6 +34,7 @@ type ServerEventPayloads = {
 	allUsersInExperience: [isAllUSersInExperience: boolean];
 	allUsersFinishedCurrentExp: [nextExpIndex: number];
 	userIsOutOfTripRoute: [userId: string];
+	userDisconnected: [userId: string];
 	error: [
 		data: string | { message: string; errorDetails: Record<string, any> },
 	];
@@ -48,6 +49,7 @@ export const ServerEvents = {
 	allUsersInExperience: 'allUsersInExperience',
 	allUsersFinishedCurrentExp: 'allUsersFinishedCurrentExp',
 	userIsOutOfTripRoute: 'userIsOutOfTripRoute',
+	userDisconnected: 'userDisconnected',
 	error: 'error',
 };
 
