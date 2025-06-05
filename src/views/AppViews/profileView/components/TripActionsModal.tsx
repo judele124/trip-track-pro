@@ -7,6 +7,7 @@ import useTripOption, {
 } from '../hooks/useTripOption';
 import { Trip } from '@/types/trip';
 import Modal, { ModalAnchor } from '@/components/ui/Modal';
+import DevPanel from '@/components/DevPanel';
 
 interface ITripActionsModalProps {
 	trip: Trip;
@@ -71,6 +72,7 @@ export default function TripActionsModal({
 						</Button>
 					);
 				})}
+				{user?.role === 'developer' && <DevPanel tripId={trip._id} />}
 			</div>
 		</Modal>
 	);

@@ -1,5 +1,4 @@
 import useAxios from '@/hooks/useAxios';
-import { useTripShowcase } from '../components/TripsShowcase';
 import { useNavigate } from 'react-router-dom';
 import { navigationRoutes } from '@/Routes/routes';
 import {
