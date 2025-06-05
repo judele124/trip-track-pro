@@ -21,7 +21,7 @@ export default function Navbar() {
 						>
 							<img
 								className='size-8 rounded-full bg-slate-400'
-								src={`https://robohash.org/${user.name}.png`}
+								src={user.imageUrl || `https://robohash.org/${user.name}.png`}
 								alt={`${user.name} profile picture`}
 							/>
 						</Link>

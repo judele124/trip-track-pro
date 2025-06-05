@@ -1,4 +1,4 @@
-import { IRedisUserTripData } from '@/contexts/SocketContext';
+import { IRedisUserTripData } from '@/contexts/socketContext/types';
 import { Socket } from 'socket.io-client';
 
 type LocationPayload = {
@@ -7,7 +7,7 @@ type LocationPayload = {
 };
 
 type ClientEventPayloads = {
-	joinTrip: [tripId: string];
+	joinTrip: [tripId: string, userId: string];
 	updateLocation: [tripId: string, location: LocationPayload];
 	finishExperience: [
 		tripId: string,
@@ -17,12 +17,13 @@ type ClientEventPayloads = {
 	];
 	sendMessage: [tripId: string, message: string, userId: string];
 	userInExperience: [tripId: string, userId: string, index: number];
+	currentUserOutOfTripRoute: [tripId: string, userId: string];
 	tripFinished: [tripId: string];
 	'connect-error': [error: Error];
 };
 
 type ServerEventPayloads = {
-	tripJoined: [userSocketId: string];
+	tripJoined: [userData: IRedisUserTripData];
 	locationUpdated: [userSocketId: string, location: LocationPayload];
 	experienceFinished: [
 		updateData: IRedisUserTripData,
@@ -33,6 +34,7 @@ type ServerEventPayloads = {
 	tripStatusChanged: [tripId: string, status: string];
 	allUsersInExperience: [isAllUSersInExperience: boolean];
 	allUsersFinishedCurrentExp: [nextExpIndex: number];
+	userIsOutOfTripRoute: [userId: string];
 	finishedTrip: [tripId: string];
 	error: [
 		data: string | { message: string; errorDetails: Record<string, any> },
@@ -47,6 +49,7 @@ export const ServerEvents = {
 	tripStatusChanged: 'tripStatusChanged',
 	allUsersInExperience: 'allUsersInExperience',
 	allUsersFinishedCurrentExp: 'allUsersFinishedCurrentExp',
+	userIsOutOfTripRoute: 'userIsOutOfTripRoute',
 	finishedTrip: 'finishedTrip',
 	error: 'error',
 };
@@ -57,6 +60,7 @@ export const ClientEvents = {
 	finishExperience: 'finishExperience',
 	sendMessage: 'sendMessage',
 	userInExperience: 'userInExperience',
+	currentUserOutOfTripRoute: 'currentUserOutOfTripRoute',
 	tripFinished: 'tripFinished',
 	connectError: 'connect-error',
 } as const;

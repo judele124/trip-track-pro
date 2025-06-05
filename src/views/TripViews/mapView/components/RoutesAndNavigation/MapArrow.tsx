@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMap } from '../../Map';
 import { Maneuver } from '@/types/map';
-import { addArrowToMap } from '@/utils/map.functions.arrow';
+import { addArrowToMap, removeArrowFromMap } from '@/utils/map.functions.arrow';
 
 interface IMapArrowProps {
 	outerId: string;
@@ -35,6 +35,11 @@ function MapArrow({
 			length,
 			width,
 		});
+
+		return () => {
+			if (!mapRef.current) return;
+			removeArrowFromMap(mapRef.current, outerId);
+		};
 	}, [
 		mapRef,
 		isMapReady,

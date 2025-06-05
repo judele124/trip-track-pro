@@ -108,6 +108,16 @@ export function addPolygonFillAndOuterFillToMap({
 	);
 }
 
+export function removePolygonFillAndOuterFillFromMap(
+	map: Map,
+	outerId: string
+) {
+	map.removeLayer(outerId);
+	map.removeSource(outerId);
+	map.removeLayer(`${outerId}-fill`);
+	map.removeSource(`${outerId}-fill`);
+}
+
 export function addRouteToMap(
 	key: string,
 	map: Map,

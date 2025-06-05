@@ -1,6 +1,6 @@
 interface BaseUser {
 	_id: string;
-	role: 'user' | 'guest';
+	role: 'user' | 'guest' | 'developer';
 	name?: string;
 	imageUrl?: string;
 }
@@ -14,4 +14,9 @@ interface UserData extends BaseUser {
 	email: string;
 }
 
-export type IUserResponseData = GuestData | UserData;
+interface DeveloperData extends BaseUser {
+	role: 'developer';
+	email: string;
+}
+
+export type IUserResponseData = GuestData | UserData | DeveloperData;

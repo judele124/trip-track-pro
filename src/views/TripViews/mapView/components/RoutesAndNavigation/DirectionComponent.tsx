@@ -16,6 +16,10 @@ const directions: Record<string, IconName> = {
 	straight: 'directionStraightArrow',
 	right: 'directionRightArrow',
 	left: 'directionLeftArrow',
+	'sharp left': 'directionLeftArrow',
+	'sharp right': 'directionRightArrow',
+	'slight left': 'directionSlightLeftArrow',
+	'slight right': 'directionSlightRightArrow',
 };
 
 function DirectionComponent({
@@ -44,7 +48,7 @@ function DirectionComponent({
 	if (!pageContentRef.current) return null;
 
 	return createPortal(
-		<div className='page-colors absolute bottom-16 left-1/2 z-50 max-h-[40vh] w-[90vw] max-w-[380px] -translate-x-1/2 -translate-y-2 overflow-y-auto rounded-2xl border-2 border-primary text-sm'>
+		<div className='page-colors absolute bottom-2 left-1/2 z-50 max-h-[40vh] w-[90vw] max-w-[380px] -translate-x-1/2 -translate-y-2 overflow-y-auto rounded-2xl border-2 border-primary text-sm'>
 			{(!steps || steps.length === 0) && <div>no route found</div>}
 
 			{steps[nextStepIndex] && (

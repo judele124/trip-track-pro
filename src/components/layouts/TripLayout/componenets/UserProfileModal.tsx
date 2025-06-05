@@ -19,6 +19,7 @@ export default function UserProfileModal({
 			<div className='flex w-[95vw] max-w-[400px] flex-col gap-6 rounded-2xl bg-light p-8 text-dark dark:bg-dark dark:text-light'>
 				{user && (
 					<UserDetailsComponent
+						role={user.role}
 						name={user.name || 'Default'}
 						imageUrl={user.imageUrl || 'https://robohash.org/Default.png'}
 						{...(user.role !== 'guest' ? { email: user.email } : {})}
