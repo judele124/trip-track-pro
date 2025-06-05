@@ -92,10 +92,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	} = useSocketMessages();
 
 	useEffect(() => {
-		console.log('usersInLiveTripExpData', usersInLiveTripExpData);
-	}, [usersInLiveTripExpData]);
-
-	useEffect(() => {
 		if (!tripId || !user) return;
 
 		const socketClient: SocketClientType = io(API_BASE_URL, {
@@ -123,8 +119,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		socket.emit('joinTrip', tripId, user._id);
 
 		socket.on('tripJoined', (userData) => {
-			console.log(`User ${userData.userId} joined trip`);
-
 			setUsersInLiveTripExpData((prev) => {
 				const index = prev.findIndex((user) => user.userId === userData.userId);
 
@@ -175,8 +169,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		});
 
 		socket.on('userDisconnected', (userId) => {
-			console.log(`User ${userId} disconnected`);
-
 			setUsersInLiveTripExpData((prev) => {
 				return prev.filter((user) => user.userId !== userId);
 			});
