@@ -63,7 +63,7 @@ export default function useFakeUserLocation({
 				indexRef.current++;
 				progressRef.current = 0;
 
-				if (indexRef.current >= points.length - 1) {
+				if (indexRef.current >= points.length) {
 					setLocation(to);
 					onLocationUpdate?.(to);
 					clearInterval(interval);

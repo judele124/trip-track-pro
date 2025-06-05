@@ -6,14 +6,21 @@ import { calculateDistanceOnEarth } from '@/utils/map.functions';
 import useToggle from '@/hooks/useToggle';
 import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
 
+type Point = {
+	lon: number;
+	lat: number;
+};
+
 interface IUseUserCompletingTripProps {
 	trip: Trip | null;
 	initialUserLocation: { lat: number; lon: number } | null;
+	onLocationUpdate?: (location: Point) => void;
 }
 
 export default function useUserCompletingTrip({
 	trip,
 	initialUserLocation,
+	onLocationUpdate,
 }: IUseUserCompletingTripProps) {
 	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } = useToggle();
 
@@ -40,21 +47,28 @@ export default function useUserCompletingTrip({
 				lat: point[1],
 				lon: point[0],
 			})) || [],
-		speed: 100,
+		speed: 10,
 		updateIntervalMs: 500,
+		onLocationUpdate,
 	});
 
 	useEffect(() => {
 		if (!trip || !fakeUserLocation || !trip.stops[0].location) return;
+
+		const steps = routeData?.routes[0].legs[0].steps;
+		const lastStep = steps?.[steps.length - 1];
+
+		if (!lastStep) return;
+
 		const distance = calculateDistanceOnEarth(
 			[fakeUserLocation.lon, fakeUserLocation.lat],
-			[trip.stops[0].location.lon, trip.stops[0].location.lat]
+			lastStep.maneuver.location
 		);
 
 		if (distance < RANGE_STEP_THRESHOLD) {
 			setIsAtTripRoute(true);
 		}
-	}, [fakeUserLocation, trip?.stops]);
+	}, [fakeUserLocation, trip?.stops, routeData]);
 
 	return {
 		fakeUserLocation,
