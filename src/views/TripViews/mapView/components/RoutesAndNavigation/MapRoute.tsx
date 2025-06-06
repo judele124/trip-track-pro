@@ -1,4 +1,4 @@
-import { useMap } from '../../Map';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 import { MapBoxDirectionsResponse } from '@/types/map';
 import { addRouteToMap, IRouteLayerSpecification } from '@/utils/map.functions';
 import { useEffect } from 'react';
@@ -20,7 +20,7 @@ export default function MapRoute({
 	},
 	beforeLayerIds,
 }: IMapRouteProps) {
-	const { mapRef } = useMap();
+	const { mapRef } = useMapContext();
 
 	useEffect(() => {
 		if (!mapRef.current) return;

@@ -10,30 +10,19 @@ import Icon from '@/components/icons/Icon';
 import Button from '@/components/ui/Button';
 import { navigationRoutes } from '@/Routes/routes';
 import { Link } from 'react-router-dom';
-import { Map as MB_Map } from 'mapbox-gl';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 
 interface MapProps {
 	children?: ReactNode;
 }
 
-export interface MapContextValue {
-	isMapReady: boolean;
-	mapRef: MutableRefObject<MB_Map | null>;
-}
-
-const MapContext = createContext<MapContextValue | null>(null);
-
 export default function Map({ children }: MapProps) {
-	const conatinerRef = useRef<HTMLDivElement>(null);
-	const { isMapReady, mapRef, error } = useMapInit(conatinerRef);
+	const { isMapReady, setMapContainerRef, error } = useMapContext();
+	// const conatinerRef = useRef<HTMLDivElement>(null);
+	// const { isMapReady, mapRef, error } = useMapInit(conatinerRef);
 
 	return (
-		<MapContext.Provider
-			value={{
-				isMapReady,
-				mapRef,
-			}}
-		>
+		<>
 			{isMapReady && children}
 
 			{!isMapReady && (
@@ -54,15 +43,10 @@ export default function Map({ children }: MapProps) {
 					)}
 				</div>
 			)}
-			<div ref={conatinerRef} className='h-full w-full'></div>
-		</MapContext.Provider>
+			<div
+				ref={(ref) => ref && setMapContainerRef(ref)}
+				className='h-full w-full'
+			></div>
+		</>
 	);
 }
-
-export const useMap = () => {
-	const context = useContext(MapContext);
-	if (!context) {
-		throw new Error('useMapContext must be used within a MapContextProvider');
-	}
-	return context;
-};

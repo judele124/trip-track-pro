@@ -1,5 +1,5 @@
 import { Trip } from '@/types/trip';
-import { useMap } from '../../Map';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 import useDrawRangeAroundStop from '../../hooks/useDrawRangeAroundStop';
 import GeneralMarker from './GeneralMarker';
 import StopMarker from './StopMarker';
@@ -13,7 +13,7 @@ export default function TripStopsMarkers({
 	currentExpIndex: number;
 	isExperienceActive?: boolean;
 }) {
-	const { mapRef, isMapReady } = useMap();
+	const { mapRef, isMapReady } = useMapContext();
 
 	useDrawRangeAroundStop({
 		isMapReady,
