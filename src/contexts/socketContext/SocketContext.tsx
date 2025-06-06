@@ -44,6 +44,8 @@ export interface ISocketContextValue {
 	isUrgentNotificationActive: boolean;
 	notification: Notification | null;
 	urgentNotifications: UrgentNotificationType[];
+	isTripActive: boolean;
+	setIsTripActive: Dispatch<SetStateAction<boolean>>;
 }
 
 interface ITripSocketProviderProps {
@@ -53,11 +55,12 @@ interface ITripSocketProviderProps {
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
-	const { tripId } = useTripContext();
+	const { tripId, trip } = useTripContext();
 
 	const { user } = useAuthContext();
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
 	const [usersLocations, setUsersLocations] = useState<IUserLocation[]>([]);
+	const [isTripActive, setIsTripActive] = useState<boolean>(true);
 
 	const {
 		initUsersLiveData,
@@ -92,13 +95,14 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	} = useSocketMessages();
 
 	useEffect(() => {
-		if (!tripId || socket) return;
+		if (!tripId || !trip || socket) return;
 
 		const socketClient: SocketClientType = io(API_BASE_URL, {
 			query: { tripId },
 		});
 
 		setSocket(socketClient);
+		setIsTripActive(trip.status === 'started');
 
 		initUsersLiveData();
 		initExpirenceIndex();
@@ -107,7 +111,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			socketClient.disconnect();
 			console.log('Socket disconnected');
 		};
-	}, [tripId]);
+	}, [tripId, trip]);
 
 	useEffect(() => {
 		if (!socket || !tripId || !user) return;
@@ -166,6 +170,10 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 
 		socket.on('allUsersFinishedCurrentExp', (nextStepIndex) => {
 			setCurrentExpIndex(nextStepIndex);
+		});
+
+		socket.on('finishedTrip', () => {
+			setIsTripActive(false);
 		});
 
 		socket.on('disconnect', () => {
@@ -228,6 +236,8 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				setNotification,
 				setIsUrgentNotificationActive,
 				notification,
+				isTripActive,
+				setIsTripActive,
 			}}
 		>
 			{children}

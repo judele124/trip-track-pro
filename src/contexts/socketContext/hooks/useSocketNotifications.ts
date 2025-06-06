@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { UrgentNotificationType, INotification } from '../types';
+import { UrgentNotificationType, Notification } from '../types';
 
 interface IUseSocketNotificationsValue {
 	isUrgentNotificationActive: boolean;
-	notification: INotification | null;
+	notification: Notification | null;
 	urgentNotifications: UrgentNotificationType[];
-	setNotification: React.Dispatch<React.SetStateAction<INotification | null>>;
+	setNotification: React.Dispatch<React.SetStateAction<Notification | null>>;
 	setIsUrgentNotificationActive: React.Dispatch<React.SetStateAction<boolean>>;
 	addUrgentNotification: (notification: UrgentNotificationType) => void;
 }
@@ -17,7 +17,7 @@ export default function useSocketNotifications(): IUseSocketNotificationsValue {
 	>([]);
 	const [isUrgentNotificationActive, setIsUrgentNotificationActive] =
 		useState<boolean>(false);
-	const [notification, setNotification] = useState<INotification | null>(null);
+	const [notification, setNotification] = useState<Notification | null>(null);
 
 	const addUrgentNotification = (notification: UrgentNotificationType) => {
 		setUrgentNotifications((prev) => [...prev, notification]);
