@@ -108,7 +108,7 @@ function UpdateGuidesModal({
 				<div className='mb-2 flex items-center justify-between'>
 					<h2>Choose your guides</h2>
 					<Button onClick={closeModal} className='rounded-lg px-1 py-1'>
-						<Icon name='xIcon' className='fill-white dark:fill-dark' />
+						<Icon name='xIcon' className='stroke-white dark:stroke-dark' />
 					</Button>
 				</div>
 				{!newParticipants.length ? (
