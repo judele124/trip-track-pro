@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useMapContext } from '@/contexts/MapContext/MapContext';
 import { Maneuver } from '@/types/map';
-import { addArrowToMap, removeArrowFromMap } from '@/utils/map.functions.arrow';
 
 interface IMapArrowProps {
 	outerId: string;
@@ -12,43 +11,25 @@ interface IMapArrowProps {
 
 function MapArrow({
 	outerId,
-	maneuver: { location, bearing_after, bearing_before },
+	maneuver,
 	fillColor = '#32adff',
 	outlineColor = 'white',
 }: IMapArrowProps) {
-	const { mapRef, isMapReady } = useMapContext();
+	const { mapRef, isMapReady, addArrow, removeArrow } = useMapContext();
 
 	useEffect(() => {
 		if (!mapRef.current || !isMapReady) return;
-
-		const length = 15;
-		const width = 3;
-
-		addArrowToMap({
+		addArrow({
 			outerId,
-			map: mapRef.current,
+			maneuver,
 			fillColor,
 			outlineColor,
-			location,
-			bearing_after,
-			bearing_before,
-			length,
-			width,
 		});
 
 		return () => {
-			if (!mapRef.current) return;
-			removeArrowFromMap(mapRef.current, outerId);
+			removeArrow();
 		};
-	}, [
-		mapRef,
-		isMapReady,
-		location,
-		bearing_after,
-		bearing_before,
-		fillColor,
-		outlineColor,
-	]);
+	}, [mapRef, isMapReady, maneuver, fillColor, outlineColor]);
 
 	return null;
 }

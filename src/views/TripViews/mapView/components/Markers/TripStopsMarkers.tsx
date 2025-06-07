@@ -34,6 +34,7 @@ export default function TripStopsMarkers({
 				<GeneralMarker
 					key={`exp-${stop.location.lat}-${stop.location.lon}-${i}`}
 					location={stop.location}
+					id={`exp-${stop.location.lat}-${stop.location.lon}-${i}`}
 				>
 					<StopMarker
 						disableExperience={currentExpIndex !== i}
@@ -47,6 +48,7 @@ export default function TripStopsMarkers({
 				<GeneralMarker
 					key={`norm-${stop.location.lat}-${stop.location.lon}-${i}`}
 					location={stop.location}
+					id={`norm-${stop.location.lat}-${stop.location.lon}-${i}`}
 				>
 					<StopMarker
 						disableExperience={false}

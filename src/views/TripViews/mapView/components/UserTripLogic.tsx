@@ -10,7 +10,6 @@ import { useEffect, useMemo } from 'react';
 import { calculateDistanceOnEarth } from '@/utils/map.functions';
 import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
 import { useTripSocket } from '@/contexts/socketContext/SocketContext';
-import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
 
@@ -23,52 +22,22 @@ const ROUTE_FILL_COLOR = '#5fa8d3';
 
 const ROUTE_WIDTH = 6;
 const ROUTE_FILL_WIDTH = 2;
-const STOP_MARKER_RANGE = 30;
 
 export default function UserTripLogic() {
 	const { user } = useAuthContext();
 	const { trip } = useTripContext();
 	const {
 		usersLocations,
-		socket,
 		currentExpIndex,
 		isExperienceActive,
-		setExperienceActive,
 		notification,
 		urgentNotifications,
 		isUrgentNotificationActive,
 		setNotification,
 		setIsUrgentNotificationActive,
+		userCurrentLocation,
+		initialUserLocation,
 	} = useTripSocket();
-
-	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
-		onLocationUpdate: (location) => {
-			if (!trip || !socket || !user) return;
-
-			const stopLocation = trip.stops[currentExpIndex]?.location;
-
-			if (!stopLocation) return;
-
-			const userPosition = [location.lon, location.lat];
-			const stopPosition = [stopLocation.lon, stopLocation.lat];
-
-			const isUserNearStop =
-				calculateDistanceOnEarth(userPosition, stopPosition) <
-				STOP_MARKER_RANGE;
-
-			socket.emit('updateLocation', trip._id, location);
-
-			if (isUserNearStop) {
-				if (!isExperienceActive) {
-					socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
-				}
-			} else {
-				if (isExperienceActive) {
-					setExperienceActive(false);
-				}
-			}
-		},
-	});
 
 	const memoizedTripPoints = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],
@@ -107,7 +76,7 @@ export default function UserTripLogic() {
 			)}
 
 			{usersLocations.map(({ id, location }) => (
-				<OtherUserMarker location={location} key={id} />
+				<OtherUserMarker location={location} key={id} id={id} />
 			))}
 
 			{trip && userCurrentLocation && (

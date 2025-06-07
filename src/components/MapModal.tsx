@@ -7,6 +7,7 @@ import MapRoute from '@/views/TripViews/mapView/components/RoutesAndNavigation/M
 import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
 import { useMemo } from 'react';
 import { Trip } from '@/types/trip';
+import { MapContextProvider } from '@/contexts/MapContext/MapContext';
 
 interface IMapModalProps {
 	mapOpen: boolean;
@@ -30,22 +31,25 @@ export default function MapModal({
 	return (
 		<Modal open={mapOpen} center onBackdropClick={() => toggleMap()}>
 			<div className='h-[80vh] w-[90vw] overflow-hidden rounded-2xl'>
-				<Map>
-					{routeData && <MapRoute id='modal-route' route={routeData} />}
-					{stops.map((stop: Types['Trip']['Stop']['Model'], i) => (
-						<GeneralMarker
-							key={`${stop.location.lon}-${stop.location.lat}-${i}`}
-							location={stop.location}
-						>
-							<StopMarker
-								index={i}
-								disableExperience={disableExperiences}
-								isTripActive={false}
-								stop={stop}
-							/>
-						</GeneralMarker>
-					))}
-				</Map>
+				<MapContextProvider>
+					<Map>
+						{routeData && <MapRoute id='modal-route' route={routeData} />}
+						{stops.map((stop: Types['Trip']['Stop']['Model'], i) => (
+							<GeneralMarker
+								id={`${stop.location.lon}-${stop.location.lat}-${i}`}
+								key={`${stop.location.lon}-${stop.location.lat}-${i}`}
+								location={stop.location}
+							>
+								<StopMarker
+									index={i}
+									disableExperience={disableExperiences}
+									isTripActive={false}
+									stop={stop}
+								/>
+							</GeneralMarker>
+						))}
+					</Map>
+				</MapContextProvider>
 			</div>
 		</Modal>
 	);

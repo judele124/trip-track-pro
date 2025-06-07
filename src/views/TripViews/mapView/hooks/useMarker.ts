@@ -1,7 +1,9 @@
-import { Map, Marker } from 'mapbox-gl';
-import { RefObject, useEffect, useRef } from 'react';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
+import { Map } from 'mapbox-gl';
+import { RefObject, useEffect } from 'react';
 
 interface IUseMarketProps {
+	id: string;
 	ref: RefObject<HTMLElement | null>;
 	isMapReady: boolean;
 	mapRef: RefObject<Map | null>;
@@ -12,30 +14,35 @@ interface IUseMarketProps {
 interface IUseMarketReturn {}
 
 export default function useMarker({
+	id,
 	ref,
 	isMapReady,
 	mapRef,
 	location: { lat, lon },
 }: IUseMarketProps): IUseMarketReturn {
-	const markerRef = useRef<Marker | null>(null);
+	const { addMarker, removeMarker, updateMarker } = useMapContext();
+
 	useEffect(() => {
-		if (!mapRef?.current || !isMapReady || !ref?.current) return;
-
-		markerRef.current = new Marker({
-			element: ref.current,
-		})
-			.setLngLat([lon, lat])
-			.addTo(mapRef.current);
-
+		addMarker({
+			id,
+			ref,
+			isMapReady,
+			mapRef,
+			location: { lat, lon },
+		});
 		return () => {
-			markerRef.current?.remove();
+			removeMarker(id);
 		};
 	}, [isMapReady]);
 
 	useEffect(() => {
-		if (!markerRef.current) return;
-
-		markerRef.current.setLngLat([lon, lat]);
+		updateMarker({
+			id,
+			ref,
+			isMapReady,
+			mapRef,
+			location: { lat, lon },
+		});
 	}, [lon, lat]);
 
 	return {};
