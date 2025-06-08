@@ -55,7 +55,7 @@ interface ITripSocketProviderProps {
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
-	const { tripId, trip } = useTripContext();
+	const { tripId, trip, isGuide } = useTripContext();
 
 	const { user } = useAuthContext();
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
@@ -147,8 +147,10 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		});
 
 		socket.on('userIsOutOfTripRoute', (userId) => {
-			const not = new UserOutOfRouteNotification(userId);
-			addUrgentNotification(not);
+			if (isGuide && userId !== user._id) {
+				const not = new UserOutOfRouteNotification(userId);
+				addUrgentNotification(not);
+			}
 		});
 
 		socket.on('allUsersInExperience', () => {
@@ -179,6 +181,9 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		socket.on('userDisconnected', (userId) => {
 			setUsersInLiveTripExpData((prev) => {
 				return prev.filter((user) => user.userId !== userId);
+			});
+			setUsersLocations((prev) => {
+				return prev.filter((user) => user.id !== userId);
 			});
 		});
 

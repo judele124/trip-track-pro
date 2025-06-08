@@ -10,6 +10,7 @@ import {
 import useTripId from '@/hooks/useTripId';
 import { tripGet } from '@/servises/tripService';
 import { Trip } from '@/types/trip';
+import { useAuthContext } from './AuthContext';
 
 interface TripContextValue {
 	trip: Trip | null;
@@ -18,6 +19,7 @@ interface TripContextValue {
 	errorTrip: Error | null;
 	tripId: string;
 	status: number | undefined;
+	isGuide: boolean;
 }
 
 const TripContext = createContext<TripContextValue | null>(null);
@@ -26,9 +28,21 @@ interface TripProviderProps {
 	children: ReactNode;
 }
 
+const checkIfIsGuide = (userId: string, trip: Trip) => {
+	if (
+		trip.guides.flatMap((g) => g._id).includes(userId) ||
+		trip.creator._id === userId
+	) {
+		return true;
+	}
+	return false;
+};
+
 const TripProvider: FC<TripProviderProps> = ({ children }) => {
+	const { user } = useAuthContext();
 	const tripId = useTripId();
 	const [trip, setTrip] = useState<Trip | null>(null);
+	const [isGuide, setIsGuide] = useState(false);
 
 	const {
 		activate,
@@ -44,6 +58,13 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 		if (tripId) tripGet(activate, tripId);
 	}, [tripId]);
 
+	useEffect(() => {
+		if (!trip || !user) return;
+		if (checkIfIsGuide(user._id, trip)) {
+			setIsGuide(true);
+		}
+	}, [trip, user]);
+
 	return (
 		<TripContext.Provider
 			value={{
@@ -53,6 +74,7 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 				errorTrip,
 				tripId,
 				status,
+				isGuide,
 			}}
 		>
 			{children}
