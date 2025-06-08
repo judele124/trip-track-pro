@@ -75,10 +75,11 @@ const TripLayout = () => {
 								</div>
 							) : trip.status !== 'started' ? (
 								<TripNotActiveMessage trip={trip} />
-							) : !isTripActive ? (
-								<FinishTripModal tripId={tripId} />
 							) : (
-								<Outlet />
+								<>
+									{!isTripActive && <FinishTripModal tripId={tripId} />}
+									<Outlet />
+								</>
 							)}
 						</>
 					)}
