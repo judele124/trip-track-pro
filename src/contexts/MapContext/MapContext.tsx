@@ -80,61 +80,59 @@ export const MapContextProvider = ({ children }: { children: ReactNode }) => {
 		if (!mapRef.current || !isMapReady) return;
 		if (!mapArrowData) return;
 		if (!mapRef.current) return;
-
-		const { outerId, maneuver, fillColor, outlineColor } = mapArrowData;
-		mapRef.current.on('style.load', () => {
-			if (!mapRef.current) return;
-			addArrowToMap({
-				outerId,
-				map: mapRef.current,
-				fillColor,
-				outlineColor,
-				location: maneuver.location,
-				bearing_after: maneuver.bearing_after,
-				bearing_before: maneuver.bearing_before,
-				length: 15,
-				width: 3,
-			});
-		});
-
-		return () => {
-			if (!mapRef.current) return;
-			removeArrowFromMap(mapRef.current, mapArrowData.outerId);
-		};
 	}, [mapArrowData, isMapReady]);
 
 	useEffect(() => {
-		if (!mapRef.current || !isMapReady) return;
-		mapRef.current.on('style.load', () => {
-			mapRoutesData.forEach(({ id, route, options, beforeLayerIds }) => {
-				if (!mapRef.current) return;
-				addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
-			});
+		if (!mapArrowData || !mapRef.current || !isMapReady) return;
+
+		const { outerId, maneuver, fillColor, outlineColor } = mapArrowData;
+
+		addArrowToMap({
+			outerId,
+			map: mapRef.current!,
+			fillColor,
+			outlineColor,
+			location: maneuver.location,
+			bearing_after: maneuver.bearing_after,
+			bearing_before: maneuver.bearing_before,
+			length: 15,
+			width: 3,
+		});
+
+		mapRoutesData.forEach(({ id, route, options, beforeLayerIds }) => {
+			if (!mapRef.current) return;
+			addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
 		});
 
 		return () => {
-			mapRoutesData.forEach(({ id }) => {
-				if (!mapRef.current) return;
-				removeRouteFromMap(mapRef.current, id);
-			});
+			if (!mapRef.current) return;
+			const removeRoutes = () => {
+				mapRoutesData.forEach(({ id }) => {
+					if (!mapRef.current) return;
+					removeRouteFromMap(mapRef.current, id);
+				});
+			};
+			removeRoutes();
+			removeArrowFromMap(mapRef.current, mapArrowData.outerId);
 		};
-	}, [mapRoutesData, isMapReady]);
+	}, [mapRoutesData, mapArrowData, isMapReady]);
 
 	useEffect(() => {
 		if (!mapRef.current || !isMapReady) return;
-		let markers: (Marker | undefined)[] = [];
-		console.log(markersData);
+		const addMarkers = () => {
+			return markersData.map(({ ref, location }) => {
+				if (!mapRef.current) return;
+				if (!mapRef?.current || !isMapReady || !ref?.current) return;
+				const marker = new Marker({
+					element: ref.current,
+				})
+					.setLngLat([location.lon, location.lat])
+					.addTo(mapRef.current);
+				return marker;
+			});
+		};
 
-		markers = markersData.map(({ ref, location }) => {
-			if (!mapRef.current) return;
-			if (!mapRef?.current || !isMapReady || !ref?.current) return;
-			const marker = new Marker({
-				element: ref.current,
-			})
-				.setLngLat([location.lon, location.lat])
-				.addTo(mapRef.current);
-			return marker;
-		});
+		const markers = addMarkers();
 
 		return () => {
 			markers.forEach((marker) => {
