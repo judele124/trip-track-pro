@@ -12,6 +12,9 @@ import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
 import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
+import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
+
+const STOP_MARKER_RANGE = 30;
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
 const ROUTE_OPACITY = 1;
@@ -35,9 +38,38 @@ export default function UserTripLogic() {
 		isUrgentNotificationActive,
 		setNotification,
 		setIsUrgentNotificationActive,
-		userCurrentLocation,
-		initialUserLocation,
+		socket,
+		setExperienceActive,
 	} = useTripSocket();
+
+	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
+		onLocationUpdate: (location) => {
+			if (!trip || !socket || !user) return;
+
+			const stopLocation = trip.stops[currentExpIndex]?.location;
+
+			if (!stopLocation) return;
+
+			const userPosition = [location.lon, location.lat];
+			const stopPosition = [stopLocation.lon, stopLocation.lat];
+
+			const isUserNearStop =
+				calculateDistanceOnEarth(userPosition, stopPosition) <
+				STOP_MARKER_RANGE;
+
+			socket.emit('updateLocation', trip._id, location);
+
+			if (isUserNearStop) {
+				if (!isExperienceActive) {
+					socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
+				}
+			} else {
+				if (isExperienceActive) {
+					setExperienceActive(false);
+				}
+			}
+		},
+	});
 
 	const memoizedTripPoints = useMemo(
 		() => trip?.stops.map((stop) => stop.location) || [],

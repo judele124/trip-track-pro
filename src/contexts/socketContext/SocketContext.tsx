@@ -26,8 +26,6 @@ import {
 } from './types';
 import { useAuthContext } from '../AuthContext';
 import { useTripContext } from '../TripContext';
-import useCurrentUserLocation from '@/views/TripViews/mapView/hooks/useCurrentUserLocation';
-import { calculateDistanceOnEarth } from '@/utils/map.functions';
 
 export interface ISocketContextValue {
 	socket: SocketClientType | null;
@@ -46,8 +44,6 @@ export interface ISocketContextValue {
 	isUrgentNotificationActive: boolean;
 	notification: Notification | null;
 	urgentNotifications: UrgentNotificationType[];
-	userCurrentLocation: { lat: number; lon: number } | null;
-	initialUserLocation: { lat: number; lon: number } | null;
 }
 
 interface ITripSocketProviderProps {
@@ -56,42 +52,11 @@ interface ITripSocketProviderProps {
 
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
-const STOP_MARKER_RANGE = 30;
-
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
-	const { tripId, trip } = useTripContext();
+	const { tripId } = useTripContext();
 	const { user } = useAuthContext();
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
 	const [usersLocations, setUsersLocations] = useState<IUserLocation[]>([]);
-
-	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
-		onLocationUpdate: (location) => {
-			if (!trip || !socket || !user) return;
-
-			const stopLocation = trip.stops[currentExpIndex]?.location;
-
-			if (!stopLocation) return;
-
-			const userPosition = [location.lon, location.lat];
-			const stopPosition = [stopLocation.lon, stopLocation.lat];
-
-			const isUserNearStop =
-				calculateDistanceOnEarth(userPosition, stopPosition) <
-				STOP_MARKER_RANGE;
-
-			socket.emit('updateLocation', trip._id, location);
-
-			if (isUserNearStop) {
-				if (!isExperienceActive) {
-					socket.emit('userInExperience', trip._id, user._id, currentExpIndex);
-				}
-			} else {
-				if (isExperienceActive) {
-					setExperienceActive(false);
-				}
-			}
-		},
-	});
 
 	const {
 		initUsersLiveData,
@@ -262,8 +227,6 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				setNotification,
 				setIsUrgentNotificationActive,
 				notification,
-				userCurrentLocation,
-				initialUserLocation,
 			}}
 		>
 			{children}
