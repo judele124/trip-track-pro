@@ -77,12 +77,6 @@ export const MapContextProvider = ({ children }: { children: ReactNode }) => {
 	const [markersData, setMarkersData] = useState<MapMarkerData[]>([]);
 
 	useEffect(() => {
-		if (!mapRef.current || !isMapReady) return;
-		if (!mapArrowData) return;
-		if (!mapRef.current) return;
-	}, [mapArrowData, isMapReady]);
-
-	useEffect(() => {
 		if (!mapArrowData || !mapRef.current || !isMapReady) return;
 
 		const { outerId, maneuver, fillColor, outlineColor } = mapArrowData;

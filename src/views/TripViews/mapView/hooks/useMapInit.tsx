@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mapboxgl, { Map, Map as MB_Map } from 'mapbox-gl';
 import { MAPBOX_ACCESS_TOKEN } from '@/env.config';
 
@@ -33,6 +33,10 @@ export default function useMapInit(
 
 			mapRef.current.on('load', () => {
 				setMapReady(true);
+			});
+
+			mapRef.current.on('remove', () => {
+				setMapReady(false);
 			});
 
 			return () => {

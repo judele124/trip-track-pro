@@ -1,11 +1,4 @@
-import useMapInit from './hooks/useMapInit';
-import {
-	createContext,
-	MutableRefObject,
-	ReactNode,
-	useContext,
-	useRef,
-} from 'react';
+import { ReactNode } from 'react';
 import Icon from '@/components/icons/Icon';
 import Button from '@/components/ui/Button';
 import { navigationRoutes } from '@/Routes/routes';
@@ -18,8 +11,6 @@ interface MapProps {
 
 export default function Map({ children }: MapProps) {
 	const { isMapReady, setMapContainerRef, error } = useMapContext();
-	// const conatinerRef = useRef<HTMLDivElement>(null);
-	// const { isMapReady, mapRef, error } = useMapInit(conatinerRef);
 
 	return (
 		<>
