@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Map } from 'mapbox-gl';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 
 interface MapTrackingOptions {
 	zoom?: number;
@@ -8,17 +8,14 @@ interface MapTrackingOptions {
 	autoReenableDelay?: number | null;
 }
 
-export function useMapTracking(
-	mapRef: React.RefObject<Map | null>,
-	options: MapTrackingOptions = {}
-) {
+export function useMapTracking(options: MapTrackingOptions = {}) {
+	const { mapRef, isMapReady } = useMapContext();
 	const {
 		zoom = 16,
 		speed = 1.5,
 		duration = 1000,
 		autoReenableDelay = 30000, // 30 seconds
 	} = options;
-
 	const [isTracking, setIsTracking] = useState(true);
 	const trackingTimeoutRef = useRef<number | null>(null);
 

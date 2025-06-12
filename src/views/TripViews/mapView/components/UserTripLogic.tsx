@@ -10,9 +10,11 @@ import { useEffect, useMemo } from 'react';
 import { calculateDistanceOnEarth } from '@/utils/map.functions';
 import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
 import { useTripSocket } from '@/contexts/socketContext/SocketContext';
-import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
+import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
+
+const STOP_MARKER_RANGE = 30;
 import useUserCompletingTrip from '../tests/useUserCompletingTrip';
 import { Trip } from '@/types/trip';
 
@@ -25,22 +27,21 @@ const ROUTE_FILL_COLOR = '#5fa8d3';
 
 const ROUTE_WIDTH = 6;
 const ROUTE_FILL_WIDTH = 2;
-const STOP_MARKER_RANGE = 30;
 
 export default function UserTripLogic() {
 	const { user } = useAuthContext();
 	const { trip } = useTripContext();
 	const {
 		usersLocations,
-		socket,
 		currentExpIndex,
 		isExperienceActive,
-		setExperienceActive,
 		notification,
 		urgentNotifications,
 		isUrgentNotificationActive,
 		setNotification,
 		setIsUrgentNotificationActive,
+		socket,
+		setExperienceActive,
 		setIsTripActive,
 	} = useTripSocket();
 
@@ -134,7 +135,7 @@ export default function UserTripLogic() {
 			)}
 
 			{usersLocations.map(({ id, location }) => (
-				<OtherUserMarker location={location} key={id} />
+				<OtherUserMarker location={location} key={id} id={id} />
 			))}
 
 			{trip && userCurrentLocation && (

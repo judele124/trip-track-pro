@@ -1,5 +1,5 @@
 import { Trip } from '@/types/trip';
-import { useMap } from '../../Map';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 import useDrawRangeAroundStop from '../../hooks/useDrawRangeAroundStop';
 import GeneralMarker from './GeneralMarker';
 import StopMarker from './StopMarker';
@@ -54,7 +54,7 @@ function StopsWithExperienceMarker({
 	isExperienceActive,
 	experienceStops,
 }: IStopsWithExperienceMarker) {
-	const { mapRef, isMapReady } = useMap();
+	const { mapRef, isMapReady } = useMapContext();
 	const safeExpIndex = Math.min(currentExpIndex, experienceStops.length - 1);
 	useDrawRangeAroundStop({
 		isMapReady,
@@ -72,10 +72,25 @@ function StopsWithExperienceMarker({
 				<GeneralMarker
 					key={`exp-${stop.location.lat}-${stop.location.lon}-${i}`}
 					location={stop.location}
+					id={`exp-${stop.location.lat}-${stop.location.lon}-${i}`}
 				>
 					<StopMarker
 						disableExperience={currentExpIndex !== i}
 						isExperienceActive={isExperienceActive}
+						stop={stop}
+						index={i}
+					/>
+				</GeneralMarker>
+			))}
+			{nurmalStops.map((stop, i) => (
+				<GeneralMarker
+					key={`norm-${stop.location.lat}-${stop.location.lon}-${i}`}
+					location={stop.location}
+					id={`norm-${stop.location.lat}-${stop.location.lon}-${i}`}
+				>
+					<StopMarker
+						disableExperience={false}
+						isExperienceActive={false}
 						stop={stop}
 						index={i}
 					/>

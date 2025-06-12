@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMap } from '../../Map';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 import GeneralMarker from './GeneralMarker';
 import { IUserResponseData } from '@/types/user';
 import { useMapTracking } from '../../hooks/useMapTracking';
@@ -24,6 +24,7 @@ export default function CurrentUserMarker({
 	return (
 		<>
 			<GeneralMarker
+				id='current-user-marker'
 				location={location}
 				childrenAsInnerHtmlString={`
 			<div class="relative flex flex-col items-center justify-center">

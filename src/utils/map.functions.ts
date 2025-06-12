@@ -48,10 +48,32 @@ export function addSourceAndLayerToMap(
 		}
 	}
 
-	map.addSource(key, sourceData);
+	try {
+		map.addSource(key, sourceData);
+	} catch (error) {
+		console.error('Error adding source:', error);
+	}
 
-	if (!map.getLayer(key)) {
-		map.addLayer(layerData, beforeLayerId);
+	try {
+		if (!map.getLayer(key)) {
+			map.addLayer(layerData, beforeLayerId);
+		}
+	} catch (error) {
+		console.error('Error adding layer:', error);
+	}
+}
+
+export function removeSourceAndLayerFromMap(map: Map, key: string) {
+	try {
+		if (map.getLayer(key)) {
+			map.removeLayer(key);
+		}
+
+		if (map.getSource(key)) {
+			map.removeSource(key);
+		}
+	} catch (error) {
+		console.error('Error removing source and layer:', error);
 	}
 }
 
@@ -112,10 +134,8 @@ export function removePolygonFillAndOuterFillFromMap(
 	map: Map,
 	outerId: string
 ) {
-	map.removeLayer(outerId);
-	map.removeSource(outerId);
-	map.removeLayer(`${outerId}-fill`);
-	map.removeSource(`${outerId}-fill`);
+	removeSourceAndLayerFromMap(map, outerId);
+	removeSourceAndLayerFromMap(map, `${outerId}-fill`);
 }
 
 export function addRouteToMap(
@@ -153,6 +173,10 @@ export function addRouteToMap(
 	};
 
 	addSourceAndLayerToMap(key, map, sourceData, layerData, beforeLayerId);
+}
+
+export function removeRouteFromMap(map: Map, key: string) {
+	removeSourceAndLayerFromMap(map, key);
 }
 
 export function addCircleRadiusToLocation<K extends string>(
