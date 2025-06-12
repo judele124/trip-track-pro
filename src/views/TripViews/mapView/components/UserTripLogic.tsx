@@ -40,9 +40,9 @@ export default function UserTripLogic() {
 		isUrgentNotificationActive,
 		setNotification,
 		setIsUrgentNotificationActive,
-		socket,
 		setExperienceActive,
 		setIsTripActive,
+		socket,
 	} = useTripSocket();
 
 	const { normalStops, lastStopLocation, stopsWithExperience } = useMemo(() => {
