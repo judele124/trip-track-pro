@@ -119,7 +119,7 @@ export default function UserTripLogic() {
 			)}
 
 			{usersLocations.map(({ id, location }) => (
-				<OtherUserMarker location={location} key={id} id={id} />
+				<OtherUserMarker location={location} key={id} />
 			))}
 
 			{trip && userCurrentLocation && (

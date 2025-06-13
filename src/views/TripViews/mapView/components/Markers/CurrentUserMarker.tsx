@@ -24,7 +24,6 @@ export default function CurrentUserMarker({
 	return (
 		<>
 			<GeneralMarker
-				id='current-user-marker'
 				location={location}
 				childrenAsInnerHtmlString={`
 			<div class="relative flex flex-col items-center justify-center">

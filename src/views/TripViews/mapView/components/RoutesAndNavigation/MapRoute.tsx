@@ -1,6 +1,10 @@
 import { useMapContext } from '@/contexts/MapContext/MapContext';
 import { MapBoxDirectionsResponse } from '@/types/map';
-import { IRouteLayerSpecification } from '@/utils/map.functions';
+import {
+	addRouteToMap,
+	IRouteLayerSpecification,
+	removeRouteFromMap,
+} from '@/utils/map.functions';
 import { useEffect } from 'react';
 
 interface IMapRouteProps {
@@ -20,18 +24,20 @@ export default function MapRoute({
 	},
 	beforeLayerIds,
 }: IMapRouteProps) {
-	const { addRouteToRoutesData, removeRouteFromRoutesData, updateRoute } =
-		useMapContext();
+	const { mapRef, isMapReady } = useMapContext();
 
 	useEffect(() => {
-		addRouteToRoutesData(id, route, options, beforeLayerIds);
+		if (!mapRef.current || !isMapReady) return;
+		addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
 		return () => {
-			removeRouteFromRoutesData(id);
+			if (!mapRef.current) return;
+			removeRouteFromMap(mapRef.current, id);
 		};
 	}, [id]);
 
 	useEffect(() => {
-		updateRoute(id, route, options);
+		if (!mapRef.current || !isMapReady) return;
+		addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
 	}, [route, options]);
 
 	return null;

@@ -36,7 +36,6 @@ export default function MapModal({
 						{routeData && <MapRoute id='modal-route' route={routeData} />}
 						{stops.map((stop: Types['Trip']['Stop']['Model'], i) => (
 							<GeneralMarker
-								id={`${stop.location.lon}-${stop.location.lat}-${i}`}
 								key={`${stop.location.lon}-${stop.location.lat}-${i}`}
 								location={stop.location}
 							>
