@@ -16,7 +16,7 @@ export const TrackingToggle: FC<TrackingToggleProps> = ({
 	return (
 		pageContentRef.current &&
 		createPortal(
-			<div className='absolute left-2 top-2 z-50'>
+			<div className='absolute left-2 top-2 z-10'>
 				<button
 					onClick={onToggle}
 					className={`rounded-full bg-white p-2 shadow-md transition-colors hover:bg-gray-100`}

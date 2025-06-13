@@ -116,39 +116,29 @@ const routes: RouteObject[] = [
 	{
 		path: `${baseRoutes.trip}/*`,
 		element: (
-			<TripProvider>
-				<SocketProvider>
-					<MapContextProvider>
-						<TripLayout />
-					</MapContextProvider>
-				</SocketProvider>
-			</TripProvider>
+			<ProtectedRoute>
+				<TripProvider>
+					<SocketProvider>
+						<MapContextProvider>
+							<TripLayout />
+						</MapContextProvider>
+					</SocketProvider>
+				</TripProvider>
+			</ProtectedRoute>
 		),
 		children: [
 			{ index: true, element: <LoadingTripDataView /> },
 			{
 				path: tripRoutes.map,
-				element: (
-					<ProtectedRoute>
-						<MapView />
-					</ProtectedRoute>
-				),
+				element: <MapView />,
 			},
 			{
 				path: tripRoutes.participants,
-				element: (
-					<ProtectedRoute>
-						<ParticipantsView />
-					</ProtectedRoute>
-				),
+				element: <ParticipantsView />,
 			},
 			{
 				path: tripRoutes.chat,
-				element: (
-					<ProtectedRoute>
-						<ChatView />
-					</ProtectedRoute>
-				),
+				element: <ChatView />,
 			},
 			{ path: '*', element: <PageNotFoundView /> },
 		],

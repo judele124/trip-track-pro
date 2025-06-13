@@ -9,6 +9,8 @@ import TripNotActiveMessage from '@/components/TripNotActiveMessage';
 import { createContext, MutableRefObject, useContext, useRef } from 'react';
 import DevPanel from '@/components/DevPanel';
 import { useAuthContext } from '@/contexts/AuthContext';
+import Map from '@/views/TripViews/mapView/Map';
+import UserTripLogic from '@/views/TripViews/mapView/components/UserTripLogic';
 
 interface TripLayoutContextValue {
 	topNavigationRef: MutableRefObject<HTMLDivElement | null>;
@@ -56,7 +58,7 @@ const TripLayout = () => {
 					{status && (
 						<>
 							{!trip ? (
-								<div className='page-padding text-center'>
+								<div className='page-padding relative text-center'>
 									<p>
 										{!tripId
 											? '⚠️ Oops! No trip was found.'
@@ -73,7 +75,16 @@ const TripLayout = () => {
 							) : trip.status !== 'started' ? (
 								<TripNotActiveMessage trip={trip} />
 							) : (
-								<Outlet />
+								<>
+									<div className='absolute inset-0 z-50'>
+										<Outlet />
+									</div>
+									<div className='page-colors absolute inset-0 z-0'>
+										<Map>
+											<UserTripLogic />
+										</Map>
+									</div>
+								</>
 							)}
 						</>
 					)}
