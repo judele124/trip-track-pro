@@ -43,7 +43,7 @@ const ChatView = () => {
 	}, []);
 
 	return (
-		<div className='page-colors flex h-full flex-col'>
+		<div className='page-colors relative z-30 flex h-full flex-col'>
 			<div className='flex-1 overflow-y-auto px-4 py-2'>
 				{messages.map((message, index) => (
 					<Message message={message} key={index} userId={user?._id} />

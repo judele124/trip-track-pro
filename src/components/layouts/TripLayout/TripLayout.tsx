@@ -76,9 +76,7 @@ const TripLayout = () => {
 								<TripNotActiveMessage trip={trip} />
 							) : (
 								<>
-									<div className='absolute inset-0 z-50'>
-										<Outlet />
-									</div>
+									<Outlet />
 									<div className='page-colors absolute inset-0 z-0'>
 										<Map>
 											<UserTripLogic />
