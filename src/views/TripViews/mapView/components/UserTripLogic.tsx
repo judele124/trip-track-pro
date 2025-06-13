@@ -13,7 +13,6 @@ import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
-import useUserCompletingTrip from '../tests/useUserCompletingTrip';
 
 const STOP_MARKER_RANGE = 30;
 
@@ -99,12 +98,6 @@ export default function UserTripLogic() {
 		}
 	}, [userCurrentLocation, trip?.stops]);
 
-	const { fakeUserLocation, isAtTripRoute: isFakeUserAtTripRoute } =
-		useUserCompletingTrip({
-			initialUserLocation,
-			trip,
-		});
-
 	return (
 		<>
 			{/* loading location */}
@@ -114,17 +107,13 @@ export default function UserTripLogic() {
 				<CurrentUserMarker location={userCurrentLocation} user={user} />
 			)}
 
-			{fakeUserLocation && user && (
-				<CurrentUserMarker location={fakeUserLocation} user={user} />
-			)}
-
 			{usersLocations.map(({ id, location }) => (
 				<OtherUserMarker location={location} key={id} />
 			))}
 
 			{trip && userCurrentLocation && (
 				<>
-					{isFakeUserAtTripRoute ? (
+					{isAtTripRoute ? (
 						<TripStopsMarkers
 							isExperienceActive={isExperienceActive}
 							currentExpIndex={currentExpIndex}
@@ -153,11 +142,11 @@ export default function UserTripLogic() {
 						routeId='trip-route'
 						originalPoints={memoizedTripPoints}
 						routeOptions={{
-							lineColor: isFakeUserAtTripRoute
+							lineColor: isAtTripRoute
 								? ACTIVE_ROUTE_COLOR
 								: INACTIVE_ROUTE_COLOR,
 							lineWidth: ROUTE_WIDTH,
-							lineOpacity: isFakeUserAtTripRoute
+							lineOpacity: isAtTripRoute
 								? ROUTE_OPACITY
 								: INACTIVE_ROUTE_OPACITY,
 						}}
@@ -166,11 +155,11 @@ export default function UserTripLogic() {
 							lineWidth: ROUTE_FILL_WIDTH,
 							lineOpacity: ROUTE_OPACITY,
 						}}
-						userLocation={fakeUserLocation}
-						active={isFakeUserAtTripRoute}
+						userLocation={userCurrentLocation}
+						active={isAtTripRoute}
 					/>
 
-					{!isFakeUserAtTripRoute && (
+					{!isAtTripRoute && (
 						<RouteAndNavigation
 							active={true}
 							routeId='user-to-trip-route'
@@ -185,7 +174,7 @@ export default function UserTripLogic() {
 								lineWidth: ROUTE_FILL_WIDTH,
 								lineOpacity: ROUTE_OPACITY,
 							}}
-							userLocation={fakeUserLocation}
+							userLocation={userCurrentLocation}
 						/>
 					)}
 				</>
