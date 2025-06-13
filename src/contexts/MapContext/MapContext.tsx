@@ -77,6 +77,25 @@ export const MapContextProvider = ({ children }: { children: ReactNode }) => {
 	const [markersData, setMarkersData] = useState<MapMarkerData[]>([]);
 
 	useEffect(() => {
+		return () => {
+			if (!mapRef.current) return;
+			const removeRoutes = () => {
+				mapRoutesData.forEach(({ id }) => {
+					if (!mapRef.current) return;
+					removeRouteFromMap(mapRef.current, id);
+				});
+			};
+			removeRoutes();
+
+			if (mapArrowData) {
+				removeArrowFromMap(mapRef.current, mapArrowData.outerId);
+			}
+
+			mapRef.current.remove();
+		};
+	}, []);
+
+	useEffect(() => {
 		if (!mapArrowData || !mapRef.current || !isMapReady) return;
 
 		const { outerId, maneuver, fillColor, outlineColor } = mapArrowData;
@@ -97,18 +116,6 @@ export const MapContextProvider = ({ children }: { children: ReactNode }) => {
 			if (!mapRef.current) return;
 			addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
 		});
-
-		return () => {
-			if (!mapRef.current) return;
-			const removeRoutes = () => {
-				mapRoutesData.forEach(({ id }) => {
-					if (!mapRef.current) return;
-					removeRouteFromMap(mapRef.current, id);
-				});
-			};
-			removeRoutes();
-			removeArrowFromMap(mapRef.current, mapArrowData.outerId);
-		};
 	}, [mapRoutesData, mapArrowData, isMapReady]);
 
 	useEffect(() => {
