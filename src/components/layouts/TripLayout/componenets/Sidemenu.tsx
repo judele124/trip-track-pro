@@ -1,6 +1,13 @@
 import { RefObject } from 'react';
 import Modal from '../../../ui/Modal';
 import Icon, { IconName } from '../../../icons/Icon';
+import { ToggleDarkMode } from '@/components/Navbar';
+import { useDarkMode } from '@/contexts/DarkModeContext';
+import { leaveTrip } from '@/servises/tripService';
+import useAxios from '@/hooks/useAxios';
+import { useTripContext } from '@/contexts/TripContext';
+import { useNavigate } from 'react-router-dom';
+import { navigationRoutes } from '@/Routes/routes';
 
 interface Props {
 	toggleMenu: () => void;
@@ -13,16 +20,19 @@ export default function Sidemenu({
 	isMenuOpen,
 	toggleMenuRef,
 }: Props) {
+	const { tripId } = useTripContext();
+	const { isDarkMode } = useDarkMode();
+	const { activate } = useAxios({ manual: true });
+	const nav = useNavigate();
+
 	const menuItems: { title: string; icon: IconName; onClick: () => void }[] = [
 		{
-			title: 'Settings',
-			icon: 'settings',
-			onClick: () => {},
-		},
-		{
-			title: 'Edit Trip',
-			icon: 'edit',
-			onClick: () => {},
+			title: 'Leave Trip',
+			icon: 'leave',
+			onClick: async () => {
+				await leaveTrip(activate, tripId);
+				nav(navigationRoutes.app);
+			},
 		},
 	];
 
@@ -34,7 +44,11 @@ export default function Sidemenu({
 			anchorTo='top-left'
 			open={isMenuOpen}
 		>
-			<ul className='page-colors mt-5 flex min-w-44 flex-col rounded-2xl bg-black px-3 py-1 text-white'>
+			<ul className='page-colors mt-5 flex min-w-44 flex-col rounded-2xl border-2 border-secondary bg-black px-3 py-1 text-white'>
+				<li className='flex justify-start gap-2 border-b-2 border-secondary p-3'>
+					<ToggleDarkMode />
+					<p>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</p>
+				</li>
 				{menuItems.map(({ title, icon, onClick }, i) => (
 					<li
 						key={title}
@@ -44,7 +58,7 @@ export default function Sidemenu({
 						<i>
 							<Icon
 								name={icon}
-								className='transition-all group-hover:fill-primary'
+								className='transition-all group-hover:fill-primary dark:fill-light'
 							/>
 						</i>
 						<p className='transition-all'>{title}</p>
