@@ -1,39 +1,86 @@
 import { useTripSocket } from '@/contexts/socketContext/SocketContext';
+import { useTripContext } from '@/contexts/TripContext';
 
 const ParticipantsView = () => {
 	const { usersInLiveTripExpData } = useTripSocket();
+	const { trip } = useTripContext();
+
+	const guides = [];
+	const participants = [];
+
+	for (const row of usersInLiveTripExpData) {
+		if (
+			trip?.guides.some((guide) => guide._id === row.userId) ||
+			trip?.creator._id === row.userId
+		) {
+			guides.push(row);
+		} else {
+			participants.push(row);
+		}
+	}
 
 	return (
-		<div className='flex h-full flex-col items-center text-gray-800 dark:text-light'>
-			<div className='mt-3 flex h-[60px] w-[90vw] max-w-[380px] flex-row items-center gap-3 rounded-2xl border-2 border-dark bg-primary p-2 font-semibold shadow-md shadow-black/55 dark:border-light'>
-				<span className='w-[48%] pl-1'>name</span>
-				<div className='flex w-1/2 items-center justify-between gap-4'>
-					<div className='w-2/5 text-center'>distance</div>
-					<div className='w-2/5 text-center'>score</div>
-				</div>
-			</div>
-			<div
-				style={{ scrollbarWidth: 'none' }}
-				className='flex w-full flex-col items-center overflow-y-auto text-sm'
-			>
-				{usersInLiveTripExpData.map((row, index) => (
-					<div
-						key={`${index}-ledrboard-row`}
-						className={`flex w-[88vw] max-w-[376px] flex-row items-center gap-3 ${index < usersInLiveTripExpData.length - 1 ? 'border-b-2 border-primary' : ''} p-2`}
-					>
-						<span className='w-1/2 pl-1 text-sm font-semibold'>{row.name}</span>
-
-						<div className='flex h-[35px] w-1/2 items-center justify-between gap-4 text-sm'>
-							<div className='w-2/5 text-center'>{45 + 'km'}</div>
-							<div className='w-2/5 text-center'>
-								{row.score.reduce((a, b) => a + b, 0)}
-							</div>
-						</div>
+		<div className='flex h-full w-full flex-col gap-7 overflow-y-auto text-gray-800 dark:text-light'>
+			{guides.length > 0 && (
+				<div className='w-full pt-6'>
+					<h3 className='px-2 py-1 text-left text-sm font-bold'>Guides:</h3>
+					<div className='flex flex-col items-center'>
+						{guides.map((user, index) => (
+							<UserDetails
+								key={user.userId}
+								name={user.name}
+								imageUrl={user.imageUrl}
+								className={`flex w-[95%] items-center gap-3 p-2 ${
+									index < guides.length - 1 ? 'border-b border-primary/30' : ''
+								}`}
+							/>
+						))}
 					</div>
-				))}
-			</div>
+				</div>
+			)}
+
+			{participants.length > 0 && (
+				<div className='w-full'>
+					<h3 className='px-2 py-1 text-left text-sm font-bold'>
+						Participants:
+					</h3>
+					<div className='flex flex-col items-center'>
+						{participants.map((user, index) => (
+							<UserDetails
+								key={user.userId}
+								name={user.name}
+								imageUrl={user.imageUrl}
+								className={`flex w-[95%] items-center gap-3 p-2 ${
+									index < participants.length - 1
+										? 'border-b border-primary/30'
+										: ''
+								}`}
+							/>
+						))}
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
 
 export default ParticipantsView;
+
+const UserDetails = ({
+	name,
+	imageUrl,
+	className = '',
+}: {
+	name: string;
+	imageUrl: string;
+	className?: string;
+}) => (
+	<div className={className}>
+		<img
+			src={imageUrl}
+			alt=''
+			className='size-10 shrink-0 rounded-full border border-primary bg-light'
+		/>
+		<span className='truncate pl-2 text-sm font-medium'>{name}</span>
+	</div>
+);
