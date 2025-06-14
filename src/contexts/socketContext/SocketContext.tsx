@@ -146,12 +146,12 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			});
 		});
 
-		socket.on('userIsOutOfTripRoute', (userId) => {
-			if (isGuide && userId !== user._id) {
+		if (isGuide) {
+			socket.on('userIsOutOfTripRoute', (userId) => {
 				const not = new UserOutOfRouteNotification(userId);
 				addUrgentNotification(not);
-			}
-		});
+			});
+		}
 
 		socket.on('allUsersInExperience', () => {
 			setExperienceActive(true);

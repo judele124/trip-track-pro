@@ -19,7 +19,7 @@ interface TripContextValue {
 	errorTrip: Error | null;
 	tripId: string;
 	status: number | undefined;
-	isGuide: boolean;
+	isGuide: boolean | null;
 }
 
 const TripContext = createContext<TripContextValue | null>(null);
@@ -42,7 +42,9 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 	const { user } = useAuthContext();
 	const tripId = useTripId();
 	const [trip, setTrip] = useState<Trip | null>(null);
-	const [isGuide, setIsGuide] = useState(false);
+
+	let isGuide = null;
+	if (trip && user) isGuide = checkIfIsGuide(user._id, trip);
 
 	const {
 		activate,
@@ -57,13 +59,6 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 	useEffect(() => {
 		if (tripId) tripGet(activate, tripId);
 	}, [tripId]);
-
-	useEffect(() => {
-		if (!trip || !user) return;
-		if (checkIfIsGuide(user._id, trip)) {
-			setIsGuide(true);
-		}
-	}, [trip, user]);
 
 	return (
 		<TripContext.Provider
