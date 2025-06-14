@@ -152,18 +152,15 @@ export default function UserTripLogic() {
 					)}
 
 					<Notification
-						{...(isUrgentNotificationActive
-							? {
-									isModalOpen: true,
-									notification:
-										urgentNotifications[urgentNotifications.length - 1],
-									closeModal: () => setIsUrgentNotificationActive(false),
-								}
-							: {
-									isModalOpen: notification !== null,
-									notification: notification!,
-									closeModal: () => setNotification(null),
-								})}
+						isModalOpen={notification !== null}
+						notification={notification!}
+						closeModal={() => setNotification(null)}
+					/>
+
+					<Notification
+						isModalOpen={isUrgentNotificationActive}
+						notification={urgentNotifications[urgentNotifications.length - 1]}
+						closeModal={() => setIsUrgentNotificationActive(false)}
 					/>
 
 					<RouteAndNavigation
