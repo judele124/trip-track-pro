@@ -57,7 +57,7 @@ const TripProvider: FC<TripProviderProps> = ({ children }) => {
 	});
 
 	useEffect(() => {
-		if (tripId) tripGet(activate, tripId);
+		if (tripId && !trip) tripGet(activate, tripId);
 	}, [tripId]);
 
 	return (

@@ -10,10 +10,12 @@ import { useEffect, useMemo } from 'react';
 import { calculateDistanceOnEarth } from '@/utils/map.functions';
 import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
 import { useTripSocket } from '@/contexts/socketContext/SocketContext';
-import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
 import { Trip } from '@/types/trip';
+import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
+
+const STOP_MARKER_RANGE = 30;
 
 const INACTIVE_ROUTE_OPACITY = 0.5;
 const ROUTE_OPACITY = 1;
@@ -24,23 +26,22 @@ const ROUTE_FILL_COLOR = '#5fa8d3';
 
 const ROUTE_WIDTH = 6;
 const ROUTE_FILL_WIDTH = 2;
-const STOP_MARKER_RANGE = 30;
 
 export default function UserTripLogic() {
 	const { user } = useAuthContext();
 	const { trip } = useTripContext();
 	const {
 		usersLocations,
-		socket,
 		currentExpIndex,
 		isExperienceActive,
-		setExperienceActive,
 		notification,
 		urgentNotifications,
 		isUrgentNotificationActive,
 		setNotification,
 		setIsUrgentNotificationActive,
 		setIsTripActive,
+		socket,
+		setExperienceActive,
 	} = useTripSocket();
 
 	const { normalStops, lastStopLocation, stopsWithExperience } = useMemo(() => {

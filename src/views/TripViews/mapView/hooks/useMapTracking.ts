@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useMap } from '../Map';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 
 interface MapTrackingOptions {
 	zoom?: number;
@@ -8,7 +8,7 @@ interface MapTrackingOptions {
 }
 
 export function useMapTracking(options: MapTrackingOptions = {}) {
-	const { mapRef, isMapReady } = useMap();
+	const { mapRef, isMapReady } = useMapContext();
 	const { zoom = 16, speed = 1.5, duration = 1000 } = options;
 	const [isTracking, setIsTracking] = useState(true);
 	const isUserInteractingWithMap = useRef(false);

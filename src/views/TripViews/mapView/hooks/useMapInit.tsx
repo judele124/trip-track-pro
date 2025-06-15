@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mapboxgl, { Map, Map as MB_Map } from 'mapbox-gl';
 import { MAPBOX_ACCESS_TOKEN } from '@/env.config';
 
@@ -14,7 +14,7 @@ interface useMapInitReturn {
 }
 
 export default function useMapInit(
-	containerRef: RefObject<HTMLDivElement>
+	containerRef: HTMLDivElement | null
 ): useMapInitReturn {
 	const [isMapReady, setMapReady] = useState<boolean>(false);
 	const [error, setError] = useState<boolean>(false);
@@ -22,10 +22,10 @@ export default function useMapInit(
 
 	useEffect(() => {
 		try {
-			if (!containerRef.current) return;
+			if (!containerRef) return;
 
 			mapRef.current = new MB_Map({
-				container: containerRef.current,
+				container: containerRef,
 				style: MAX_BOX_STYLE,
 				center: INITIAL_CENTER,
 				zoom: INITIAL_ZOOM,
@@ -35,13 +35,17 @@ export default function useMapInit(
 				setMapReady(true);
 			});
 
+			mapRef.current.on('remove', () => {
+				setMapReady(false);
+			});
+
 			return () => {
 				mapRef.current?.remove();
 			};
 		} catch (error) {
 			setError(true);
 		}
-	}, []);
+	}, [containerRef]);
 
 	return { isMapReady, mapRef, error };
 }

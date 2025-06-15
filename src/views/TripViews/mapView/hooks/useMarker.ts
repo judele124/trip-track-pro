@@ -17,25 +17,24 @@ export default function useMarker({
 	mapRef,
 	location: { lat, lon },
 }: IUseMarketProps): IUseMarketReturn {
-	const markerRef = useRef<Marker | null>(null);
+	const marker = useRef<Marker | null>(null);
 	useEffect(() => {
-		if (!mapRef?.current || !isMapReady || !ref?.current) return;
-
-		markerRef.current = new Marker({
+		if (!mapRef.current || !isMapReady) return;
+		if (!ref.current) return;
+		marker.current = new Marker({
 			element: ref.current,
 		})
 			.setLngLat([lon, lat])
 			.addTo(mapRef.current);
-
 		return () => {
-			markerRef.current?.remove();
+			if (!marker.current) return;
+			marker.current.remove();
 		};
 	}, [isMapReady]);
 
 	useEffect(() => {
-		if (!markerRef.current) return;
-
-		markerRef.current.setLngLat([lon, lat]);
+		if (!marker.current) return;
+		marker.current.setLngLat([lon, lat]);
 	}, [lon, lat]);
 
 	return {};

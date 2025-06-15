@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMap } from '../../Map';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 import GeneralMarker from './GeneralMarker';
 import { IUserResponseData } from '@/types/user';
 import { useMapTracking } from '../../hooks/useMapTracking';
@@ -13,7 +13,7 @@ export default function CurrentUserMarker({
 	location,
 	user,
 }: IUserMarkerProps) {
-	const { isMapReady } = useMap();
+	const { isMapReady } = useMapContext();
 	const { isTracking, toggleTracking, centerOnUser } = useMapTracking();
 
 	useEffect(() => {

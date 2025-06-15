@@ -2,6 +2,7 @@ import NavbarLayout from '@/components/layouts/NavbarLayout';
 import PageLayout from '@/components/layouts/PageLayout';
 import TripLayout from '@/components/layouts/TripLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { MapContextProvider } from '@/contexts/MapContext/MapContext';
 import SocketProvider from '@/contexts/socketContext';
 import TripProvider from '@/contexts/TripContext';
 import BeforeJoinTripView from '@/views/AppViews/beforeJoinTripView';
@@ -115,37 +116,29 @@ const routes: RouteObject[] = [
 	{
 		path: `${baseRoutes.trip}/*`,
 		element: (
-			<TripProvider>
-				<SocketProvider>
-					<TripLayout />
-				</SocketProvider>
-			</TripProvider>
+			<ProtectedRoute>
+				<TripProvider>
+					<SocketProvider>
+						<MapContextProvider>
+							<TripLayout />
+						</MapContextProvider>
+					</SocketProvider>
+				</TripProvider>
+			</ProtectedRoute>
 		),
 		children: [
 			{ index: true, element: <LoadingTripDataView /> },
 			{
 				path: tripRoutes.map,
-				element: (
-					<ProtectedRoute>
-						<MapView />
-					</ProtectedRoute>
-				),
+				element: <MapView />,
 			},
 			{
 				path: tripRoutes.participants,
-				element: (
-					<ProtectedRoute>
-						<ParticipantsView />
-					</ProtectedRoute>
-				),
+				element: <ParticipantsView />,
 			},
 			{
 				path: tripRoutes.chat,
-				element: (
-					<ProtectedRoute>
-						<ChatView />
-					</ProtectedRoute>
-				),
+				element: <ChatView />,
 			},
 			{ path: '*', element: <PageNotFoundView /> },
 		],
