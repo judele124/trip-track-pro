@@ -179,6 +179,24 @@ export function removeRouteFromMap(map: Map, key: string) {
 	removeSourceAndLayerFromMap(map, key);
 }
 
+export function updateRouteLayerStyle(
+	map: Map,
+	key: string,
+	style: {
+		lineColor: string;
+		lineWidth: number;
+		lineOpacity: number;
+	}
+) {
+	if (!map.getLayer(key)) {
+		return;
+	}
+
+	map.setPaintProperty(key, 'line-color', style.lineColor);
+	map.setPaintProperty(key, 'line-width', style.lineWidth);
+	map.setPaintProperty(key, 'line-opacity', style.lineOpacity);
+}
+
 export function addCircleRadiusToLocation<K extends string>(
 	key: K,
 	map: Map,

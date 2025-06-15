@@ -4,6 +4,7 @@ import {
 	addRouteToMap,
 	IRouteLayerSpecification,
 	removeRouteFromMap,
+	updateRouteLayerStyle,
 } from '@/utils/map.functions';
 import { useEffect } from 'react';
 
@@ -37,7 +38,7 @@ export default function MapRoute({
 
 	useEffect(() => {
 		if (!mapRef.current || !isMapReady) return;
-		addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
+		updateRouteLayerStyle(mapRef.current, id, options);
 	}, [route, options]);
 
 	return null;
