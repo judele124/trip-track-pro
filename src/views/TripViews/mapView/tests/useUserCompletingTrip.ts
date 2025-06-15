@@ -38,16 +38,32 @@ export default function useUserCompletingTrip({
 	);
 
 	const { routeData } = useMapboxDirectionRoute({
-		points: isAtTripRoute ? memoizedPoints : memoizedUserToTripPoints,
+		points: memoizedPoints,
 	});
 
+	const { routeData: userToTripRouteData } = useMapboxDirectionRoute({
+		points: memoizedUserToTripPoints,
+	});
+
+	const fakePoints =
+		routeData && userToTripRouteData
+			? [
+					...userToTripRouteData.routes[0].geometry.coordinates.map(
+						(point) => ({
+							lat: point[1],
+							lon: point[0],
+						})
+					),
+					...routeData.routes[0].geometry.coordinates.map((point) => ({
+						lat: point[1],
+						lon: point[0],
+					})),
+				]
+			: [];
+
 	const fakeUserLocation = useFakeUserLocation({
-		points:
-			routeData?.routes[0].geometry.coordinates.map((point) => ({
-				lat: point[1],
-				lon: point[0],
-			})) || [],
-		speed: 500,
+		points: fakePoints,
+		speed: 200,
 		updateIntervalMs: 50,
 		onLocationUpdate,
 	});
@@ -55,7 +71,7 @@ export default function useUserCompletingTrip({
 	useEffect(() => {
 		if (!trip || !fakeUserLocation || !trip.stops[0].location) return;
 
-		const steps = routeData?.routes[0].legs[0].steps;
+		const steps = userToTripRouteData?.routes[0].legs[0].steps;
 		const lastStep = steps?.[steps.length - 1];
 
 		if (!lastStep) return;
@@ -68,7 +84,7 @@ export default function useUserCompletingTrip({
 		if (distance < RANGE_STEP_THRESHOLD) {
 			setIsAtTripRoute(true);
 		}
-	}, [fakeUserLocation, trip?.stops, routeData]);
+	}, [fakeUserLocation, trip?.stops, userToTripRouteData, routeData]);
 
 	return {
 		fakeUserLocation,
