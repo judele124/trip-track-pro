@@ -44,6 +44,8 @@ export interface ISocketContextValue {
 	isUrgentNotificationActive: boolean;
 	notification: Notification | null;
 	urgentNotifications: UrgentNotificationType[];
+	isTripActive: boolean;
+	setIsTripActive: Dispatch<SetStateAction<boolean>>;
 }
 
 interface ITripSocketProviderProps {
@@ -53,10 +55,12 @@ interface ITripSocketProviderProps {
 const tripSocketContext = createContext<ISocketContextValue | null>(null);
 
 export default function SocketProvider({ children }: ITripSocketProviderProps) {
-	const { tripId } = useTripContext();
+	const { tripId, trip, isGuide } = useTripContext();
+
 	const { user } = useAuthContext();
 	const [socket, setSocket] = useState<SocketClientType | null>(null);
 	const [usersLocations, setUsersLocations] = useState<IUserLocation[]>([]);
+	const [isTripActive, setIsTripActive] = useState<boolean>(true);
 
 	const {
 		initUsersLiveData,
@@ -91,13 +95,14 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 	} = useSocketMessages();
 
 	useEffect(() => {
-		if (!tripId || socket) return;
+		if (!tripId || !trip || !user || socket) return;
 
 		const socketClient: SocketClientType = io(API_BASE_URL, {
-			query: { tripId },
+			query: { tripId, userId: user._id },
 		});
 
 		setSocket(socketClient);
+		setIsTripActive(trip.status === 'started');
 
 		initUsersLiveData();
 		initExpirenceIndex();
@@ -106,7 +111,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			socketClient.disconnect();
 			console.log('Socket disconnected');
 		};
-	}, [tripId]);
+	}, [tripId, trip, user]);
 
 	useEffect(() => {
 		if (!socket || !tripId || !user) return;
@@ -141,10 +146,12 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			});
 		});
 
-		socket.on('userIsOutOfTripRoute', (userId) => {
-			const not = new UserOutOfRouteNotification(userId);
-			addUrgentNotification(not);
-		});
+		if (isGuide) {
+			socket.on('userIsOutOfTripRoute', (userId) => {
+				const not = new UserOutOfRouteNotification(userId);
+				addUrgentNotification(not);
+			});
+		}
 
 		socket.on('allUsersInExperience', () => {
 			setExperienceActive(true);
@@ -167,6 +174,19 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			setCurrentExpIndex(nextStepIndex);
 		});
 
+		socket.on('finishedTrip', () => {
+			setIsTripActive(false);
+		});
+
+		socket.on('userDisconnected', (userId) => {
+			setUsersInLiveTripExpData((prev) => {
+				return prev.filter((user) => user.userId !== userId);
+			});
+			setUsersLocations((prev) => {
+				return prev.filter((user) => user.id !== userId);
+			});
+		});
+
 		socket.on('disconnect', () => {
 			console.log('Disconnected from socket');
 		});
@@ -178,7 +198,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		return () => {
 			socket.removeAllListeners();
 		};
-	}, [user, socket]);
+	}, [user, socket, tripId]);
 
 	useEffect(() => {
 		if (!socket) return;
@@ -227,6 +247,8 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				setNotification,
 				setIsUrgentNotificationActive,
 				notification,
+				isTripActive,
+				setIsTripActive,
 			}}
 		>
 			{children}

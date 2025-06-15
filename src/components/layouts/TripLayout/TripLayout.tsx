@@ -9,6 +9,8 @@ import TripNotActiveMessage from '@/components/TripNotActiveMessage';
 import { createContext, MutableRefObject, useContext, useRef } from 'react';
 import DevPanel from '@/components/DevPanel';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
+import FinishTripModal from '@/components/FinishTripModal';
 import Map from '@/views/TripViews/mapView/Map';
 import UserTripLogic from '@/views/TripViews/mapView/components/UserTripLogic';
 
@@ -24,6 +26,7 @@ const TripLayout = () => {
 	let { pathname } = useLocation();
 	const title = titleFromPath(pathname);
 	const { trip, tripId, loadingTrip, status } = useTripContext();
+	const { isTripActive } = useTripSocket();
 	const nav = useNavigate();
 	const { user } = useAuthContext();
 
@@ -76,6 +79,7 @@ const TripLayout = () => {
 								<TripNotActiveMessage trip={trip} />
 							) : (
 								<>
+									{!isTripActive && <FinishTripModal tripId={tripId} />}
 									<Outlet />
 									<div className='page-colors absolute inset-0 z-0'>
 										<Map>

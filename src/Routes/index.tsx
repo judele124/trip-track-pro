@@ -1,4 +1,5 @@
 import {
+	Navigate,
 	Route,
 	RouteObject,
 	Routes,
@@ -43,6 +44,8 @@ export default function AllRoutes() {
 			});
 		}
 	}, []);
+
+	if (pathname === '/') return <Navigate to={navigationRoutes.app} />;
 
 	return <Routes>{renderRoutes(routes)}</Routes>;
 }
