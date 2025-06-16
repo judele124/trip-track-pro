@@ -15,6 +15,12 @@ interface Props {
 	toggleMenuRef: RefObject<HTMLButtonElement>;
 }
 
+interface MenuItemProps {
+	title: string;
+	icon: IconName;
+	onClick: () => void;
+}
+
 export default function Sidemenu({
 	toggleMenu,
 	isMenuOpen,
@@ -25,13 +31,18 @@ export default function Sidemenu({
 	const { activate } = useAxios({ manual: true });
 	const nav = useNavigate();
 
-	const menuItems: { title: string; icon: IconName; onClick: () => void }[] = [
+	const menuItems: MenuItemProps[] = [
 		{
 			title: 'Leave Trip',
 			icon: 'leave',
 			onClick: async () => {
-				await leaveTrip(activate, tripId);
-				nav(navigationRoutes.app);
+				try {
+					await leaveTrip(activate, tripId);
+				} catch (error) {
+					console.log(error);
+				} finally {
+					nav(navigationRoutes.app);
+				}
 			},
 		},
 	];
