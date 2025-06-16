@@ -8,14 +8,14 @@ const ParticipantsView = () => {
 	const guides = [];
 	const participants = [];
 
-	for (const row of usersInLiveTripExpData) {
+	for (const user of usersInLiveTripExpData) {
 		if (
-			trip?.guides.some((guide) => guide._id === row.userId) ||
-			trip?.creator._id === row.userId
+			trip?.guides.some((guide) => guide._id === user.userId) ||
+			trip?.creator._id === user.userId
 		) {
-			guides.push(row);
+			guides.push(user);
 		} else {
-			participants.push(row);
+			participants.push(user);
 		}
 	}
 
