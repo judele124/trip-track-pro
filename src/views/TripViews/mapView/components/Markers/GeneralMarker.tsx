@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useRef } from 'react';
 import useMarker from '../../hooks/useMarker';
-import { useMap } from '../../Map';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 
 interface IGeneralMarkerWithChildrenProps {
 	children: ReactElement;
@@ -32,7 +32,7 @@ export default function GeneralMarker({
 	childrenAsInnerHtmlString = '',
 	childrenAsInnerHtmlStringClassName = '',
 }: IGeneralMarkerProps) {
-	const { isMapReady, mapRef } = useMap();
+	const { isMapReady, mapRef } = useMapContext();
 	const ref = useRef<HTMLElement | null>(null);
 
 	useMarker({

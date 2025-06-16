@@ -20,7 +20,7 @@ const ParticipantsView = () => {
 	}
 
 	return (
-		<div className='flex h-full w-full flex-col gap-7 overflow-y-auto px-6 text-gray-800 dark:text-light'>
+		<div className='page-colors relative z-30 flex h-full w-full flex-col gap-7 overflow-y-auto px-6 text-gray-800 dark:text-light'>
 			{guides.length > 0 && (
 				<div className='w-full pt-6'>
 					<h3 className='px-2 py-1 text-left text-sm font-bold'>Guides:</h3>

@@ -1,6 +1,11 @@
-import { useMap } from '../../Map';
+import { useMapContext } from '@/contexts/MapContext/MapContext';
 import { MapBoxDirectionsResponse } from '@/types/map';
-import { addRouteToMap, IRouteLayerSpecification } from '@/utils/map.functions';
+import {
+	addRouteToMap,
+	IRouteLayerSpecification,
+	removeRouteFromMap,
+	updateRouteLayerStyle,
+} from '@/utils/map.functions';
 import { useEffect } from 'react';
 
 interface IMapRouteProps {
@@ -14,46 +19,27 @@ export default function MapRoute({
 	id,
 	route,
 	options = {
-		lineColor: '#ff0000',
+		lineColor: '#1b4965',
 		lineOpacity: 1,
-		lineWidth: 3,
+		lineWidth: 4,
 	},
 	beforeLayerIds,
 }: IMapRouteProps) {
-	const { mapRef } = useMap();
+	const { mapRef, isMapReady } = useMapContext();
 
 	useEffect(() => {
-		if (!mapRef.current) return;
+		if (!mapRef.current || !isMapReady) return;
 		addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
 		return () => {
 			if (!mapRef.current) return;
-			mapRef.current.removeLayer(id);
-			mapRef.current.removeSource(id);
+			removeRouteFromMap(mapRef.current, id);
 		};
 	}, [id]);
 
 	useEffect(() => {
-		if (!mapRef.current) return;
-		const existingSource = mapRef.current.getSource(id);
-
-		if (existingSource?.type === 'geojson') {
-			try {
-				existingSource.setData(route.routes[0].geometry);
-				return;
-			} catch (error) {
-				console.error('Error updating existing route:', error);
-			}
-		} else {
-			addRouteToMap(id, mapRef.current, route, options, beforeLayerIds);
-		}
-	}, [route]);
-
-	useEffect(() => {
-		if (!mapRef.current) return;
-		mapRef.current.setPaintProperty(id, 'line-color', options.lineColor);
-		mapRef.current.setPaintProperty(id, 'line-opacity', options.lineOpacity);
-		mapRef.current.setPaintProperty(id, 'line-width', options.lineWidth);
-	}, [options]);
+		if (!mapRef.current || !isMapReady) return;
+		updateRouteLayerStyle(mapRef.current, id, options);
+	}, [route, options]);
 
 	return null;
 }

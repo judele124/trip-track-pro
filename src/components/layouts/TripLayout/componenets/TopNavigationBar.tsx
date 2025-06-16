@@ -1,10 +1,11 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Icon from '../../../icons/Icon';
 import Button from '../../../ui/Button';
 import Sidemenu from './Sidemenu';
 import useToggle from '../../../../hooks/useToggle';
 import { useAuthContext } from '@/contexts/AuthContext';
 import UserProfileModal from './UserProfileModal';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 
 export default function TopNavigation({
 	title,
@@ -13,11 +14,13 @@ export default function TopNavigation({
 	title: string;
 	setRef?: (ref: HTMLDivElement) => void;
 }) {
+	const { user } = useAuthContext();
+	const { urgentNotifications } = useTripSocket();
 	const { toggle: toggleUserProfile, isOpen: isUserProfileOpen } =
 		useToggle(false);
 	const { toggle: toggleMenu, isOpen: isMenuOpen } = useToggle(false);
+	const [unreadUrgentNotifications, setUnreadUrgentNotifications] = useState(0);
 	const toggleMenuRef = useRef<HTMLButtonElement>(null);
-	const { user } = useAuthContext();
 
 	return (
 		<div
@@ -51,8 +54,19 @@ export default function TopNavigation({
 			{/* right side */}
 
 			<div className='flex flex-row items-center gap-4'>
-				<Button className='bg-transparent px-0 py-0'>
-					<Icon className='fill-dark dark:fill-light' name='alert' />
+				<Button
+					onClick={() =>
+						setUnreadUrgentNotifications(urgentNotifications.length)
+					}
+					className='bg-transparent px-0 py-0'
+				>
+					<Icon
+						className='fill-dark dark:fill-light'
+						name='alert'
+						notificationCount={
+							urgentNotifications.length - unreadUrgentNotifications
+						}
+					/>
 				</Button>
 
 				<Button

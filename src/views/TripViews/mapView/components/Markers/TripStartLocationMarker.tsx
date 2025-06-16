@@ -27,6 +27,10 @@ export default function TripStartLocationMarker({
 	`;
 
 	return (
-		<GeneralMarker location={location} childrenAsInnerHtmlString={markerHtml} />
+		<GeneralMarker
+			id='trip-start-location'
+			location={location}
+			childrenAsInnerHtmlString={markerHtml}
+		/>
 	);
 }
