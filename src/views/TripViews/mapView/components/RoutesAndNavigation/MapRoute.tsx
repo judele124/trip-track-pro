@@ -5,6 +5,7 @@ import {
 	IRouteLayerSpecification,
 	removeRouteFromMap,
 	updateRouteLayerStyle,
+	updateRouteSource,
 } from '@/utils/map.functions';
 import { useEffect } from 'react';
 
@@ -39,7 +40,12 @@ export default function MapRoute({
 	useEffect(() => {
 		if (!mapRef.current || !isMapReady) return;
 		updateRouteLayerStyle(mapRef.current, id, options);
-	}, [route, options]);
+	}, [options]);
+
+	useEffect(() => {
+		if (!mapRef.current || !isMapReady) return;
+		updateRouteSource(mapRef.current, id, route);
+	}, [route]);
 
 	return null;
 }
