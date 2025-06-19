@@ -6,6 +6,8 @@ import useToggle from '../../../../hooks/useToggle';
 import { useAuthContext } from '@/contexts/AuthContext';
 import UserProfileModal from './UserProfileModal';
 import { useTripSocket } from '@/contexts/socketContext/SocketContext';
+import { useNavigate } from 'react-router-dom';
+import { navigationRoutes } from '@/Routes/routes';
 
 export default function TopNavigation({
 	title,
@@ -16,6 +18,7 @@ export default function TopNavigation({
 }) {
 	const { user } = useAuthContext();
 	const { urgentNotifications } = useTripSocket();
+	const nav = useNavigate();
 	const { toggle: toggleUserProfile, isOpen: isUserProfileOpen } =
 		useToggle(false);
 	const { toggle: toggleMenu, isOpen: isMenuOpen } = useToggle(false);
@@ -55,9 +58,10 @@ export default function TopNavigation({
 
 			<div className='flex flex-row items-center gap-4'>
 				<Button
-					onClick={() =>
-						setUnreadUrgentNotifications(urgentNotifications.length)
-					}
+					onClick={() => {
+						setUnreadUrgentNotifications(urgentNotifications.length);
+						nav(navigationRoutes.urgentNotifications);
+					}}
 					className='bg-transparent px-0 py-0'
 				>
 					<Icon

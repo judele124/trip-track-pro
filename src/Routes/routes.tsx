@@ -19,6 +19,7 @@ import ChatView from '@/views/TripViews/chatView';
 import LoadingTripDataView from '@/views/TripViews/loadingTripDataView';
 import MapView from '@/views/TripViews/mapView';
 import ParticipantsView from '@/views/TripViews/participantsView';
+import UrgentNotificationsView from '@/views/TripViews/UrgentNotificationsView';
 import { RouteObject } from 'react-router-dom';
 
 const baseRoutes = {
@@ -30,6 +31,7 @@ const tripRoutes = {
 	map: `map`,
 	participants: `participants`,
 	chat: `chat`,
+	urgentNotifications: 'urgent-notifications',
 	notFound: 'not-found',
 } as const;
 
@@ -58,6 +60,7 @@ export const navigationRoutes = {
 	map: `${baseRoutes.trip}/${tripRoutes.map}`,
 	participants: `${baseRoutes.trip}/${tripRoutes.participants}`,
 	chat: `${baseRoutes.trip}/${tripRoutes.chat}`,
+	urgentNotifications: `${baseRoutes.trip}/urgent-notifications`,
 
 	notFound: `${appRoutes.notFound}`,
 	app: `${baseRoutes.app}`,
@@ -139,6 +142,10 @@ const routes: RouteObject[] = [
 			{
 				path: tripRoutes.chat,
 				element: <ChatView />,
+			},
+			{
+				path: tripRoutes.urgentNotifications,
+				element: <UrgentNotificationsView />,
 			},
 			{ path: '*', element: <PageNotFoundView /> },
 		],

@@ -148,6 +148,7 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 
 		if (isGuide) {
 			socket.on('userIsOutOfTripRoute', (userId) => {
+				if (user._id === userId) return;
 				const not = new UserOutOfRouteNotification(userId);
 				addUrgentNotification(not);
 			});

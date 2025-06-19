@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { UrgentNotificationType, Notification } from '../types';
+import { useLocation } from 'react-router-dom';
 
 interface IUseSocketNotificationsValue {
 	isUrgentNotificationActive: boolean;
@@ -18,12 +19,14 @@ export default function useSocketNotifications(): IUseSocketNotificationsValue {
 	const [isUrgentNotificationActive, setIsUrgentNotificationActive] =
 		useState<boolean>(false);
 	const [notification, setNotification] = useState<Notification | null>(null);
+	const currentRoute = useLocation().pathname;
 
 	const addUrgentNotification = (notification: UrgentNotificationType) => {
 		setUrgentNotifications((prev) => [...prev, notification]);
 	};
 
 	useEffect(() => {
+		if (currentRoute === '/trip/urgent-notifications') return;
 		if (urgentNotifications.length > lastUrgentNotificationsLength.current) {
 			lastUrgentNotificationsLength.current = urgentNotifications.length;
 			setIsUrgentNotificationActive(true);

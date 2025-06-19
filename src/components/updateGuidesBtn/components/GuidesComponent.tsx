@@ -17,9 +17,8 @@ export const GuidesComponent = ({
 				{!guides.length && <p className='text-center'>No guides yet</p>}
 
 				{guides.map((guide, index) => (
-					<>
+					<div key={`guide-${guide.userModel._id}`}>
 						<div
-							key={`guide-${guide.userModel._id}`}
 							onClick={() => handleUpdateGuide(guide.userModel._id, false)}
 							className='flex cursor-pointer items-center justify-between border-dark last:border-none dark:border-light'
 						>
@@ -29,7 +28,7 @@ export const GuidesComponent = ({
 						{index < guides.length - 1 && (
 							<div className='h-[1px] w-full bg-dark dark:bg-light' />
 						)}
-					</>
+					</div>
 				))}
 			</div>
 		</div>
