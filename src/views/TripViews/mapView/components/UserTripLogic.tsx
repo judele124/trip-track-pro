@@ -15,6 +15,7 @@ import Notification from './Notifications';
 import { Trip } from '@/types/trip';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import useUserCompletingTrip from '../tests/useUserCompletingTrip';
+import FinalStepMarker from './Markers/FinalStepMarker';
 
 const STOP_MARKER_RANGE = 30;
 
@@ -232,6 +233,7 @@ export default function UserTripLogic() {
 						}}
 						userLocation={fakeUserLocation}
 						active={fakeIsUserAtTripRoute}
+						isTripRoute
 					/>
 
 					{!fakeIsUserAtTripRoute && (
