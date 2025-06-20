@@ -39,7 +39,7 @@ const TripLayout = () => {
 			{/* top navigation */}
 			<TopNavigation
 				setRef={(node) => (topNavigationRef.current = node)}
-				title={title}
+				title={title.replace('-', ' ')}
 			/>
 
 			{user?.role === 'developer' && trip && <DevPanel tripId={trip._id} />}

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import Icon from '../../../icons/Icon';
 import Button from '../../../ui/Button';
 import Sidemenu from './Sidemenu';
@@ -6,23 +6,20 @@ import useToggle from '../../../../hooks/useToggle';
 import { useAuthContext } from '@/contexts/AuthContext';
 import UserProfileModal from './UserProfileModal';
 import { useTripSocket } from '@/contexts/socketContext/SocketContext';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { navigationRoutes } from '@/Routes/routes';
 
-export default function TopNavigation({
-	title,
-	setRef,
-}: {
+interface ITopNavigationProps {
 	title: string;
 	setRef?: (ref: HTMLDivElement) => void;
-}) {
+}
+
+export default function TopNavigation({ title, setRef }: ITopNavigationProps) {
 	const { user } = useAuthContext();
-	const { urgentNotifications } = useTripSocket();
-	const nav = useNavigate();
+	const { unreadUrgentNotificationsCount } = useTripSocket();
 	const { toggle: toggleUserProfile, isOpen: isUserProfileOpen } =
 		useToggle(false);
 	const { toggle: toggleMenu, isOpen: isMenuOpen } = useToggle(false);
-	const [unreadUrgentNotifications, setUnreadUrgentNotifications] = useState(0);
 	const toggleMenuRef = useRef<HTMLButtonElement>(null);
 
 	return (
@@ -35,6 +32,12 @@ export default function TopNavigation({
 			id='trip-top-navigation'
 			className='page-colors page-x-padding flex flex-row justify-between py-4'
 		>
+			<Sidemenu
+				toggleMenuRef={toggleMenuRef}
+				isMenuOpen={isMenuOpen}
+				toggleMenu={toggleMenu}
+			/>
+
 			{/* left side */}
 			<div className='flex flex-row items-center gap-4'>
 				<Button
@@ -48,30 +51,19 @@ export default function TopNavigation({
 				<h4>{title}</h4>
 			</div>
 
-			<Sidemenu
-				toggleMenuRef={toggleMenuRef}
-				isMenuOpen={isMenuOpen}
-				toggleMenu={toggleMenu}
-			/>
-
 			{/* right side */}
 
 			<div className='flex flex-row items-center gap-4'>
-				<Button
-					onClick={() => {
-						setUnreadUrgentNotifications(urgentNotifications.length);
-						nav(navigationRoutes.urgentNotifications);
-					}}
+				<Link
+					to={navigationRoutes.urgentNotifications}
 					className='bg-transparent px-0 py-0'
 				>
 					<Icon
 						className='fill-dark dark:fill-light'
 						name='alert'
-						notificationCount={
-							urgentNotifications.length - unreadUrgentNotifications
-						}
+						notificationCount={unreadUrgentNotificationsCount}
 					/>
-				</Button>
+				</Link>
 
 				<Button
 					onClick={toggleUserProfile}

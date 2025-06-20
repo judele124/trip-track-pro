@@ -9,6 +9,8 @@ interface IUseSocketNotificationsValue {
 	setNotification: React.Dispatch<React.SetStateAction<Notification | null>>;
 	setIsUrgentNotificationActive: React.Dispatch<React.SetStateAction<boolean>>;
 	addUrgentNotification: (notification: UrgentNotificationType) => void;
+	unreadUrgentNotificationsCount: number;
+	resetUnreadUrgentNotificationsCount: () => void;
 }
 
 export default function useSocketNotifications(): IUseSocketNotificationsValue {
@@ -16,6 +18,9 @@ export default function useSocketNotifications(): IUseSocketNotificationsValue {
 	const [urgentNotifications, setUrgentNotifications] = useState<
 		UrgentNotificationType[]
 	>([]);
+	const [unreadUrgentNotificationsCount, setUnreadUrgentNotificationsCount] =
+		useState(0);
+
 	const [isUrgentNotificationActive, setIsUrgentNotificationActive] =
 		useState<boolean>(false);
 	const [notification, setNotification] = useState<Notification | null>(null);
@@ -23,6 +28,7 @@ export default function useSocketNotifications(): IUseSocketNotificationsValue {
 
 	const addUrgentNotification = (notification: UrgentNotificationType) => {
 		setUrgentNotifications((prev) => [...prev, notification]);
+		setUnreadUrgentNotificationsCount((prev) => prev + 1);
 	};
 
 	useEffect(() => {
@@ -40,5 +46,9 @@ export default function useSocketNotifications(): IUseSocketNotificationsValue {
 		urgentNotifications,
 		setNotification,
 		addUrgentNotification,
+		unreadUrgentNotificationsCount,
+		resetUnreadUrgentNotificationsCount: () => {
+			setUnreadUrgentNotificationsCount(0);
+		},
 	};
 }

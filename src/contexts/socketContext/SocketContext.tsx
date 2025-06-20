@@ -46,6 +46,8 @@ export interface ISocketContextValue {
 	urgentNotifications: UrgentNotificationType[];
 	isTripActive: boolean;
 	setIsTripActive: Dispatch<SetStateAction<boolean>>;
+	unreadUrgentNotificationsCount: number;
+	resetUnreadUrgentNotificationsCount: () => void;
 }
 
 interface ITripSocketProviderProps {
@@ -75,6 +77,8 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 		isUrgentNotificationActive,
 		notification,
 		urgentNotifications,
+		unreadUrgentNotificationsCount,
+		resetUnreadUrgentNotificationsCount,
 	} = useSocketNotifications();
 
 	const {
@@ -250,6 +254,8 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 				notification,
 				isTripActive,
 				setIsTripActive,
+				unreadUrgentNotificationsCount,
+				resetUnreadUrgentNotificationsCount,
 			}}
 		>
 			{children}

@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { INewParticipantsData } from '../UpdateGuidesBtn';
 import User from './User';
 
@@ -17,7 +18,7 @@ export const GuidesComponent = ({
 				{!guides.length && <p className='text-center'>No guides yet</p>}
 
 				{guides.map((guide, index) => (
-					<div key={`guide-${guide.userModel._id}`}>
+					<Fragment key={`guide-${guide.userModel._id}`}>
 						<div
 							onClick={() => handleUpdateGuide(guide.userModel._id, false)}
 							className='flex cursor-pointer items-center justify-between border-dark last:border-none dark:border-light'
@@ -28,7 +29,7 @@ export const GuidesComponent = ({
 						{index < guides.length - 1 && (
 							<div className='h-[1px] w-full bg-dark dark:bg-light' />
 						)}
-					</div>
+					</Fragment>
 				))}
 			</div>
 		</div>
