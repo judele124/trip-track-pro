@@ -4,6 +4,7 @@ import DirectionComponent from './DirectionComponent';
 import useRouteAndNavigation from '../../hooks/useRouteAndNavigation';
 import { useAuthContext } from '@/contexts/AuthContext';
 import MapArrow from './MapArrow';
+import FinalStepMarker from '../Markers/FinalStepMarker';
 
 interface IRouteAndNavigationProps {
 	routeId: string;
@@ -12,6 +13,7 @@ interface IRouteAndNavigationProps {
 	fillRouteOption?: IRouteLayerSpecification;
 	userLocation: { lat: number; lon: number } | null;
 	active?: boolean;
+	isTripRoute?: boolean;
 }
 
 export default function RouteAndNavigation({
@@ -21,6 +23,7 @@ export default function RouteAndNavigation({
 	fillRouteOption,
 	userLocation,
 	active,
+	isTripRoute,
 }: IRouteAndNavigationProps) {
 	const { user } = useAuthContext();
 
@@ -37,7 +40,7 @@ export default function RouteAndNavigation({
 		<>
 			{active && (
 				<>
-					{nextStepIndex != routeData.routes[0].legs[0].steps.length - 1 && (
+					{nextStepIndex < routeData.routes[0].legs[0].steps.length - 1 && (
 						<MapArrow
 							outerId={`arrow-${routeId}`}
 							maneuver={
@@ -66,11 +69,21 @@ export default function RouteAndNavigation({
 						}}
 						options={fillRouteOption}
 						beforeLayerIds={
-							nextStepIndex != routeData.routes[0].legs[0].steps.length - 1
+							nextStepIndex < routeData.routes[0].legs[0].steps.length - 1
 								? `arrow-${routeId}`
 								: undefined
 						}
 					/>
+
+					{isTripRoute && (
+						<FinalStepMarker
+							location={
+								routeData.routes[0].legs[0].steps[
+									routeData.routes[0].legs[0].steps.length - 1
+								].maneuver.location
+							}
+						/>
+					)}
 
 					{/* Direction Info UI */}
 					<DirectionComponent

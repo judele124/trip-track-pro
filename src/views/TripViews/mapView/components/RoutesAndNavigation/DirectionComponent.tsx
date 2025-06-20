@@ -47,6 +47,11 @@ function DirectionComponent({
 
 	if (!pageContentRef.current) return null;
 
+	const icon: IconName =
+		nextStepIndex === steps.length - 1
+			? 'flag'
+			: directions[steps[nextStepIndex].maneuver.modifier];
+
 	return createPortal(
 		<div className='page-colors absolute bottom-2 left-1/2 z-10 max-h-[40vh] w-[90vw] max-w-[380px] -translate-x-1/2 -translate-y-2 overflow-y-auto rounded-2xl border-2 border-primary text-sm'>
 			{(!steps || steps.length === 0) && <div>no route found</div>}
@@ -61,6 +66,7 @@ function DirectionComponent({
 					<Step
 						step={steps[nextStepIndex]}
 						userToStepNextDistance={userToStepNextDistance}
+						icon={icon}
 					/>
 
 					{/* Remaining Steps */}
@@ -71,6 +77,12 @@ function DirectionComponent({
 									key={nextStepIndex + 1 + index}
 									step={step}
 									userToStepNextDistance={steps[nextStepIndex + index].distance}
+									icon={
+										nextStepIndex + 1 + index === steps.length - 1
+											? 'flag'
+											: directions[step.maneuver.modifier] ||
+												'directionStraightArrow'
+									}
 								/>
 							))}
 						</div>
@@ -87,17 +99,13 @@ export default DirectionComponent;
 interface StepProps {
 	step: DirectionStep;
 	userToStepNextDistance: number;
+	icon: IconName;
 }
 
-function Step({ step, userToStepNextDistance }: StepProps) {
+function Step({ step, userToStepNextDistance, icon }: StepProps) {
 	return (
 		<div className='flex items-center justify-between p-2 text-gray-800 dark:text-light'>
-			<Icon
-				name={directions[step.maneuver.modifier] || 'directionStraightArrow'}
-				size='18'
-				fill='#ce5737'
-				className='mr-2'
-			/>
+			<Icon name={icon} size='18' fill='#ce5737' className='mr-2' />
 			<div className='flex w-[50%] flex-col'>
 				<span className='text-sm font-semibold'>
 					{step.maneuver.instruction}

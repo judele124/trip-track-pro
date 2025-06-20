@@ -197,6 +197,32 @@ export function updateRouteLayerStyle(
 	map.setPaintProperty(key, 'line-opacity', style.lineOpacity);
 }
 
+export function updateRouteSource(
+	map: Map,
+	key: string,
+	sourceData: MapBoxDirectionsResponse
+) {
+	const existingSource = map.getSource(key);
+
+	if (existingSource) {
+		if (existingSource.type === 'geojson') {
+			try {
+				existingSource.setData({
+					type: 'Feature',
+					properties: {},
+					geometry: {
+						type: 'LineString',
+						coordinates: sourceData.routes[0].geometry.coordinates,
+					},
+				});
+				return;
+			} catch (error) {
+				console.error('Error updating existing route:', error);
+			}
+		}
+	}
+}
+
 export function addCircleRadiusToLocation<K extends string>(
 	key: K,
 	map: Map,

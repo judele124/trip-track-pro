@@ -183,6 +183,7 @@ export default function UserTripLogic() {
 						}}
 						userLocation={userCurrentLocation}
 						active={isAtTripRoute}
+						isTripRoute
 					/>
 
 					{!isAtTripRoute && (
