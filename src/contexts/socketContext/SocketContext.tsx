@@ -1,8 +1,6 @@
 import {
 	createContext,
-	Dispatch,
 	ReactNode,
-	SetStateAction,
 	useContext,
 	useEffect,
 	useState,
@@ -30,24 +28,24 @@ import { useTripContext } from '../TripContext';
 export interface ISocketContextValue {
 	socket: SocketClientType | null;
 	messages: IMessage[];
-	addMsgToMsgs: (message: IMessage) => void;
 	usersLocations: IUserLocation[];
 	usersInLiveTripExpData: IRedisUserTripData[];
 	currentExpIndex: number;
 	unreadMessagesState: UnreadMessagesStateType;
-	setUnreadMessagesState: (state: UnreadMessagesStateType) => void;
-	setExperienceActive: (value: boolean) => void;
 	isExperienceActive: boolean;
-	addUrgentNotification: (notification: UrgentNotificationType) => void;
-	setNotification: Dispatch<SetStateAction<Notification | null>>;
-	setIsUrgentNotificationActive: Dispatch<SetStateAction<boolean>>;
-	isUrgentNotificationActive: boolean;
-	notification: Notification | null;
 	urgentNotifications: UrgentNotificationType[];
 	isTripActive: boolean;
-	setIsTripActive: Dispatch<SetStateAction<boolean>>;
 	unreadUrgentNotificationsCount: number;
+	notificationQueue: Notification[];
+	removingLastNotificationFromQueue: boolean;
+	setIsTripActive: (value: boolean) => void;
+	addMsgToMsgs: (message: IMessage) => void;
+	setUnreadMessagesState: (state: UnreadMessagesStateType) => void;
+	setExperienceActive: (value: boolean) => void;
+	addUrgentNotification: (notification: UrgentNotificationType) => void;
 	resetUnreadUrgentNotificationsCount: () => void;
+	removeLastNotificationFromQueue: () => void;
+	addNotification: (notification: Notification) => void;
 }
 
 interface ITripSocketProviderProps {
@@ -72,13 +70,13 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 
 	const {
 		addUrgentNotification,
-		setNotification,
-		setIsUrgentNotificationActive,
-		isUrgentNotificationActive,
-		notification,
 		urgentNotifications,
 		unreadUrgentNotificationsCount,
 		resetUnreadUrgentNotificationsCount,
+		notificationQueue,
+		removeLastNotificationFromQueue,
+		removingLastNotificationFromQueue,
+		addNotification,
 	} = useSocketNotifications();
 
 	const {
@@ -238,24 +236,24 @@ export default function SocketProvider({ children }: ITripSocketProviderProps) {
 			value={{
 				socket,
 				messages,
-				addMsgToMsgs,
 				usersLocations,
 				usersInLiveTripExpData,
 				currentExpIndex,
-				setExperienceActive,
 				isExperienceActive,
 				unreadMessagesState,
-				setUnreadMessagesState,
-				isUrgentNotificationActive,
 				urgentNotifications,
-				addUrgentNotification,
-				setNotification,
-				setIsUrgentNotificationActive,
-				notification,
 				isTripActive,
-				setIsTripActive,
 				unreadUrgentNotificationsCount,
+				notificationQueue,
+				removingLastNotificationFromQueue,
+				addMsgToMsgs,
+				setExperienceActive,
+				setUnreadMessagesState,
+				addUrgentNotification,
+				setIsTripActive,
 				resetUnreadUrgentNotificationsCount,
+				removeLastNotificationFromQueue,
+				addNotification,
 			}}
 		>
 			{children}

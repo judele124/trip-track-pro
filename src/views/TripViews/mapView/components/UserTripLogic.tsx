@@ -14,6 +14,7 @@ import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
 import { Trip } from '@/types/trip';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
+import useFakeUserLocation from '../tests/useFakeUserLocation';
 
 const STOP_MARKER_RANGE = 30;
 
@@ -34,14 +35,12 @@ export default function UserTripLogic() {
 		usersLocations,
 		currentExpIndex,
 		isExperienceActive,
-		notification,
-		urgentNotifications,
-		isUrgentNotificationActive,
-		setNotification,
-		setIsUrgentNotificationActive,
 		setIsTripActive,
 		socket,
 		setExperienceActive,
+		notificationQueue,
+		removeLastNotificationFromQueue,
+		removingLastNotificationFromQueue,
 	} = useTripSocket();
 
 	const { normalStops, lastStopLocation, stopsWithExperience } = useMemo(() => {
@@ -49,6 +48,53 @@ export default function UserTripLogic() {
 	}, [trip?.stops]);
 
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
+		onLocationUpdate: (location) => {
+			if (!trip || !socket || !user) return;
+
+			const userPosition = [location.lon, location.lat];
+
+			const isUserNearLastStop =
+				lastStopLocation &&
+				calculateDistanceOnEarth(userPosition, lastStopLocation) <
+					STOP_MARKER_RANGE;
+
+			if (isUserNearLastStop) {
+				setIsTripActive(false);
+				return;
+			}
+
+			socket.emit('updateLocation', trip._id, location);
+
+			const stopLocation = stopsWithExperience[currentExpIndex]?.location;
+
+			if (stopLocation) {
+				const stopPosition = [stopLocation.lon, stopLocation.lat];
+
+				const isUserNearStop =
+					calculateDistanceOnEarth(userPosition, stopPosition) <
+					STOP_MARKER_RANGE;
+
+				if (isUserNearStop) {
+					if (!isExperienceActive) {
+						socket.emit(
+							'userInExperience',
+							trip._id,
+							user._id,
+							currentExpIndex
+						);
+					}
+				} else {
+					if (isExperienceActive) {
+						setExperienceActive(false);
+					}
+				}
+			}
+		},
+	});
+
+	// delete this after testing
+	const fakeUserLocation = useFakeUserLocation({
+		points: trip?.stops.map((stop) => stop.location) || [],
 		onLocationUpdate: (location) => {
 			if (!trip || !socket || !user) return;
 
@@ -129,17 +175,17 @@ export default function UserTripLogic() {
 	return (
 		<>
 			{/* loading location */}
-			{!userCurrentLocation && <LoadingLocation />}
+			{!fakeUserLocation && <LoadingLocation />}
 
-			{userCurrentLocation && user && (
-				<CurrentUserMarker location={userCurrentLocation} user={user} />
+			{fakeUserLocation && user && (
+				<CurrentUserMarker location={fakeUserLocation} user={user} />
 			)}
 
 			{usersLocations.map(({ id, location }) => (
 				<OtherUserMarker location={location} key={id} />
 			))}
 
-			{trip && userCurrentLocation && (
+			{trip && fakeUserLocation && (
 				<>
 					{isAtTripRoute ? (
 						<TripStopsMarkers
@@ -153,15 +199,11 @@ export default function UserTripLogic() {
 					)}
 
 					<Notification
-						isModalOpen={notification !== null}
-						notification={notification!}
-						closeModal={() => setNotification(null)}
-					/>
-
-					<Notification
-						isModalOpen={isUrgentNotificationActive}
-						notification={urgentNotifications[urgentNotifications.length - 1]}
-						closeModal={() => setIsUrgentNotificationActive(false)}
+						isModalOpen={
+							notificationQueue.length > 0 && !removingLastNotificationFromQueue
+						}
+						notification={notificationQueue[notificationQueue.length - 1]}
+						closeModal={() => removeLastNotificationFromQueue()}
 					/>
 
 					<RouteAndNavigation
@@ -181,7 +223,7 @@ export default function UserTripLogic() {
 							lineWidth: ROUTE_FILL_WIDTH,
 							lineOpacity: ROUTE_OPACITY,
 						}}
-						userLocation={userCurrentLocation}
+						userLocation={fakeUserLocation}
 						active={isAtTripRoute}
 					/>
 
@@ -200,7 +242,7 @@ export default function UserTripLogic() {
 								lineWidth: ROUTE_FILL_WIDTH,
 								lineOpacity: ROUTE_OPACITY,
 							}}
-							userLocation={userCurrentLocation}
+							userLocation={fakeUserLocation}
 						/>
 					)}
 				</>

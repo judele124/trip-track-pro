@@ -1,9 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Icon, { IconName } from '@/components/icons/Icon';
 import Modal from '@/components/ui/Modal';
 import useToggle from '@/hooks/useToggle';
 import { useTripLayout } from '@/components/layouts/TripLayout/TripLayout';
-import { Notification as NotificationType } from '@/contexts/socketContext/types';
+import {
+	Notification as NotificationType,
+	UserOutOfRouteNotification,
+} from '@/contexts/socketContext/types';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 
 interface NotificationProps {
 	notification: NotificationType;
@@ -25,22 +29,37 @@ const Notification: React.FC<NotificationProps> = ({
 	closeModal,
 	duration = 3000,
 }) => {
+	const { usersInLiveTripExpData } = useTripSocket();
 	const { topNavigationRef, pageContentRef } = useTripLayout();
 	const { isOpen, setIsOpen } = useToggle();
+	const timeoutIdRef = useRef<NodeJS.Timeout>();
 
 	useEffect(() => {
 		if (isModalOpen) {
-			setTimeout(() => {
+			timeoutIdRef.current = setTimeout(() => {
 				setIsOpen(true);
 				setTimeout(() => setIsOpen(false), duration);
 				setTimeout(() => closeModal(), duration + 500);
 			}, 1000);
 		}
+		return () => {
+			if (timeoutIdRef.current) {
+				clearTimeout(timeoutIdRef.current);
+			}
+		};
 	}, [isModalOpen]);
 
 	if (!notification) return null;
 
-	const { status, message, icon } = notification;
+	let { status, message, icon } = notification;
+
+	if (notification instanceof UserOutOfRouteNotification) {
+		const userName =
+			usersInLiveTripExpData.find((user) => user.userId === notification.userId)
+				?.name || 'User';
+
+		message = `${userName} ${message}`;
+	}
 
 	return (
 		<Modal
