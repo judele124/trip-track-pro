@@ -4,6 +4,7 @@ import TripLayout from '@/components/layouts/TripLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { MapContextProvider } from '@/contexts/MapContext/MapContext';
 import SocketProvider from '@/contexts/socketContext';
+import { TrackLocationProvider } from '@/contexts/TrackLocationContext';
 import TripProvider from '@/contexts/TripContext';
 import BeforeJoinTripView from '@/views/AppViews/beforeJoinTripView';
 import CreateTripView from '@/views/AppViews/createTripView';
@@ -123,7 +124,9 @@ const routes: RouteObject[] = [
 				<TripProvider>
 					<SocketProvider>
 						<MapContextProvider>
-							<TripLayout />
+							<TrackLocationProvider>
+								<TripLayout />
+							</TrackLocationProvider>
 						</MapContextProvider>
 					</SocketProvider>
 				</TripProvider>

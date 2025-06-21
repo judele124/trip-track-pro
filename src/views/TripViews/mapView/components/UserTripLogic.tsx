@@ -15,6 +15,8 @@ import Notification from './Notifications';
 import { Trip } from '@/types/trip';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import useFakeUserLocation from '../tests/useFakeUserLocation';
+import { TrackingToggle } from './MapControls/TrackingToggle';
+import { useTrackLocationContext } from '@/contexts/TrackLocationContext';
 
 const STOP_MARKER_RANGE = 30;
 
@@ -43,6 +45,9 @@ export default function UserTripLogic() {
 		removingLastNotificationFromQueue,
 	} = useTripSocket();
 
+	const { toggleTracking, isTracking, trackingTarget, centerOnLocation } =
+		useTrackLocationContext();
+
 	const { normalStops, lastStopLocation, stopsWithExperience } = useMemo(() => {
 		return splitStopsByExperience(trip?.stops || []);
 	}, [trip?.stops]);
@@ -50,6 +55,10 @@ export default function UserTripLogic() {
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			if (!trip || !socket || !user) return;
+
+			if (trackingTarget === 'current-user') {
+				centerOnLocation(location);
+			}
 
 			const userPosition = [location.lon, location.lat];
 
@@ -98,6 +107,9 @@ export default function UserTripLogic() {
 		onLocationUpdate: (location) => {
 			if (!trip || !socket || !user) return;
 
+			if (trackingTarget === 'current-user') {
+				centerOnLocation(location);
+			}
 			const userPosition = [location.lon, location.lat];
 
 			const isUserNearLastStop =
@@ -187,6 +199,10 @@ export default function UserTripLogic() {
 
 			{trip && fakeUserLocation && (
 				<>
+					<TrackingToggle
+						isTracking={isTracking && trackingTarget === 'current-user'}
+						onToggle={() => toggleTracking()}
+					/>
 					{isAtTripRoute ? (
 						<TripStopsMarkers
 							isExperienceActive={isExperienceActive}
