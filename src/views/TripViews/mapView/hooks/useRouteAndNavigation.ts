@@ -28,7 +28,7 @@ export default function useRouteAndNavigation({
 	points,
 	active,
 }: IUseRouteAndNavigationProps): IUseRouteAndNavigationReturn {
-	const { socket, setNotification } = useTripSocket();
+	const { socket, addNotification } = useTripSocket();
 	const { user } = useAuthContext();
 	const { trip } = useTripContext();
 
@@ -70,7 +70,7 @@ export default function useRouteAndNavigation({
 				...points.slice(nextStepIndex, points.length),
 			];
 
-			setNotification(new Notification('You are out of trip route', 'warning'));
+			addNotification(new Notification('You are out of trip route', 'warning'));
 
 			if (socket && user && trip) {
 				socket.emit('currentUserOutOfTripRoute', trip._id, user._id);

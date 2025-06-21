@@ -14,6 +14,8 @@ import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
 import { Trip } from '@/types/trip';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
+import { TrackingToggle } from './MapControls/TrackingToggle';
+import { useTrackLocationContext } from '@/contexts/TrackLocationContext';
 
 const STOP_MARKER_RANGE = 30;
 
@@ -34,15 +36,16 @@ export default function UserTripLogic() {
 		usersLocations,
 		currentExpIndex,
 		isExperienceActive,
-		notification,
-		urgentNotifications,
-		isUrgentNotificationActive,
-		setNotification,
-		setIsUrgentNotificationActive,
 		setIsTripActive,
 		socket,
 		setExperienceActive,
+		notificationQueue,
+		removeLastNotificationFromQueue,
+		removingLastNotificationFromQueue,
 	} = useTripSocket();
+
+	const { toggleTracking, isTracking, trackingTarget, centerOnLocation } =
+		useTrackLocationContext();
 
 	const { normalStops, lastStopLocation, stopsWithExperience } = useMemo(() => {
 		return splitStopsByExperience(trip?.stops || []);
@@ -51,6 +54,10 @@ export default function UserTripLogic() {
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			if (!trip || !socket || !user) return;
+
+			if (trackingTarget === 'current-user') {
+				centerOnLocation(location);
+			}
 
 			const userPosition = [location.lon, location.lat];
 
@@ -141,6 +148,10 @@ export default function UserTripLogic() {
 
 			{trip && userCurrentLocation && (
 				<>
+					<TrackingToggle
+						isTracking={isTracking && trackingTarget === 'current-user'}
+						onToggle={() => toggleTracking()}
+					/>
 					{isAtTripRoute ? (
 						<TripStopsMarkers
 							isExperienceActive={isExperienceActive}
@@ -153,15 +164,11 @@ export default function UserTripLogic() {
 					)}
 
 					<Notification
-						isModalOpen={notification !== null}
-						notification={notification!}
-						closeModal={() => setNotification(null)}
-					/>
-
-					<Notification
-						isModalOpen={isUrgentNotificationActive}
-						notification={urgentNotifications[urgentNotifications.length - 1]}
-						closeModal={() => setIsUrgentNotificationActive(false)}
+						isModalOpen={
+							notificationQueue.length > 0 && !removingLastNotificationFromQueue
+						}
+						notification={notificationQueue[notificationQueue.length - 1]}
+						closeModal={() => removeLastNotificationFromQueue()}
 					/>
 
 					<RouteAndNavigation
