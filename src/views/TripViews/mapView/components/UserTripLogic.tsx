@@ -42,6 +42,7 @@ export default function UserTripLogic() {
 		notificationQueue,
 		removeLastNotificationFromQueue,
 		removingLastNotificationFromQueue,
+		usersInLiveTripExpData,
 	} = useTripSocket();
 
 	const { toggleTracking, isTracking, trackingTarget, centerOnLocation } =
@@ -143,7 +144,11 @@ export default function UserTripLogic() {
 			)}
 
 			{usersLocations.map(({ id, location }) => (
-				<OtherUserMarker location={location} key={id} />
+				<OtherUserMarker
+					location={location}
+					user={usersInLiveTripExpData.find((user) => user.userId === id)}
+					key={id}
+				/>
 			))}
 
 			{trip && userCurrentLocation && (
