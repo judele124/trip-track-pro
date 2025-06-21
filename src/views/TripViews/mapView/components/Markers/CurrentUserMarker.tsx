@@ -1,9 +1,5 @@
-import { useEffect } from 'react';
-import { useMapContext } from '@/contexts/MapContext/MapContext';
 import GeneralMarker from './GeneralMarker';
 import { IUserResponseData } from '@/types/user';
-import { useMapTracking } from '../../hooks/useMapTracking';
-import { TrackingToggle } from '../MapControls/TrackingToggle';
 
 interface IUserMarkerProps {
 	location: { lon: number; lat: number };
@@ -13,14 +9,6 @@ export default function CurrentUserMarker({
 	location,
 	user,
 }: IUserMarkerProps) {
-	const { isMapReady } = useMapContext();
-	const { isTracking, toggleTracking, centerOnUser } = useMapTracking();
-
-	useEffect(() => {
-		if (!isMapReady || !location || !isTracking) return;
-		centerOnUser(location);
-	}, [isMapReady, location, isTracking, centerOnUser]);
-
 	return (
 		<>
 			<GeneralMarker
@@ -32,7 +20,6 @@ export default function CurrentUserMarker({
 			</div>
 		  `}
 			/>
-			<TrackingToggle isTracking={isTracking} onToggle={toggleTracking} />
 		</>
 	);
 }

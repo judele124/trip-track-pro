@@ -1,21 +1,31 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMapContext } from '@/contexts/MapContext/MapContext';
+import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 
 interface MapTrackingOptions {
 	zoom?: number;
 	speed?: number;
 	duration?: number;
+	trackingTarget: 'current-user' | string;
+	setTrackingToCurrentUser: () => void;
 }
 
-export function useMapTracking(options: MapTrackingOptions = {}) {
+export function useMapTracking({
+	zoom = 16,
+	speed = 1.5,
+	duration = 1000,
+	trackingTarget,
+	setTrackingToCurrentUser,
+}: MapTrackingOptions) {
 	const { mapRef, isMapReady } = useMapContext();
-	const { zoom = 16, speed = 1.5, duration = 1000 } = options;
 	const [isTracking, setIsTracking] = useState(true);
 	const isUserInteractingWithMap = useRef(false);
+	const { usersLocations } = useTripSocket();
 
-	const centerOnUser = useCallback(
+	const centerOnLocation = useCallback(
 		(location: { lon: number; lat: number }) => {
 			if (!mapRef.current || isUserInteractingWithMap.current) return;
+			if (!isTracking) return;
 
 			const currentZoom = mapRef.current.getZoom();
 			const currentBearing = mapRef.current.getBearing();
@@ -31,15 +41,21 @@ export function useMapTracking(options: MapTrackingOptions = {}) {
 				duration,
 			});
 		},
-		[mapRef, zoom, speed, duration]
+		[mapRef, zoom, speed, duration, isTracking]
 	);
 
 	const toggleTracking = useCallback(
 		(value?: boolean) => {
+			if (trackingTarget !== 'current-user') {
+				setTrackingToCurrentUser();
+				setIsTracking(true);
+				return;
+			}
+
 			const newValue = value ?? !isTracking;
 			setIsTracking(newValue);
 		},
-		[isTracking]
+		[isTracking, setTrackingToCurrentUser, trackingTarget]
 	);
 
 	const handleDragStart = useCallback(() => {
@@ -49,8 +65,23 @@ export function useMapTracking(options: MapTrackingOptions = {}) {
 	}, [isTracking, toggleTracking]);
 
 	useEffect(() => {
+		if (!isMapReady) return;
+		if (trackingTarget === 'current-user') return;
+
+		const userLocation = usersLocations.find(
+			(user) => user.id === trackingTarget
+		);
+
+		if (!userLocation) return;
+
+		centerOnLocation(userLocation.location);
+	}, [isMapReady, trackingTarget, usersLocations, centerOnLocation]);
+
+	useEffect(() => {
+		if (!mapRef.current) return;
+
 		const map = mapRef.current;
-		if (!map) return;
+
 		map.on('dragstart', handleDragStart);
 		map.on('zoomstart', () => {
 			isUserInteractingWithMap.current = true;
@@ -97,6 +128,6 @@ export function useMapTracking(options: MapTrackingOptions = {}) {
 	return {
 		isTracking,
 		toggleTracking,
-		centerOnUser,
+		centerOnLocation,
 	};
 }

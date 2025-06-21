@@ -15,12 +15,16 @@ interface IUseUserCompletingTripProps {
 	trip: Trip | null;
 	initialUserLocation: { lat: number; lon: number } | null;
 	onLocationUpdate?: (location: Point) => void;
+	speed?: number;
+	updateIntervalMs?: number;
 }
 
 export default function useUserCompletingTrip({
 	trip,
 	initialUserLocation,
 	onLocationUpdate,
+	speed = 200,
+	updateIntervalMs = 50,
 }: IUseUserCompletingTripProps) {
 	const { isOpen: isAtTripRoute, setIsOpen: setIsAtTripRoute } = useToggle();
 
@@ -63,8 +67,8 @@ export default function useUserCompletingTrip({
 
 	const fakeUserLocation = useFakeUserLocation({
 		points: fakePoints,
-		speed: 200,
-		updateIntervalMs: 50,
+		speed,
+		updateIntervalMs,
 		onLocationUpdate,
 	});
 

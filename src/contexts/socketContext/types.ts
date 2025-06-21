@@ -43,7 +43,7 @@ export interface IBadNotification extends Notification {
 
 export interface IUserOutOfRouteNotification extends IBadNotification {
 	userId: string;
-	message: 'user is out of trip route';
+	message: 'is out of trip route';
 }
 
 export type UrgentNotificationType = UserOutOfRouteNotification;
@@ -54,7 +54,7 @@ export interface IUserLocation {
 }
 
 export class UserOutOfRouteNotification implements IUserOutOfRouteNotification {
-	public message = 'user is out of trip route' as const;
+	public message = 'is out of trip route' as const;
 	public status = 'bad' as const;
 	public timestamp: string;
 	constructor(public userId: string) {
