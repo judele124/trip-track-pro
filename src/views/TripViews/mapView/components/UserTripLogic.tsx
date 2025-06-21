@@ -42,6 +42,7 @@ export default function UserTripLogic() {
 		setIsTripActive,
 		socket,
 		setExperienceActive,
+		usersInLiveTripExpData,
 	} = useTripSocket();
 
 	const { normalStops, lastStopLocation, stopsWithExperience } = useMemo(() => {
@@ -136,7 +137,11 @@ export default function UserTripLogic() {
 			)}
 
 			{usersLocations.map(({ id, location }) => (
-				<OtherUserMarker location={location} key={id} />
+				<OtherUserMarker
+					location={location}
+					user={usersInLiveTripExpData.find((user) => user.userId === id)}
+					key={id}
+				/>
 			))}
 
 			{trip && userCurrentLocation && (
