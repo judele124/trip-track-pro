@@ -14,7 +14,6 @@ import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
 import { Trip } from '@/types/trip';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
-import useFakeUserLocation from '../tests/useFakeUserLocation';
 import { TrackingToggle } from './MapControls/TrackingToggle';
 import { useTrackLocationContext } from '@/contexts/TrackLocationContext';
 
@@ -101,56 +100,6 @@ export default function UserTripLogic() {
 		},
 	});
 
-	// delete this after testing
-	const fakeUserLocation = useFakeUserLocation({
-		points: trip?.stops.map((stop) => stop.location) || [],
-		onLocationUpdate: (location) => {
-			if (!trip || !socket || !user) return;
-
-			if (trackingTarget === 'current-user') {
-				centerOnLocation(location);
-			}
-			const userPosition = [location.lon, location.lat];
-
-			const isUserNearLastStop =
-				lastStopLocation &&
-				calculateDistanceOnEarth(userPosition, lastStopLocation) <
-					STOP_MARKER_RANGE;
-
-			if (isUserNearLastStop) {
-				setIsTripActive(false);
-				return;
-			}
-
-			socket.emit('updateLocation', trip._id, location);
-
-			const stopLocation = stopsWithExperience[currentExpIndex]?.location;
-
-			if (stopLocation) {
-				const stopPosition = [stopLocation.lon, stopLocation.lat];
-
-				const isUserNearStop =
-					calculateDistanceOnEarth(userPosition, stopPosition) <
-					STOP_MARKER_RANGE;
-
-				if (isUserNearStop) {
-					if (!isExperienceActive) {
-						socket.emit(
-							'userInExperience',
-							trip._id,
-							user._id,
-							currentExpIndex
-						);
-					}
-				} else {
-					if (isExperienceActive) {
-						setExperienceActive(false);
-					}
-				}
-			}
-		},
-	});
-
 	useEffect(() => {
 		if (!lastStopLocation && currentExpIndex >= stopsWithExperience.length) {
 			setIsTripActive(false);
@@ -187,17 +136,17 @@ export default function UserTripLogic() {
 	return (
 		<>
 			{/* loading location */}
-			{!fakeUserLocation && <LoadingLocation />}
+			{!userCurrentLocation && <LoadingLocation />}
 
-			{fakeUserLocation && user && (
-				<CurrentUserMarker location={fakeUserLocation} user={user} />
+			{userCurrentLocation && user && (
+				<CurrentUserMarker location={userCurrentLocation} user={user} />
 			)}
 
 			{usersLocations.map(({ id, location }) => (
 				<OtherUserMarker location={location} key={id} />
 			))}
 
-			{trip && fakeUserLocation && (
+			{trip && userCurrentLocation && (
 				<>
 					<TrackingToggle
 						isTracking={isTracking && trackingTarget === 'current-user'}
@@ -239,7 +188,7 @@ export default function UserTripLogic() {
 							lineWidth: ROUTE_FILL_WIDTH,
 							lineOpacity: ROUTE_OPACITY,
 						}}
-						userLocation={fakeUserLocation}
+						userLocation={userCurrentLocation}
 						active={isAtTripRoute}
 					/>
 
@@ -258,7 +207,7 @@ export default function UserTripLogic() {
 								lineWidth: ROUTE_FILL_WIDTH,
 								lineOpacity: ROUTE_OPACITY,
 							}}
-							userLocation={fakeUserLocation}
+							userLocation={userCurrentLocation}
 						/>
 					)}
 				</>
