@@ -1,10 +1,13 @@
-import { useMapTracking } from '@/views/TripViews/mapView/hooks/useMapTracking';
+import {
+	ToggleTrackingOptions,
+	useMapTracking,
+} from '@/views/TripViews/mapView/hooks/useMapTracking';
 import { createContext, useContext, useState } from 'react';
 
 interface LocationContextType {
 	trackingTarget: 'current-user' | string;
 	setTrackingTarget: (target: 'current-user' | string) => void;
-	toggleTracking: (value?: boolean) => void;
+	toggleTracking: (options?: ToggleTrackingOptions) => void;
 	isTracking: boolean;
 	centerOnLocation: (location: { lon: number; lat: number }) => void;
 }

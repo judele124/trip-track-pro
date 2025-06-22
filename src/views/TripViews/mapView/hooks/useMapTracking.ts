@@ -10,6 +10,11 @@ interface MapTrackingOptions {
 	setTrackingToCurrentUser: () => void;
 }
 
+export interface ToggleTrackingOptions {
+	value?: boolean;
+	location?: { lon: number; lat: number };
+}
+
 export function useMapTracking({
 	zoom = 16,
 	speed = 1.5,
@@ -23,9 +28,9 @@ export function useMapTracking({
 	const { usersLocations } = useTripSocket();
 
 	const centerOnLocation = useCallback(
-		(location: { lon: number; lat: number }) => {
+		(location: { lon: number; lat: number }, newIsTracking?: boolean) => {
 			if (!mapRef.current || isUserInteractingWithMap.current) return;
-			if (!isTracking) return;
+			if (!isTracking && !newIsTracking) return;
 
 			const currentZoom = mapRef.current.getZoom();
 			const currentBearing = mapRef.current.getBearing();
@@ -45,22 +50,25 @@ export function useMapTracking({
 	);
 
 	const toggleTracking = useCallback(
-		(value?: boolean) => {
-			if (trackingTarget !== 'current-user') {
-				setTrackingToCurrentUser();
-				setIsTracking(true);
-				return;
+		(options?: ToggleTrackingOptions) => {
+			const { value, location } = options || {};
+			const newValue =
+				trackingTarget !== 'current-user' ? true : (value ?? !isTracking);
+
+			if (location && newValue) {
+				centerOnLocation(location, newValue);
 			}
 
-			const newValue = value ?? !isTracking;
+			setTrackingToCurrentUser();
+
 			setIsTracking(newValue);
 		},
-		[isTracking, setTrackingToCurrentUser, trackingTarget]
+		[isTracking, setTrackingToCurrentUser, centerOnLocation]
 	);
 
 	const handleDragStart = useCallback(() => {
 		if (isTracking) {
-			toggleTracking(false);
+			toggleTracking({ value: false });
 		}
 	}, [isTracking, toggleTracking]);
 
