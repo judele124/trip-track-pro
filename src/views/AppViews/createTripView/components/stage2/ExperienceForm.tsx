@@ -111,7 +111,7 @@ const ExperienceForm = ({ index, closeModal }: IExperienceFormProps) => {
 				<InfoForm index={index} />
 			)}
 
-			<InputWLabel
+			{/* <InputWLabel
 				type='number'
 				placeholder='Enter score'
 				title='Add Score'
@@ -124,7 +124,7 @@ const ExperienceForm = ({ index, closeModal }: IExperienceFormProps) => {
 						}
 					},
 				})}
-			/>
+			/> */}
 			<div className='flex gap-2'>
 				<Button
 					type='reset'

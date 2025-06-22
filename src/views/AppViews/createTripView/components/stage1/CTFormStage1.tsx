@@ -56,7 +56,7 @@ export default function CTFormStage1() {
 					</div>
 				)
 			)}
-			<AddRewardBtn />
+			{/* <AddRewardBtn /> */}
 			<Button className='w-full' type='submit'>
 				Confirm
 			</Button>

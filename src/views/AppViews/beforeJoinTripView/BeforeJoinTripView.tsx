@@ -41,7 +41,7 @@ export default function BeforeJoinTripView() {
 
 					<Guides guides={trip.guides} />
 
-					<Reward reward={trip.reward} />
+					{/* <Reward reward={trip.reward} /> */}
 
 					<JoinButton trip={trip} />
 

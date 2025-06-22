@@ -54,14 +54,14 @@ export default function TripDetailsView() {
 							trip={tripData}
 						/>
 						<div className='flex flex-col'>
-							<RewardDetails
+							{/* <RewardDetails
 								trip={tripData}
 								onUpdate={() => {
 									if (!params.tripId) return;
 									tripGet(activate, tripData._id);
 								}}
 								tripId={tripData._id}
-							/>
+							/> */}
 							<ShowTripOnMapBtn trip={tripData} />
 						</div>
 					</>
