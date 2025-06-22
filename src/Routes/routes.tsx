@@ -121,8 +121,8 @@ const routes: RouteObject[] = [
 	{
 		path: `${baseRoutes.trip}/*`,
 		element: (
-			<TripProtectedRoute>
-				<TripProvider>
+			<TripProvider>
+				<TripProtectedRoute>
 					<SocketProvider>
 						<MapContextProvider>
 							<TrackLocationProvider>
@@ -130,8 +130,8 @@ const routes: RouteObject[] = [
 							</TrackLocationProvider>
 						</MapContextProvider>
 					</SocketProvider>
-				</TripProvider>
-			</TripProtectedRoute>
+				</TripProtectedRoute>
+			</TripProvider>
 		),
 		children: [
 			{ index: true, element: <LoadingTripDataView /> },
