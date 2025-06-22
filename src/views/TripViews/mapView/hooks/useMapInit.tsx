@@ -6,6 +6,11 @@ const INITIAL_CENTER: [number, number] = [-74.0242, 40.6941];
 const INITIAL_ZOOM: number = 10.12;
 const MAX_BOX_STYLE = 'mapbox://styles/mapbox/outdoors-v11';
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+mapboxgl.setRTLTextPlugin(
+	'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.3.0/mapbox-gl-rtl-text.js',
+	null,
+	true // Lazy load the plugin
+);
 
 interface useMapInitReturn {
 	isMapReady: boolean;
@@ -29,6 +34,7 @@ export default function useMapInit(
 				style: MAX_BOX_STYLE,
 				center: INITIAL_CENTER,
 				zoom: INITIAL_ZOOM,
+				language: navigator.language,
 			});
 
 			mapRef.current.on('load', () => {
