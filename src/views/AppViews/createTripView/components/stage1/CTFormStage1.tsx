@@ -1,6 +1,5 @@
 import { InputHTMLAttributes } from 'react';
 import InputFeildError from '@/components/ui/InputFeildError';
-import AddRewardBtn from './AddRewardBtn';
 import InputWLabel from '@/components/ui/InputWLabel';
 import Button from '@/components/ui/Button';
 import { useFormContext } from 'react-hook-form';
@@ -56,7 +55,6 @@ export default function CTFormStage1() {
 					</div>
 				)
 			)}
-			{/* <AddRewardBtn /> */}
 			<Button className='w-full' type='submit'>
 				Confirm
 			</Button>

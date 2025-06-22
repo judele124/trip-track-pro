@@ -4,7 +4,6 @@ import DropdownTriggerElement from '@/components/ui/Dropdown/DropdownTriggerElem
 import DropdownMenu from '@/components/ui/Dropdown/DropdownMenu';
 import Button from '@/components/ui/Button';
 import TriviaForm from './experience/TriviaForm';
-import InputWLabel from '@/components/ui/InputWLabel';
 import { ExperienceType, Types } from 'trip-track-package';
 import InputFeildError from '@/components/ui/InputFeildError';
 import InfoForm from './experience/InfoForm';
@@ -20,7 +19,6 @@ interface IExperienceFormProps {
 const ExperienceForm = ({ index, closeModal }: IExperienceFormProps) => {
 	const {
 		watch,
-		register,
 		setValue,
 		resetField,
 		trigger,
@@ -111,20 +109,6 @@ const ExperienceForm = ({ index, closeModal }: IExperienceFormProps) => {
 				<InfoForm index={index} />
 			)}
 
-			{/* <InputWLabel
-				type='number'
-				placeholder='Enter score'
-				title='Add Score'
-				{...register(`stops.${index}.experience.score`, {
-					valueAsNumber: true,
-					min: 0,
-					onChange: (e) => {
-						if (e.target.value <= 0) {
-							setValue(`stops.${index}.experience.score`, 0);
-						}
-					},
-				})}
-			/> */}
 			<div className='flex gap-2'>
 				<Button
 					type='reset'
