@@ -2,6 +2,7 @@ import NavbarLayout from '@/components/layouts/NavbarLayout';
 import PageLayout from '@/components/layouts/PageLayout';
 import TripLayout from '@/components/layouts/TripLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import TripProtectedRoute from '@/components/TripProtectedRoute';
 import { MapContextProvider } from '@/contexts/MapContext/MapContext';
 import SocketProvider from '@/contexts/socketContext';
 import { TrackLocationProvider } from '@/contexts/TrackLocationContext';
@@ -120,7 +121,7 @@ const routes: RouteObject[] = [
 	{
 		path: `${baseRoutes.trip}/*`,
 		element: (
-			<ProtectedRoute>
+			<TripProtectedRoute>
 				<TripProvider>
 					<SocketProvider>
 						<MapContextProvider>
@@ -130,7 +131,7 @@ const routes: RouteObject[] = [
 						</MapContextProvider>
 					</SocketProvider>
 				</TripProvider>
-			</ProtectedRoute>
+			</TripProtectedRoute>
 		),
 		children: [
 			{ index: true, element: <LoadingTripDataView /> },
