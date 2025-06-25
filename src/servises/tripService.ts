@@ -174,3 +174,13 @@ export const cancelTrip = async (
 		},
 	});
 };
+
+export const addUserToTripParticipants = async (
+	activate: UseAxiosResponse['activate'],
+	tripId: string
+) => {
+	await activate({
+		url: `${API_BASE_URL}/trip/user-to-participants/${tripId}`,
+		method: 'PUT',
+	});
+};
