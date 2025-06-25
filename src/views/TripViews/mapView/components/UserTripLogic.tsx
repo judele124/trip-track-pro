@@ -155,7 +155,11 @@ export default function UserTripLogic() {
 				<>
 					<TrackingToggle
 						isTracking={isTracking && trackingTarget === 'current-user'}
-						onToggle={() => toggleTracking()}
+						onToggle={() =>
+							toggleTracking({
+								location: userCurrentLocation,
+							})
+						}
 					/>
 					{isAtTripRoute ? (
 						<TripStopsMarkers
