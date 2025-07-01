@@ -3,9 +3,8 @@ import { useAuthContext } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { navigationRoutes } from '@/Routes/routes';
 import { useTripContext } from '@/contexts/TripContext';
-import { Schemas } from 'trip-track-package';
 import useAxios from '@/hooks/useAxios';
-import { addUserToTripParticipants } from '@/servises/tripService';
+import { getAllUserIdsRelatedToTrip } from '@/servises/tripService';
 
 type TripProtectedRouteProps = {
 	children: ReactNode;
@@ -26,17 +25,19 @@ export default function TripProtectedRoute({
 		}
 
 		if (!trip) return;
+		const fetchUserIds = async () => {
+			try {
+				const { data } = await getAllUserIdsRelatedToTrip(activate, tripId);
 
-		const isValidUserId = Schemas.mongoObjectId.safeParse(user?._id).success;
+				if (data && !data.includes(user?._id)) {
+					nav(`${navigationRoutes.joinTrip}?tripId=${tripId}`);
+				}
+			} catch (error) {
+				nav(`${navigationRoutes.notFound}`);
+			}
+		};
 
-		if (isValidUserId) {
-			const isParticipant = trip.participants.some(
-				(participant) => participant.userId._id === user?._id
-			);
-
-			if (isParticipant) return;
-			addUserToTripParticipants(activate, tripId);
-		}
+		fetchUserIds();
 	}, [tokenValidationStatus, trip]);
 
 	return <>{children}</>;

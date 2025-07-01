@@ -184,3 +184,15 @@ export const addUserToTripParticipants = async (
 		method: 'PUT',
 	});
 };
+
+export const getAllUserIdsRelatedToTrip = async (
+	activate: UseAxiosResponse['activate'],
+	tripId: string
+) => {
+	const data = await activate({
+		url: `${API_BASE_URL}/trip/users-id/${tripId}`,
+		method: 'GET',
+	});
+
+	return data;
+};
