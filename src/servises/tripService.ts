@@ -1,6 +1,7 @@
 import { API_BASE_URL } from '@/env.config';
 import { UseAxiosResponse } from '@/hooks/useAxios';
 import { Trip } from '@/types/trip';
+import { IUserResponseData } from '@/types/user';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { ServiceError } from '@/utils/ServiceError';
 import { Types } from 'trip-track-package';
@@ -106,7 +107,7 @@ export const joinTrip = async (
 	userData: {
 		name?: string;
 		imageUrl?: string;
-		role: 'user' | 'guest';
+		role: IUserResponseData['role'];
 	}
 ) => {
 	try {
