@@ -52,15 +52,13 @@ export default function useUserCompletingTrip({
 	const fakePoints =
 		routeData && userToTripRouteData
 			? [
-					...userToTripRouteData.routes[0].geometry.coordinates.map(
-						(point) => ({
-							lat: point[1],
-							lon: point[0],
-						})
-					),
-					...routeData.routes[0].geometry.coordinates.map((point) => ({
-						lat: point[1],
-						lon: point[0],
+					...userToTripRouteData.routes[0].legs[0].steps.map((step) => ({
+						lat: step.maneuver.location[1],
+						lon: step.maneuver.location[0],
+					})),
+					...routeData.routes[0].legs[0].steps.map((step) => ({
+						lat: step.maneuver.location[1],
+						lon: step.maneuver.location[0],
 					})),
 				]
 			: [];

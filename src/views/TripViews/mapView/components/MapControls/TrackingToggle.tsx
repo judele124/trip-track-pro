@@ -21,6 +21,7 @@ export const TrackingToggle: FC<TrackingToggleProps> = ({
 					onClick={onToggle}
 					className={`rounded-full bg-white p-2 shadow-md transition-colors hover:bg-gray-100`}
 					aria-label={isTracking ? 'Disable tracking' : 'Enable tracking'}
+					title={isTracking ? 'Disable tracking' : 'Enable tracking'}
 				>
 					<Icon
 						name={isTracking ? 'location' : 'circle-cross'}

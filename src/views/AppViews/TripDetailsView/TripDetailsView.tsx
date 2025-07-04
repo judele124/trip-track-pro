@@ -6,7 +6,6 @@ import { getErrorMessage } from '@/utils/errorMessages';
 import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import TripStatusButton from '../profileView/components/TripStatusButton';
-import RewardDetails from './components/RewardDetails';
 import { tripGet } from '@/servises/tripService';
 import UpdateGuidesBtn from '@/components/updateGuidesBtn/UpdateGuidesBtn';
 import TripActionsModal from '../profileView/components/TripActionsModal';
@@ -54,14 +53,6 @@ export default function TripDetailsView() {
 							trip={tripData}
 						/>
 						<div className='flex flex-col'>
-							{/* <RewardDetails
-								trip={tripData}
-								onUpdate={() => {
-									if (!params.tripId) return;
-									tripGet(activate, tripData._id);
-								}}
-								tripId={tripData._id}
-							/> */}
 							<ShowTripOnMapBtn trip={tripData} />
 						</div>
 					</>
