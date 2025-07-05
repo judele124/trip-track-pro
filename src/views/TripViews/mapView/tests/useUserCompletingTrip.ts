@@ -4,7 +4,7 @@ import { useMapboxDirectionRoute } from '../hooks/useMapboxDirectionRoute';
 import { useEffect, useMemo } from 'react';
 import { calculateDistanceOnEarth } from '@/utils/map.functions';
 import useToggle from '@/hooks/useToggle';
-import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
+import { RANGE_STEP_THRESHOLD } from '../hooks/useNextPointIndex';
 
 type Point = {
 	lon: number;

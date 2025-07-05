@@ -50,13 +50,15 @@ function DirectionComponent({
 	const icon: IconName =
 		nextStepIndex === steps.length - 1
 			? 'flag'
-			: directions[steps[nextStepIndex].maneuver.modifier];
+			: directions[steps[nextStepIndex]?.maneuver.modifier || 'straight'];
+
+	const restSteps = steps.slice(nextStepIndex + 1);
 
 	return createPortal(
 		<div className='page-colors absolute bottom-2 left-1/2 z-10 max-h-[40vh] w-[90vw] max-w-[380px] -translate-x-1/2 -translate-y-2 overflow-y-auto rounded-2xl border-2 border-primary text-sm'>
 			{(!steps || steps.length === 0) && <div>no route found</div>}
 
-			{steps[nextStepIndex] && (
+			{steps[nextStepIndex] ? (
 				<div
 					ref={ref}
 					onClick={() => !showRestStops && setShowRestStops(true)}
@@ -72,7 +74,7 @@ function DirectionComponent({
 					{/* Remaining Steps */}
 					{showRestStops && (
 						<div>
-							{steps.slice(nextStepIndex + 1).map((step, index) => (
+							{restSteps.map((step, index) => (
 								<Step
 									key={nextStepIndex + 1 + index}
 									step={step}
@@ -88,6 +90,28 @@ function DirectionComponent({
 						</div>
 					)}
 				</div>
+			) : (
+				<Step
+					step={{
+						maneuver: {
+							instruction: 'No more steps',
+							modifier: 'straight',
+							location: [0, 0],
+							type: 'turn',
+							bearing_before: 0,
+							bearing_after: 0,
+						},
+						distance: 0,
+						duration: 0,
+						geometry: {
+							coordinates: [],
+							type: 'LineString',
+						},
+						name: '',
+					}}
+					userToStepNextDistance={0}
+					icon={'directionStraightArrow'}
+				/>
 			)}
 		</div>,
 		pageContentRef.current

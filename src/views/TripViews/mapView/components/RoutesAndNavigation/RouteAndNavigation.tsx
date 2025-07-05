@@ -78,9 +78,7 @@ export default function RouteAndNavigation({
 					{isTripRoute && (
 						<FinalStepMarker
 							location={
-								routeData.routes[0].legs[0].steps[
-									routeData.routes[0].legs[0].steps.length - 1
-								].maneuver.location
+								routeData.waypoints[routeData.waypoints.length - 1].location
 							}
 						/>
 					)}

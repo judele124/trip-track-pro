@@ -2,7 +2,7 @@ import {
 	addCircleRadiusToLocation,
 	metersToPixels,
 } from '@/utils/map.functions';
-import { RANGE_STEP_THRESHOLD } from './useNextStepIndex';
+import { RANGE_STEP_THRESHOLD } from './useNextPointIndex';
 import { MutableRefObject, useEffect, useRef } from 'react';
 import { Map } from 'mapbox-gl';
 
