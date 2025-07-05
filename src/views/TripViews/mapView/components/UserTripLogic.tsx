@@ -15,7 +15,6 @@ import { Trip } from '@/types/trip';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import { TrackingToggle } from './MapControls/TrackingToggle';
 import { useTrackLocationContext } from '@/contexts/TrackLocationContext';
-import useUserCompletingTrip from '../tests/useUserCompletingTrip';
 import { RANGE_STEP_THRESHOLD } from '../hooks/useNextPointIndex';
 
 const STOP_MARKER_RANGE = 30;
