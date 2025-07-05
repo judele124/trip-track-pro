@@ -4,8 +4,9 @@ import DarkModeContextProvider from './contexts/DarkModeContext.tsx';
 import { axios } from './hooks/useAxios.ts';
 import { BrowserRouter } from 'react-router-dom';
 import AllRoutes from './Routes/index.tsx';
+import { API_BASE_URL } from './env.config.ts';
 
-axios.defaults.baseURL = 'http://localhost:3000/';
+axios.defaults.baseURL = API_BASE_URL;
 axios.defaults.withCredentials = true;
 
 function App() {
