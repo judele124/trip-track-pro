@@ -8,7 +8,6 @@ import CurrentUserMarker from './Markers/CurrentUserMarker';
 import LoadingLocation from './LoadingLocation';
 import { useEffect, useMemo } from 'react';
 import { calculateDistanceOnEarth } from '@/utils/map.functions';
-import { RANGE_STEP_THRESHOLD } from '../hooks/useNextStepIndex';
 import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 import useToggle from '@/hooks/useToggle';
 import Notification from './Notifications';
@@ -16,6 +15,7 @@ import { Trip } from '@/types/trip';
 import useCurrentUserLocation from '../hooks/useCurrentUserLocation';
 import { TrackingToggle } from './MapControls/TrackingToggle';
 import { useTrackLocationContext } from '@/contexts/TrackLocationContext';
+import { RANGE_STEP_THRESHOLD } from '../hooks/useNextPointIndex';
 
 const STOP_MARKER_RANGE = 30;
 
@@ -55,34 +55,25 @@ export default function UserTripLogic() {
 	const { userCurrentLocation, initialUserLocation } = useCurrentUserLocation({
 		onLocationUpdate: (location) => {
 			if (!trip || !socket || !user) return;
-
 			if (trackingTarget === 'current-user') {
 				centerOnLocation(location);
 			}
-
 			const userPosition = [location.lon, location.lat];
-
 			const isUserNearLastStop =
 				lastStopLocation &&
 				calculateDistanceOnEarth(userPosition, lastStopLocation) <
 					STOP_MARKER_RANGE;
-
 			if (isUserNearLastStop) {
 				setIsTripActive(false);
 				return;
 			}
-
 			socket.emit('updateLocation', trip._id, location);
-
 			const stopLocation = stopsWithExperience[currentExpIndex]?.location;
-
 			if (stopLocation) {
 				const stopPosition = [stopLocation.lon, stopLocation.lat];
-
 				const isUserNearStop =
 					calculateDistanceOnEarth(userPosition, stopPosition) <
 					STOP_MARKER_RANGE;
-
 				if (isUserNearStop) {
 					if (!isExperienceActive) {
 						socket.emit(

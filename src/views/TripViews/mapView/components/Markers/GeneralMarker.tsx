@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import useMarker from '../../hooks/useMarker';
 import { useMapContext } from '@/contexts/MapContext/MapContext';
 
@@ -34,8 +34,10 @@ export default function GeneralMarker({
 }: IGeneralMarkerProps) {
 	const { isMapReady, mapRef } = useMapContext();
 	const ref = useRef<HTMLElement | null>(null);
+	const [isMarkerReady, setIsMarkerReady] = useState(false);
 
 	useMarker({
+		isMarkerReady,
 		ref,
 		location,
 		isMapReady,
@@ -49,8 +51,16 @@ export default function GeneralMarker({
 			htmlElement.innerHTML = childrenAsInnerHtmlString;
 			htmlElement.className = childrenAsInnerHtmlStringClassName;
 			ref.current = htmlElement;
+			setIsMarkerReady(true);
+		} else {
+			setIsMarkerReady(true);
 		}
-	}, [children, childrenAsInnerHtmlString, childrenAsInnerHtmlStringClassName]);
+	}, [
+		isMapReady,
+		children,
+		childrenAsInnerHtmlString,
+		childrenAsInnerHtmlStringClassName,
+	]);
 
 	return children ? (
 		<div ref={(node) => node && (ref.current = node)}>{children}</div>

@@ -1,6 +1,6 @@
 import Button from '@/components/ui/Button';
 
-const ScanQRForm = ({ index }: { index: number }) => {
+const ScanQRForm = () => {
 	return (
 		<>
 			<div>

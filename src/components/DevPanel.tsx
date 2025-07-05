@@ -166,6 +166,10 @@ const DebugInfoSection = ({ tripId }: { tripId: string }) => {
 const DevPanel: React.FC<DevPanelProps> = ({ tripId }) => {
 	const [visible, setVisible] = useState(false);
 
+	if (process.env.NODE_ENV !== 'development') {
+		return null;
+	}
+
 	return (
 		<>
 			<div>

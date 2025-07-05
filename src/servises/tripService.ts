@@ -1,6 +1,7 @@
 import { API_BASE_URL } from '@/env.config';
 import { UseAxiosResponse } from '@/hooks/useAxios';
 import { Trip } from '@/types/trip';
+import { IUserResponseData } from '@/types/user';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { ServiceError } from '@/utils/ServiceError';
 import { Types } from 'trip-track-package';
@@ -106,7 +107,7 @@ export const joinTrip = async (
 	userData: {
 		name?: string;
 		imageUrl?: string;
-		role: 'user' | 'guest';
+		role: IUserResponseData['role'];
 	}
 ) => {
 	try {
@@ -173,4 +174,26 @@ export const cancelTrip = async (
 			status: 'cancelled',
 		},
 	});
+};
+
+export const addUserToTripParticipants = async (
+	activate: UseAxiosResponse['activate'],
+	tripId: string
+) => {
+	await activate({
+		url: `${API_BASE_URL}/trip/user-to-participants/${tripId}`,
+		method: 'PUT',
+	});
+};
+
+export const getAllUserIdsRelatedToTrip = async (
+	activate: UseAxiosResponse['activate'],
+	tripId: string
+) => {
+	const data = await activate({
+		url: `${API_BASE_URL}/trip/users-id/${tripId}`,
+		method: 'GET',
+	});
+
+	return data;
 };

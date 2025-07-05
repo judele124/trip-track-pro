@@ -1,6 +1,5 @@
 import { MapBoxDirectionsResponse } from '@/types/map';
 import { useMapboxDirectionRoute } from './useMapboxDirectionRoute';
-import useNextStepIndex from './useNextStepIndex';
 import { useRouteProgress } from './useRouteProgress';
 import { Point } from '@/utils/map.functions';
 import useCurrentUserOutOfTripRoute from './useCurrentUserOutOfTripRoute';
@@ -9,6 +8,8 @@ import { useTripSocket } from '@/contexts/socketContext/SocketContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useTripContext } from '@/contexts/TripContext';
 import { Notification } from '@/contexts/socketContext/types';
+import useNextPointIndex from './useNextPointIndex';
+
 interface IUseRouteAndNavigationProps {
 	userLocation: { lon: number; lat: number } | null;
 	points: { lon: number; lat: number }[];
@@ -39,13 +40,25 @@ export default function useRouteAndNavigation({
 		Point[]
 	>([]);
 
+	const { nextPointIndex: nextStopIndex } = useNextPointIndex({
+		userLocation,
+		steps: currentRoutePoints.map((point) => [point.lon, point.lat]),
+		active,
+	});
+
 	const { routeData } = useMapboxDirectionRoute({
 		points: currentRoutePoints,
 	});
 
-	const { nextStepIndex, userToStepNextDistance } = useNextStepIndex({
+	const {
+		nextPointIndex: nextStepIndex,
+		userToPointNextDistance: userToStepNextDistance,
+	} = useNextPointIndex({
 		userLocation,
-		steps: routeData?.routes[0].legs[0].steps,
+		steps:
+			routeData?.routes[0].legs[0].steps.map(
+				(step) => step.maneuver.location
+			) || [],
 		active,
 	});
 
@@ -66,8 +79,7 @@ export default function useRouteAndNavigation({
 		if (isOutOfRoute && userLocation) {
 			const newPoints = [
 				userLocation,
-
-				...points.slice(nextStepIndex, points.length),
+				...points.slice(nextStopIndex, points.length),
 			];
 
 			addNotification(new Notification('You are out of trip route', 'warning'));
