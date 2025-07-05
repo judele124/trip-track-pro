@@ -3,7 +3,6 @@ import Guides from './components/Guides';
 import TripErrorState from './components/TripErrorState';
 import Header from './components/Header';
 import JoinButton from './components/Buttons';
-import Reward from './components/Reward';
 import ShowTripOnMapBtn from '../../../components/ShowTripOnMapBtn';
 import useAxios from '@/hooks/useAxios';
 import { Trip } from '@/types/trip';
@@ -40,8 +39,6 @@ export default function BeforeJoinTripView() {
 					<Header description={trip.description || ''} name={trip.name} />
 
 					<Guides guides={trip.guides} />
-
-					{/* <Reward reward={trip.reward} /> */}
 
 					<JoinButton trip={trip} />
 
