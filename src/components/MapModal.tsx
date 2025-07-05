@@ -5,9 +5,12 @@ import StopMarker from '@/views/TripViews/mapView/components/Markers/StopMarker'
 import { Types } from 'trip-track-package';
 import MapRoute from '@/views/TripViews/mapView/components/RoutesAndNavigation/MapRoute';
 import { useMapboxDirectionRoute } from '@/views/TripViews/mapView/hooks/useMapboxDirectionRoute';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Trip } from '@/types/trip';
-import { MapContextProvider } from '@/contexts/MapContext/MapContext';
+import {
+	MapContextProvider,
+	useMapContext,
+} from '@/contexts/MapContext/MapContext';
 
 interface IMapModalProps {
 	mapOpen: boolean;
@@ -33,6 +36,7 @@ export default function MapModal({
 			<div className='h-[80vh] w-[90vw] overflow-hidden rounded-2xl'>
 				<MapContextProvider>
 					<Map>
+						<CenterOnFirstLocationStops stops={stops} />
 						{routeData && <MapRoute id='modal-route' route={routeData} />}
 						{stops.map((stop: Types['Trip']['Stop']['Model'], i) => (
 							<GeneralMarker
@@ -52,4 +56,15 @@ export default function MapModal({
 			</div>
 		</Modal>
 	);
+}
+
+function CenterOnFirstLocationStops({ stops }: { stops: Trip['stops'] }) {
+	const { mapRef } = useMapContext();
+	useEffect(() => {
+		mapRef.current?.easeTo({
+			center: stops[0].location,
+			zoom: 12,
+		});
+	}, []);
+	return null;
 }
