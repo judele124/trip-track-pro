@@ -1,15 +1,13 @@
 import { useFormContext } from 'react-hook-form';
-import InputWLabel from '@/components/ui/InputWLabel';
 import Button from '@/components/ui/Button';
+import TextareaWLabel from '@/components/ui/TextareaWLabel';
 
-const TreasureFindForm = ({ index }: { index: number }) => {
+const TreasureFindForm = () => {
 	const { register } = useFormContext();
 
 	return (
 		<>
-			<InputWLabel
-				type='text'
-				textarea
+			<TextareaWLabel
 				title='Treasure Description'
 				placeholder='Enter treasure description'
 				{...register('treasureDescription')}

@@ -1,0 +1,27 @@
+# Node dependencies
+node_modules
+dist
+build
+
+# Vite cache
+.vite
+
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Editor / system
+.vscode
+*.swp
+.DS_Store
+Thumbs.db

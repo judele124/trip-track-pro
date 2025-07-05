@@ -2,6 +2,7 @@ import { Map, Marker } from 'mapbox-gl';
 import { RefObject, useEffect, useRef } from 'react';
 
 interface IUseMarketProps {
+	isMarkerReady: boolean;
 	ref: RefObject<HTMLElement | null>;
 	isMapReady: boolean;
 	mapRef: RefObject<Map | null>;
@@ -12,6 +13,7 @@ interface IUseMarketProps {
 interface IUseMarketReturn {}
 
 export default function useMarker({
+	isMarkerReady,
 	ref,
 	isMapReady,
 	mapRef,
@@ -20,17 +22,16 @@ export default function useMarker({
 	const marker = useRef<Marker | null>(null);
 	useEffect(() => {
 		if (!mapRef.current || !isMapReady) return;
-		if (!ref.current) return;
+		if (!ref.current || !isMarkerReady) return;
 		marker.current = new Marker({
 			element: ref.current,
-		})
-			.setLngLat([lon, lat])
-			.addTo(mapRef.current);
+		}).setLngLat([lon, lat]);
+		marker.current.addTo(mapRef.current);
 		return () => {
 			if (!marker.current) return;
 			marker.current.remove();
 		};
-	}, [isMapReady]);
+	}, [isMapReady, isMarkerReady]);
 
 	useEffect(() => {
 		if (!marker.current) return;
