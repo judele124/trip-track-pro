@@ -75,7 +75,7 @@ export default function ShareTrip() {
 
 	if (!tripData) return null;
 
-	const isCreator = tripData.creator.toString() === user?._id;
+	const isCreator = tripData.creator._id === user?._id;
 
 	return (
 		<>
