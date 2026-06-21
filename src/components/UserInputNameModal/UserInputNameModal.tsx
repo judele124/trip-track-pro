@@ -10,9 +10,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import InputFeildError from '../ui/InputFeildError';
 import { Schemas } from 'trip-track-package';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { AxiosError } from 'axios';
 
 const LOADER_GIF =
 	'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200w.gif?cid=6c09b952aui5tunhas7rsybn9vumavkvdfvz88bxyjecfghh&ep=v1_gifs_search&rid=200w.gif&ct=g';
+
+const getRequestErrorMessage = (error: AxiosError | Error) => {
+	const data = (error as AxiosError)?.response?.data as { message?: string } | undefined;
+	return data?.message || error.message || 'Something went wrong';
+};
 
 export default function UserInputNameModal({
 	setIsOpen,
@@ -39,6 +45,7 @@ export default function UserInputNameModal({
 	});
 
 	const [randomNameError, setRandomNameError] = useState<string | null>(null);
+	const [confirmError, setConfirmError] = useState<string | null>(null);
 	const [inputValue, setInputValue] = useState('');
 	const inputValueDebaunced = useDebouncedValue(inputValue, 500);
 	const name = watch('name') || '';
@@ -60,12 +67,13 @@ export default function UserInputNameModal({
 	}, [inputValueDebaunced]);
 
 	const handleGenerateRandomName = async () => {
+		setRandomNameError(null);
 		const { data: name, error } = await activate({
 			url: `${API_BASE_URL}/user/random-name`,
 		});
 
 		if (error) {
-			setRandomNameError(error.message);
+			setRandomNameError(getRequestErrorMessage(error));
 			return;
 		}
 
@@ -81,24 +89,29 @@ export default function UserInputNameModal({
 		name: string;
 	}) => {
 		if (!user) return;
+		setConfirmError(null);
 		const imageUrl = `https://robohash.org/${name}.png`;
 		const { role } = user;
 		let status;
 
 		if (role === 'guest') {
-			const { status: userStatus } = await activate({
-				url: '/auth/update-guest-info-token',
+			const { status: userStatus, error } = await activate({
+				url: `${API_BASE_URL}/auth/update-guest-info-token`,
 				method: 'PUT',
 				data: {
 					name,
 					imageUrl,
 				},
 			});
+			if (error) {
+				setConfirmError(getRequestErrorMessage(error));
+				return;
+			}
 			status = userStatus;
 		} else if (role === 'user') {
 			const { email } = user;
-			const { status: userStatus } = await activate({
-				url: '/user/profile',
+			const { status: userStatus, error } = await activate({
+				url: `${API_BASE_URL}/user/profile`,
 				method: 'PUT',
 				data: {
 					email,
@@ -107,6 +120,10 @@ export default function UserInputNameModal({
 					imageUrl,
 				},
 			});
+			if (error) {
+				setConfirmError(getRequestErrorMessage(error));
+				return;
+			}
 			status = userStatus;
 		}
 
@@ -139,6 +156,7 @@ export default function UserInputNameModal({
 				{errors.name?.message && (
 					<InputFeildError message={errors.name.message} />
 				)}
+				{confirmError && <InputFeildError message={confirmError} />}
 				<Input
 					value={inputValue}
 					placeholder='Enter name'

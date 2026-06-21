@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import useAxios from '../hooks/useAxios';
 import {
 	logout,
@@ -49,6 +49,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 	>();
 	const [user, setUser] = useState<IUserResponseData | null>(null);
 	const { activate, loading, error, status } = useAxios({ manual: true });
+	const tokenValidationIdRef = useRef(0);
 
 	const handleSendCode = async (email: string) => {
 		try {
@@ -65,6 +66,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 	const handleVerifyCode = async (data: Types['Auth']['VerifyCode']) => {
 		try {
 			const { user, status } = await verifyCode(data, activate);
+			tokenValidationIdRef.current++;
 			setVerifyCodeStatus(status);
 			setUser(user);
 			setVerifyCodeError(null);
@@ -87,11 +89,18 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 	};
 
 	const handleTokenValidation = async () => {
+		const validationId = ++tokenValidationIdRef.current;
+
 		try {
 			const { user, status } = await validateToken(activate);
+			if (validationId !== tokenValidationIdRef.current) return;
+
 			setUser(user);
 			setTokenValidationStatus(status);
 		} catch (err) {
+			if (validationId !== tokenValidationIdRef.current) return;
+
+			setUser(null);
 			setTokenValidationStatus((err as ServiceError).statusCode);
 			console.error(err);
 		}
